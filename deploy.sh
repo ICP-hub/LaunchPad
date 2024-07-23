@@ -12,7 +12,7 @@ JSON_STRING='{
     "trigger_threshold":0,
     "cycle_for_archive_creation":0,
     "num_of_block_to_archive":0,
-    "minter":"aaaaa-aa"
+    "minter":"aaaaa-aa" 
 }'
 
 # Parse JSON string using jq
