@@ -1,3 +1,26 @@
-service : {
-    "greet": (text) -> (text) query;
-}
+type Account = record { owner : principal; subaccount : opt blob };
+type ArchiveOptions = record {
+  num_blocks_to_archive : nat64;
+  trigger_threshold : nat64;
+  cycles_for_archive_creation : opt nat64;
+  controller_id : principal;
+};
+type CreateTokenArgs = record {
+  token_symbol : text;
+  transfer_fee : nat64;
+  metadata : vec MetadataEntry;
+  minting_account : Account;
+  initial_balances : vec InitialBalance;
+  archive_options : ArchiveOptions;
+  token_name : text;
+};
+type InitialBalance = record { account : Account; amount : nat64 };
+type MetadataEntry = record { value : MetadataValue; "text" : text };
+type MetadataValue = variant {
+  Int : int64;
+  Nat : nat64;
+  Blob : blob;
+  Text : text;
+};
+type Result = variant { Ok : text; Err : text };
+service : { create_token : (CreateTokenArgs) -> (Result) }

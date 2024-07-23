@@ -5,6 +5,11 @@
       "package": "icplaunchpad_backend",
       "type": "rust"
     },
+    "prac": {
+      "type": "custom",
+      "candid": "external_canisters/prac/ledger.did",
+      "wasm": "external_canisters/prac/ic-icrc1-ledger.wasm.gz"
+    },
     "icplaunchpad_frontend": {
       "dependencies": [
         "icplaunchpad_backend"
