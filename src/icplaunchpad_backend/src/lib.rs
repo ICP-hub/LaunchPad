@@ -26,5 +26,5 @@ fn create_token(details: TokenDetails) -> String {
     // Return the serialized details
     serialized
 }
-
+//to see if pr is raised
 export_candid!();
