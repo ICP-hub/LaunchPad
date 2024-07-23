@@ -18,20 +18,7 @@ struct TokenDetails {
     minter: Principal,
 }
 
-#[derive(Serialize, Deserialize, CandidType)]
-struct Token_Details {
-    token_symbol: String,
-    token_name: String,
-    transfer_fee: u64,
-    feature_flags: bool,
-    pre_minted_tokens: u64,
-    default_owner: Principal,
-    archive_controller: Principal,
-    trigger_threshold: u64,
-    cycle_for_archive_creation: u64,
-    num_of_block_to_archive: u64,
-    minter: Principal,
-}
+
 
 #[update]
 fn create_token(details: TokenDetails) -> String {
