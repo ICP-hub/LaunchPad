@@ -1,0 +1,27 @@
+{
+  "canisters": {
+    "icplaunchpad_backend": {
+      "candid": "src/icplaunchpad_backend/icplaunchpad_backend.did",
+      "package": "icplaunchpad_backend",
+      "type": "rust"
+    },
+    "icplaunchpad_frontend": {
+      "dependencies": [
+        "icplaunchpad_backend"
+      ],
+      "source": [
+        "src/icplaunchpad_frontend/dist"
+      ],
+      "type": "assets",
+      "workspace": "icplaunchpad_frontend"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}
