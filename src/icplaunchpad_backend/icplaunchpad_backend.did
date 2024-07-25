@@ -1,14 +1,18 @@
-type TokenDetails = record {
+type Result = variant { Ok : nat64; Err : text };
+type TokenParams = record {
+  num_blocks_to_archive : nat64;
   token_symbol : text;
   transfer_fee : nat64;
-  minter : principal;
+  minting_account : principal;
+  initial_balance_principal : principal;
   trigger_threshold : nat64;
-  archive_controller : principal;
-  pre_minted_tokens : nat64;
-  num_of_block_to_archive : nat64;
-  cycle_for_archive_creation : nat64;
+  initial_balance_amount : nat64;
+  cycles_for_archive_creation : nat64;
   token_name : text;
-  feature_flags : bool;
-  default_owner : principal;
+  icrc2_feature_flag : bool;
+  controller_id : principal;
 };
-service : { create_token : (TokenDetails) -> (text) }
+service : {
+  create_token : (TokenParams) -> (Result);
+  get_token_params : (nat64) -> (opt TokenParams) query;
+}

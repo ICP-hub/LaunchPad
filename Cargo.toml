@@ -2,4 +2,5 @@
 members = [
     "src/icplaunchpad_backend"
 ]
+
 resolver = "2"
