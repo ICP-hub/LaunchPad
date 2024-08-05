@@ -9,22 +9,8 @@ edition = "2021"
 crate-type = ["cdylib"]
 
 [dependencies]
+serde = { version = "1.0.160", features = ["derive"] }
+base64 = "0.13.0"
 candid = "0.10"
 ic-cdk = "0.13"
 ic-cdk-timers = "0.7" # Feel free to remove this dependency if you don't need timers
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-ic-cdk-macros="0.15.0"
-parking_lot = { version = "0.11", optional = true }
-futures = { version = "0.3", optional = true }
-openssl-sys = { version = "0.9.103", optional = true }
-
-[features]
-default = []
-native = ["parking_lot", "futures", "openssl-sys"]
-
-[target.'cfg(target_arch = "wasm32")'.dependencies]
-js-sys = "0.3"
-wasm-bindgen = "0.2"
-web-sys = "0.3"
-getrandom = { version = "0.2", features = ["js"] }

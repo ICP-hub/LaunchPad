@@ -1,14 +1,15 @@
 {
   "canisters": {
     "icplaunchpad_backend": {
+      "main": "src/icplaunchpad_backend/src/lib.rs",
       "candid": "src/icplaunchpad_backend/icplaunchpad_backend.did",
       "package": "icplaunchpad_backend",
       "type": "rust"
     },
-    "prac": {
+    "token_deployer": {
       "type": "custom",
-      "candid": "external_canisters/prac/ledger.did",
-      "wasm": "external_canisters/prac/ic-icrc1-ledger.wasm.gz"
+      "candid": "src/token_deployer/token_deployer.did",
+      "wasm": "src/token_deployer/ic-icrc1-ledger.wasm.gz"
     },
     "icplaunchpad_frontend": {
       "dependencies": [
