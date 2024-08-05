@@ -4,14 +4,12 @@ use ic_cdk::{
         call::{call_with_payment128, CallResult},
         canister_version,
         management_canister::main::{CanisterInstallMode, WasmModule},
-    }, export_candid, update
+    }, export_candid, query, update
 };
 use serde::{Deserialize, Serialize};
+use state_handler::{mutate_state, read_state, CanisterIdWrapper};
+mod state_handler;
 
-#[ic_cdk::query]
-fn greet(name: String) -> String {
-    format!("Hello, {}!", name)
-}
 
 #[derive(CandidType, Serialize, Deserialize, Debug)]
 pub struct Account {
@@ -273,6 +271,14 @@ pub async fn create_token(params: TokenParams) -> Result<String, String> {
     match install_code(arg1, wasm_module).await {
         Ok(_) => {
             ic_cdk::println!("Canister ID: {:?}", canister_id_principal.to_string());
+
+            // Store the canister ID
+            mutate_state(|state| {
+                state.canister_ids.insert(canister_id_principal.to_string(), CanisterIdWrapper {
+                    canister_id: canister_id_principal,
+                });
+            });
+
             Ok(format!("Canister ID: {}", canister_id_principal.to_string()))
         }
         Err((code, msg)) => {
@@ -281,5 +287,13 @@ pub async fn create_token(params: TokenParams) -> Result<String, String> {
         }
     }
 }
+
+#[query]
+pub fn get_all_canister_ids() -> Vec<String> {
+    read_state(|state| {
+        state.canister_ids.iter().map(|(key, _)| key.clone()).collect()
+    })
+}
+
 
 export_candid!();

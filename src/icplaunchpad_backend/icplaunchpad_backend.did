@@ -32,7 +32,7 @@ type TokenParams = record {
   token_name : text;
   feature_flags : opt FeatureFlags;
 };
-service : {
+service : () -> {
   create_token : (TokenParams) -> (Result);
-  greet : (text) -> (text) query;
+  get_all_canister_ids : () -> (vec text) query;
 }
