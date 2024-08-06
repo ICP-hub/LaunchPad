@@ -213,21 +213,21 @@ async fn install_code(arg: InstallCodeArgument, wasm_module: Vec<u8>) -> CallRes
 
 #[update]
 pub async fn create_token(params: TokenParams) -> Result<String, String> {
-    // Print the user inputted token params for debugging
-    ic_cdk::println!("Token Symbol: {:?}", params.token_symbol);
-    ic_cdk::println!("Token Name: {:?}", params.token_name);
-    ic_cdk::println!("Decimals: {:?}", params.decimals);
-    ic_cdk::println!("Minting Account Owner: {:?}", params.minting_account.owner);
-    ic_cdk::println!("Minting Account Subaccount: {:?}", params.minting_account.subaccount);
-    ic_cdk::println!("Transfer Fee: {:?}", params.transfer_fee);
-    ic_cdk::println!("Metadata: {:?}", params.metadata);
-    ic_cdk::println!("Feature Flags: {:?}", params.feature_flags);
-    ic_cdk::println!("Initial Balances: {:?}", params.initial_balances);
-    ic_cdk::println!("Archive Options: {:?}", params.archive_options);
-    ic_cdk::println!("Maximum Number of Accounts: {:?}", params.maximum_number_of_accounts);
-    ic_cdk::println!("Accounts Overflow Trim Quantity: {:?}", params.accounts_overflow_trim_quantity);
-    ic_cdk::println!("Fee Collector Account: {:?}", params.fee_collector_account);
-    ic_cdk::println!("Max Memo Length: {:?}", params.max_memo_length);
+    // // Print the user inputted token params for debugging
+    // ic_cdk::println!("Token Symbol: {:?}", params.token_symbol);
+    // ic_cdk::println!("Token Name: {:?}", params.token_name);
+    // ic_cdk::println!("Decimals: {:?}", params.decimals);
+    // ic_cdk::println!("Minting Account Owner: {:?}", params.minting_account.owner);
+    // ic_cdk::println!("Minting Account Subaccount: {:?}", params.minting_account.subaccount);
+    // ic_cdk::println!("Transfer Fee: {:?}", params.transfer_fee);
+    // ic_cdk::println!("Metadata: {:?}", params.metadata);
+    // ic_cdk::println!("Feature Flags: {:?}", params.feature_flags);
+    // ic_cdk::println!("Initial Balances: {:?}", params.initial_balances);
+    // ic_cdk::println!("Archive Options: {:?}", params.archive_options);
+    // ic_cdk::println!("Maximum Number of Accounts: {:?}", params.maximum_number_of_accounts);
+    // ic_cdk::println!("Accounts Overflow Trim Quantity: {:?}", params.accounts_overflow_trim_quantity);
+    // ic_cdk::println!("Fee Collector Account: {:?}", params.fee_collector_account);
+    // ic_cdk::println!("Max Memo Length: {:?}", params.max_memo_length);
 
     let arg = CreateCanisterArgument { settings: None };
     let (canister_id,) = match create_canister(arg).await {
