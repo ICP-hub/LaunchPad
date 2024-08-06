@@ -1,14 +1,38 @@
-type TokenDetails = record {
-  token_symbol : text;
-  transfer_fee : nat64;
-  minter : principal;
+type Account = record { owner : principal; subaccount : opt blob };
+type ArchiveOptions = record {
+  num_blocks_to_archive : nat64;
+  max_transactions_per_response : opt nat64;
   trigger_threshold : nat64;
-  archive_controller : principal;
-  pre_minted_tokens : nat64;
-  num_of_block_to_archive : nat64;
-  cycle_for_archive_creation : nat64;
-  token_name : text;
-  feature_flags : bool;
-  default_owner : principal;
+  max_message_size_bytes : opt nat64;
+  cycles_for_archive_creation : opt nat64;
+  node_max_memory_size_bytes : opt nat64;
+  controller_id : principal;
 };
-service : { create_token : (TokenDetails) -> (text) }
+type FeatureFlags = record { icrc2 : bool };
+type Metadata = record { key : text; value : MetadataValue };
+type MetadataValue = variant {
+  Int : int64;
+  Nat : nat;
+  Blob : blob;
+  Text : text;
+};
+type Result = variant { Ok : text; Err : text };
+type TokenParams = record {
+  decimals : opt nat8;
+  token_symbol : text;
+  transfer_fee : nat;
+  metadata : vec Metadata;
+  minting_account : Account;
+  initial_balances : vec record { Account; nat };
+  maximum_number_of_accounts : opt nat64;
+  accounts_overflow_trim_quantity : opt nat64;
+  fee_collector_account : opt Account;
+  archive_options : ArchiveOptions;
+  max_memo_length : opt nat16;
+  token_name : text;
+  feature_flags : opt FeatureFlags;
+};
+service : () -> {
+  create_token : (TokenParams) -> (Result);
+  get_all_canister_ids : () -> (vec text) query;
+}
