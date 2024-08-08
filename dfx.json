@@ -3,12 +3,7 @@
     "index_canister": {
       "type": "custom",
       "candid": "src/index_canister/index_canister.did",
-      "wasm": "src/index_canister/index_canister.wasm.gz",
-      "remote": {
-        "id": {
-          "ic": "br5f7-7uaaa-aaaaa-qaaca-cai"
-        }
-      }
+      "wasm": "src/index_canister/index_canister.wasm.gz"
     },
     "icplaunchpad_backend": {
       "main": "src/icplaunchpad_backend/src/lib.rs",
