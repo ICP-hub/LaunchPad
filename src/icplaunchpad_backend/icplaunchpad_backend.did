@@ -16,7 +16,7 @@ type MetadataValue = variant {
   Blob : blob;
   Text : text;
 };
-type Result = variant { Ok : text; Err : text };
+type Result = variant { Ok : record { text; text }; Err : text };
 type TokenParams = record {
   decimals : opt nat8;
   token_symbol : text;
