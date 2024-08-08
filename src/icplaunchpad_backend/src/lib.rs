@@ -129,6 +129,17 @@ pub(crate) struct InstallCodeArgumentExtended {
 }
 
 #[derive(
+    CandidType, Serialize, Deserialize, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone,
+)]
+pub(crate) struct IndexInstallCodeArgumentExtended {
+    pub mode: CanisterInstallMode,
+    pub canister_id: CanisterId,
+    pub wasm_module: WasmModule,
+    pub sender_canister_version: Option<u64>,
+    pub arg: Vec<u8>,
+}
+
+#[derive(
     CandidType, Serialize, Deserialize, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Default,
 )]
 pub struct CreateCanisterArgument {
@@ -139,6 +150,17 @@ pub struct CreateCanisterArgument {
     CandidType, Serialize, Deserialize, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone,
 )]
 pub struct InstallCodeArgument {
+    pub mode: CanisterInstallMode,
+    pub canister_id: CanisterId,
+    pub wasm_module: WasmModule,
+    pub arg: Vec<u8>,
+}
+
+
+#[derive(
+    CandidType, Serialize, Deserialize, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone,
+)]
+pub struct IndexInstallCodeArgument {
     pub mode: CanisterInstallMode,
     pub canister_id: CanisterId,
     pub wasm_module: WasmModule,
@@ -161,6 +183,12 @@ pub(crate) struct CreateCanisterArgumentExtended {
     pub settings: Option<CanisterSettings>,
     pub sender_canister_version: Option<u64>,
 }
+
+#[derive(CandidType, Serialize, Deserialize, Debug)]
+pub struct IndexInitArgs {
+    pub ledger_id: Principal,
+}
+
 
 // create canister
 async fn create_canister(
@@ -211,26 +239,37 @@ async fn install_code(arg: InstallCodeArgument, wasm_module: Vec<u8>) -> CallRes
     .await
 }
 
-#[update]
-pub async fn create_token(params: TokenParams) -> Result<String, String> {
-    // // Print the user inputted token params for debugging
-    // ic_cdk::println!("Token Symbol: {:?}", params.token_symbol);
-    // ic_cdk::println!("Token Name: {:?}", params.token_name);
-    // ic_cdk::println!("Decimals: {:?}", params.decimals);
-    // ic_cdk::println!("Minting Account Owner: {:?}", params.minting_account.owner);
-    // ic_cdk::println!("Minting Account Subaccount: {:?}", params.minting_account.subaccount);
-    // ic_cdk::println!("Transfer Fee: {:?}", params.transfer_fee);
-    // ic_cdk::println!("Metadata: {:?}", params.metadata);
-    // ic_cdk::println!("Feature Flags: {:?}", params.feature_flags);
-    // ic_cdk::println!("Initial Balances: {:?}", params.initial_balances);
-    // ic_cdk::println!("Archive Options: {:?}", params.archive_options);
-    // ic_cdk::println!("Maximum Number of Accounts: {:?}", params.maximum_number_of_accounts);
-    // ic_cdk::println!("Accounts Overflow Trim Quantity: {:?}", params.accounts_overflow_trim_quantity);
-    // ic_cdk::println!("Fee Collector Account: {:?}", params.fee_collector_account);
-    // ic_cdk::println!("Max Memo Length: {:?}", params.max_memo_length);
+async fn index_install_code(arg: IndexInstallCodeArgument, wasm_module: Vec<u8>) -> CallResult<()> {
+    let cycles: u128 = 10_000_000_000;
 
+    let extended_arg = IndexInstallCodeArgumentExtended {
+        mode: arg.mode,
+        arg: arg.arg,
+        canister_id: arg.canister_id,
+        wasm_module: WasmModule::from(wasm_module),
+        sender_canister_version: Some(canister_version()),
+    };
+
+    call_with_payment128(
+        Principal::management_canister(),
+        "install_code",
+        (extended_arg,),
+        cycles,
+    )
+    .await
+}
+
+#[update]
+pub async fn create_token(params: TokenParams) -> Result<(String, String), String> {
     let arg = CreateCanisterArgument { settings: None };
-    let (canister_id,) = match create_canister(arg).await {
+    let (canister_id,) = match create_canister(arg.clone()).await {
+        Ok(id) => id,
+        Err((_, err_string)) => {
+            ic_cdk::println!("error in canister id");
+            return Err(format!("Error: {}", err_string));
+        }
+    };
+    let (index_canister_id,) = match create_canister(arg.clone()).await {
         Ok(id) => id,
         Err((_, err_string)) => {
             ic_cdk::println!("error in canister id");
@@ -239,7 +278,9 @@ pub async fn create_token(params: TokenParams) -> Result<String, String> {
     };
 
     let _addcycles = deposit_cycles(canister_id, 100000000).await.unwrap();
+    let _addcycles_index = deposit_cycles(index_canister_id, 100000000).await.unwrap();
     let canister_id_principal = canister_id.canister_id;
+    let index_canister_id_principal = index_canister_id.canister_id;
 
     let init_args = LedgerArg::Init(InitArgs {
         minting_account: params.minting_account,
@@ -257,33 +298,53 @@ pub async fn create_token(params: TokenParams) -> Result<String, String> {
         archive_options: params.archive_options,
     });
 
-    let init_arg = encode_one(init_args).map_err(|e| e.to_string())?;
+    let init_arg: Vec<u8> = encode_one(init_args).map_err(|e| e.to_string())?;
 
     let wasm_module = include_bytes!("../../../.dfx/local/canisters/token_deployer/token_deployer.wasm.gz").to_vec();
+    let index_wasm_module = include_bytes!("../../../.dfx/local/canisters/index_canister/index_canister.wasm.gz").to_vec();
 
-    let arg1 = InstallCodeArgument {
+    let arg1: InstallCodeArgument = InstallCodeArgument {
         mode: CanisterInstallMode::Install,
         canister_id: canister_id_principal,
         wasm_module: WasmModule::from(wasm_module.clone()),
-        arg: init_arg,
+        arg: init_arg.clone(),
     };
 
-    match install_code(arg1, wasm_module).await {
+    // Prepare init args for the index canister
+    let index_init_args = IndexInitArgs {
+        ledger_id: canister_id_principal,
+    };
+    let index_init_arg: Vec<u8> = encode_one(index_init_args).map_err(|e| e.to_string())?;
+
+    let arg2: IndexInstallCodeArgument = IndexInstallCodeArgument {
+        mode: CanisterInstallMode::Install,
+        canister_id: index_canister_id_principal,
+        wasm_module: WasmModule::from(index_wasm_module.clone()),
+        arg: index_init_arg,
+    };
+
+    match install_code(arg1.clone(), wasm_module).await {
         Ok(_) => {
             ic_cdk::println!("Canister ID: {:?}", canister_id_principal.to_string());
 
-            // Store the canister ID
             mutate_state(|state| {
                 state.canister_ids.insert(canister_id_principal.to_string(), CanisterIdWrapper {
                     canister_id: canister_id_principal,
                 });
             });
-
-            Ok(format!("Canister ID: {}", canister_id_principal.to_string()))
         }
         Err((code, msg)) => {
             ic_cdk::println!("Error installing code: {} - {}", code as u8, msg);
-            Err(format!("Error installing code: {} - {}", code as u8, msg))
+            return Err(format!("Error installing code: {} - {}", code as u8, msg));
+        }
+    }
+
+    match index_install_code(arg2, index_wasm_module).await {
+        Ok(_) => {
+            Ok((canister_id_principal.to_string(), index_canister_id_principal.to_string()))
+        }
+        Err((code, msg)) => {
+            Err(format!("Error installing index code: {} - {}", code as u8, msg))
         }
     }
 }
