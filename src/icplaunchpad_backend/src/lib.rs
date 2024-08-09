@@ -7,7 +7,7 @@ use ic_cdk::{
     }, export_candid, query, update
 };
 use serde::{Deserialize, Serialize};
-use state_handler::{mutate_state, read_state, CanisterIdWrapper};
+use state_handler::{mutate_state, read_state, CanisterIdWrapper,IndexCanisterIdWrapper};
 mod state_handler;
 
 
@@ -189,6 +189,11 @@ pub struct IndexInitArgs {
     pub ledger_id: Principal,
 }
 
+#[derive(CandidType, Serialize, Deserialize, Debug)]
+pub struct CanisterIndexInfo {
+    pub canister_id: String,
+    pub index_canister_id: String,
+}
 
 // create canister
 async fn create_canister(
@@ -325,13 +330,12 @@ pub async fn create_token(params: TokenParams) -> Result<(String, String), Strin
 
     match install_code(arg1.clone(), wasm_module).await {
         Ok(_) => {
-            ic_cdk::println!("Canister ID: {:?}", canister_id_principal.to_string());
-
             mutate_state(|state| {
                 state.canister_ids.insert(canister_id_principal.to_string(), CanisterIdWrapper {
-                    canister_id: canister_id_principal,
+                    canister_ids: canister_id_principal,
                 });
             });
+            ic_cdk::println!("ledger canister id: {}", canister_id_principal);
         }
         Err((code, msg)) => {
             ic_cdk::println!("Error installing code: {} - {}", code as u8, msg);
@@ -341,7 +345,13 @@ pub async fn create_token(params: TokenParams) -> Result<(String, String), Strin
 
     match index_install_code(arg2, index_wasm_module).await {
         Ok(_) => {
-            Ok((canister_id_principal.to_string(), index_canister_id_principal.to_string()))
+            mutate_state(|state|{ 
+                state.index_canister_ids.insert(index_canister_id_principal.to_string(), IndexCanisterIdWrapper {
+                    index_canister_ids : index_canister_id_principal,
+                })
+            });
+            ic_cdk::println!("index canister id: {}", index_canister_id_principal);
+             Ok((canister_id_principal.to_string(), index_canister_id_principal.to_string()))
         }
         Err((code, msg)) => {
             Err(format!("Error installing index code: {} - {}", code as u8, msg))
@@ -350,9 +360,14 @@ pub async fn create_token(params: TokenParams) -> Result<(String, String), Strin
 }
 
 #[query]
-pub fn get_all_canister_ids() -> Vec<String> {
+pub fn get_all_canister_ids() -> Vec<CanisterIndexInfo> {
     read_state(|state| {
-        state.canister_ids.iter().map(|(key, _)| key.clone()).collect()
+        state.canister_ids.iter().zip(state.index_canister_ids.iter()).map(|((canister_key, _), (index_key, _))| {
+            CanisterIndexInfo {
+                canister_id: canister_key.clone(),
+                index_canister_id: index_key.clone(),
+            }
+        }).collect()
     })
 }
 
