@@ -8,6 +8,10 @@ type ArchiveOptions = record {
   node_max_memory_size_bytes : opt nat64;
   controller_id : principal;
 };
+type CanisterIndexInfo = record {
+  canister_id : text;
+  index_canister_id : text;
+};
 type FeatureFlags = record { icrc2 : bool };
 type Metadata = record { key : text; value : MetadataValue };
 type MetadataValue = variant {
@@ -34,5 +38,5 @@ type TokenParams = record {
 };
 service : () -> {
   create_token : (TokenParams) -> (Result);
-  get_all_canister_ids : () -> (vec text) query;
+  get_all_canister_ids : () -> (vec CanisterIndexInfo) query;
 }
