@@ -5,6 +5,10 @@
       "candid": "src/index_canister/index_canister.did",
       "wasm": "src/index_canister/index_canister.wasm.gz"
     },
+    "internet_identity" : {
+      "type": "pull",
+      "id": "rdmx6-jaaaa-aaaaa-aaadq-cai"
+    },
     "icplaunchpad_backend": {
       "main": "src/icplaunchpad_backend/src/lib.rs",
       "candid": "src/icplaunchpad_backend/icplaunchpad_backend.did",
