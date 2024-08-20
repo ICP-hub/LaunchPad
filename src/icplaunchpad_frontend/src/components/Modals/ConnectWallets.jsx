@@ -24,7 +24,7 @@ const JoinWaitlist = ({ modalIsOpen, setIsOpen }) => {
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
         contentLabel="Example Modal"
-        className="fixed  inset-0 flex items-center justify-center bg-transparent"
+        className="fixed  inset-0 flex items-center lg:mb-[60%] lgx:mb-[10%] justify-center bg-transparent"
         overlayClassName="fixed z-[100] inset-0 bg-gray-800 bg-opacity-50"
       >
         <div className='bg-[#222222] p-[15px] md:p-[20px] relative w-[80%] md:w-[440px] border border-[#696969] rounded-xl'>

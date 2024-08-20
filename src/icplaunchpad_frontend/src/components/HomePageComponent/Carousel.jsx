@@ -16,6 +16,7 @@ import person6 from '../../assets/images/carousel/person6.png';
 
 const Carousel = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [slidesToShow, setSlidesToShow] = useState(5); // Default to 5 slides
 
   const slides = [
     { id: 1, title: "Catwifhat", subtitle: "Catwifhat", img: person1 ,logo: l1 },
@@ -27,29 +28,40 @@ const Carousel = () => {
     { id: 7, title: "Catwifhat", subtitle: "Catwifhat", img: person1 ,logo: l1 },
   ];
 
+  useEffect(() => {
+    // Adjust the number of slides based on screen width
+    const updateSlidesToShow = () => {
+      if (window.innerWidth < 1025) {
+        setSlidesToShow(3);
+      } else {
+        setSlidesToShow(5);
+      }
+    };
+
+    // Initial check
+    updateSlidesToShow();
+
+    // Add event listener for window resize
+    window.addEventListener('resize', updateSlidesToShow);
+
+    // Clean up event listener on unmount
+    return () => window.removeEventListener('resize', updateSlidesToShow);
+  }, []);
+
   const handlePrevClick = () => {
-    setCurrentSlide((prev) => (prev === 0 ? slides.length - 5 : prev - 1));
+    setCurrentSlide((prev) => (prev === 0 ? slides.length - slidesToShow : prev - 1));
   };
 
   const handleNextClick = () => {
-    setCurrentSlide((prev) => (prev === slides.length - 5 ? 0 : prev + 1));
+    setCurrentSlide((prev) => (prev === slides.length - slidesToShow ? 0 : prev + 1));
   };
 
-   // Automatically move slides every 3 seconds
-   useEffect(() => {
-    const interval = setInterval(() => {
-      handleNextClick();
-    }, 3000); // Slide interval in milliseconds
-
-    return () => clearInterval(interval); // Clear interval on component unmount
-  }, []);
-
   return (
-    <div className="relative flex flex-col px-[9%] pt-[8%] pb-[3%] items-center">
+    <div className="relative flex flex-col px-[9%] dxlpt-[8%]  lg:pt-[15%]  dxl:pb-[3%] items-center">
       {/* Carousel Content */}
       <div className="flex overflow w-full justify-center space-x-6">
-        {slides.slice(currentSlide, currentSlide + 5).map((slide) => (
-          <div key={slide.id} className="relative px-8  pb-40 h-20 rounded-2xl bg-[#252525]">
+        {slides.slice(currentSlide, currentSlide + slidesToShow).map((slide) => (
+          <div key={slide.id} className="relative px-8  pb-40 h-[174px] w-[183px]  rounded-2xl bg-[#252525]">
             <div className="absolute left-1/2 bottom-11 transform -translate-x-1/2 -translate-y-1/2 w-[125px]  rounded-full overflow border-1 border-gray-300">
               <img src={slide.img} alt={slide.title} className="object-cover  " />
               <div className="absolute bottom-0 right-0 w-10 h-10  rounded-full border-1 border-gray-300">
@@ -63,16 +75,16 @@ const Carousel = () => {
       </div>
 
       {/* Navigation Arrows */}
-      <button onClick={handlePrevClick} className="absolute left-[15%] top-[40%] transform -translate-y-1/2 bg-black p-2">
-        <FiArrowLeftCircle size={30} />
+      <button onClick={handlePrevClick} className="absolute left-[10%] top-[50%] transform -translate-y-1/2 bg-black p-2">
+        <FiArrowLeftCircle size={35} />
       </button>
-      <button onClick={handleNextClick} className="absolute right-[15%] top-[40%] transform -translate-y-1/2 bg-black p-2 rounded-full">
-        <FiArrowRightCircle size={30} />
+      <button onClick={handleNextClick} className="absolute right-[10%] top-[50%] transform -translate-y-1/2 bg-black p-2 rounded-full">
+        <FiArrowRightCircle size={35} />
       </button>
 
       {/* Dots */}
       <div className="flex mt-4">
-        {slides.slice(0, 3).map((_, index) => (
+        {slides.slice(0, slidesToShow === 3 ? 2 : 3).map((_, index) => (
           <div key={index} className={`mx-1 h-2 ${currentSlide === index ? 'w-8' : 'w-2'} bg-gray-500 rounded-full transition-all duration-300`}></div>
         ))}
       </div>

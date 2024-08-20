@@ -14,10 +14,10 @@ import p12 from '../../assets/images/projectsIcon/p12.png';
 
 const FundList = () => {
   return (
-    <div className="px-[8%] py-[2%] bg-black">
+    <div className="px-[8%] py-[3%] bg-black">
       <h2 className="text-2xl font-bold text-white mb-4">SUCCESSFUL PROJECTS RAISE FUNDING</h2>
       <div className="overflow-x-auto">
-        <table className="min-w-full bg-black ">
+        <table className="min-w-full bg-black border-b border-gray-700">
           <thead>
             <tr className="bg-[#1919194D] text-white  uppercase text-sm leading-normal">
               <th className="py-3 px-6 text-left">#</th>
@@ -28,7 +28,7 @@ const FundList = () => {
               <th className="py-3 px-6 text-left">Ended In</th>
             </tr>
           </thead>
-          <tbody className="text-white text-sm divide-y divide-gray-700">
+          <tbody className="text-white text-sm divide-y  divide-gray-700">
            
             <tr className='text-base'>
               <td className="py-3 px-6">1</td>
@@ -129,7 +129,7 @@ const FundList = () => {
               <td className="py-3 px-6">June 29th 2089</td>
             </tr>
 
-            <tr className='text-base'>
+            <tr className='text-base '>
               <td className="py-3 px-6">12</td>
               <td className=" flex items-center py-3 px-6"><img src={p12} alt="infinite" className=" pr-2 " />Name</td>
               <td className="py-3 px-6">$400,000</td>

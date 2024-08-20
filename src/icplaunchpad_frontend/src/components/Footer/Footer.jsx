@@ -19,7 +19,7 @@ const Footer = () => {
       <img draggable="false" className='w-[130px] pb-4' src={infinity} alt='ICP' />
       <p className=' font-[400]  text-[18px] text-white  '>PinkSale helps everyone to create their own tokens and token sales in few seconds.</p>
       </div> 
-      <div className='flex flex-col pr-[17%] gap-8  bg-black'>
+      <div className='flex flex-col lg:pr-[-5%] lgx:pr-[8%] dxl:pr-[17%] gap-8  bg-black'>
         <div className=' flex gap-[85px]'>
         <p className=' font-[400] text-[20px] text-white'>USEFUL LINKS</p>
         <a className='text-[#96839B]'>Home</a>
