@@ -57,7 +57,7 @@ const Carousel = () => {
   };
 
   return (
-    <div className="relative flex flex-col px-[9%] dxlpt-[8%]  lg:pt-[15%]  dxl:pb-[3%] items-center">
+    <div className="relative flex flex-col px-[9%] dxl:pt-[8%] md:pt-[17%]  lg:pt-[15%]  dxl:pb-[3%] items-center">
       {/* Carousel Content */}
       <div className="flex overflow w-full justify-center space-x-6">
         {slides.slice(currentSlide, currentSlide + slidesToShow).map((slide) => (
@@ -75,10 +75,10 @@ const Carousel = () => {
       </div>
 
       {/* Navigation Arrows */}
-      <button onClick={handlePrevClick} className="absolute left-[10%] top-[50%] transform -translate-y-1/2 bg-black p-2">
+      <button onClick={handlePrevClick} className="absolute lg:left-[10%] lg:top-[60%] lgx:left-[5%] transform -translate-y-1/2 bg-black p-2">
         <FiArrowLeftCircle size={35} />
       </button>
-      <button onClick={handleNextClick} className="absolute right-[10%] top-[50%] transform -translate-y-1/2 bg-black p-2 rounded-full">
+      <button onClick={handleNextClick} className="absolute lg:right-[10%] lg:top-[60%] transform -translate-y-1/2 bg-black p-2 rounded-full">
         <FiArrowRightCircle size={35} />
       </button>
 

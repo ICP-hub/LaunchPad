@@ -43,17 +43,17 @@ const Header = () => {
 
   return (
     <div>
-      <nav className="relative z-20 text-white bg-black shadow-lg  dlg:px-[2%] dlg:py-6 lgx:px-[4%] lgx:py-9 md:px-[4%] flex justify-between items-center">
+      <nav className="relative z-20 text-white bg-black shadow-lg   dlg:px-[2%] dlg:py-6 lgx:px-[4%] lgx:py-9 md:px-[4%] md:py-[2%] flex justify-between items-center">
         <div className="flex items-center">
           <img
             src={logo}
             alt="Logo"
-            className="  lg:h-[25px]  lg:w-[170px] lgx:w-[190px] lgx:h-[40px]  "
+            className=" md:h-[18px] lg:h-[25px]  lg:w-[170px] lgx:w-[190px] lgx:h-[40px]  "
             draggable="false"
           />
         </div>
 
-        <div className="hidden ldx:px-10 lgx:mr-[35%] md:mr-[20%] md:flex lg:text-[14px] space-x-8">
+        <div className="hidden lgx:px-10 lgx:mr-[35%] md:mr-[20%] md:flex lg:text-[18px] md:text-[13px] lgx:text-[20px] space-x-8">
   <a
     href="#home"
     onClick={() => handleSectionClick('home')}
@@ -126,7 +126,7 @@ const Header = () => {
         <div>
           <button
             onClick={openModal}
-            className="border z-20 text-white relative w-[120px] lg:w-[190px] h-[25px] lg:h-[25px] dxl:h-[35px] text-[10px] md:text-[18px] font-[400] rounded-xl border-[#EE3EC9]"
+            className="border z-20 text-white relative w-[120px] md:w-[150px] lg:w-[190px] h-[25px] lg:h-[25px] dxl:h-[35px] text-[10px] md:text-[14px] font-[400] rounded-xl border-[#EE3EC9]"
           >
             Connect Wallet
           </button>
@@ -134,7 +134,7 @@ const Header = () => {
         </div>
       </nav>
 
-      <div className="flex   items-center bg-[#222222] py-1 px-[4%]  lg:text-[7px] dxl:text-sm gap-11">
+      <div className="flex   items-center bg-[#222222] py-1 px-[4%] md:text-[6px] lg:text-[7px] dxl:text-[15px] md:gap-9  dxl:gap-11 whitespace-nowrap">
         <p className=" lg:text-[12px] dxl:text-lg">TRENDING</p>
         <p>#1 TRUMPBB</p>
         <p>#2 SWIF</p>

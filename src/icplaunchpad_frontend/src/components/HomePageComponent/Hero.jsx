@@ -11,7 +11,7 @@ const Hero = () => {
     <div className="flex pt-[4%] ">
       {/* Left Section */}
       <div className="w-1/2 flex flex-col justify-center pl-[9%]">
-        <h1 className="text-7xl font-bold mb-6">
+        <h1 className=" text-2xl md:text-4xl lg:text-5xl dxl:text-7xl font-bold mb-6">
           THE LAUNCHPAD PROTOCOL FOR EVERYONE
         </h1>
         <p className="text-lg mb-4">
