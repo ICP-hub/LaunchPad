@@ -97,10 +97,10 @@ const UpcomingSales = () => {
         </button>
       </div>
 
-      <div className="flex space-x-4 h-[580px] lg:pt-[15%] dxl:pt-[10%]">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 h-[580px] lg:pt-[15%] dxl:pt-[10%]">
         {salesData.map((sale, index) => (
-          <div key={index} className="bg-[#222222] rounded-2xl  py-4 pr-4 w-1/3 relative">
-            <div className="absolute -top-[15%] left-1/2 transform -translate-x-1/2">
+          <div key={index} className="bg-[#222222] rounded-2xl py-6 pr-6 w-full relative mt-6">
+            <div className="absolute -top-[13%] left-1/2 transform -translate-x-1/2">
               <img
                 src={person1}
                 alt="sale-item"
@@ -110,12 +110,12 @@ const UpcomingSales = () => {
                 <img src={l3} alt="small" className="object-cover w-full h-full" />
               </div>
             </div>
-            <div className="mt-10 text-center">
-              <h3 className="text-white text-lg">{sale.heading}</h3>
+            <div className="mt-14 text-center">
+              <h3 className="text-white lg:text-lg">{sale.heading}</h3>
               <p className="text-gray-400">{sale.subheading}</p>
               <p className="text-yellow-500 mt-2">UPCOMING</p>
               <hr className="my-4 border-gray-600" />
-              <div className="flex items-center  relative">
+              <div className="flex items-center relative">
                 <div className="w-1/2 relative overflow-hidden">
                   <div className="relative" style={{ width: '140%', transform: 'translateX(-40%)' }}>
                     <Doughnut

@@ -48,7 +48,7 @@ const Header = () => {
           <img
             src={logo}
             alt="Logo"
-            className=" md:h-[18px] lg:h-[25px]  lg:w-[170px] lgx:w-[190px] lgx:h-[40px]  "
+            className=" md:h-[18px] lg:h-[25px]  lg:w-[170px] lgx:w-[190px] lgx:h-[30px]  "
             draggable="false"
           />
         </div>

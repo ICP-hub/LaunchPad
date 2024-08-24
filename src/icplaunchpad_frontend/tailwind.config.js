@@ -30,7 +30,7 @@ export default {
         md2: "914px",
         md3: "936px",
         lg: "976px",
-        dlg: "1024px",
+        dlg: "1025px",
         lg1: "1100px",
         lgx: "1180px",
         dxl: "1285px",

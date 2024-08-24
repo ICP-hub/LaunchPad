@@ -28,7 +28,7 @@ const FundList = () => {
               <th className="py-3 px-6 text-left">Ended In</th>
             </tr>
           </thead>
-          <tbody className="text-white text-sm divide-y  divide-gray-700">
+          <tbody className="text-white text-sm divide-y md:align-top divide-gray-700">
            
             <tr className='text-base'>
               <td className="py-3 px-6">1</td>

@@ -31,8 +31,10 @@ const Carousel = () => {
   useEffect(() => {
     // Adjust the number of slides based on screen width
     const updateSlidesToShow = () => {
-      if (window.innerWidth < 1025) {
+      if (window.innerWidth < 1086) {
         setSlidesToShow(3);
+      } else if (window.innerWidth < 1282 ) {
+        setSlidesToShow(4);
       } else {
         setSlidesToShow(5);
       }
@@ -75,10 +77,10 @@ const Carousel = () => {
       </div>
 
       {/* Navigation Arrows */}
-      <button onClick={handlePrevClick} className="absolute lg:left-[10%] lg:top-[60%] lgx:left-[5%] transform -translate-y-1/2 bg-black p-2">
+      <button onClick={handlePrevClick} className="absolute top-[60%] md:left-[3%]  lg:left-[10%] lg:top-[60%]  transform -translate-y-1/2 bg-black p-2">
         <FiArrowLeftCircle size={35} />
       </button>
-      <button onClick={handleNextClick} className="absolute lg:right-[10%] lg:top-[60%] transform -translate-y-1/2 bg-black p-2 rounded-full">
+      <button onClick={handleNextClick} className="absolute top-[60%] md:right-[3%]  lg:right-[10%] lg:top-[60%] transform -translate-y-1/2 bg-black p-2 rounded-full">
         <FiArrowRightCircle size={35} />
       </button>
 
