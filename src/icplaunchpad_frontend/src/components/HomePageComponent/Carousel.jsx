@@ -19,13 +19,13 @@ const Carousel = () => {
   const [slidesToShow, setSlidesToShow] = useState(5); // Default to 5 slides
 
   const slides = [
-    { id: 1, title: "Catwifhat", subtitle: "Catwifhat", img: person1 ,logo: l1 },
-    { id: 2, title: "Catwifhat", subtitle: "Catwifhat", img: person2 ,logo: l2 },
-    { id: 3, title: "Catwifhat", subtitle: "Catwifhat", img: person3 ,logo: l3 },
-    { id: 4, title: "Catwifhat", subtitle: "Catwifhat", img: person4 ,logo: l4 },
-    { id: 5, title: "Catwifhat", subtitle: "Catwifhat", img: person5 ,logo: l5 },
-    { id: 6, title: "Catwifhat", subtitle: "Catwifhat", img: person6 ,logo: l6 },
-    { id: 7, title: "Catwifhat", subtitle: "Catwifhat", img: person1 ,logo: l1 },
+    { id: 1, title: "CATWIFHAT", subtitle: "Catwifhat", img: person1 ,logo: l1 },
+    { id: 2, title: "CATWIFHAT", subtitle: "Catwifhat", img: person2 ,logo: l2 },
+    { id: 3, title: "CATWIFHAT", subtitle: "Catwifhat", img: person3 ,logo: l3 },
+    { id: 4, title: "CATWIFHAT", subtitle: "Catwifhat", img: person4 ,logo: l4 },
+    { id: 5, title: "CATWIFHAT", subtitle: "Catwifhat", img: person5 ,logo: l5 },
+    { id: 6, title: "CATWIFHAT", subtitle: "Catwifhat", img: person6 ,logo: l6 },
+    { id: 7, title: "CATWIFHAT", subtitle: "Catwifhat", img: person1 ,logo: l1 },
   ];
 
   useEffect(() => {
@@ -59,7 +59,7 @@ const Carousel = () => {
   };
 
   return (
-    <div className="relative flex flex-col px-[9%] dxl:pt-[8%] md:pt-[17%]  lg:pt-[15%]  dxl:pb-[3%] items-center">
+    <div className="relative flex flex-col px-[9%] py-9 dxl:pt-[8%] md:pt-[17%]  lg:pt-[15%]  dxl:pb-[3%] items-center">
       {/* Carousel Content */}
       <div className="flex overflow w-full justify-center space-x-6">
         {slides.slice(currentSlide, currentSlide + slidesToShow).map((slide) => (
@@ -77,10 +77,10 @@ const Carousel = () => {
       </div>
 
       {/* Navigation Arrows */}
-      <button onClick={handlePrevClick} className="absolute top-[60%] md:left-[3%]  lg:left-[10%] lg:top-[60%]  transform -translate-y-1/2 bg-black p-2">
+      <button onClick={handlePrevClick} className="absolute left-[5%] top-[40%] md:top-[60%] md:left-[3%]  lg:left-[10%] lg:top-[60%]  transform -translate-y-1/2 bg-transparent p-2">
         <FiArrowLeftCircle size={35} />
       </button>
-      <button onClick={handleNextClick} className="absolute top-[60%] md:right-[3%]  lg:right-[10%] lg:top-[60%] transform -translate-y-1/2 bg-black p-2 rounded-full">
+      <button onClick={handleNextClick} className="absolute top-[40%] right-[5%] md:top-[60%] md:right-[3%]  lg:right-[10%] lg:top-[60%] transform -translate-y-1/2 bg-transparent p-2 rounded-full">
         <FiArrowRightCircle size={35} />
       </button>
 

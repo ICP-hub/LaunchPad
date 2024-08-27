@@ -14,27 +14,31 @@ const Footer = () => {
           listed and therefore, accept no liability for any loss occasioned. It is the user(s) responsibility to do 
           their own research and  seek financial advice from a professional. More information about (DYOR) can be found via Binance Academy.</p>
       </div>
-     <div className='px-[9%]   bg-black pt-[4%] pb-6 flex justify-between '>
-      <div className='my-auto    bg-black w-[20%] '>
+     <div className='px-[9%]   bg-black pt-[4%] pb-6 flex flex-col md:flex-row  justify-between '>
+      <div className='my-auto    bg-black pb-6 w-[85%] md:w-[20%] '>
       <img draggable="false" className='w-[130px] pb-4' src={infinity} alt='ICP' />
-      <p className=' font-[400]  text-[18px] text-white  '>PinkSale helps everyone to create their own tokens and token sales in few seconds.</p>
+      <p className=' font-[400]  text-[15px] md:text-[18px] text-white  '>PinkSale helps everyone to create their own tokens and token sales in few seconds.</p>
       </div> 
-      <div className='flex md:flex-row lg:flex-col lg:pr-[-5%] lgx:pr-[8%] dxl:pr-[17%] gap-8  bg-black'>
-        <div className=' flex md:flex-col lg:flex-row  md:gap-[20px] lg:gap-[85px]'>
+      <div className='flex flex-col  md:flex-row lg:flex-col lg:pr-[-5%] lgx:pr-[8%] dxl:pr-[17%] gap-8  bg-black'>
+        <div className=' flex flex-col md:flex-col lg:flex-row gap-[7px] md:gap-[20px] lg:gap-[85px]'>
+          <div>
         <p className=' font-[400] text-[20px] text-white'>USEFUL LINKS</p>
-        <a className='text-[#96839B]'>Home</a>
+        </div>
+        <div className='flex md:flex-col lg:flex-row gap-4'>
+        <a className='text-[#96839B] '>Home</a>
         <a className='text-[#96839B]'>Projects</a>
         <a className='text-[#96839B]'>Launch a Coin</a>
         <a className='text-[#96839B]'>Profile</a>
         </div>
-        <div className=' flex md:flex-col lg:flex-row  md:gap-[20px] lg:gap-[85px]'>
+        </div>
+        <div className=' flex md:flex-col lg:flex-row gap-[15px] md:gap-[20px] lg:gap-[85px]'>
         <p className=' font-[400] text-[20px] text-white'>FOLLOW US</p>
         <Link to="" target="__blank" className='text-[#96839B]' ><FaInstagram size={33} /></Link>
         <Link to="" target="__blank" className='text-[#96839B]'><FaXTwitter size={33} /></Link>
         <Link to="" target="__blank" className='text-[#96839B]' ><PiTelegramLogo size={33} /></Link>
         <Link to="" target="__blank" className='text-[#96839B]'>< AiOutlineFacebook size={33} /></Link>
         </div>
-        <div className=' flex md:flex-col lg:flex-row  md:gap-[20px] lg:gap-[85px]'>
+        <div className=' flex md:flex-col lg:flex-row gap-[15px] md:gap-[20px] lg:gap-[85px]'>
         <p className=' font-[400] text-[20px] text-white'>INTERFACE</p>
          {/* Light View */}
   <div className='flex items-center gap-2'>
