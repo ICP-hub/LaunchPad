@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import logo from '../../assets/images/icLogo.png';
 import infinite from '../../assets/images/icons/infinity.png';
 import id from '../../assets/images/icons/id.png';
-import stoic from '../../assets/images/icons/stoic.png';
 import plug from '../../assets/images/icons/plug.png';
 import bifinity from '../../assets/images/icons/bifinity.png';
 

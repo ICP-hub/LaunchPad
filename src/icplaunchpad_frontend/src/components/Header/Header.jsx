@@ -76,8 +76,8 @@ const Header = () => {
 
        
 
-        {/* Regular Navigation Links and Search for screens above 768px */}
-        <div className="hidden md:flex lgx:px-10 lgx:mr-[35%] md:mr-[20%] md:flex lg:text-[18px] md:text-[13px] lgx:text-[20px] space-x-8">
+        
+        <div className="hidden md:flex lgx:px-10 lgx:mr-[35%] md:mr-[20%]  lg:text-[18px] md:text-[13px] lgx:text-[20px] space-x-8">
           <a
             href="#home"
             onClick={() => handleSectionClick('home')}
@@ -105,7 +105,7 @@ const Header = () => {
             )}
           </a>
           <a
-            href="#LaunchCoin"
+            href="/LaunchCoin"
             onClick={() => handleSectionClick('coin')}
             className={`decoration-pink-400 underline-offset-8 whitespace-nowrap ${
               activeSection === 'coin' ? 'underline' : 'decoration-transparent'
@@ -183,14 +183,14 @@ const Header = () => {
           </a>
           <button
             onClick={openModal}
-            className="w-full mt-4 border text-white py-2 rounded-xl border-[#EE3EC9]"
+            className="w-full mt-4 border text-center  text-white py-2 rounded-xl border-[#EE3EC9]"
           >
             Connect Wallet
           </button>
         </div>
       )}
 
-      <div className="flex items-center bg-[#222222] py-1 px-[4%]   md:text-[6px] lg:text-[7px] dxl:text-[15px] md:gap-9  dxl:gap-11 gap-7 whitespace-nowrap">
+      <div className="flex items-center bg-[#222222] py-1 px-[4%]   md:text-[6px] lg:text-[7px]  dlg:text-[22pz] dxl:text-[18px] md:gap-9  dxl:gap-11 gap-7 whitespace-nowrap">
         <p className="  lg:text-[12px] dxl:text-lg">TRENDING</p>
         <p>#1 TRUMPBB</p>
         <p>#2 SWIF</p>

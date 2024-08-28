@@ -1,16 +1,19 @@
 import React from 'react';
-import OurPartner from '../components/HomePageComponent/OurPartners';
-import FundList from '../components/HomePageComponent/FundList';
-import Carousel from '../components/HomePageComponent/Carousel';
-import UpcomingSales from '../components/HomePageComponent/UpcomingSales';
+
+import Clients from '../components/LaunchACoin/Clients';
+import FundedProjects from '../components/LaunchACoin/FundedProjects';
+import CommunityStats from '../components/LaunchACoin/CommunityStats';
+import WhyLaunch from '../components/LaunchACoin/WhyLaunch';
+import Launch from '../components/LaunchACoin/Launch';
 
 function Home() {
   return (
     <div>
-      <Carousel/>
-      <FundList/>
-      <UpcomingSales/>
-      <OurPartner/>
+      <Launch/>
+      <WhyLaunch/>
+      <CommunityStats/>
+      <FundedProjects/>
+      <Clients/>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Route, Routes } from "react-router-dom";
 import Home from "./Pages/Home";
+import LaunchCoin from "./Pages/LaunchCoin"
 
 // import { AuthProvider } from "./utils/useAuthClient"
 
@@ -18,6 +19,14 @@ function AllRoutes() {
             </PrivateLayout>
           }
         />
+        <Route
+        path="/launchCoin"
+        element={
+          <PrivateLayout>
+            <LaunchCoin />
+          </PrivateLayout>
+        }
+      />
 
       </Routes>
    

@@ -13,7 +13,7 @@ import l3 from '../../assets/images/carousel/l3.png';
 // Register Chart.js components
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const UpcomingSales = () => {
+const Clients= () => {
   const navigate = useNavigate();
 
   // Handle navigation to the projects page
@@ -89,15 +89,15 @@ const UpcomingSales = () => {
   ];
 
   return (
-    <div className="upcoming-sales h-full mb-[300%] xxs:mb-[270%]  md:mb-[80%] lg:mb-0 sm4:mb-3 py-[5%] px-[9%]">
+    <div className="upcoming-sales h-full mb-[270%]  md:mb-[80%] lg:mb-0 sm4:mb-3 py-[5%] px-[9%]">
       <div className="flex justify-between items-center">
-        <h2 className="text-white text-2xl">UPCOMING SALES</h2>
+        <h2 className="text-white font-bold text-3xl">CLIENT SUCCESS STORIES</h2>
         <button onClick={handleViewMoreClick} className="text-white underline">
           View More
         </button>
       </div>
 
-      <div className="grid  grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-11  lg:gap-4 h-[580px]  pt-[20%] md:pt-[15%] dxl:pt-[10%]">
+      <div className="grid  grid-cols-1 md:grid-cols-2 lg:grid-cols-3 md:gap-11  lg:gap-4 h-[580px]  pt-[20%] md:pt-[15%] dxl:pt-[10%]">
         {salesData.map((sale, index) => (
           <div key={index} className="bg-[#222222] rounded-2xl  py-6 pr-6 w-full relative mt-[20%] md:mt-6">
             <div className="absolute -top-[13%] left-1/2 transform -translate-x-1/2">
@@ -165,4 +165,4 @@ const UpcomingSales = () => {
   );
 };
 
-export default UpcomingSales;
+export default Clients;
