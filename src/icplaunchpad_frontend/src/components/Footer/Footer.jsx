@@ -15,16 +15,16 @@ const Footer = () => {
           their own research and  seek financial advice from a professional. More information about (DYOR) can be found via Binance Academy.</p>
       </div>
      <div className='px-[9%]   bg-black pt-[4%] pb-6 flex flex-col md:flex-row  justify-between '>
-      <div className='my-auto    bg-black pb-6 w-[85%] md:w-[20%] '>
+      <div className='my-auto pr-11   bg-black pb-6 w-[85%] md:w-[20%] '>
       <img draggable="false" className='w-[130px] pb-4' src={infinity} alt='ICP' />
-      <p className=' font-[400]  text-[15px] md:text-[18px] text-white  '>PinkSale helps everyone to create their own tokens and token sales in few seconds.</p>
+      <p className=' font-[400]  text-[15px] dxl:text-[18px] text-white  '>PinkSale helps everyone to create their own tokens and token sales in few seconds.</p>
       </div> 
-      <div className='flex flex-col  md:flex-row lg:flex-col lg:pr-[-5%] lgx:pr-[8%] dxl:pr-[17%] gap-8  bg-black'>
+      <div className='flex flex-col  md:flex-row lg:flex-col lg:pr-[-5%]  lgx:pr-[6%] dxl:pr-[7%] gap-8  bg-black'>
         <div className=' flex flex-col md:flex-col lg:flex-row gap-[7px] md:gap-[20px] lg:gap-[85px]'>
           <div>
         <p className=' font-[400] text-[20px] text-white'>USEFUL LINKS</p>
         </div>
-        <div className='flex md:flex-col lg:flex-row gap-4'>
+        <div className='flex md:flex-col lg:flex-row gap-4 lg:gap-[120px]'>
         <a className='text-[#96839B] '>Home</a>
         <a className='text-[#96839B]'>Projects</a>
         <a className='text-[#96839B]'>Launch a Coin</a>

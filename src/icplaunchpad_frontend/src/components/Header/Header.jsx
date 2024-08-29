@@ -175,7 +175,7 @@ const Header = () => {
             Projects
           </a>
           <a
-            href="#coin"
+            href="/LaunchCoin"
             onClick={() => handleSectionClick('coin')}
             className={`block py-2 ${activeSection === 'coin' ? 'text-pink-400' : 'text-white'}`}
           >
@@ -190,7 +190,7 @@ const Header = () => {
         </div>
       )}
 
-      <div className="flex items-center bg-[#222222] py-1 px-[4%]   md:text-[6px] lg:text-[7px]  dlg:text-[22pz] dxl:text-[18px] md:gap-9  dxl:gap-11 gap-7 whitespace-nowrap">
+      <div className="flex items-center bg-[#222222] py-1 px-[4%] md:text-[7px]  md1:text-[8px] lg:text-[8px] lg:gap-4 lg1:gap-7 dlg:text-[14px] dxl:text-[15px] xl:text-[16px] md:gap-8  dxl:gap-8 gap-7 whitespace-nowrap">
         <p className="  lg:text-[12px] dxl:text-lg">TRENDING</p>
         <p>#1 TRUMPBB</p>
         <p>#2 SWIF</p>
