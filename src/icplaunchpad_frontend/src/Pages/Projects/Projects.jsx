@@ -45,14 +45,14 @@ const Projects = () => {
 
   return (
     <>
-      <div className="flex gap-5 max-w-[90%] mx-auto ">
-        <div className="left-cart-parent h-[1150px] bg-[#FFFFFF1A] mt-24 max-w-[902px]">
+      <div className="flex flex-col gap-5 max-w-[90%] mx-auto lg:flex-row">
+        <div className="min-h-[1150px] bg-[#FFFFFF1A] mt-24 max-w-[902px]">
           <div className="h-[314px]">
             <div className="relative">
-              <img src={ProjectRectangleBg} className="object-cover" alt="" />
+              <img src={ProjectRectangleBg} className="min-h-[147px]" alt="" />
               <img
                 src={tokenHolder}
-                className="absolute top-0 left-[50%] transform -translate-x-1/2 -translate-y-[35%] rounded-full "
+                className="absolute top-0 left-[50%] transform -translate-x-1/2 -translate-y-[35%] rounded-full min-h-[177px]"
                 alt=""
               />
             </div>
@@ -150,8 +150,8 @@ const Projects = () => {
           </div>
         </div>
 
-        <div className="flex flex-col gap-5">
-          <div className="max-w-[406px] bg-[#FFFFFF1A] rounded-[17.44px] p-5 text-white relative h-[218px] mt-24">
+        <div className="flex lg:flex-col flex-row gap-5 flex-wrap ">
+          <div className="lg:min-w-[406px] bg-[#FFFFFF1A] rounded-[17.44px] p-5 text-white relative h-[218px] lg:mt-24 w-full">
             <p className="text-lg mb-2">AMOUNT</p>
             <input
               type="text"
@@ -163,9 +163,9 @@ const Projects = () => {
             </button>
           </div>
 
-          <div className="bg-[#FFFFFF1A] text-white p-1 rounded-lg flex  w-[406px]">
+          <div className="bg-[#FFFFFF1A] text-white p-1 rounded-lg flex w-full lg:min-w-[406px]">
             <div className="relative flex items-center  overflow-hidden w-[60%] h-72">
-              <div className="absolute left-[-45%] top-0 w-72 h-72">
+              <div className="absolute lg:left-[-45%] left-[-30%] sm:left-[-20%] md:left-[-15%]  top-0 w-72 h-72">
                 <svg className="transform rotate-90" viewBox="0 0 36 36">
                   <defs>
                     <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -222,7 +222,7 @@ const Projects = () => {
             </div>
           </div>
 
-          <div className="w-[406px] h-[153px] bg-[#FFFFFF1A] rounded-[17.44px] flex flex-col justify-center items-center text-white">
+          <div className="lg:min-w-[406px] w-full h-[153px] bg-[#FFFFFF1A] rounded-[17.44px] flex flex-col justify-center items-center text-white">
             <p className="text-lg mb-2">SALE STARTS IN</p>
             <div className="text-2xl font-bold">00:29:23:00</div>
           </div>
