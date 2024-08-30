@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ProjectRectangleBg from "../../assets/images/project-rectangle-bg.png";
 import tokenHolder from "../../assets/images/tokenHolder.png";
 import facebook from "../../assets/images/logos/facebook.png";
@@ -14,9 +14,11 @@ import FAQsDiscussion from "./FAQsDiscussion/FAQsDiscussion";
 import Pooolinfo from "./pooolinfo/Pooolinfo";
 import Token from "./token/Token";
 import Tokenomic from "./Tokenomic/Tokenomic";
+import MobileViewTab from "./MobileViewTab";
 
 const Projects = () => {
   const [activeTab, setActiveTab] = useState("About");
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 640);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -37,119 +39,112 @@ const Projects = () => {
     }
   };
 
+  const tabNames = [
+    "About",
+    "Token",
+    "Pool Info",
+    "Affiliate Program",
+    "Tokenomic",
+    "FAQs & Discussion",
+  ];
+
   const progress = 35.1;
   const raised = 30;
   const unsoldTokens = 368484;
   const currentRaised = 36;
   const saleType = "PUBLIC";
 
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 640);
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   return (
     <>
       <div className="flex flex-col gap-5 max-w-[90%] mx-auto lg:flex-row">
-        <div className="min-h-[1150px] bg-[#FFFFFF1A] mt-24 max-w-[902px]">
+        <div className={`max-w-[902px] bg-[#FFFFFF1A]  rounded-lg mt-24 ${!isMobile && "min-h-[1150px]"}`}>
           <div className="h-[314px]">
             <div className="relative">
-              <img src={ProjectRectangleBg} className="min-h-[147px]" alt="" />
+              <img src={ProjectRectangleBg} className="min-h-[147px] rounded-lg" alt="" />
               <img
                 src={tokenHolder}
-                className="absolute top-0 left-[50%] transform -translate-x-1/2 -translate-y-[35%] rounded-full min-h-[177px]"
+                className="absolute top-0 left-[50%] transform -translate-x-1/2 -translate-y-[35%] rounded-full h-[130px] md:min-h-[177px] "
                 alt=""
               />
             </div>
-            <div>
-              <div className="content-div flex justify-between w-[90%] m-auto mt-7 ">
-                <div className="left flex flex-col gap-5">
-                  <div>PuPPo</div>
-                  <div>FAir Launnch - Max buy 5 SOL</div>
-                  <div className="logos flex gap-5">
-                    <img
-                      src={web}
-                      className="h-full w-full cursor-pointer"
-                      alt=""
-                    />
-                    <img
-                      src={twiiter}
-                      className="h-full w-full cursor-pointer"
-                      alt=""
-                    />
-                    <img
-                      src={facebook}
-                      className="h-full w-full cursor-pointer"
-                      alt=""
-                    />
-                    <img
-                      src={noi}
-                      className="h-full w-full cursor-pointer"
-                      alt=""
-                    />
-                    <img
-                      src={telegram}
-                      className="h-full w-full cursor-pointer"
-                      alt=""
-                    />
-                    <img
-                      src={instagram}
-                      className="h-full w-full cursor-pointer"
-                      alt=""
-                    />
-                    <img
-                      src={noi2}
-                      className="h-full w-full cursor-pointer"
-                      alt=""
-                    />
-                  </div>
+            <div className="content-div flex justify-between w-[90%] m-auto mt-7 ">
+              <div className="left flex flex-col gap-5">
+                <div>PuPPo</div>
+                <div>FAir Launnch - Max buy 5 SOL</div>
+                <div className="logos flex gap-5">
+                  <img
+                    src={web}
+                    className="h-full w-full cursor-pointer"
+                    alt=""
+                  />
+                  <img
+                    src={twiiter}
+                    className="h-full w-full cursor-pointer"
+                    alt=""
+                  />
+                  <img
+                    src={facebook}
+                    className="h-full w-full cursor-pointer"
+                    alt=""
+                  />
+                  <img
+                    src={noi}
+                    className="h-full w-full cursor-pointer"
+                    alt=""
+                  />
+                  <img
+                    src={telegram}
+                    className="h-full w-full cursor-pointer"
+                    alt=""
+                  />
+                  <img
+                    src={instagram}
+                    className="h-full w-full cursor-pointer"
+                    alt=""
+                  />
+                  <img
+                    src={noi2}
+                    className="h-full w-full cursor-pointer"
+                    alt=""
+                  />
                 </div>
-                <div className="right flex flex-col gap-5">
-                  <div>Upcoming</div>
-                  <div>Soft 100 SOL</div>
-                </div>
+              </div>
+              <div className="right flex flex-col gap-5">
+                <div className="text-[#FFC145]">Upcoming</div>
+                <div>Soft 100 SOL</div>
               </div>
             </div>
             <div className="bg-[#FFFFFF66] h-[2px] max-w-[90%] mx-auto mt-4"></div>
           </div>
-          <div className="max-w-[90%] mx-auto">
-            <div className="flex justify-between">
-              <div
-                className="cursor-pointer"
-                onClick={() => setActiveTab("About")}
-              >
-                About
+          {!isMobile &&
+            <div className="max-w-[90%] mx-auto">
+              <div className="flex justify-between">
+                {tabNames.map((tab) => (
+                  <div
+                    key={tab}
+                    className={`cursor-pointer relative ${activeTab === tab ? 'before:absolute before:left-0 before:right-0 before:top-7 before:h-[2px] before:bg-gradient-to-r before:from-[#F3B3A7] before:to-[#CACCF5] before:rounded' : ''}`}
+                    onClick={() => setActiveTab(tab)}
+                  >
+                    {tab}
+                  </div>
+                ))}
               </div>
-              <div
-                className="cursor-pointer"
-                onClick={() => setActiveTab("Token")}
-              >
-                Token
-              </div>
-              <div
-                className="cursor-pointer"
-                onClick={() => setActiveTab("Pool Info")}
-              >
-                Pool Info
-              </div>
-              <div
-                className="cursor-pointer"
-                onClick={() => setActiveTab("Affiliate Program")}
-              >
-                Affiliate Program
-              </div>
-              <div
-                className="cursor-pointer"
-                onClick={() => setActiveTab("Tokenomic")}
-              >
-                Tokenomic
-              </div>
-              <div
-                className="cursor-pointer"
-                onClick={() => setActiveTab("FAQs & Discussion")}
-              >
-                FAQs & Discussion
-              </div>
-            </div>
-            <div className="mt-5">{renderContent()}</div>
-          </div>
+              <div className="mt-5">{renderContent()}</div>
+            </div>}
         </div>
-
         <div className="flex lg:flex-col flex-row gap-5 flex-wrap ">
           <div className="lg:min-w-[406px] bg-[#FFFFFF1A] rounded-[17.44px] p-5 text-white relative h-[218px] lg:mt-24 w-full">
             <p className="text-lg mb-2">AMOUNT</p>
@@ -168,9 +163,21 @@ const Projects = () => {
               <div className="absolute lg:left-[-45%] left-[-30%] sm:left-[-20%] md:left-[-15%]  top-0 w-72 h-72">
                 <svg className="transform rotate-90" viewBox="0 0 36 36">
                   <defs>
-                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" style={{ stopColor: "#f3b3a7", stopOpacity: 1 }} />
-                      <stop offset="100%" style={{ stopColor: "#cac9f5", stopOpacity: 1 }} />
+                    <linearGradient
+                      id="gradient"
+                      x1="0%"
+                      y1="0%"
+                      x2="100%"
+                      y2="0%"
+                    >
+                      <stop
+                        offset="0%"
+                        style={{ stopColor: "#f3b3a7", stopOpacity: 1 }}
+                      />
+                      <stop
+                        offset="100%"
+                        style={{ stopColor: "#cac9f5", stopOpacity: 1 }}
+                      />
                     </linearGradient>
                   </defs>
                   <path
@@ -227,6 +234,10 @@ const Projects = () => {
             <div className="text-2xl font-bold">00:29:23:00</div>
           </div>
         </div>
+        {
+          isMobile &&
+          <MobileViewTab />
+        }
       </div>
     </>
   );
