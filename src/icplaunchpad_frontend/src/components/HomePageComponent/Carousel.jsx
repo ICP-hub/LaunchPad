@@ -77,10 +77,12 @@ const Carousel = () => {
       </div>
 
       {/* Navigation Arrows */}
-      <button onClick={handlePrevClick} className="absolute left-[5%] top-[40%] md:top-[60%] md:left-[3%]  lg:left-[10%] lg:top-[60%]  transform -translate-y-1/2 bg-transparent p-2">
+      <button onClick={handlePrevClick} className="absolute left-[5%] top-[40%] md:top-[60%] md:left-[3%]
+        xl:left-[10%] xl:top-[60%] dxl:left-[7%] dxl:top-[60%] lg1:left-[6%] lg1:top-[60%] transform -translate-y-1/2 bg-transparent p-2">
         <FiArrowLeftCircle size={35} />
       </button>
-      <button onClick={handleNextClick} className="absolute top-[40%] right-[5%] md:top-[60%] md:right-[3%]  lg:right-[10%] lg:top-[60%] transform -translate-y-1/2 bg-transparent p-2 rounded-full">
+      <button onClick={handleNextClick} className="absolute top-[40%] right-[5%] md:top-[60%] md:right-[3%]  
+      xl:right-[10%] xl:top-[60%] dxl:right-[7%] dxl:top-[60%] lg1:right-[6%] lg1:top-[60%] transform -translate-y-1/2 bg-transparent p-2 rounded-full">
         <FiArrowRightCircle size={35} />
       </button>
 

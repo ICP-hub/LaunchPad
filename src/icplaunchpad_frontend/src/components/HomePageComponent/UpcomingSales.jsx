@@ -89,17 +89,18 @@ const UpcomingSales = () => {
   ];
 
   return (
-    <div className="upcoming-sales h-full mb-[300%] xxs:mb-[270%]  md:mb-[80%] lg:mb-0 sm4:mb-3 py-[5%] px-[9%]">
-      <div className="flex justify-between items-center">
+    <div className="upcoming-sales h-full  md:mb-[80%] lg:mb-0 sm4:mb-3 py-[5%] px-[9%]">
+      <div className="flex justify-between items-center ">
         <h2 className="text-white text-2xl">UPCOMING SALES</h2>
         <button onClick={handleViewMoreClick} className="text-white underline">
           View More
         </button>
       </div>
 
-      <div className="grid  grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-11  lg:gap-4 h-[580px]  pt-[20%] md:pt-[15%] dxl:pt-[10%]">
+      <div className="grid  grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-11  lg:gap-4 h-[580px]  pt-[20%] md:pt-[15%] 
+         mb-[410%] xxs:mb-[330%] sm2:mb-[270%] sm1:mb-[280%] sm3:mb-[280%] sm:mb-[280%] md:mb-0 dxl:pt-[10%]">
         {salesData.map((sale, index) => (
-          <div key={index} className="bg-[#222222] rounded-2xl  py-6 pr-6 w-full relative mt-[20%] md:mt-6">
+          <div key={index} className="bg-[#222222] rounded-2xl  py-6 pr-6 w-full relative mt-[20%] sm1:mt-[13%] md:mt-6">
             <div className="absolute -top-[13%] left-1/2 transform -translate-x-1/2">
               <img
                 src={person1}
@@ -132,7 +133,8 @@ const UpcomingSales = () => {
                         },
                       }}
                     />
-                    <div className="absolute left-[22%] inset-0 flex items-center justify-center text-white md:text-[8px] lg1:text-[12px] text-center">
+                    <div className="absolute left-[22%] inset-0 flex items-center justify-center text-white 
+                    text-[7px] md:text-[8px] lg1:text-[12px] text-center">
                       <div>
                         <p>PROGRESS (10.10%)</p>
                         <p>30 SOL RAISED</p>
