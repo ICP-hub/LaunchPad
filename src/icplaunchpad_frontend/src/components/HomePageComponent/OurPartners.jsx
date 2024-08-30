@@ -51,16 +51,6 @@ const OurPartner = () => {
 
         <div className=" xxs1:h-[140px] sm3:h-[175px] md:h-[190px] xxs1:w-1 md:w-2 rounded-full transition-all duration-500 bg-gradient-to-t from-[#212121] to-[#F3B3A7]"></div>
 
-        {/* Partner 4 */}
-        <div className="text-center">
-          <img
-            src={partner}
-            alt="Partner 4"
-            className="mx-auto mb-2 xxs1:w-[80px]  sm:w-[110px]  md1:w-[130px]"
-            draggable="false"
-          />
-          <p className="text-sm md:text-lg font-medium text-white">NAME</p>
-        </div>
       </div>
     </div>
   );
