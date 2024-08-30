@@ -70,13 +70,13 @@ const Projects = () => {
   return (
     <>
       <div className="flex flex-col gap-5 max-w-[90%] mx-auto lg:flex-row">
-        <div className={`max-w-[902px] bg-[#FFFFFF1A]  rounded-lg mt-24 ${!isMobile && "min-h-[1150px]"}`}>
+        <div className={`bg-[#FFFFFF1A] rounded-lg mt-24 pb-5`}>
           <div className="h-[314px]">
             <div className="relative">
               <img src={ProjectRectangleBg} className="min-h-[147px] rounded-lg" alt="" />
               <img
                 src={tokenHolder}
-                className="absolute top-0 left-[50%] transform -translate-x-1/2 -translate-y-[35%] rounded-full h-[130px] md:min-h-[177px] "
+                className="absolute top-0 left-[50%] transform -translate-x-1/2 -translate-y-[35%] rounded-full h-[130px] md:min-h-[177px]"
                 alt=""
               />
             </div>
@@ -145,7 +145,7 @@ const Projects = () => {
               <div className="mt-5">{renderContent()}</div>
             </div>}
         </div>
-        <div className="flex lg:flex-col flex-row gap-5 flex-wrap ">
+        <div className="flex lg:flex-col flex-row gap-5 flex-wrap">
           <div className="lg:min-w-[406px] bg-[#FFFFFF1A] rounded-[17.44px] p-5 text-white relative h-[218px] lg:mt-24 w-full">
             <p className="text-lg mb-2">AMOUNT</p>
             <input
@@ -234,10 +234,7 @@ const Projects = () => {
             <div className="text-2xl font-bold">00:29:23:00</div>
           </div>
         </div>
-        {
-          isMobile &&
-          <MobileViewTab />
-        }
+        {isMobile &&<MobileViewTab />}
       </div>
     </>
   );
