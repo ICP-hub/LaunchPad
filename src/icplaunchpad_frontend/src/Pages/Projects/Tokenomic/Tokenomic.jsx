@@ -3,7 +3,7 @@ import React from "react";
 const Tokenomic = () => {
   return (
     <div className="mt-[20px] flex flex-col gap-8">
-      <div className="flex w-[732px] h-[58px]">
+      <div className="flex max-w-[732px] h-[58px]">
         <div className="bg-[#F3B3A7] w-[183px] h-[58px]"></div>
         <div className="bg-[#CACCF5] w-[183px] h-[58px]"></div>
         <div className="bg-[#3E3E3E] w-[183px] h-[58px]"></div>
