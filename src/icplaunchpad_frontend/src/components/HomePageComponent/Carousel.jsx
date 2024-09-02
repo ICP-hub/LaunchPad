@@ -50,6 +50,16 @@ const Carousel = () => {
     return () => window.removeEventListener('resize', updateSlidesToShow);
   }, []);
 
+  useEffect(() => {
+    // Auto slide movement every 3 seconds
+    const intervalId = setInterval(() => {
+      setCurrentSlide((prev) => (prev === slides.length - slidesToShow ? 0 : prev + 1));
+    }, 3000); // 3000ms = 3 seconds
+
+    // Clear interval on component unmount
+    return () => clearInterval(intervalId);
+  }, [slides.length, slidesToShow]);
+  
   const handlePrevClick = () => {
     setCurrentSlide((prev) => (prev === 0 ? slides.length - slidesToShow : prev - 1));
   };

@@ -14,7 +14,7 @@ const Launch = () => {
         <div
           className="w-full h-full bg-no-repeat bg-center bg-cover"
           style={{
-            backgroundImage: `url(${circleImg})`,
+            backgroundImage: `url(${circleGif})`,
           }}
         />
       </div>

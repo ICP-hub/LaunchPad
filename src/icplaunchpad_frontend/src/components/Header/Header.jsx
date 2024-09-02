@@ -28,8 +28,6 @@ const Header = () => {
 
   const [activeSection, setActiveSection] = useState('home');
 
-  
-
   const handleSectionClick = (section) => {
     setActiveSection(section);
     setMenuOpen(false); // Close the menu after a section is clicked
@@ -40,8 +38,8 @@ const Header = () => {
       <nav className="relative z-20 text-white bg-black shadow-lg dlg:px-[2%] dlg:py-6 lgx:px-[4%] 
       lgx:py-9 md:px-[4%] md:py-[2%] py-[3%] px-[2.5%] flex justify-between items-center">
 
-         {/* Hamburger Menu for screens below 768px */}
-         <div className="md:hidden flex  items-center">
+        {/* Hamburger Menu for screens below 768px */}
+        <div className="md:hidden flex  items-center">
           {menuOpen ? (
             <IoCloseSharp
               onClick={() => setMenuOpen(false)}
@@ -66,62 +64,58 @@ const Header = () => {
           />
         </div>
 
-       
+        <div className="hidden md:flex lgx:px-10 lgx:mr-[28%] md:mr-[20%] lg:text-[18px] md:text-[13px] lgx:text-[20px] md:gap-[20px] lg:gap-[25px] dxl:gap-[50px]">
+          <Link
+            to="/"
+            onClick={() => handleSectionClick('home')}
+            className={`decoration-pink-400 underline-offset-8 ${
+              activeSection === 'home' ? 'underline' : 'decoration-transparent'
+            }`}
+          >
+            {activeSection === 'home' ? (
+              <GradientText>Home</GradientText>
+            ) : (
+              'Home'
+            )}
+          </Link>
+          <Link
+            to="/project"
+            onClick={() => handleSectionClick('project')}
+            className={`decoration-pink-400 underline-offset-8 ${
+              activeSection === 'project' ? 'underline' : 'decoration-transparent'
+            }`}
+          >
+            {activeSection === 'project' ? (
+              <GradientText>Projects</GradientText>
+            ) : (
+              'Projects'
+            )}
+          </Link>
+          <Link
+            to="/LaunchCoin"
+            onClick={() => handleSectionClick('coin')}
+            className={`decoration-pink-400 underline-offset-8 whitespace-nowrap ${
+              activeSection === 'coin' ? 'underline' : 'decoration-transparent'
+            }`}
+          >
+            {activeSection === 'coin' ? (
+              <GradientText>Launch a Coin</GradientText>
+            ) : (
+              'Launch a Coin'
+            )}
+          </Link>
+        </div>
 
-        
-        <div className="hidden md:flex lgx:px-10 lgx:mr-[28%] md:mr-[20%]  lg:text-[18px] md:text-[13px] lgx:text-[20px] lg:gap-[25px] dxl:gap-[50px]">
-  <Link
-    to="/"
-    onClick={() => handleSectionClick('home')}
-    className={`decoration-pink-400 underline-offset-8 ${
-      activeSection === 'home' ? 'underline' : 'decoration-transparent'
-    }`}
-  >
-    {activeSection === 'home' ? (
-      <GradientText>Home</GradientText>
-    ) : (
-      'Home'
-    )}
-  </Link>
-  <Link
-    to="/project"
-    onClick={() => handleSectionClick('project')}
-    className={`decoration-pink-400 underline-offset-8 ${
-      activeSection === 'project' ? 'underline' : 'decoration-transparent'
-    }`}
-  >
-    {activeSection === 'project' ? (
-      <GradientText>Projects</GradientText>
-    ) : (
-      'Projects'
-    )}
-  </Link>
-  <Link
-    to="/LaunchCoin"
-    onClick={() => handleSectionClick('coin')}
-    className={`decoration-pink-400 underline-offset-8 whitespace-nowrap ${
-      activeSection === 'coin' ? 'underline' : 'decoration-transparent'
-    }`}
-  >
-    {activeSection === 'coin' ? (
-      <GradientText>Launch a Coin</GradientText>
-    ) : (
-      'Launch a Coin'
-    )}
-  </Link>
-</div>
-
-
-        <div className="relative flex   items-center">
+        <div className="relative flex items-center">
           {!isSearching && (
             <IoSearch
               onClick={handleSearchClick}
-              className="cursor-pointer  "
+              className="cursor-pointer"
               size={24}
             />
           )}
           {isSearching && (
-            <div className="flex items-center absolute  lg1:w-[230px] lgx:w-[280px] xl:w-[380px]  border border-gray-400 rounded bg-black dlg:right-[5px] py-1 lg:px-2 lg:mr-4 dxl:px-2 dxl:mr-1">
+            <div className="flex items-center absolute md:w-[200px] md3:w-[230px] lg1:w-[260px] lgx:w-[280px] xl:w-[380px] border border-gray-400 rounded bg-black sm4:right-[23px] md:right-[-15px] lg:right-[-25px] dlg:right-[5px] md:py-[2px] lg:py-1 px-[5px] lg:px-2 lg:mr-4 dxl:px-2 dxl:mr-1">
               <input
                 type="text"
                 value={searchText}
@@ -131,7 +125,7 @@ const Header = () => {
               />
               <IoClose
                 onClick={handleClearSearch}
-                className="text-gray-500 cursor-pointer lg:ml-[5%] lgx:ml-[22%] xl:ml-[45%]"
+                className="text-gray-500 cursor-pointer md:ml-[-8%] md2:ml-[-3%] md1:ml-[6%] lg:ml-[5%] lg1:ml-[17%] lgx:ml-[22%] xl:ml-[45%]"
                 size={24}
               />
             </div>
@@ -139,10 +133,10 @@ const Header = () => {
         </div>
 
         {/* Connect Wallet Button for screens above 768px */}
-        <div className="hidden  md:block">
+        <div className="hidden md:block">
           <button
             onClick={openModal}
-            className="border  text-white   w-[120px] md:w-[150px] lg:w-[190px] h-[25px] lg:h-[25px] dxl:h-[35px] text-[10px] md:text-[15px] dlg:text-[19px] font-[400] rounded-xl border-[#EE3EC9]"
+            className="border text-white w-[120px] md:w-[150px] lg:w-[190px] h-[25px] lg:h-[25px] dxl:h-[35px] text-[10px] md:text-[15px] dlg:text-[19px] font-[400] rounded-xl border-[#EE3EC9]"
           >
             Connect Wallet
           </button>
@@ -153,38 +147,44 @@ const Header = () => {
       {/* Dropdown Menu for screens below 768px */}
       {menuOpen && (
         <div className="md:hidden absolute z-20 bg-black w-full py-4 px-6 shadow-lg">
-          <a
-            href="#home"
+          <Link
+            to="/"
             onClick={() => handleSectionClick('home')}
-            className={`block py-2 ${activeSection === 'home' ? 'text-pink-400' : 'text-white'}`}
+            className={`block py-2 ${
+              activeSection === 'home' ? 'text-pink-400' : 'text-white'
+            }`}
           >
             Home
-          </a>
-          <a
-            href="#project"
+          </Link>
+          <Link
+            to="/project"
             onClick={() => handleSectionClick('project')}
-            className={`block py-2 ${activeSection === 'project' ? 'text-pink-400' : 'text-white'}`}
+            className={`block py-2 ${
+              activeSection === 'project' ? 'text-pink-400' : 'text-white'
+            }`}
           >
             Projects
-          </a>
-          <a
-            href="/LaunchCoin"
+          </Link>
+          <Link
+            to="/LaunchCoin"
             onClick={() => handleSectionClick('coin')}
-            className={`block py-2 ${activeSection === 'coin' ? 'text-pink-400' : 'text-white'}`}
+            className={`block py-2 ${
+              activeSection === 'coin' ? 'text-pink-400' : 'text-white'
+            }`}
           >
             Launch a Coin
-          </a>
+          </Link>
           <button
             onClick={openModal}
-            className="w-full mt-4 border text-center  text-white py-2 rounded-xl border-[#EE3EC9]"
+            className="w-full mt-4 border text-center text-white py-2 rounded-xl border-[#EE3EC9]"
           >
             Connect Wallet
           </button>
         </div>
       )}
 
-      <div className="flex items-center bg-[#222222] py-1 px-[4%] md:text-[8px]  md1:text-[10px] lg:text-[12px] lg:gap-4 lg1:gap-6 dlg:text-[14px] dxl:text-[15px] xl:text-[16px] md:gap-6  dxl:gap-8 gap-7 whitespace-nowrap">
-        <p className="  lg:text-[12px] dxl:text-lg">TRENDING</p>
+      <div className="flex items-center bg-[#222222] py-1 px-[4%] md:text-[8px] md1:text-[10px] lg:text-[12px] lg:gap-4 lg1:gap-6 dlg:text-[14px] dxl:text-[15px] xl:text-[16px] md:gap-6 dxl:gap-8 gap-7 whitespace-nowrap">
+        <p className="lg:text-[12px] dxl:text-lg">TRENDING</p>
         <p>#1 TRUMPBB</p>
         <p>#2 SWIF</p>
         <p>#3 MustPepe</p>
