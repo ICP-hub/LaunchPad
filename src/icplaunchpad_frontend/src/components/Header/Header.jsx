@@ -3,7 +3,6 @@ import logo from '../../assets/images/icLogo.png';
 import GradientText from '../../common/GradientText';
 import { IoSearch, IoClose, IoMenu, IoCloseSharp } from "react-icons/io5";
 import ConnectWallets from '../Modals/ConnectWallets';
-// import toast from "react-hot-toast";
 import { Link } from 'react-router-dom';
 
 
