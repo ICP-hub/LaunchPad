@@ -71,71 +71,145 @@ const Projects = () => {
     <>
       <div className="flex flex-col gap-5 max-w-[90%] mx-auto lg:flex-row">
         <div className={`bg-[#FFFFFF1A] rounded-lg mt-24 pb-5`}>
-          <div className="h-[314px]">
-            <div className="relative">
-              <img src={ProjectRectangleBg} className="min-h-[147px] rounded-lg" alt="" />
-              <img
-                src={tokenHolder}
-                className="absolute top-0 left-[50%] transform -translate-x-1/2 -translate-y-[35%] rounded-full h-[130px] md:min-h-[177px]"
-                alt=""
-              />
-            </div>
-            <div className="content-div flex justify-between w-[90%] m-auto mt-7 ">
-              <div className="left flex flex-col gap-5">
-                <div>PuPPo</div>
-                <div>FAir Launnch - Max buy 5 SOL</div>
-                <div className="logos flex gap-5">
-                  <img
-                    src={web}
-                    className="h-full w-full cursor-pointer"
-                    alt=""
-                  />
-                  <img
-                    src={twiiter}
-                    className="h-full w-full cursor-pointer"
-                    alt=""
-                  />
-                  <img
-                    src={facebook}
-                    className="h-full w-full cursor-pointer"
-                    alt=""
-                  />
-                  <img
-                    src={noi}
-                    className="h-full w-full cursor-pointer"
-                    alt=""
-                  />
-                  <img
-                    src={telegram}
-                    className="h-full w-full cursor-pointer"
-                    alt=""
-                  />
-                  <img
-                    src={instagram}
-                    className="h-full w-full cursor-pointer"
-                    alt=""
-                  />
-                  <img
-                    src={noi2}
-                    className="h-full w-full cursor-pointer"
-                    alt=""
-                  />
+          {!isMobile && (
+            <div className="h-[314px]">
+              <div className="relative">
+                <img
+                  src={ProjectRectangleBg}
+                  className="min-h-[147px] rounded-lg"
+                  alt=""
+                />
+                <img
+                  src={tokenHolder}
+                  className="absolute top-0 left-[50%] transform -translate-x-1/2 -translate-y-[35%] rounded-full h-[130px] md:min-h-[177px]"
+                  alt=""
+                />
+              </div>
+              <div className="content-div flex justify-between w-[90%] m-auto mt-7 ">
+                <div className="left flex flex-col gap-5">
+                  <div>PuPPo</div>
+                  <div>FAir Launnch - Max buy 5 SOL</div>
+                  <div className="logos flex gap-5">
+                    <img
+                      src={web}
+                      className="h-full w-full cursor-pointer"
+                      alt=""
+                    />
+                    <img
+                      src={twiiter}
+                      className="h-full w-full cursor-pointer"
+                      alt=""
+                    />
+                    <img
+                      src={facebook}
+                      className="h-full w-full cursor-pointer"
+                      alt=""
+                    />
+                    <img
+                      src={noi}
+                      className="h-full w-full cursor-pointer"
+                      alt=""
+                    />
+                    <img
+                      src={telegram}
+                      className="h-full w-full cursor-pointer"
+                      alt=""
+                    />
+                    <img
+                      src={instagram}
+                      className="h-full w-full cursor-pointer"
+                      alt=""
+                    />
+                    <img
+                      src={noi2}
+                      className="h-full w-full cursor-pointer"
+                      alt=""
+                    />
+                  </div>
+                </div>
+                <div className="right flex flex-col gap-5">
+                  <div className="text-[#FFC145]">Upcoming</div>
+                  <div>Soft 100 SOL</div>
                 </div>
               </div>
-              <div className="right flex flex-col gap-5">
-                <div className="text-[#FFC145]">Upcoming</div>
-                <div>Soft 100 SOL</div>
+              <div className="bg-[#FFFFFF66] h-[2px] max-w-[90%] mx-auto mt-4"></div>
+            </div>
+          )}
+
+          {isMobile && (
+            <div className="h-[314px] bg-[#181818] rounded-lg py-5 flex flex-col">
+             <div className="relative">
+                <img
+                  src={tokenHolder}
+                  className="absolute top-0 left-[50%] transform -translate-x-1/2 -translate-y-[50%] rounded-full h-[130px] md:min-h-[177px]"
+                  alt=""
+                />
+              </div>
+
+              <div className="mt-[70px] text-center text-white space-y-2">
+                <div className="text-[24px] font-bold">PuPPo</div>
+                <div className="text-[16px] font-medium">
+                  FAir Launnch - Max buy 5 SOL
+                </div>
+                <div className="text-[#FFC145] text-[18px] font-semibold">
+                  Upcoming
+                </div>
+                <div className="text-[16px]">Soft 100 SOL</div>
+              </div>
+
+              <div className="bg-[#FFFFFF66] h-[2px] w-[100%] mx-auto mt-4"></div>
+
+              <div className="flex justify-evenly w-[90%] mt-4">
+                <img
+                  src={web}
+                  className="h-[24px] w-[24px] cursor-pointer"
+                  alt="Website"
+                />
+                <img
+                  src={twiiter}
+                  className="h-[24px] w-[24px] cursor-pointer"
+                  alt="Twitter"
+                />
+                <img
+                  src={facebook}
+                  className="h-[24px] w-[24px] cursor-pointer"
+                  alt="Facebook"
+                />
+                <img
+                  src={noi}
+                  className="h-[24px] w-[24px] cursor-pointer"
+                  alt="Reddit"
+                />
+                <img
+                  src={telegram}
+                  className="h-[24px] w-[24px] cursor-pointer"
+                  alt="Telegram"
+                />
+                <img
+                  src={instagram}
+                  className="h-[24px] w-[24px] cursor-pointer"
+                  alt="Instagram"
+                />
+                <img
+                  src={noi2}
+                  className="h-[24px] w-[24px] cursor-pointer"
+                  alt="Discord"
+                />
               </div>
             </div>
-            <div className="bg-[#FFFFFF66] h-[2px] max-w-[90%] mx-auto mt-4"></div>
-          </div>
-          {!isMobile &&
+          )}
+
+          {!isMobile && (
             <div className="max-w-[90%] mx-auto">
               <div className="flex justify-between">
                 {tabNames.map((tab) => (
                   <div
                     key={tab}
-                    className={`cursor-pointer relative ${activeTab === tab ? 'before:absolute before:left-0 before:right-0 before:top-7 before:h-[2px] before:bg-gradient-to-r before:from-[#F3B3A7] before:to-[#CACCF5] before:rounded' : ''}`}
+                    className={`cursor-pointer relative ${
+                      activeTab === tab
+                        ? "before:absolute before:left-0 before:right-0 before:top-7 before:h-[2px] before:bg-gradient-to-r before:from-[#F3B3A7] before:to-[#CACCF5] before:rounded"
+                        : ""
+                    }`}
                     onClick={() => setActiveTab(tab)}
                   >
                     {tab}
@@ -143,7 +217,8 @@ const Projects = () => {
                 ))}
               </div>
               <div className="mt-5">{renderContent()}</div>
-            </div>}
+            </div>
+          )}
         </div>
         <div className="flex lg:flex-col flex-row gap-5 flex-wrap">
           <div className="lg:min-w-[406px] bg-[#FFFFFF1A] rounded-[17.44px] p-5 text-white relative h-[218px] lg:mt-24 w-full">
@@ -234,7 +309,7 @@ const Projects = () => {
             <div className="text-2xl font-bold">00:29:23:00</div>
           </div>
         </div>
-        {isMobile &&<MobileViewTab />}
+        {isMobile && <MobileViewTab />}
       </div>
     </>
   );
