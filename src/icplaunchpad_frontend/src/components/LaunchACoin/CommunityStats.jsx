@@ -15,7 +15,7 @@ const CommunityStats = () => {
           <p className=" font-medium transition-all duration-500 bg-gradient-to-r  from-[#F3B3A7] to-[#CACCF5] text-transparent bg-clip-text">DISCORD MEMBERS</p>
         </div>
         <div className="bg-[#333333] text-white p-6 rounded-lg">
-          <FaTwitter className="text-4xl mx-auto mb-4" />
+          <FaTwitter className="text-4xl  mx-auto mb-4" />
           <p className="text-2xl font-bold">+100K</p>
           <p className="font-medium transition-all duration-500 bg-gradient-to-r  from-[#F3B3A7] to-[#CACCF5] text-transparent bg-clip-text">TWITTER FOLLOWERS</p>
         </div>

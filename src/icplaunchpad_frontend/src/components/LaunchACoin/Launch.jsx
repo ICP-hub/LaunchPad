@@ -1,8 +1,10 @@
 import React from 'react';
-import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import circleGif from '../../assets/images/circle.gif';
-import circleImg from '../../assets/images/circle.png';
 import AnimationButton from '../../common/AnimationButton';
+
+
+
 
 const Launch = () => {
 
@@ -29,7 +31,9 @@ const Launch = () => {
           auctor, nunc at laoreet dapibus, felis ligula scelerisque orci, sit
           amet efficitur mauris lacus vel ex.
         </p>
-        <AnimationButton  text="LAUNCH NOW"/>
+        <Link to="/create-prelaunch">
+        <AnimationButton text="LAUNCH NOW" />
+      </Link>
       </div>
 
       {/* Right Section for larger screens */}

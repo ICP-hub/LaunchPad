@@ -1,17 +1,11 @@
 import React from 'react';
 import { Doughnut } from 'react-chartjs-2';
-import {
-  Chart as ChartJS,
-  ArcElement,
-  Tooltip,
-  Legend,
-} from 'chart.js';
+
 import { useNavigate } from 'react-router-dom';
 import person1 from '../../assets/images/carousel/person1.png';
 import l3 from '../../assets/images/carousel/l3.png';
 
-// Register Chart.js components
-ChartJS.register(ArcElement, Tooltip, Legend);
+
 
 const UpcomingSales = () => {
   const navigate = useNavigate();
