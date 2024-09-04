@@ -1,0 +1,14 @@
+{
+  "icplaunchpad_backend": {
+    "ic": "aoymu-gaaaa-aaaak-ak5ra-cai"
+  },
+  "icplaunchpad_frontend": {
+    "ic": "ajzka-lyaaa-aaaak-ak5rq-cai"
+  },
+  "index_canister": {
+    "ic": "a463n-kqaaa-aaaak-ak5sa-cai"
+  },
+  "token_deployer": {
+    "ic": "a375z-hiaaa-aaaak-ak5sq-cai"
+  }
+}
