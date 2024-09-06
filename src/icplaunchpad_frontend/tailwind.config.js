@@ -50,6 +50,7 @@ export default {
         'inter': ['Inter', 'sans-serif'],
         'adam': ['Adam', 'sans-serif'],
         'monument': ['Monument', 'sans-serif'],
+        'posterama': ['Posterama','sans-serif']
       },
       keyframes: {
         translateY: {

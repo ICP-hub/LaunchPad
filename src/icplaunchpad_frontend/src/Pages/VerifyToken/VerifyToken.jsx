@@ -30,12 +30,12 @@ const VerifyToken = () => {
         {currentStep === 3 && <AdditionalInfoTab />}
         {currentStep === 4 && <ReviewInfoTab />}
       </div>
-      <div className="flex justify-between  max-w-2xl mt-[-130px] xxs1:mt-[-100px] sm2:mt-[-80px]">
+      <div className="flex justify-between  max-w-2xl mt-[-140px] xxs1:mt-[-100px] sm2:mt-[-80px]">
         {currentStep > 1 && (
           <button
             className='border-2   bg-transparent bg-gradient-to-r  font-adam   from-[#F3B3A7] to-[#CACCF5] text-transparent bg-clip-text 
-          text-black  relative w-[120px] lg:w-[211px] h-[25px] lg:h-[35px] mx-2
-             text-[10px] md:text-[18px] font-[600] rounded-2xl'
+          text-black  relative w-[120px] lg:w-[211px] h-[35px] lg:h-[35px] mx-2
+             text-[17px] md:text-[18px] font-[600] rounded-2xl'
             onClick={handleBack}
           >
             Back

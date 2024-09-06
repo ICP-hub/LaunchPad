@@ -22,8 +22,8 @@ const Launch = () => {
       </div>
 
       {/* Left Section */}
-      <div className="w-full  md:w-1/2 flex flex-col justify-center  md:items-start text-start md:text-left py-[5%]  pl-[6%] md:pr-0 pr-[4%] md:pl-[9%]">
-        <h1 className=" text-4xl md:text-4xl lg:text-6xl dlg:text-7xl font-[700] mb-6">
+      <div className="w-full  md:w-1/2 flex flex-col justify-center   md:items-start text-start md:text-left py-[5%]  pl-[6%] md:pr-0 pr-[4%] md:pl-[9%]">
+        <h1 className=" text-4xl md:text-4xl lg:text-6xl font-posterama dlg:text-7xl font-[700] mb-6">
           LAUNCH YOUR PROJECT
         </h1>
         <p className=" md:text-lg mb-4">
