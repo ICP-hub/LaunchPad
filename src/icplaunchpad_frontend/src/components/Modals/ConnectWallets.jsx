@@ -9,9 +9,10 @@ import Modal from 'react-modal';
 
 import { RxCross1 } from "react-icons/rx";
 
-import toast from 'react-hot-toast';
-import AnimationButton from '../../common/AnimationButton';
-const JoinWaitlist = ({ modalIsOpen, setIsOpen }) => {
+
+
+
+const ConnectWallet = ({ modalIsOpen, setIsOpen }) => {
   
   function closeModal() {
     setIsOpen(false);
@@ -89,4 +90,4 @@ const JoinWaitlist = ({ modalIsOpen, setIsOpen }) => {
   );
 }
 
-export default JoinWaitlist;
+export default ConnectWallet;

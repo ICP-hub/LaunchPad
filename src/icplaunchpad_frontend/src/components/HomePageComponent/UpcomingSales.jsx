@@ -1,7 +1,7 @@
 import React from "react";
 import person1 from "../../assets/images/carousel/person1.png";
 import { useNavigate } from 'react-router-dom';
-
+import l3 from '../../assets/images/carousel/l3.png'
 
 const salesData = [
   {
@@ -105,6 +105,9 @@ const UpcomingSales = () => {
                 className="absolute top-0 left-[50%] transform -translate-x-1/2 -translate-y-[50%] rounded-full h-[100px] md:min-h-[114px]"
                 alt={sale.heading}
               />
+               <div className="absolute top-[20px] right-[130px] w-10 h-10  rounded-full border-1 border-gray-300">
+                <img src={l3} alt="small" className="object-cover w-full h-full" />
+              </div>
             </div>
 
             <div className="mt-[70px] text-center text-white space-y-5">

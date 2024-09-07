@@ -24,6 +24,7 @@ export default {
         sm4: "508px",
         sm2: "538px",
         sm3: "550px",
+        sm4: "590px",
         sm: "640px",
         md: "768px",
         md1: "870px",

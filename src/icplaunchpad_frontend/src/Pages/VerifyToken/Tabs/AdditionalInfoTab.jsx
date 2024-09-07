@@ -2,7 +2,7 @@ import React from 'react';
 
 const AdditionalInfoTab = () => {
   return (
-    <div className="bg-[#222222] p-3 xxs1:p-8 rounded-2xl h-[1400px] xxs1:h-[900px] m-4">
+    <div className="bg-[#222222] p-3 xxs1:p-8  rounded-2xl h-[1400px] mb-24 xxs1:mb-0   xxs1:h-[1000px]">
         {/* Chain Text with Gray Background on mobile only*/}
         <div className="flex  xxs1:hidden mb-8 bg-[rgb(68,68,68)] pl-6 p-2 mt-[-15px] mx-[-12px] rounded-2xl">
             <span className="text-white text-[22px]">Chain</span>
@@ -98,7 +98,7 @@ const AdditionalInfoTab = () => {
         ></textarea>
       </div>
 
-      <div className="flex    justify-center items-center ">
+      <div className="flex    justify-center items-center  ">
         <button className="border-1  hidden xxs1:block  bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5] 
           text-black  relative w-[120px] xxs1:w-[250px] md:w-[360px] h-[25px] lg:h-[35px]
              text-[15px] md:text-[18px] font-[600] rounded-2xl">

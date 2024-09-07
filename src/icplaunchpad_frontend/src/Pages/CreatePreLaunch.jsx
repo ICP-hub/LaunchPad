@@ -1,14 +1,17 @@
 import React ,{useState} from 'react';
 import AnimationButton from '../common/AnimationButton';
 import { Link } from 'react-router-dom';
+import CreateTokenModal from '../components/Modals/CreateTokenModal';
 
 const CreatePreLaunch = () => {
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalIsOpen, setIsOpen] = useState(false);
 
-  const openModal = () => setIsModalOpen(true);
+  
   const closeModal = () => setIsModalOpen(false);
-
+  const openModal = () => {
+    setIsOpen(true);
+  };
 
   return (
     <div className="flex justify-center items-center  bg-black text-white">
@@ -23,8 +26,8 @@ const CreatePreLaunch = () => {
 
          
 
-          {/* Search Label with Placeholder */}
-          <div className="mb-8">
+  {/* Search Label with Placeholder */}
+  <div className="mb-8">
   <label className="block text-[16px] font-medium text-white mb-4">Token Address</label>
   <div className="flex items-center space-x-2">
     <input
@@ -33,8 +36,9 @@ const CreatePreLaunch = () => {
       placeholder="Search"
     />
     <button onClick={openModal}  className='border-1  absolute  bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5] 
-             text-black  right-[18%] w-[120px] lg:w-[250px] h-[25px] lg:h-[35px]
-                text-[10px] md:text-[18px] font-[600] rounded-2xl'>Create Token</button>
+             text-black right-[12%] sm4:right-[6%] dlg:right-[13%] dxl:right-[18%] w-[120px] lg:w-[250px] h-[38px] lg:h-[38px]
+                text-[16px] md:text-[18px] font-[600] rounded-2xl'>CREATE TOKEN</button>
+                <CreateTokenModal modalIsOpen={modalIsOpen} setIsOpen={setIsOpen} />
   </div>
 </div>
 
