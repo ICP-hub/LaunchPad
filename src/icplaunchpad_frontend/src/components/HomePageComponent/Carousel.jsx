@@ -19,13 +19,13 @@ const Carousel = () => {
   const [slidesToShow, setSlidesToShow] = useState(5); // Default to 5 slides
 
   const slides = [
-    { id: 1, title: "CATWIFHAT", subtitle: "Catwifhat", img: person1 ,logo: l1 },
-    { id: 2, title: "CATWIFHAT", subtitle: "Catwifhat", img: person2 ,logo: l2 },
-    { id: 3, title: "CATWIFHAT", subtitle: "Catwifhat", img: person3 ,logo: l3 },
-    { id: 4, title: "CATWIFHAT", subtitle: "Catwifhat", img: person4 ,logo: l4 },
-    { id: 5, title: "CATWIFHAT", subtitle: "Catwifhat", img: person5 ,logo: l5 },
-    { id: 6, title: "CATWIFHAT", subtitle: "Catwifhat", img: person6 ,logo: l6 },
-    { id: 7, title: "CATWIFHAT", subtitle: "Catwifhat", img: person1 ,logo: l1 },
+    { id: 1, title: "CATWIFHAT", subtitle: "catwifhat", img: person1 ,logo: l1 },
+    { id: 2, title: "CATWIFHAT", subtitle: "catwifhat", img: person2 ,logo: l2 },
+    { id: 3, title: "CATWIFHAT", subtitle: "catwifhat", img: person3 ,logo: l3 },
+    { id: 4, title: "CATWIFHAT", subtitle: "catwifhat", img: person4 ,logo: l4 },
+    { id: 5, title: "CATWIFHAT", subtitle: "catwifhat", img: person5 ,logo: l5 },
+    { id: 6, title: "CATWIFHAT", subtitle: "catwifhat", img: person6 ,logo: l6 },
+    { id: 7, title: "CATWIFHAT", subtitle: "catwifhat", img: person1 ,logo: l1 },
   ];
 
   useEffect(() => {
@@ -73,15 +73,15 @@ const Carousel = () => {
       {/* Carousel Content */}
       <div className="flex overflow w-full justify-center space-x-6">
         {slides.slice(currentSlide, currentSlide + slidesToShow).map((slide) => (
-          <div key={slide.id} className="relative px-8  pb-40 h-[174px] w-[183px]  rounded-2xl bg-[#252525]">
+          <div key={slide.id} className="relative px-8  pb-40 h-[174px] w-[183px]   rounded-2xl bg-[#252525]">
             <div className="absolute left-1/2 bottom-11 transform -translate-x-1/2 -translate-y-1/2 w-[125px]  rounded-full overflow border-1 border-gray-300">
               <img src={slide.img} alt={slide.title} className="object-cover  " />
               <div className="absolute bottom-0 right-0 w-10 h-10  rounded-full border-1 border-gray-300">
                 <img src={slide.logo} alt="small" className="object-cover w-full h-full" />
               </div>
             </div>
-            <p className="text-center text-xl font-bold mt-20">{slide.title}</p>
-            <p className="text-center text-sm text-gray-500">{slide.subtitle}</p>
+            <p className="text-center text-xl font-posterama font-bold mt-20">{slide.title}</p>
+            <p className="text-center text-[17px] ">{slide.subtitle}</p>
           </div>
         ))}
       </div>

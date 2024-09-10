@@ -54,8 +54,8 @@ const ConnectWallet = ({ modalIsOpen, setIsOpen }) => {
               <div className="mb-4">
                 <button onClick={()=>login("plug")} className="w-full bg-[#303030] text-white py-2 rounded-[10px] flex items-center">
                   
-                  <span className="ml-3">Plug</span>
-                  <div className="flex items-center justify-center  ml-[73%] py-2 px-2 bg-white rounded-full">
+                  <span className="ml-3 absolute">Plug</span>
+                  <div className="flex items-center justify-center  ml-[85%]  py-2 px-2 bg-white rounded-full">
                     <img src={plug} alt="plug" className="w-4" />
                   </div>
                 </button>
@@ -65,8 +65,8 @@ const ConnectWallet = ({ modalIsOpen, setIsOpen }) => {
                 <button onClick={()=>login("plug")} className="w-full bg-[#303030] text-white py-2 rounded-[10px] flex items-center">
                   
                   <span className="ml-3 absolute">Bifinity</span>
-                  <div className="flex items-center justify-center  ml-[85%] py-2 px-2 bg-white rounded-full">
-                    <img src={bifinity} alt="stoic" className="w-4 " />
+                  <div className="flex items-center justify-center  ml-[85%]  bg-white rounded-full">
+                    <img src={bifinity} alt="stoic" className="w-8 " />
                   </div>
                 </button>
               </div>

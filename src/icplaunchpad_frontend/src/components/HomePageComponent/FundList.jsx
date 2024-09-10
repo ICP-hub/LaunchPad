@@ -15,7 +15,7 @@ import p12 from '../../assets/images/projectsIcon/p12.png';
 const FundList = () => {
   return (
     <div className="px-[8%] py-[5%] md:py-[6%] lg:py-[3%] bg-black">
-      <h2 className="text-2xl font-bold text-white mb-4">SUCCESSFUL PROJECTS RAISE FUNDING</h2>
+      <h2 className="text-[30px] font-bold text-white mb-4">SUCCESSFUL PROJECTS RAISE FUNDING</h2>
       <div className="overflow-x-auto">
         <table className="min-w-full bg-black border-b border-[#FFFFFF33]">
           <thead>

@@ -91,7 +91,7 @@ const Clients = () => {
         </button>
       </div>
 
-    <div className="flex lg:flex-row flex-col flex-wrap w-[95%] m-auto justify-around">
+    <div className="flex md:flex-row flex-col flex-wrap w-[95%] m-auto justify-around">
       
       {salesData.map((sale, index) => (
         <div

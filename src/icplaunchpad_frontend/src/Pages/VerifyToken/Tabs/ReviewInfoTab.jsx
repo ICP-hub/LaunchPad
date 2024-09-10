@@ -2,8 +2,8 @@ import React from 'react';
 
 const ReviewInfoTab = () => {
   return (
-    <div className="bg-[#222222] p-8 rounded-2xl mb-[100px] xxs1:mb-[50px] sm3:mb-8 mx-8 h-[1600px] sm3:h-[1350px] md:h-[1250px] lg:h-[1150px]">
-      <table className="w-full text-left text-[12px] xxs1:text-[14px]  mb-4">
+    <div className="bg-[#222222] p-4 xxs1:p-8  overflow-x-auto rounded-2xl mb-[120px]  xxs1:mb-[50px] sm3:mb-8 mx-8  h-[1270px] xxs1:h-[1450px] sm3:h-[1350px] md:h-[1250px] lg:h-[1150px]">
+      <table className="w-full text-left  text-[10px] xxs1:text-[14px]  pr-2 mb-4">
         <tbody>
           {[
             ["Total token", "585.000 ICP"],
@@ -44,15 +44,6 @@ const ReviewInfoTab = () => {
             <li> Quisque enim amet ipsum ipsum faucibus leo adipiscing molestie. Tincidunt enim dis lobortis ac gravida. Non mollis lacus convallis non sit ac sit.</li>
             </ul>
           </div> 
-          <div className=' justify-center items-center'>
-          <button 
-          className='border-1   bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5] 
-          text-black  relative w-[120px] lg:w-[211px] h-[35px] lg:h-[35px]
-             text-[10px] md:text-[18px] font-[600] rounded-2xl'
-          >
-            Next
-          </button>
-          </div>
     </div>
   );
 };

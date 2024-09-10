@@ -5,21 +5,21 @@ const OurPartner = () => {
   return (
     <div className="my-8 px-[9%]">
       {/* Heading */}
-      <h2 className="text-start text-2xl md:text-3xl font-bold text-white mb-6">
+      <h2 className="text-start text-2xl md:text-3xl font-posterama font-bold text-white mb-6">
         OUR PARTNERS
       </h2>
 
       {/* Partner Images and Borders */}
       <div className="flex  items-center h-[190px] md:h-[200px] justify-between">
         {/* Partner 1 */}
-        <div className="text-center hidden xxs1:block">
+        <div className="text-center hidden  xxs1:block">
           <img
             src={partner}
             alt="Partner 1"
             className="mx-auto mb-2   xxs1:w-[80px]  sm:w-[110px]  md1:w-[130px] "
             draggable="false"
           />
-          <p className="text-sm md:text-lg font-medium text-white">NAME</p>
+          <p className="text-sm md:text-lg font-medium font-posterama text-white">NAME</p>
         </div>
 
         {/* Thick Border */}

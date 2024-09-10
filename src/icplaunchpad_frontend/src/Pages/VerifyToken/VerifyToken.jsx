@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import VerifyTokenTab from './Tabs/VerifyTokenTab';
 import LaunchpadInfoTab from './Tabs/LaunchpadInfoTab';
 import AdditionalInfoTab from './Tabs/AdditionalInfoTab';
 import ReviewInfoTab from './Tabs/ReviewInfoTab';
 import StepProgressBar from './StepProgressBar';
 
-
 const VerifyToken = () => {
   const [currentStep, setCurrentStep] = useState(1);
+  const navigate = useNavigate();  // React Router's hook for navigation
 
   const handleNext = () => {
     if (currentStep < 4) {
       setCurrentStep((prevStep) => prevStep + 1);
+    } else if (currentStep === 4) {
+      navigate('/project');  // Navigate to /project page when current step is 4
     }
   };
 
@@ -30,21 +33,21 @@ const VerifyToken = () => {
         {currentStep === 3 && <AdditionalInfoTab />}
         {currentStep === 4 && <ReviewInfoTab />}
       </div>
-      <div className="flex justify-between  max-w-2xl mt-[-140px] xxs1:mt-[-100px] sm2:mt-[-80px]">
+      <div className="flex justify-between max-w-2xl mt-[-160px] xxs1:mt-[-100px] sm2:mt-[-80px]">
         {currentStep > 1 && (
           <button
-            className='border-2   bg-transparent bg-gradient-to-r  font-adam   from-[#F3B3A7] to-[#CACCF5] text-transparent bg-clip-text 
-          text-black  relative w-[120px] lg:w-[211px] h-[35px] lg:h-[35px] mx-2
+            className='border-2 bg-transparent bg-gradient-to-r font-adam from-[#F3B3A7] to-[#CACCF5] text-transparent bg-clip-text 
+          text-black relative w-[120px] lg:w-[211px] h-[35px] lg:h-[35px] mx-2
              text-[17px] md:text-[18px] font-[600] rounded-2xl'
             onClick={handleBack}
           >
             Back
           </button>
         )}
-        {currentStep < 4 && (
+        {currentStep <= 4 && (
           <button
-          className='border-1   bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5] 
-          text-black  relative w-[120px] lg:w-[211px] h-[35px] lg:h-[35px]
+            className='border-1 bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5] 
+          text-black relative w-[120px] lg:w-[211px] h-[35px] lg:h-[35px]
              text-[17px] md:text-[18px] font-[600] rounded-2xl'
             onClick={handleNext}
           >

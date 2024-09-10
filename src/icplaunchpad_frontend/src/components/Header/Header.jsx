@@ -145,11 +145,11 @@ const Header = () => {
 
       {/* Dropdown Menu for screens below 768px */}
       {menuOpen && (
-        <div className="md:hidden absolute z-20 bg-black w-full py-4 px-6 shadow-lg">
+        <div className="md:hidden flex flex-col font-posterama justify-center items-center absolute z-20 bg-black w-full py-8 px-6 shadow-lg">
           <Link
             to="/"
             onClick={() => handleSectionClick('home')}
-            className={`block py-2 ${
+            className={`block py-4 ${
               activeSection === 'home' ? 'text-pink-400' : 'text-white'
             }`}
           >
@@ -158,7 +158,7 @@ const Header = () => {
           <Link
             to="/project"
             onClick={() => handleSectionClick('project')}
-            className={`block py-2 ${
+            className={`block py-4 ${
               activeSection === 'project' ? 'text-pink-400' : 'text-white'
             }`}
           >
@@ -167,7 +167,7 @@ const Header = () => {
           <Link
             to="/LaunchCoin"
             onClick={() => handleSectionClick('coin')}
-            className={`block py-2 ${
+            className={`block py-4 ${
               activeSection === 'coin' ? 'text-pink-400' : 'text-white'
             }`}
           >
@@ -175,7 +175,9 @@ const Header = () => {
           </Link>
           <button
             onClick={openModal}
-            className="w-full mt-4 border text-center text-white py-2 rounded-xl border-[#EE3EC9]"
+            className="border-1 mt-[80px]   bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5] 
+             text-black  relative w-[220px] h-[35px]
+                text-[16px] md:text-[18px] font-[600] rounded-3xl"
           >
             Connect Wallet
           </button>

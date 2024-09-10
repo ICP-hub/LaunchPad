@@ -2,7 +2,7 @@ import React from 'react';
 
 const LaunchpadInfoTab = () => {
   return (
-    <div className="bg-[#222222] p-8  m-[18px] mb-[100px] xxs1:mb-[60px] sm2:mb-[30px] md:m-4  rounded-2xl  xxs1:h-[730px] ">
+    <div className="bg-[#222222] p-8  m-[18px] mb-[115px] xxs1:mb-[60px] sm2:mb-[30px] md:m-4  rounded-2xl  xxs1:h-[730px] ">
       {/* Chain Text with Gray Background on mobile only*/}
       <div className="flex  xxs1:hidden mb-8 bg-[rgb(68,68,68)] pl-6 p-2 mt-[-31px] mx-[-31px] rounded-2xl">
             <span className="text-white text-[22px]">Chain</span>
