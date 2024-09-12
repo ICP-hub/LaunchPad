@@ -63,7 +63,7 @@ const Header = () => {
           />
         </div>
 
-        <div className="hidden md:flex lgx:px-10 lgx:mr-[28%] md:mr-[20%] lg:text-[18px] md:text-[13px] lgx:text-[20px] md:gap-[20px] lg:gap-[25px] dxl:gap-[50px]">
+        <div className="hidden  md:flex lgx:px-10 lgx:mr-[28%]  md:mr-[20%] lg:text-[18px] md:text-[13px] lgx:text-[20px] md:gap-[20px] lg:gap-[25px] dxl:gap-[50px]">
           <Link
             to="/"
             onClick={() => handleSectionClick('home')}
@@ -78,7 +78,7 @@ const Header = () => {
             )}
           </Link>
           <Link
-            to="/project"
+            to="/projects"
             onClick={() => handleSectionClick('project')}
             className={`decoration-pink-400 underline-offset-8 ${
               activeSection === 'project' ? 'underline' : 'decoration-transparent'

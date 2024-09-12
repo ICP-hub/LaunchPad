@@ -36,7 +36,7 @@ const CreatePreLaunch = () => {
       placeholder="Search"
     />
     <button onClick={openModal}  className='border-1  absolute  bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5] 
-             text-black right-[12%] sm4:right-[6%] dlg:right-[13%] dxl:right-[18%] w-[120px] lg:w-[250px] h-[38px] lg:h-[38px]
+             text-black right-[12%] sm4:right-[6%] dlg:right-[13%] dxl:right-[18%] w-[120px] md:w-[250px] h-[38px] lg:h-[38px]
                 text-[16px] md:text-[18px] font-[600] rounded-2xl'>CREATE TOKEN</button>
                 <CreateTokenModal modalIsOpen={modalIsOpen} setIsOpen={setIsOpen} />
   </div>

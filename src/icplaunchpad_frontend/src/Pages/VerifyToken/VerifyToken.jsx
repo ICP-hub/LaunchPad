@@ -14,7 +14,7 @@ const VerifyToken = () => {
     if (currentStep < 4) {
       setCurrentStep((prevStep) => prevStep + 1);
     } else if (currentStep === 4) {
-      navigate('/project');  // Navigate to /project page when current step is 4
+      navigate('/token-page');  // Navigate to /project page when current step is 4
     }
   };
 

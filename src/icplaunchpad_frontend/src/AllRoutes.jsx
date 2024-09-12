@@ -4,9 +4,11 @@ import Home from "./Pages/Home";
 import LaunchCoin from "./Pages/LaunchCoin"
 import CreatePreLaunch from './Pages/CreatePreLaunch';
 // import { AuthProvider } from "./utils/useAuthClient"
-
+import Profile from "./Pages/Profile/Profile"
 import PrivateLayout from './Layout/PrivateLayout';
 import VerifyToken from './Pages/VerifyToken/VerifyToken';
+import ProjectList from './Pages/Projects/Projects';
+import TokenPage from './Pages/TokenPage/TokenPage';
 
 function AllRoutes() {
   return (
@@ -42,6 +44,33 @@ function AllRoutes() {
         element={
           <PrivateLayout>
             <VerifyToken />
+          </PrivateLayout>
+        } 
+        />
+        
+        <Route 
+        path="/profile" 
+        element={
+          <PrivateLayout>
+            <Profile />
+          </PrivateLayout>
+        } 
+        />
+         
+         <Route 
+        path="/projects" 
+        element={
+          <PrivateLayout>
+            <ProjectList />
+          </PrivateLayout>
+        } 
+        />
+
+        <Route 
+        path="/token-page" 
+        element={
+          <PrivateLayout>
+            <TokenPage />
           </PrivateLayout>
         } 
         />

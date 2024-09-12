@@ -28,11 +28,11 @@ const FundList = () => {
               <th className="py-3 px-6 text-left">Ended In</th>
             </tr>
           </thead>
-          <tbody className="text-white text-sm divide-y  md:align-top divide-[#FFFFFF33]">
+          <tbody className="text-white text-sm divide-y  align-top divide-[#FFFFFF33]">
            
             <tr className='text-base'>
               <td className="py-3 px-6">1</td>
-              <td className=" flex items-center py-3 px-6"><img src={p1} alt="infinite" className=" pr-2 " />Name</td>
+              <td className=" flex  py-3 px-6"><img src={p1} alt="infinite" className=" pr-2 " />Name</td>
               <td className="py-3 px-6">$400,000</td>
               <td className="py-3 px-6">$1.5892</td>
               <td className="py-3 px-6">Token Sale</td>

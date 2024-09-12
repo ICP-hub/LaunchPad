@@ -28,7 +28,7 @@ const Footer = () => {
               <Link to="/" >Home</Link>
               <Link to="/projects" >Projects</Link>
               <Link to="/LaunchCoin" >Launch a Coin</Link>
-              <Link to="/" >Profile</Link>
+              <Link to="/profile" >Profile</Link>
             </div>
         </div>
         <div className=' flex md:flex-col lg:flex-row gap-[15px] md:gap-[20px] lg:gap-[85px]'>

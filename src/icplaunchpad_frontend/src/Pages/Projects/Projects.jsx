@@ -1,7 +1,9 @@
-import React from "react";
+import React,{useState} from "react";
 import person1 from "../../assets/images/carousel/person1.png";
 import { useNavigate } from 'react-router-dom';
 import l3 from '../../assets/images/carousel/l3.png'
+import { TbFilterCheck } from "react-icons/tb";
+import { PiArrowsDownUpBold } from "react-icons/pi";
 
 const salesData = [
   {
@@ -28,7 +30,7 @@ const salesData = [
   },
   {
     heading: 'SUNNY',
-    subheading: 'EXCITING NEW PROJECT - LIMITED TO 10 ETH',
+    subheading: 'FAIR LAUNNCH-MAX BUY 5 SOL',
     chartData: {
       datasets: [
         {
@@ -50,7 +52,7 @@ const salesData = [
   },
   {
     heading: 'STARLIGHT',
-    subheading: 'INNOVATIVE TOKEN SALE - MAX PURCHASE 0.5 BTC',
+    subheading: 'FAIR LAUNNCH-MAX BUY 5 SOL',
     chartData: {
       datasets: [
         {
@@ -70,10 +72,77 @@ const salesData = [
       saleStartsIn: '00:29:23:00',
     },
   },
+  {
+    heading: 'PUPPO',
+    subheading: 'FAIR LAUNNCH-MAX BUY 5 SOL',
+    chartData: {
+      datasets: [
+        {
+          data: [70, 30],
+          backgroundColor: ['#FF6384', 'transparent'],
+          borderWidth: 0,
+        },
+      ],
+    },
+    progress: 10.1,
+    raised: 30,
+    details: {
+      type: 'SOFT',
+      amount: '100 SOL',
+      liquidity: '51%',
+      lockTime: '365 DAYS',
+      saleStartsIn: '00:29:23:00',
+    },
+  },
+  {
+    heading: 'SUNNY',
+    subheading: 'FAIR LAUNNCH-MAX BUY 5 SOL',
+    chartData: {
+      datasets: [
+        {
+          data: [60, 40],
+          backgroundColor: ['#FF9F40', 'transparent'],
+          borderWidth: 0,
+        },
+      ],
+    },
+    progress: 10.1,
+    raised: 30,
+    details: {
+      type: 'HARD',
+      amount: '200 ETH',
+      liquidity: '51%',
+      lockTime: '365 DAYS',
+      saleStartsIn: '00:29:23:00',
+    },
+  },
+  {
+    heading: 'STARLIGHT',
+    subheading: 'FAIR LAUNNCH-MAX BUY 5 SOL',
+    chartData: {
+      datasets: [
+        {
+          data: [80, 20],
+          backgroundColor: ['#9966FF', 'transparent'],
+          borderWidth: 0,
+        },
+      ],
+    },
+    progress: 10.1,
+    raised: 30,
+    details: {
+      type: 'FLEXIBLE',
+      amount: '0.35 BTC',
+      liquidity: '51%',
+      lockTime: '365 DAYS',
+      saleStartsIn: '00:29:23:00',
+    },
+  },
+  
 ];
 
-const UpcomingSales = () => {
-
+const ProjectLists = () => {
+  const [selectedTab, setSelectedTab] = useState("all");
   const navigate = useNavigate();
 
   // Handle navigation to the projects page
@@ -81,17 +150,60 @@ const UpcomingSales = () => {
     navigate('/projects');
   };
 
+  
 
   return (
-    <div  className="upcoming-sales h-full   md:mb-[5%] lg:mb-0 sm4:mb-3 py-[5%]">
-      <div className="flex justify-between items-center px-[6%] mb-10">
-        <h2 className="text-white font-bold font-posterama text-[20px] xxs1:text-3xl">UPCOMING SALES</h2>
-        <button onClick={handleViewMoreClick} className="text-white font-posterama underline text-[15px] xxs1:text-xl">
-          View More
+    <div  className="upcoming-sales  h-full   md:mb-[5%] lg:mb-0 sm4:mb-3 py-[5%]">
+        <div className="bg-black text-white px-14">
+      {/* Heading */}
+      <h1 className="text-[40px] font-bold">PROJECTS</h1>
+
+      {/* Tabs */}
+      <div className="flex space-x-4 mt-4">
+        <button
+          className={`text-lg ${
+            selectedTab === "all" ? "border-b-2 border-white" : "text-gray-400"
+          }`}
+          onClick={() => setSelectedTab("all")}
+        >
+          ALL
+        </button>
+        <button
+          className={`text-lg ${
+            selectedTab === "advanced"
+              ? "border-b-2 border-white"
+              : "text-gray-400"
+          }`}
+          onClick={() => setSelectedTab("advanced")}
+        >
+          ADVANCED
         </button>
       </div>
 
-    <div className="flex lg:flex-row flex-col items-center flex-wrap w-[95%] m-auto justify-around">
+      {/* Search Bar */}
+      <div className="flex items-center mt-6 space-x-4">
+        <input
+          type="text"
+          placeholder="Search"
+          className="w-full bg-[#444444] text-white p-2 rounded-lg outline-none placeholder-gray-500"
+        />
+        
+        {/* Filter and Sort Buttons */}
+        <button className="bg-[#444444] p-2 rounded-lg text-white flex items-center">
+        <TbFilterCheck/>
+          <span className="ml-2">Filter</span>
+          
+        </button>
+        
+        <button className="bg-[#444444] p-2 rounded-lg text-white flex items-center">
+        <PiArrowsDownUpBold/>
+          <span className="ml-2">Sort</span>
+          
+        </button>
+      </div>
+    </div>
+
+    <div className="flex lg:flex-row flex-col flex-wrap items-center w-[95%] m-auto justify-around">
       
       {salesData.map((sale, index) => (
         <div
@@ -105,7 +217,7 @@ const UpcomingSales = () => {
                 className="absolute top-0 left-[50%] transform -translate-x-1/2 -translate-y-[50%] rounded-full h-[100px] md:min-h-[114px]"
                 alt={sale.heading}
               />
-               <div className="absolute top-[20px]  right-[90px] xxs:right-[130px] w-10 h-10  rounded-full border-1 border-gray-300">
+               <div className="absolute top-[20px] right-[130px] w-10 h-10  rounded-full border-1 border-gray-300">
                 <img src={l3} alt="small" className="object-cover w-full h-full" />
               </div>
             </div>
@@ -123,7 +235,7 @@ const UpcomingSales = () => {
 
           <div className="flex">
             <div className="relative flex items-center overflow-hidden w-[60%] h-72">
-              <div className="absolute lg:left-[-35%] left-[-70%]  xxs:left-[-30%] sm:left-[-20%] md:left-[-25%] top-0 w-72 h-72">
+              <div className="absolute lg:left-[-35%] left-[-62%]  xxs1:left-[-30%] sm:left-[-20%] md:left-[-15%] top-0 w-72 h-72">
                 <svg className="transform rotate-90" viewBox="0 0 36 36">
                   <defs>
                     <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -188,4 +300,4 @@ const UpcomingSales = () => {
   );
 };
 
-export default UpcomingSales;
+export default ProjectLists;
