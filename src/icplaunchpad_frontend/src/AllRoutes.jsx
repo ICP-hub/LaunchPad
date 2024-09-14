@@ -8,7 +8,7 @@ import Profile from "./Pages/Profile/Profile"
 import PrivateLayout from './Layout/PrivateLayout';
 import VerifyToken from './Pages/VerifyToken/VerifyToken';
 import ProjectList from './Pages/Projects/Projects';
-import TokenPage from './Pages/TokenPage/TokenPage';
+import TokenPage from './Pages/OwnerSection/TokenPage';
 
 function AllRoutes() {
   return (

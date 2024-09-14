@@ -132,12 +132,15 @@ const Header = () => {
         </div>
 
         {/* Connect Wallet Button for screens above 768px */}
-        <div className="hidden md:block">
+        <div className="hidden font-posterama md:block">
           <button
             onClick={openModal}
-            className="border text-white w-[120px] md:w-[150px] lg:w-[190px] h-[25px] lg:h-[25px] dxl:h-[35px] text-[10px] md:text-[15px] dlg:text-[19px] font-[400] rounded-xl border-[#EE3EC9]"
+            className="w-[120px] md:w-[150px] lg:w-[190px] h-[25px] lg:h-[25px] 
+            dxl:h-[35px] text-[10px] md:text-[15px] dlg:text-[19px] font-[400] rounded-xl p-[1.5px] bg-gradient-to-r from-[#f09787]  to-[#CACCF5]"
           >
+            <div className='bg-gray-950 w-full h-full  rounded-xl items-center justify-center '>
             Connect Wallet
+            </div>
           </button>
           <ConnectWallets modalIsOpen={modalIsOpen} setIsOpen={setIsOpen} />
         </div>
@@ -175,11 +178,13 @@ const Header = () => {
           </Link>
           <button
             onClick={openModal}
-            className="border-1 mt-[80px]   bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5] 
-             text-black  relative w-[220px] h-[35px]
-                text-[16px] md:text-[18px] font-[600] rounded-3xl"
+            className=" mt-[80px]   bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5]
+             text-black  relative w-[220px] h-[35px] p-[1.5px]
+                text-[16px] md:text-[18px] font-[600] rounded-3xl "
           >
+            
             Connect Wallet
+          
           </button>
         </div>
       )}
