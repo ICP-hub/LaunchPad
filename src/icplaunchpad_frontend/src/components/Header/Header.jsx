@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
-import logo from '../../assets/images/icLogo.png';
-import GradientText from '../../common/GradientText';
+import React, { useState } from "react";
+import logo from "../../assets/images/icLogo.png";
+import GradientText from "../../common/GradientText";
 import { IoSearch, IoClose, IoMenu, IoCloseSharp } from "react-icons/io5";
-import ConnectWallets from '../Modals/ConnectWallets';
+import ConnectWallets from "../Modals/ConnectWallets";
 import toast from "react-hot-toast";
+import { useAuth } from "../../auth/useAuthClient";
 
 const Header = () => {
   const [modalIsOpen, setIsOpen] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
-  const [searchText, setSearchText] = useState('');
-  const [menuOpen, setMenuOpen] = useState(false); // State to toggle hamburger menu
+  const [searchText, setSearchText] = useState("");
+  const [menuOpen, setMenuOpen] = useState(false);
+  const { userPrincipal } = useAuth();
 
   const openModal = () => {
     setIsOpen(true);
@@ -20,11 +22,11 @@ const Header = () => {
   };
 
   const handleClearSearch = () => {
-    setSearchText('');
+    setSearchText("");
     setIsSearching(false);
   };
 
-  const [activeSection, setActiveSection] = useState('home');
+  const [activeSection, setActiveSection] = useState("home");
   const [userDetails, setUserDetails] = useState(null);
 
   const getStatus = async () => {
@@ -40,16 +42,17 @@ const Header = () => {
 
   const handleSectionClick = (section) => {
     setActiveSection(section);
-    setMenuOpen(false); // Close the menu after a section is clicked
+    setMenuOpen(false);
   };
 
   return (
     <div>
-      <nav className="relative z-20 text-white bg-black shadow-lg dlg:px-[2%] dlg:py-6 lgx:px-[4%] 
-      lgx:py-9 md:px-[4%] md:py-[2%] py-[3%] px-[2.5%] flex justify-between items-center">
-
-         {/* Hamburger Menu for screens below 768px */}
-         <div className="md:hidden flex  items-center">
+      <nav
+        className="relative z-20 text-white bg-black shadow-lg dlg:px-[2%] dlg:py-6 lgx:px-[4%] 
+      lgx:py-9 md:px-[4%] md:py-[2%] py-[3%] px-[2.5%] flex justify-between items-center"
+      >
+        {/* Hamburger Menu for screens below 768px */}
+        <div className="md:hidden flex  items-center">
           {menuOpen ? (
             <IoCloseSharp
               onClick={() => setMenuOpen(false)}
@@ -74,49 +77,56 @@ const Header = () => {
           />
         </div>
 
-       
-
-        
-        <div className="hidden md:flex lgx:px-10 lgx:mr-[35%] md:mr-[20%]  lg:text-[18px] md:text-[13px] lgx:text-[20px] space-x-8">
+        <div className="hidden md:flex lgx:px-10 lgx:mr-[35%] lg:text-[18px] md:text-[13px] lgx:text-[20px] space-x-8">
           <a
             href="#home"
-            onClick={() => handleSectionClick('home')}
+            onClick={() => handleSectionClick("home")}
             className={`decoration-pink-400 underline-offset-8 ${
-              activeSection === 'home' ? 'underline' : 'decoration-transparent'
+              activeSection === "home" ? "underline" : "decoration-transparent"
             }`}
           >
-            {activeSection === 'home' ? (
+            {activeSection === "home" ? (
               <GradientText>Home</GradientText>
             ) : (
-              'Home'
+              "Home"
             )}
           </a>
           <a
             href="#project"
-            onClick={() => handleSectionClick('project')}
+            onClick={() => handleSectionClick("project")}
             className={`decoration-pink-400 underline-offset-8 ${
-              activeSection === 'project' ? 'underline' : 'decoration-transparent'
+              activeSection === "project"
+                ? "underline"
+                : "decoration-transparent"
             }`}
           >
-            {activeSection === 'project' ? (
+            {activeSection === "project" ? (
               <GradientText>Projects</GradientText>
             ) : (
-              'Projects'
+              "Projects"
             )}
           </a>
           <a
             href="/LaunchCoin"
-            onClick={() => handleSectionClick('coin')}
+            onClick={() => handleSectionClick("coin")}
             className={`decoration-pink-400 underline-offset-8 whitespace-nowrap ${
-              activeSection === 'coin' ? 'underline' : 'decoration-transparent'
+              activeSection === "coin" ? "underline" : "decoration-transparent"
             }`}
           >
-            {activeSection === 'coin' ? (
+            {activeSection === "coin" ? (
               <GradientText>Launch a Coin</GradientText>
             ) : (
-              'Launch a Coin'
+              "Launch a Coin"
             )}
           </a>
+        </div>
+
+        <div className="flex items-center  bg-white border border-[#0F3746] rounded-full px-4 cursor-pointer shadow-lg">
+          {userPrincipal && (
+            <p className="text-black font-medium truncate w-20">
+              {userPrincipal}
+            </p>
+          )}
         </div>
 
         <div className="relative flex lg:px-6 items-center">
@@ -146,6 +156,7 @@ const Header = () => {
         </div>
 
         {/* Connect Wallet Button for screens above 768px */}
+
         <div className="hidden md:block">
           <button
             onClick={openModal}
@@ -162,22 +173,28 @@ const Header = () => {
         <div className="md:hidden absolute z-20 bg-black w-full py-4 px-6 shadow-lg">
           <a
             href="#home"
-            onClick={() => handleSectionClick('home')}
-            className={`block py-2 ${activeSection === 'home' ? 'text-pink-400' : 'text-white'}`}
+            onClick={() => handleSectionClick("home")}
+            className={`block py-2 ${
+              activeSection === "home" ? "text-pink-400" : "text-white"
+            }`}
           >
             Home
           </a>
           <a
             href="#project"
-            onClick={() => handleSectionClick('project')}
-            className={`block py-2 ${activeSection === 'project' ? 'text-pink-400' : 'text-white'}`}
+            onClick={() => handleSectionClick("project")}
+            className={`block py-2 ${
+              activeSection === "project" ? "text-pink-400" : "text-white"
+            }`}
           >
             Projects
           </a>
           <a
             href="#coin"
-            onClick={() => handleSectionClick('coin')}
-            className={`block py-2 ${activeSection === 'coin' ? 'text-pink-400' : 'text-white'}`}
+            onClick={() => handleSectionClick("coin")}
+            className={`block py-2 ${
+              activeSection === "coin" ? "text-pink-400" : "text-white"
+            }`}
           >
             Launch a Coin
           </a>

@@ -13,6 +13,7 @@ type CanisterIndexInfo = record {
   index_canister_id : text;
 };
 type FeatureFlags = record { icrc2 : bool };
+type IndexCanisterIdWrapper = record { index_canister_ids : principal };
 type Metadata = record { key : text; value : MetadataValue };
 type MetadataValue = variant {
   Int : int64;
@@ -37,6 +38,7 @@ type TokenParams = record {
   feature_flags : opt FeatureFlags;
 };
 service : () -> {
+  add_data : (IndexCanisterIdWrapper) -> (Result);
   create_token : (TokenParams) -> (Result);
   get_all_canister_ids : () -> (vec CanisterIndexInfo) query;
 }

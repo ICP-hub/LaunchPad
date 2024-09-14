@@ -1,0 +1,14 @@
+{
+  "icplaunchpad_frontend": {
+    "ic": "ahw5u-keaaa-aaaaa-qaaha-cai"
+  },
+  "icplaunchpad_backend": {
+    "ic": "a3shf-5eaaa-aaaaa-qaafa-cai"
+  },
+  "index_canister": {
+    "ic": "aovwi-4maaa-aaaaa-qaagq-cai"
+  },
+  "token_deployer": {
+    "ic": "a4tbr-q4aaa-aaaaa-qaafq-cai"
+  }
+}
