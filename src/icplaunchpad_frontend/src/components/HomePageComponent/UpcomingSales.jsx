@@ -81,6 +81,9 @@ const UpcomingSales = () => {
     navigate('/projects');
   };
 
+  const handleViewMoreClick2 = () => {
+    navigate('/project');
+  };
 
   return (
     <div  className="upcoming-sales h-full   md:mb-[5%] lg:mb-0 sm4:mb-3 py-[5%]">
@@ -176,9 +179,9 @@ const UpcomingSales = () => {
                 <span className="text-sm text-gray-400">Sale Starts In</span>
                 <span className="text-lg font-semibold">{sale.details.saleStartsIn}</span>
               </div>
-              <div className="border-b-2 border-r-gray-600 w-20 cursor-pointer">
+              <button onClick={handleViewMoreClick2} className="border-b-2 border-r-gray-600 w-20 cursor-pointer">
                 View More
-              </div>
+              </button>
             </div>
           </div>
         </div>

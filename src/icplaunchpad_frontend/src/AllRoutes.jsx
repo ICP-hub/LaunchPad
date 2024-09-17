@@ -9,6 +9,7 @@ import PrivateLayout from './Layout/PrivateLayout';
 import VerifyToken from './Pages/VerifyToken/VerifyToken';
 import ProjectList from './Pages/Projects/Projects';
 import TokenPage from './Pages/OwnerSection/TokenPage';
+import Project from './Pages/Project/project'
 
 function AllRoutes() {
   return (
@@ -74,7 +75,15 @@ function AllRoutes() {
           </PrivateLayout>
         } 
         />
-
+         
+         <Route 
+        path="/project" 
+        element={
+          <PrivateLayout>
+            <Project />
+          </PrivateLayout>
+        } 
+        />
       </Routes>
    
   )

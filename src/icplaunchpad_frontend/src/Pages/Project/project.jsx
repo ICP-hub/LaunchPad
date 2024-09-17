@@ -10,13 +10,13 @@ import { FaInstagram } from "react-icons/fa";
 import { FaDiscord } from "react-icons/fa";
 
 import person1 from "../../assets/images/carousel/person1.png"
-import ProjectTokenAbout from "./about/ProjectTokenAbout";
-import AffiliateProgram from "./AffiliateProgram/AffiliateProgram";
-import FAQsDiscussion from "./FAQsDiscussion/FAQsDiscussion";
-import Pooolinfo from "./pooolinfo/Pooolinfo";
-import Token from "./token/Token";
+import ProjectTokenAbout from "./about/ProjectTokenAbout.jsx";
+import AffiliateProgram from "./AffiliateProgram/AffiliateProgram.jsx";
+import FAQsDiscussion from "./FAQsDiscussion/FAQsDiscussion.jsx";
+import Pooolinfo from "./pooolinfo/Pooolinfo.jsx";
+import Token from "./token/Token.jsx";
 import Tokenomic from "./Tokenomic/Tokenomic.jsx";
-import MobileViewTab from "./MobileViewTab";
+import MobileViewTab from "./MobileViewTab.jsx";
 
 const TokenPage = () => {
   const [activeTab, setActiveTab] = useState("About");
@@ -71,8 +71,8 @@ const TokenPage = () => {
 
   return (
     <>
-      <div className="flex flex-col gap-5 max-w-[90%] mx-auto lg:flex-row">
-        <div className={`bg-[#FFFFFF1A] rounded-lg mt-24 pb-5`}>
+      <div className="flex flex-col  gap-5 max-w-[90%] mx-auto lg:flex-row">
+        <div className={`bg-[#FFFFFF1A] rounded-lg  mt-24 pb-5`}>
           {!isMobile && (
             <div className="h-[314px]">
               <div className="relative">
@@ -87,7 +87,7 @@ const TokenPage = () => {
                   alt=""
                 />
               </div>
-              <div className="content-div flex justify-between w-[90%] m-auto mt-7 ">
+              <div className="content-div font-posterama flex justify-between w-[90%] m-auto mt-7 ">
                 <div className="left flex flex-col gap-5">
                   <div>PuPPo</div>
                   <div>FAir Launnch - Max buy 5 SOL</div>
@@ -120,9 +120,9 @@ const TokenPage = () => {
                 />
               </div>
 
-              <div className="mt-[70px] text-center text-white space-y-2">
-                <div className="text-[24px] font-bold">PuPPo</div>
-                <div className="text-[16px] font-medium">
+              <div className="mt-[70px] font-posterama text-center text-white space-y-2">
+                <div className=" text-[24px] font-bold">PuPPo</div>
+                <div className=" text-[16px] font-medium">
                   FAir Launnch - Max buy 5 SOL
                 </div>
                 <div className="text-[#FFC145] text-[18px] font-semibold">
@@ -147,13 +147,13 @@ const TokenPage = () => {
 
           {!isMobile && (
             <div className="max-w-[90%] mx-auto">
-              <div className="flex justify-between">
+              <div className="flex font-posterama text-[10px] xl:text-[18px]  justify-between">
                 {tabNames.map((tab) => (
                   <div
                     key={tab}
                     className={`cursor-pointer relative ${
                       activeTab === tab
-                        ? "before:absolute before:left-0 before:right-0 before:top-7 before:h-[2px] before:bg-gradient-to-r before:from-[#F3B3A7] before:to-[#CACCF5] before:rounded"
+                        ? "before:absolute before:left-0 before:right-0 before:top-5 before:h-[2px] before:bg-gradient-to-r before:from-[#F3B3A7] before:to-[#CACCF5] before:rounded"
                         : ""
                     }`}
                     onClick={() => setActiveTab(tab)}
@@ -174,14 +174,14 @@ const TokenPage = () => {
               className="w-full p-2 rounded-md bg-[#333333] border-none text-white text-base mb-5"
               placeholder="Enter Amount"
             />
-            <button className="w-full p-2 rounded-md bg-gradient-to-r from-[#f3b3a7] to-[#cac9f5] text-white text-base">
+            <button className="w-[50%] p-2 rounded-2xl   font-semibold  bg-gradient-to-r from-[#f3b3a7] to-[#cac9f5] text-black text-base">
               USE ICP
             </button>
           </div>
 
           <div className="bg-[#FFFFFF1A] text-white p-1 rounded-lg flex w-full lg:min-w-[406px]">
             <div className="relative flex items-center  overflow-hidden w-[60%] h-72">
-              <div className="absolute lg:left-[-45%] left-[-30%] sm:left-[-20%] md:left-[-15%]  top-0 w-72 h-72">
+              <div className="absolute lg:left-[-45%] left-[-70%] dxs:left-[-47%] xxs1:left-[-30%] sm:left-[-20%] md:left-[-15%]  top-0 w-72 h-72">
                 <svg className="transform rotate-90" viewBox="0 0 36 36">
                   <defs>
                     <linearGradient
@@ -217,7 +217,7 @@ const TokenPage = () => {
                     strokeDasharray={`${progress}, 100`}
                   />
                 </svg>
-                <div className="absolute ml-10 inset-0 flex flex-col items-center justify-center">
+                <div className="absolute ml-24 dxs:ml-10 inset-0 flex flex-col items-center justify-center">
                   <span>Progress</span>
                   <span className="text-lg font-semibold text-white">
                     {" "}

@@ -159,7 +159,7 @@ const Header = () => {
             Home
           </Link>
           <Link
-            to="/project"
+            to="/projects"
             onClick={() => handleSectionClick('project')}
             className={`block py-4 ${
               activeSection === 'project' ? 'text-pink-400' : 'text-white'

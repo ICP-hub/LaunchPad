@@ -114,7 +114,8 @@ const TokenPage = () => {
                   
                 </div>
               </div>
-              
+
+              <div className="bg-[#FFFFFF66] h-[2px] w-[100%] mx-auto mt-4"></div>
             </div>
           )}
 
@@ -138,8 +139,6 @@ const TokenPage = () => {
                 </div>
               </div>
 
-              <div className="bg-[#FFFFFF66] h-[0px] w-[100%] mx-auto mt-4"></div>
-
               <div className="flex justify-evenly w-[90%] mt-4">
               <IoGlobeOutline/>
                    <FaTwitter />
@@ -149,11 +148,12 @@ const TokenPage = () => {
                     < FaInstagram/>
                     <FaDiscord/>
               </div>
+              <div className="bg-[#FFFFFF66] h-[2px] w-[100%] mx-auto mt-4 "></div>
             </div>
           )}
 
           {!isMobile && (
-            <div className="max-w-[90%] mx-auto">
+            <div className="max-w-[90%] mx-auto mt-6">
               <div className="flex justify-between font-posterama">
                 {tabNames.map((tab) => (
                   <div
@@ -290,7 +290,9 @@ const TokenPage = () => {
   {sellType === 'whitelist' && (
       <div>
     <button onClick={openModal} className="w-full text-white  bg-gradient-to-r from-[#f09787]  to-[#CACCF5] rounded-3xl p-[1.5px] h-[40px] mt-2 ">
+    <div className='flex items-center bg-black justify-center  w-full h-full  rounded-3xl  '>
       ADD USER TO WHITELIST
+      </div>
     </button>
     <AddToWhitelist modalIsOpen={modalIsOpen} setIsOpen={setIsOpen} />
     </div>
@@ -301,20 +303,20 @@ const TokenPage = () => {
     <p className="text-sm font-inter text-gray-400 mb-2">Pool Actions</p>
 
     {/* Buttons */}
-    <div class="mx-auto flex  items-center justify-center bg-gray-900">
+    <div class="mx-auto flex  items-center justify-center ">
     <button className="w-full text-white  bg-gradient-to-r from-[#f09787]  to-[#CACCF5] rounded-3xl p-[1.5px] h-[40px] mt-2 ">
-      <div className='flex items-center justify-center  w-full h-full  rounded-3xl  '>
+      <div className='flex items-center bg-black justify-center  w-full h-full  rounded-3xl  '>
       POOL START/END TIME SETTING
       </div>
     </button>
     </div>
     <button className="w-full text-white bg-gradient-to-r from-[#f09787]  to-[#CACCF5]  rounded-3xl p-[1.5px] h-[40px]  mt-2 ">
-    <div className='flex items-center justify-center bg-[#FFFFFF1A] w-full h-full  rounded-3xl  '>
+    <div className='flex items-center justify-center  bg-black w-full h-full  rounded-3xl  '>
       HIDE TOKEN MATRIX CHART
       </div>
     </button>
     <button className="w-full text-white bg-gradient-to-r from-[#f09787]  to-[#CACCF5]  rounded-3xl p-[1.5px] h-[40px]  mt-2">
-    <div className='flex items-center justify-center bg-[#FFFFFF1A] w-full h-full  rounded-3xl  '>
+    <div className='flex items-center justify-center bg-black w-full h-full  rounded-3xl  '>
       CANCEL POOL
       </div>
     </button>

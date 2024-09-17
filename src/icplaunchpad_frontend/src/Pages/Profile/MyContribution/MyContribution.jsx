@@ -1,9 +1,8 @@
 import React,{useState} from "react";
-import person1 from "../../assets/images/carousel/person1.png";
+import person1 from "../../../assets/images/carousel/person1.png";
 import { useNavigate } from 'react-router-dom';
-import l3 from '../../assets/images/carousel/l3.png'
-import { TbFilterCheck } from "react-icons/tb";
-import { PiArrowsDownUpBold } from "react-icons/pi";
+import l3 from '../../../assets/images/carousel/l3.png'
+
 
 const salesData = [
   {
@@ -50,163 +49,20 @@ const salesData = [
       saleStartsIn: '00:29:23:00',
     },
   },
-  {
-    heading: 'STARLIGHT',
-    subheading: 'FAIR LAUNNCH-MAX BUY 5 SOL',
-    chartData: {
-      datasets: [
-        {
-          data: [80, 20],
-          backgroundColor: ['#9966FF', 'transparent'],
-          borderWidth: 0,
-        },
-      ],
-    },
-    progress: 10.1,
-    raised: 30,
-    details: {
-      type: 'FLEXIBLE',
-      amount: '0.35 BTC',
-      liquidity: '51%',
-      lockTime: '365 DAYS',
-      saleStartsIn: '00:29:23:00',
-    },
-  },
-  {
-    heading: 'PUPPO',
-    subheading: 'FAIR LAUNNCH-MAX BUY 5 SOL',
-    chartData: {
-      datasets: [
-        {
-          data: [70, 30],
-          backgroundColor: ['#FF6384', 'transparent'],
-          borderWidth: 0,
-        },
-      ],
-    },
-    progress: 10.1,
-    raised: 30,
-    details: {
-      type: 'SOFT',
-      amount: '100 SOL',
-      liquidity: '51%',
-      lockTime: '365 DAYS',
-      saleStartsIn: '00:29:23:00',
-    },
-  },
-  {
-    heading: 'SUNNY',
-    subheading: 'FAIR LAUNNCH-MAX BUY 5 SOL',
-    chartData: {
-      datasets: [
-        {
-          data: [60, 40],
-          backgroundColor: ['#FF9F40', 'transparent'],
-          borderWidth: 0,
-        },
-      ],
-    },
-    progress: 10.1,
-    raised: 30,
-    details: {
-      type: 'HARD',
-      amount: '200 ETH',
-      liquidity: '51%',
-      lockTime: '365 DAYS',
-      saleStartsIn: '00:29:23:00',
-    },
-  },
-  {
-    heading: 'STARLIGHT',
-    subheading: 'FAIR LAUNNCH-MAX BUY 5 SOL',
-    chartData: {
-      datasets: [
-        {
-          data: [80, 20],
-          backgroundColor: ['#9966FF', 'transparent'],
-          borderWidth: 0,
-        },
-      ],
-    },
-    progress: 10.1,
-    raised: 30,
-    details: {
-      type: 'FLEXIBLE',
-      amount: '0.35 BTC',
-      liquidity: '51%',
-      lockTime: '365 DAYS',
-      saleStartsIn: '00:29:23:00',
-    },
-  },
-  
 ];
 
 const ProjectLists = () => {
-  const [selectedTab, setSelectedTab] = useState("all");
   const navigate = useNavigate();
 
   // Handle navigation to the projects page
-  const handleViewMoreClick = () => {
-    navigate('/projects');
-  };
-
   const handleViewMoreClick2 = () => {
     navigate('/project');
   };
   
 
   return (
-    <div  className="upcoming-sales  h-full   md:mb-[5%] lg:mb-0 sm4:mb-3 py-[5%]">
-        <div className="bg-black text-white px-14">
-      {/* Heading */}
-      <h1 className="text-[40px] font-bold">PROJECTS</h1>
-
-      {/* Tabs */}
-      <div className="flex space-x-4 mt-4">
-        <button
-          className={`text-lg ${
-            selectedTab === "all" ? "border-b-2 border-white" : "text-gray-400"
-          }`}
-          onClick={() => setSelectedTab("all")}
-        >
-          ALL
-        </button>
-        <button
-          className={`text-lg ${
-            selectedTab === "advanced"
-              ? "border-b-2 border-white"
-              : "text-gray-400"
-          }`}
-          onClick={() => setSelectedTab("advanced")}
-        >
-          ADVANCED
-        </button>
-      </div>
-
-      {/* Search Bar */}
-      <div className="flex items-center mt-6 space-x-4">
-        <input
-          type="text"
-          placeholder="Search"
-          className="w-full bg-[#444444] text-white p-2 rounded-lg outline-none placeholder-gray-500"
-        />
-        
-        {/* Filter and Sort Buttons */}
-        <button className="bg-[#444444] p-2 rounded-lg text-white flex items-center">
-        <TbFilterCheck/>
-          <span className="ml-2">Filter</span>
-          
-        </button>
-        
-        <button className="bg-[#444444] p-2 rounded-lg text-white flex items-center">
-        <PiArrowsDownUpBold/>
-          <span className="ml-2">Sort</span>
-          
-        </button>
-      </div>
-    </div>
-
-    <div className="flex lg:flex-row flex-col flex-wrap items-center w-[95%] m-auto justify-around">
+    <div  className=" h-full   md:mb-[5%] lg:mb-0 sm4:mb-3 py-[5%]">
+    <div className="flex lg:flex-row flex-col flex-wrap items-center w-[95%]  m-auto justify-around">
       
       {salesData.map((sale, index) => (
         <div
@@ -236,7 +92,7 @@ const ProjectLists = () => {
             <div className="bg-[#FFFFFF66] h-[2px] w-[92%] mx-auto mt-6"></div>
           </div>
 
-          <div className="flex">
+          <div className="flex items-center justify-center ">
             <div className="relative flex items-center overflow-hidden w-[60%] h-72">
               <div className="absolute lg:left-[-35%] left-[-62%]  xxs1:left-[-30%] sm:left-[-20%] md:left-[-30%] top-0 w-72 h-72">
                 <svg className="transform rotate-90" viewBox="0 0 36 36">

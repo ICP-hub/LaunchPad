@@ -1,13 +1,13 @@
 import React from 'react';
 import person1 from "../../../assets/images/carousel/person1.png";
 
-const PreviousSaleTab = () => {
+const RecentlyViewed = () => {
   
   const sales = [
     {
       name: 'PUPPO',
       description: 'FAIR LAUNCH - MAX BUY 5 SOL',
-      image: 'person1', // Replace this with the actual image URL
+      src: 'https://via.placeholder.com/50', // Replace this with the actual image URL
     },
     {
       name: 'PUPPO',
@@ -27,7 +27,7 @@ const PreviousSaleTab = () => {
           <div className="flex items-center">
             <img
               src={person1}
-              alt={sales.image}
+              alt={sale.name}
               className="w-12 h-12 rounded-full object-cover mr-4"
             />
             <div>
@@ -37,7 +37,7 @@ const PreviousSaleTab = () => {
           </div>
 
           {/* View Button */}
-          <button className="text-white text-sm border-b-2  px-1 mr-6  hover:bg-gray-600">
+          <button className="hidden xxs1:block text-sm border-b-2  px-1 mr-6  hover:bg-gray-600">
             VIEW
           </button>
         </div>
@@ -46,4 +46,4 @@ const PreviousSaleTab = () => {
   );
 };
 
-export default PreviousSaleTab;
+export default RecentlyViewed;
