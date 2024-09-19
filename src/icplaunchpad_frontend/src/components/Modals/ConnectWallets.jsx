@@ -6,13 +6,23 @@ import plug from '../../assets/images/icons/plug.png';
 import bifinity from '../../assets/images/icons/bifinity.png';
 
 import Modal from 'react-modal';
-
+import { useAuth } from "../../auth/useAuthClient";
 import { RxCross1 } from "react-icons/rx";
 
 
 
 
 const ConnectWallet = ({ modalIsOpen, setIsOpen }) => {
+
+  const { login, logout  } = useAuth();
+
+  const handleLogin = async () => {
+    await login("Icp").then(() => window.location.reload());
+  };
+
+  const handleLogout = async () => {
+    await logout().then(() => window.location.reload());
+  };
   
   function closeModal() {
     setIsOpen(false);
@@ -24,7 +34,7 @@ const ConnectWallet = ({ modalIsOpen, setIsOpen }) => {
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
         contentLabel="Example Modal"
-        className="fixed  inset-0 flex items-center lg:mb-[60%] lgx:mb-[10%] justify-center bg-transparent"
+        className="fixed  inset-0 flex items-center lg:mb-[10%] lgx:mb-[10%] justify-center bg-transparent"
         overlayClassName="fixed z-[100] inset-0 bg-gray-800 bg-opacity-50"
       >
         <div className='bg-[#222222] p-[15px] md:p-[20px] relative w-[80%] md:w-[440px] border border-[#696969] rounded-xl'>
@@ -42,7 +52,7 @@ const ConnectWallet = ({ modalIsOpen, setIsOpen }) => {
             <div className="w-[90%] mx-auto mt-5 flex flex-col  pt-5 justify-center ">
              
             <div className="mb-4">
-                <button onClick={()=>login("plug")} className="w-full bg-[#303030] text-white py-2 rounded-[10px] flex items-center">
+                <button onClick={handleLogin} className="w-full bg-[#303030] text-white py-2 rounded-[10px] flex items-center">
                   
                   <span className="ml-3 absolute">Internet Identity</span>
                   <div className="flex items-center justify-center  ml-[85%] py-2 px-2 bg-white rounded-full">

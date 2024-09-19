@@ -114,7 +114,7 @@ const Header = () => {
             />
           )}
           {isSearching && (
-            <div className="flex items-center absolute md:w-[200px] md3:w-[230px] lg1:w-[260px] lgx:w-[280px] xl:w-[380px] border border-gray-400 rounded bg-black sm4:right-[23px] md:right-[-15px] lg:right-[-25px] dlg:right-[5px] md:py-[2px] lg:py-1 px-[5px] lg:px-2 lg:mr-4 dxl:px-2 dxl:mr-1">
+            <div className="flex items-center absolute h-[35px] rounded-lg w-[470px]  md:w-[200px] md3:w-[230px] lg1:w-[260px] lgx:w-[280px] xl:w-[380px]  bg-[#222222] sm4:right-[23px] md:right-[-15px] lg:right-[-25px] dlg:right-[5px] md:py-[2px] lg:py-1 px-[5px] lg:px-2 lg:mr-4 dxl:px-2 dxl:mr-1">
               <input
                 type="text"
                 value={searchText}
