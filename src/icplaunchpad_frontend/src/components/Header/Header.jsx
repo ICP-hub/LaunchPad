@@ -109,22 +109,22 @@ const Header = () => {
           {!isSearching && (
             <IoSearch
               onClick={handleSearchClick}
-              className="cursor-pointer"
+              className="cursor-pointer s"
               size={24}
             />
           )}
           {isSearching && (
-            <div className="flex items-center absolute h-[35px] rounded-lg w-[470px]  md:w-[200px] md3:w-[230px] lg1:w-[260px] lgx:w-[280px] xl:w-[380px]  bg-[#222222] sm4:right-[23px] md:right-[-15px] lg:right-[-25px] dlg:right-[5px] md:py-[2px] lg:py-1 px-[5px] lg:px-2 lg:mr-4 dxl:px-2 dxl:mr-1">
+            <div className="flex items-center absolute h-[35px] rounded-lg w-[80vw] right-0 md:w-[200px] md3:w-[230px] xl:w-[380px]  bg-[#222222] sm4:right-[23px] md:right-[-15px] lg:right-[-25px] dlg:right-[5px] md:py-[2px]">
               <input
                 type="text"
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
                 placeholder="Search..."
-                className="bg-transparent focus:outline-none text-white"
+                className="bg-transparent pl-3 w-full focus:outline-none text-white"
               />
               <IoClose
                 onClick={handleClearSearch}
-                className="text-gray-500 cursor-pointer md:ml-[-8%] md2:ml-[-3%] md1:ml-[6%] lg:ml-[5%] lg1:ml-[17%] lgx:ml-[22%] xl:ml-[45%]"
+                className="text-gray-500 mr-2 cursor-pointer md:ml-[-8%] md2:ml-[-3%] md1:ml-[6%] lg:ml-[5%] lg1:ml-[17%] lgx:ml-[22%] xl:ml-[45%]"
                 size={24}
               />
             </div>
@@ -135,7 +135,7 @@ const Header = () => {
         <div className="hidden font-posterama md:block">
           <button
             onClick={openModal}
-            className="w-[120px] md:w-[150px] lg:w-[190px] h-[25px] lg:h-[25px] 
+            className="w-[120px] md:w-[150px] lg:w-[190px] h-[25px] lg:h-[32px] 
             dxl:h-[35px] text-[10px] md:text-[15px] dlg:text-[19px] font-[400] rounded-xl p-[1.5px] bg-gradient-to-r from-[#f09787]  to-[#CACCF5]"
           >
             <div className='bg-gray-950 w-full h-full  rounded-xl items-center justify-center '>
