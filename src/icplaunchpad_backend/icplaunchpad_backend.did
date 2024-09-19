@@ -1,0 +1,42 @@
+type Account = record { owner : principal; subaccount : opt blob };
+type ArchiveOptions = record {
+  num_blocks_to_archive : nat64;
+  max_transactions_per_response : opt nat64;
+  trigger_threshold : nat64;
+  max_message_size_bytes : opt nat64;
+  cycles_for_archive_creation : opt nat64;
+  node_max_memory_size_bytes : opt nat64;
+  controller_id : principal;
+};
+type CanisterIndexInfo = record {
+  canister_id : text;
+  index_canister_id : text;
+};
+type FeatureFlags = record { icrc2 : bool };
+type Metadata = record { key : text; value : MetadataValue };
+type MetadataValue = variant {
+  Int : int64;
+  Nat : nat;
+  Blob : blob;
+  Text : text;
+};
+type Result = variant { Ok : record { text; text }; Err : text };
+type TokenParams = record {
+  decimals : opt nat8;
+  token_symbol : text;
+  transfer_fee : nat;
+  metadata : vec Metadata;
+  minting_account : Account;
+  initial_balances : vec record { Account; nat };
+  maximum_number_of_accounts : opt nat64;
+  accounts_overflow_trim_quantity : opt nat64;
+  fee_collector_account : opt Account;
+  archive_options : ArchiveOptions;
+  max_memo_length : opt nat16;
+  token_name : text;
+  feature_flags : opt FeatureFlags;
+};
+service : () -> {
+  create_token : (TokenParams) -> (Result);
+  get_all_canister_ids : () -> (vec CanisterIndexInfo) query;
+}
