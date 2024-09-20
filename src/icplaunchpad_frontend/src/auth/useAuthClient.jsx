@@ -28,6 +28,7 @@ export const useAuthClient = (options = defaultOptions) => {
   const [identity, setIdentity] = useState(null);
   const [backendActor, setBackendActor] = useState(null);
   const [userPrincipal, setuserPrincipal] = useState(null);
+  
   const clientInfo = async (client, identity) => {
     const isAuthenticated = await client.isAuthenticated();
     const principal = identity.getPrincipal();
@@ -56,11 +57,17 @@ export const useAuthClient = (options = defaultOptions) => {
   const login = async (provider = "Icp") => {
     return new Promise(async (resolve, reject) => {
       try {
+        if (!authClient) {
+          reject(new Error("AuthClient is not initialized yet."));
+          return;
+        }
+
         if (
           authClient.isAuthenticated() &&
           !(await authClient.getIdentity().getPrincipal().isAnonymous())
         ) {
           resolve(clientInfo(authClient, authClient.getIdentity()));
+        
         } else {
           const loginOption =
             provider === "Icp" ? "loginOptionsIcp" : "loginOptionsNfid";
@@ -76,6 +83,7 @@ export const useAuthClient = (options = defaultOptions) => {
       }
     });
   };
+  
 
   const createCustomActor = (canisterId) => {
     try {
@@ -93,12 +101,15 @@ export const useAuthClient = (options = defaultOptions) => {
     }
   };
 
-  const logout = async () => {
-    await authClient?.logout();
-    setAuthClient(null);
-    setIdentity(null);
-    setBackendActor(null);
-  };
+const logout = async () => {
+  if (!authClient) return; 
+
+  await authClient?.logout();
+  setAuthClient(null);
+  setIdentity(null);
+  setBackendActor(null);
+};
+
 
   return {
     login,

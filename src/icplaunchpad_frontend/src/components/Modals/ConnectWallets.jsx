@@ -14,14 +14,10 @@ import { RxCross1 } from "react-icons/rx";
 
 const ConnectWallet = ({ modalIsOpen, setIsOpen }) => {
 
-  const { login, logout  } = useAuth();
+  const { login } = useAuth();
 
   const handleLogin = async () => {
     await login("Icp").then(() => window.location.reload());
-  };
-
-  const handleLogout = async () => {
-    await logout().then(() => window.location.reload());
   };
   
   function closeModal() {
