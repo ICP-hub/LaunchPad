@@ -12,7 +12,7 @@ import { RxCross1 } from "react-icons/rx";
 
 
 
-const ConnectWallet = ({ modalIsOpen, setIsOpen }) => {
+const ConnectWallet = ({ modalIsOpen, setModalIsOpen }) => {
 
   const { login, logout  } = useAuth();
 
@@ -25,7 +25,7 @@ const ConnectWallet = ({ modalIsOpen, setIsOpen }) => {
   };
   
   function closeModal() {
-    setIsOpen(false);
+    setModalIsOpen(false);
   }
 
   return (

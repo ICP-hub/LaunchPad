@@ -33,15 +33,21 @@ const LaunchpadInfoTab = () => {
 
       <div className="mb-4">
         <label className="block text-[19px]  mb-1">Whitelist</label>
-        <div className="flex items-center mb-4">
-          <label className="flex items-center mr-4">
-            <input type="radio" name="whitelist" className="mr-4" />
-            Disable
-          </label>
+        <div className="flex items-center mb-4 gap-4">
+        <label className="flex items-center">
+  <input type="radio" name="currency" className="hidden peer" />
+  <div className="w-4 h-4 bg-transparent border-2 border-white  rounded-full  peer-checked:bg-gradient-to-r from-[#f09787]  to-[#CACCF5] flex items-center justify-center mr-2">
+      <div className="w-1.5 h-1.5 bg-transparent peer-checked:bg-gradient-to-r from-[#f09787]  to-[#CACCF5] rounded-full"></div>
+  </div>
+  Disable
+</label>
           <label className="flex items-center">
-            <input type="radio" name="whitelist" className="mr-4" />
-            Enable
-          </label>
+  <input type="radio" name="currency" className="hidden peer" />
+  <div className="w-4 h-4 bg-transparent border-2 border-white  rounded-full  peer-checked:bg-gradient-to-r from-[#f09787]  to-[#CACCF5] flex items-center justify-center mr-2">
+      <div className="w-1.5 h-1.5 bg-transparent peer-checked:bg-gradient-to-r from-[#f09787]  to-[#CACCF5] rounded-full"></div>
+  </div>
+   Enable
+</label>
         </div>
         <p className=" text-xs">Toggle whitelist on/off anytime.</p>
       </div>

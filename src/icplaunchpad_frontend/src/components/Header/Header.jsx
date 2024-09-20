@@ -5,15 +5,22 @@ import { IoSearch, IoClose, IoMenu, IoCloseSharp } from "react-icons/io5";
 import ConnectWallets from '../Modals/ConnectWallets';
 import { Link } from 'react-router-dom';
 
+import { FaUser } from 'react-icons/fa';
+import { BsThreeDotsVertical } from 'react-icons/bs';
 
 const Header = () => {
-  const [modalIsOpen, setIsOpen] = useState(false);
+  const [modalIsOpen, setModalIsOpen] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [menuOpen, setMenuOpen] = useState(false); // State to toggle hamburger menu
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen);
+  };
 
   const openModal = () => {
-    setIsOpen(true);
+    setModalIsOpen(true);
   };
 
   const handleSearchClick = () => {
@@ -64,45 +71,63 @@ const Header = () => {
         </div>
 
         <div className="hidden  md:flex lgx:px-10 lgx:mr-[28%]  md:mr-[20%] lg:text-[18px] md:text-[13px] lgx:text-[20px] md:gap-[20px] lg:gap-[25px] dxl:gap-[50px]">
-          <Link
-            to="/"
-            onClick={() => handleSectionClick('home')}
-            className={`decoration-pink-400 underline-offset-8 ${
-              activeSection === 'home' ? 'underline' : 'decoration-transparent'
-            }`}
-          >
-            {activeSection === 'home' ? (
-              <GradientText>Home</GradientText>
-            ) : (
-              'Home'
-            )}
-          </Link>
-          <Link
-            to="/projects"
-            onClick={() => handleSectionClick('project')}
-            className={`decoration-pink-400 underline-offset-8 ${
-              activeSection === 'project' ? 'underline' : 'decoration-transparent'
-            }`}
-          >
-            {activeSection === 'project' ? (
-              <GradientText>Projects</GradientText>
-            ) : (
-              'Projects'
-            )}
-          </Link>
-          <Link
-            to="/LaunchCoin"
-            onClick={() => handleSectionClick('coin')}
-            className={`decoration-pink-400 underline-offset-8 whitespace-nowrap ${
-              activeSection === 'coin' ? 'underline' : 'decoration-transparent'
-            }`}
-          >
-            {activeSection === 'coin' ? (
-              <GradientText>Launch a Coin</GradientText>
-            ) : (
-              'Launch a Coin'
-            )}
-          </Link>
+        
+        <Link
+        to="/"
+        onClick={() => handleSectionClick('home')}
+        className={`relative inline-block decoration-pink-400 underline-offset-8 ${
+          activeSection === 'home' && (
+            <span className="absolute left-0 bottom-0 w-full h-[1px] bg-gradient-to-r from-[#f09787]  to-[#CACCF5]"></span>
+          )
+        }`}
+        >
+        {activeSection === 'home' ? (
+          <GradientText>Home</GradientText>
+        ) : (
+          'Home'
+        )}
+        {activeSection === 'home' && (
+          <span className="absolute left-0 bottom-0 w-full h-[1px] bg-gradient-to-r from-[#f09787]  to-[#CACCF5]"></span>
+        )}
+        </Link>
+
+                <Link
+        to="/projects"
+        onClick={() => handleSectionClick('project')}
+        className={`relative inline-block   ${
+          activeSection === 'project' && (
+            <span className="absolute left-0 bottom-0 w-full h-[1px] bg-gradient-to-r from-[#f09787]  to-[#CACCF5]"></span>
+          )
+        }`}
+        >
+        {activeSection === 'project' ? (
+          <GradientText>Projects</GradientText>
+        ) : (
+          'Projects'
+        )}
+        {activeSection === 'project' && (
+          <span className="absolute left-0 bottom-0 w-full h-[1px] bg-gradient-to-r from-[#f09787]  to-[#CACCF5]"></span>
+        )}
+        </Link>
+
+        <Link
+        to="/LaunchCoin"
+        onClick={() => handleSectionClick('coin')}
+        className={`relative inline-block decoration-pink-400 underline-offset-8 ${
+          activeSection === 'coin' && (
+            <span className="absolute left-0 bottom-0 w-full h-[1px] bg-gradient-to-r from-[#f09787]  to-[#CACCF5]"></span>
+          )
+        }`}
+        >
+        {activeSection === 'coin' ? (
+          <GradientText>Launch a Coin</GradientText>
+        ) : (
+          'Launch a Coin'
+        )}
+        {activeSection === 'coin' && (
+          <span className="absolute left-0 bottom-0 w-full h-[1px] bg-gradient-to-r from-[#f09787]  to-[#CACCF5]"></span>
+        )}
+        </Link>
         </div>
 
         <div className="relative flex items-center">
@@ -142,8 +167,48 @@ const Header = () => {
             Connect Wallet
             </div>
           </button>
-          <ConnectWallets modalIsOpen={modalIsOpen} setIsOpen={setIsOpen} />
+          <ConnectWallets modalIsOpen={modalIsOpen} setModalIsOpen={setModalIsOpen} />
         </div>
+
+        {/* user info */}
+        <div className="relative inline-block rounded-2xl bg-gradient-to-r from-[#f09787]  to-[#CACCF5] text-left p-[1.5px]">
+      <button
+        onClick={toggleDropdown}
+        className="flex items-center   text-white rounded-full  "
+      >
+        <div className='bg-black h-full -w-full rounded-2xl'>
+        <FaUser className="mr-2" />
+        <div className="flex flex-col items-start">
+          <span className="text-sm">ABCD</span>
+          <span className="text-xs text-gray-400">fghyrf26rg895</span>
+        </div>
+        <BsThreeDotsVertical className="ml-2" />
+        </div>
+      </button>
+
+      {/* Dropdown menu */}
+      {isOpen && (
+        <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-20">
+          <div className="py-1">
+            <Link
+              to="/account"
+              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              onClick={() => setIsOpen(false)}  // Close dropdown on click
+            >
+              Account
+            </Link>
+            <Link
+              to="/profile"
+              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              onClick={() => setIsOpen(false)}  // Close dropdown on click
+            >
+              Profile
+            </Link>
+          </div>
+        </div>
+      )}
+    </div>
+      
       </nav>
 
       {/* Dropdown Menu for screens below 768px */}
@@ -186,6 +251,7 @@ const Header = () => {
             Connect Wallet
           
           </button>
+          
         </div>
       )}
 

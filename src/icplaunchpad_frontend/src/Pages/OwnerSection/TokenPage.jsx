@@ -267,10 +267,14 @@ const TokenPage = () => {
           value="public"
           checked={sellType === 'public'}
           onChange={() => setSellType('public')}
-          className="form-radio text-pink-500"
+         className="hidden peer"
         />
-        <span className="ml-2">Public</span>
+          <div className="w-4 h-4 bg-transparent border-2 border-white  rounded-full  peer-checked:bg-gradient-to-r from-[#f09787]  to-[#CACCF5] flex items-center justify-center mr-2">
+      <div className="w-1.5 h-1.5 bg-transparent peer-checked:bg-gradient-to-r from-[#f09787]  to-[#CACCF5] rounded-full"></div>
+  </div>
+    Public
       </label>
+      
       <label className="flex items-center">
         <input
           type="radio"
@@ -278,9 +282,12 @@ const TokenPage = () => {
           value="whitelist"
           checked={sellType === 'whitelist'}
           onChange={() => setSellType('whitelist')}
-          className="form-radio text-pink-500"
+          className="hidden peer"
         />
-        <span className="ml-2">Whitelist</span>
+        <div className="w-4 h-4 bg-transparent border-2 border-white  rounded-full  peer-checked:bg-gradient-to-r from-[#f09787]  to-[#CACCF5] flex items-center justify-center mr-2">
+      <div className="w-1.5 h-1.5 bg-transparent peer-checked:bg-gradient-to-r from-[#f09787]  to-[#CACCF5] rounded-full"></div>
+  </div>
+   Whitelist
       </label>
     </div>
   </div>

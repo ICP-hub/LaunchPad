@@ -37,15 +37,24 @@ const VerifyTokenTab = () => {
       <div className="mb-4">
         <p className="mb-2">Currency</p>
         <label className="flex items-center">
-          <input type="radio" name="currency" className="mr-2" /> ICP
-        </label>
-        <p className="text-gray-400 text-sm">(User Will pay with ICP for your token)</p>
+  <input type="checkbox" name="currency" className="hidden peer" />
+  <div className="w-4 h-4 bg-transparent border-2 border-white  rounded-full  peer-checked:bg-gradient-to-r from-[#f09787]  to-[#CACCF5] flex items-center justify-center mr-2">
+      <div className="w-1.5 h-1.5 bg-transparent peer-checked:bg-gradient-to-r from-[#f09787]  to-[#CACCF5] rounded-full"></div>
+  </div>
+  ICP
+</label>
+       <p className="text-gray-400 text-sm">(User Will pay with ICP for your token)</p>
       </div>
+
       <div className="mb-11">
         <p className="mb-2">Fee Options</p>
         <label className="flex items-center">
-          <input type="radio" name="fee" className="mr-2" /> 5% ETH raise only
-        </label>
+  <input type="checkbox" name="currency" className="hidden peer" />
+  <div className="w-4 h-4 bg-transparent border-2 border-white  rounded-full  peer-checked:bg-gradient-to-r from-[#f09787]  to-[#CACCF5] flex items-center justify-center mr-2">
+      <div className="w-1.5 h-1.5 bg-transparent peer-checked:bg-gradient-to-r from-[#f09787]  to-[#CACCF5] rounded-full"></div>
+  </div>
+  5% ETH Raise Only
+</label>
       </div>
 
       <div className="bg-[#F5F5F51A]  text-white p-3 rounded-md  dlg:mb-8">
