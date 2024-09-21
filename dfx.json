@@ -20,16 +20,14 @@
       "candid": "src/token_deployer/token_deployer.did",
       "wasm": "src/token_deployer/ic-icrc1-ledger.wasm.gz"
     },
-    "icplaunchpad_frontend": {
-      "dependencies": [
-        "icplaunchpad_backend"
-      ],
-      "source": [
-        "src/icplaunchpad_frontend/dist"
-      ],
-      "type": "assets",
-      "workspace": "icplaunchpad_frontend"
+    "ic_asset_handler": {
+      "main": "src/ic_asset_handler/src/lib.rs",
+      "candid": "src/ic_asset_handler/ic_asset_handler.did",
+      "package": "ic_asset_handler",
+      "type": "rust"
     }
+
+ 
   },
   "defaults": {
     "build": {

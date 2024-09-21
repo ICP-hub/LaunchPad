@@ -1,6 +1,7 @@
 [workspace]
 members = [
-    "src/icplaunchpad_backend"
+    "src/icplaunchpad_backend",
+    "src/ic_asset_handler"
 ]
 
 resolver = "2"
