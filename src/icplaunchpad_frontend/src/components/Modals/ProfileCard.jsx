@@ -1,45 +1,75 @@
 import React from 'react';
+import { TfiClose } from "react-icons/tfi";
+import { Link } from 'react-router-dom';
+import Modal from 'react-modal';
+import person1 from "../../assets/images/carousel/person1.png"
 
-const ProfileCard = () => {
+const ProfileCard = ({ profileModalIsOpen, setProfileModalIsOpen }) => {
+
+  function closeModal() {
+    setProfileModalIsOpen(false);
+  }
+
   return (
-    <div className="bg-gray-800 w-64 p-4 rounded-lg shadow-lg relative text-white">
-      {/* Close button */}
-      <button className="absolute top-2 right-2 text-gray-400 hover:text-white focus:outline-none">
-        ✕
-      </button>
-      {/* Profile Picture */}
-      <div className="flex items-center justify-center">
+    <div className='mx-[50px]'>
+      <Modal
+        isOpen={profileModalIsOpen}
+        onRequestClose={closeModal}
+        contentLabel="Example Modal"
+        className="fixed inset-0 flex items-center justify-center bg-transparent"
+        overlayClassName="fixed z-[100] inset-0 bg-gray-800 bg-opacity-50"
+      >
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-[#222222] p-6 rounded-xl font-posterama text-white  relative">
+            <div className='mx-[-24px] px-4 p-1 mb-4 rounded-2xl'>
+              
+              {/* Modal Close Button */}
+              <button
+                onClick={closeModal}
+                className="absolute right-8 top-[20px] text-[30px] text-white"
+              >
+                <TfiClose />
+              </button>
+            </div>
+            
+
+      {/* Profile Image */}
+      <div className="flex  items-center mt-4 gap-8">
         <img
-          src="https://via.placeholder.com/100"
+          src={person1}
           alt="Profile"
-          className="w-20 h-20 rounded-full border-2 border-gray-600"
+          className="w-20 h-20 rounded-full object-cover"
         />
-      </div>
-      {/* Profile Info */}
-      <div className="text-center mt-4">
-        <h2 className="text-lg font-semibold">ABCD</h2>
+         <div>
+        <h2 className="text-lg font-semibold mt-2">ABCD</h2>
         <p className="text-sm text-gray-400">fghyrf26rg895</p>
-        <button className="bg-gray-700 text-xs py-1 px-4 mt-2 rounded-full hover:bg-gray-600 transition">
+
+        {/* Block Explorer Button */}
+        <button className="bg-[#3c3c3c] text-xs text-gray-400 px-3 py-1 mt-1 rounded-full">
           Block Explorer
         </button>
-      </div>
-      {/* ICP and Activity Sections */}
-      <div className="mt-6 space-y-2">
-        <div className="flex justify-between">
-          <span className="text-gray-500">ICP</span>
-          {/* You can add content here */}
-        </div>
-        <div className="flex justify-between">
-          <span className="text-gray-500">ACTIVITY</span>
-          {/* You can add content here */}
         </div>
       </div>
-      {/* Disconnect Button */}
-      <button className="w-full bg-gray-600 text-gray-400 py-2 mt-4 rounded-lg cursor-not-allowed" disabled>
-        DISCONNECT
-      </button>
+
+      {/* ICP, Activity, and Disconnect */}
+      <div className="mt-4">
+        <div className="text-sm font-semibold border-t border-gray-600 py-2">
+          ICP
+        </div>
+        <div className="text-sm font-semibold border-t border-gray-600 py-2">
+          ACTIVITY
+        </div>
+        <div className="text-sm font-semibold text-gray-400 border-t border-gray-600 py-2">
+          DISCONNECT
+        </div>
+      </div>
+            
+           
+          </div>
+        </div>
+      </Modal>
     </div>
   );
-};
+}
 
 export default ProfileCard;
