@@ -4,9 +4,11 @@ import GradientText from '../../common/GradientText';
 import { IoSearch, IoClose, IoMenu, IoCloseSharp } from "react-icons/io5";
 import ConnectWallets from '../Modals/ConnectWallets';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../auth/useAuthClient';
 
 import { FaUser } from 'react-icons/fa';
 import { BsThreeDotsVertical } from 'react-icons/bs';
+
 
 const Header = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -14,6 +16,8 @@ const Header = () => {
   const [searchText, setSearchText] = useState('');
   const [menuOpen, setMenuOpen] = useState(false); // State to toggle hamburger menu
   const [isOpen, setIsOpen] = useState(false);
+
+  const {isAuthenticated,userPrincipal,identity}=useAuth();
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -157,7 +161,7 @@ const Header = () => {
         </div>
 
         {/* Connect Wallet Button for screens above 768px */}
-        <div className="hidden font-posterama md:block">
+      {  !isAuthenticated && <div className="hidden font-posterama md:block">
           <button
             onClick={openModal}
             className="w-[120px] md:w-[150px] lg:w-[190px] h-[25px] lg:h-[32px] 
@@ -169,45 +173,52 @@ const Header = () => {
           </button>
           <ConnectWallets modalIsOpen={modalIsOpen} setModalIsOpen={setModalIsOpen} />
         </div>
+    }
 
-        {/* user info */}
-        <div className="relative inline-block rounded-2xl bg-gradient-to-r from-[#f09787]  to-[#CACCF5] text-left p-[1.5px]">
-      <button
-        onClick={toggleDropdown}
-        className="flex items-center   text-white rounded-full  "
-      >
-        <div className='bg-black h-full -w-full rounded-2xl'>
+
+       {/* User Info */}
+{ isAuthenticated &&  
+  <div className="relative inline-block rounded-2xl bg-gradient-to-r from-[#f09787] to-[#CACCF5] text-left p-[1.5px]">
+    <button
+      onClick={toggleDropdown}
+      className="flex items-center text-white rounded-full"
+    >
+      <div className="bg-black h-full w-full rounded-2xl flex items-center p-2">
         <FaUser className="mr-2" />
-        <div className="flex flex-col items-start">
+        <div className="flex flex-col items-start w-44">
           <span className="text-sm">ABCD</span>
-          <span className="text-xs text-gray-400">fghyrf26rg895</span>
+          <span className="text-xs text-gray-400 w-full overflow-hidden whitespace-nowrap text-ellipsis">
+            {userPrincipal}
+          </span>
         </div>
         <BsThreeDotsVertical className="ml-2" />
-        </div>
-      </button>
+      </div>
+    </button>
 
-      {/* Dropdown menu */}
-      {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-20">
-          <div className="py-1">
-            <Link
-              to="/account"
-              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-              onClick={() => setIsOpen(false)}  // Close dropdown on click
-            >
-              Account
-            </Link>
-            <Link
-              to="/profile"
-              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-              onClick={() => setIsOpen(false)}  // Close dropdown on click
-            >
-              Profile
-            </Link>
-          </div>
+    {/* Dropdown menu */}
+    {isOpen && (
+      <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-20">
+        <div className="py-1">
+          <Link
+            to="/account"
+            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+            onClick={() => setIsOpen(false)}  // Close dropdown on click
+          >
+            Account
+          </Link>
+          <Link
+            to="/profile"
+            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+            onClick={() => setIsOpen(false)}  // Close dropdown on click
+          >
+            Profile
+          </Link>
         </div>
-      )}
-    </div>
+      </div>
+    )}
+  </div>
+}
+
       
       </nav>
 

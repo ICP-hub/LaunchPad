@@ -11,7 +11,7 @@ import MyContribution from './MyContribution/MyContribution';
 const Profile = () => {
   const [activeTab, setActiveTab] = useState("Activities");
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const { logout, userPrincipal } = useAuth();
+  const { logout,isAuthenticated, userPrincipal } = useAuth();
 
 
   const handleLogout = async (e) => {
@@ -74,7 +74,7 @@ const Profile = () => {
                 </button>
                 <button
                   onClick={handleLogout} 
-                  disabled={userPrincipal && userPrincipal.length <= 9}
+                  disabled={!isAuthenticated}
                   className="bg-transparent border border-gray-500 py-2 px-4 w-[200px] rounded-2xl"
                 >
                   <GradientText>LOGOUT</GradientText>
@@ -153,7 +153,7 @@ const Profile = () => {
             <div className="flex justify-center items-center">
               <button
                 onClick={handleLogout}
-                disabled={userPrincipal && userPrincipal.length <= 9}
+                disabled={!isAuthenticated}
                 className="w-[70%] bg-transparent border border-[#CACCF5] py-2 px-4 rounded-2xl text-white"
               >
                 LOGOUT

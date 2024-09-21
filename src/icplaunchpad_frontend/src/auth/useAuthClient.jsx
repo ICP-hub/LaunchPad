@@ -28,6 +28,7 @@ export const useAuthClient = (options = defaultOptions) => {
   const [identity, setIdentity] = useState(null);
   const [backendActor, setBackendActor] = useState(null);
   const [userPrincipal, setuserPrincipal] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   
   const clientInfo = async (client, identity) => {
     const isAuthenticated = await client.isAuthenticated();
@@ -41,6 +42,9 @@ export const useAuthClient = (options = defaultOptions) => {
         agentOptions: { identity, verifyQuerySignatures: false },
       });
       setBackendActor(backendActor);
+      setIsAuthenticated(true);  
+    } else {
+      setIsAuthenticated(false); 
     }
 
     return true;
@@ -116,6 +120,7 @@ const logout = async () => {
     logout,
     backendActor,
     userPrincipal,
+    isAuthenticated,
     identity,
     createCustomActor,
     clientInfo,
