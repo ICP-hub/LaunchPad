@@ -20,6 +20,13 @@
     "@dfinity/auth-client": "^2.0.0",
     "@dfinity/identity": "^2.0.0",
     "@dfinity/principal": "^2.0.0",
-    "@nfid/embed": "^0.10.3"
+    "@nfid/embed": "^0.10.3",
+    "chart.js": "^4.4.3",
+    "react-chartjs-2": "^5.2.0",
+    "react-hot-toast": "^2.4.1",
+    "react-icons": "^5.2.1",
+    "react-modal": "^3.16.1",
+    "react-router-dom": "^6.26.0",
+    "react-transition-group": "^4.4.5"
   }
 }

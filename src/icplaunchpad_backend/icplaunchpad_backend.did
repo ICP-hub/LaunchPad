@@ -15,11 +15,13 @@ type CanisterIndexInfo = record {
   token_name : text;
 };
 type FeatureFlags = record { icrc2 : bool };
+
 type ImageData = record {
   content : opt blob;
   name : text;
   content_type : text;
 };
+
 type Metadata = record { key : text; value : MetadataValue };
 type MetadataValue = variant {
   Int : int64;
@@ -65,6 +67,7 @@ type TokenParams = record {
   feature_flags : opt FeatureFlags;
 };
 service : () -> {
+  add_data : (IndexCanisterIdWrapper) -> (Result);
   create_token : (TokenParams) -> (Result);
   get_image_ids : () -> (vec nat32) query;
   get_sale_params : (principal) -> (Result_1) query;
