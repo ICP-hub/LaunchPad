@@ -5,7 +5,7 @@ import { IoSearch, IoClose, IoMenu, IoCloseSharp } from "react-icons/io5";
 import ConnectWallets from '../Modals/ConnectWallets';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../auth/useAuthClient';
-
+import ProfileCard from '../Modals/ProfileCard';
 import { FaUser } from 'react-icons/fa';
 import { BsThreeDotsVertical } from 'react-icons/bs';
 
@@ -16,6 +16,7 @@ const Header = () => {
   const [searchText, setSearchText] = useState('');
   const [menuOpen, setMenuOpen] = useState(false); // State to toggle hamburger menu
   const [isOpen, setIsOpen] = useState(false);
+  const [profileModalIsOpen, setProfileModalIsOpen] = useState(false); // State for ProfileCard modal
 
   const {isAuthenticated,userPrincipal,identity}=useAuth();
 
@@ -25,6 +26,14 @@ const Header = () => {
 
   const openModal = () => {
     setModalIsOpen(true);
+  };
+
+  const openProfileModal = () => {
+    setProfileModalIsOpen(true);
+  };
+
+  const closeProfileModal = () => {
+    setProfileModalIsOpen(false);
   };
 
   const handleSearchClick = () => {
@@ -197,19 +206,21 @@ const Header = () => {
 
     {/* Dropdown menu */}
     {isOpen && (
-      <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-20">
-        <div className="py-1">
-          <Link
-            to="/account"
-            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-            onClick={() => setIsOpen(false)}  // Close dropdown on click
+      <div className="absolute right-0 mt-2 font-posterama w-48 bg-[#222222] rounded-md z-50">
+        <div className="py-2 px-2">
+          <div className="hidden border-b md:block">
+          <button
+            onClick={openProfileModal}
+            className="block px-4 py-2 text-[18px] "
           >
             Account
-          </Link>
+          </button>
+          <ProfileCard profileModalIsOpen={profileModalIsOpen} setProfileModalIsOpen={setProfileModalIsOpen} />
+        </div>
+
           <Link
             to="/profile"
-            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-            onClick={() => setIsOpen(false)}  // Close dropdown on click
+            className="block px-4 py-2 text-[18px] border-b "  // Close dropdown on click
           >
             Profile
           </Link>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { TfiClose } from "react-icons/tfi";
-import { Link } from 'react-router-dom';
+
 import Modal from 'react-modal';
 import person1 from "../../assets/images/carousel/person1.png"
 
