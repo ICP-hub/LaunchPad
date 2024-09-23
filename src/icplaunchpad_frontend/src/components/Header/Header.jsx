@@ -3,7 +3,7 @@ import logo from '../../assets/images/icLogo.png';
 import GradientText from '../../common/GradientText';
 import { IoSearch, IoClose, IoMenu, IoCloseSharp } from "react-icons/io5";
 import ConnectWallets from '../Modals/ConnectWallets';
-import { Link } from 'react-router-dom';
+import { Link} from 'react-router-dom';
 import { useAuth } from '../../auth/useAuthClient';
 import ProfileCard from '../Modals/ProfileCard';
 import { FaUser } from 'react-icons/fa';
@@ -17,6 +17,7 @@ const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false); // State to toggle hamburger menu
   const [isOpen, setIsOpen] = useState(false);
   const [profileModalIsOpen, setProfileModalIsOpen] = useState(false); // State for ProfileCard modal
+
 
   const {isAuthenticated,userPrincipal,identity}=useAuth();
 
@@ -187,7 +188,7 @@ const Header = () => {
 
        {/* User Info */}
 { isAuthenticated &&  
-  <div className="relative inline-block rounded-2xl bg-gradient-to-r from-[#f09787] to-[#CACCF5] text-left p-[1.5px]">
+  <div className=" hidden md:inline-block relative  rounded-2xl bg-gradient-to-r ml-2 from-[#f09787] to-[#CACCF5] text-left p-[1.5px]">
     <button
       onClick={toggleDropdown}
       className="flex items-center text-white rounded-full"
@@ -263,16 +264,27 @@ const Header = () => {
           >
             Launch a Coin
           </Link>
-          <button
+
+         { !isAuthenticated ? <button
             onClick={openModal}
             className=" mt-[80px]   bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5]
              text-black  relative w-[220px] h-[35px] p-[1.5px]
                 text-[16px] md:text-[18px] font-[600] rounded-3xl "
-          >
-            
+          > 
             Connect Wallet
-          
           </button>
+          :
+          <>          <button
+          onClick={openProfileModal}
+            className=" mt-[80px]   bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5]
+             text-black  relative w-[220px] h-[35px] p-[1.5px]
+                text-[16px] md:text-[18px] font-[600] rounded-3xl "
+          > 
+            Account
+          </button>
+          <ProfileCard profileModalIsOpen={profileModalIsOpen} setProfileModalIsOpen={setProfileModalIsOpen} />
+          </>
+         }
           
         </div>
       )}

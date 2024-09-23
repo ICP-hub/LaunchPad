@@ -17,7 +17,7 @@ const ConnectWallet = ({ modalIsOpen, setModalIsOpen }) => {
   const { login } = useAuth();
 
   const handleLogin = async () => {
-    await login("Icp").then(() => window.location.reload());
+    await login("Icp").then(() => console.log("connected"));
   };
   
   function closeModal() {
