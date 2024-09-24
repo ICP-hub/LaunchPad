@@ -3,9 +3,14 @@ import { TfiClose } from "react-icons/tfi";
 
 import Modal from 'react-modal';
 import person1 from "../../assets/images/carousel/person1.png"
+import { useAuth } from '../../auth/useAuthClient';
 
 const ProfileCard = ({ profileModalIsOpen, setProfileModalIsOpen }) => {
+  const { logout, userPrincipal } = useAuth();
 
+  async function handleLogout(){
+      await logout().then(()=>window.location.reload())
+  }
   function closeModal() {
     setProfileModalIsOpen(false);
   }
@@ -26,7 +31,7 @@ const ProfileCard = ({ profileModalIsOpen, setProfileModalIsOpen }) => {
               {/* Modal Close Button */}
               <button
                 onClick={closeModal}
-                className="absolute right-8 top-[20px] text-[30px] text-white"
+                className="absolute right-8 top-[20px] text-[25px] text-white"
               >
                 <TfiClose />
               </button>
@@ -34,15 +39,15 @@ const ProfileCard = ({ profileModalIsOpen, setProfileModalIsOpen }) => {
             
 
       {/* Profile Image */}
-      <div className="flex  items-center mt-4 gap-8">
+      <div className="flex  items-center mt-4 gap-8 ">
         <img
           src={person1}
           alt="Profile"
           className="w-20 h-20 rounded-full object-cover"
         />
-         <div>
+         <div className='w-48'>
         <h2 className="text-lg font-semibold mt-2">ABCD</h2>
-        <p className="text-sm text-gray-400">fghyrf26rg895</p>
+        <p className="text-sm text-gray-400 overflow-hidden whitespace-nowrap text-ellipsis"> {userPrincipal} </p>
 
         {/* Block Explorer Button */}
         <button className="bg-[#3c3c3c] text-xs text-gray-400 px-3 py-1 mt-1 rounded-full">
@@ -53,13 +58,13 @@ const ProfileCard = ({ profileModalIsOpen, setProfileModalIsOpen }) => {
 
       {/* ICP, Activity, and Disconnect */}
       <div className="mt-4">
-        <div className="text-sm font-semibold border-t border-gray-600 py-2">
+        <div className="text-sm font-semibold border-b border-gray-600 py-2">
           ICP
         </div>
-        <div className="text-sm font-semibold border-t border-gray-600 py-2">
+        <div className="text-sm font-semibold border-b border-gray-600 py-2">
           ACTIVITY
         </div>
-        <div className="text-sm font-semibold text-gray-400 border-t border-gray-600 py-2">
+        <div onClick={handleLogout} className="text-sm cursor-pointer font-semibold text-gray-400 border-b border-gray-600 py-2 mb-1">
           DISCONNECT
         </div>
       </div>
