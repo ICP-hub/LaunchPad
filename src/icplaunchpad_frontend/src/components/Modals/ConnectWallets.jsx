@@ -16,8 +16,8 @@ const ConnectWallet = ({ modalIsOpen, setModalIsOpen }) => {
 
   const { login } = useAuth();
 
-  const handleLogin = async () => {
-    await login("Icp").then(() => console.log("connected"));
+  const handleLogin = async (loginOption) => {
+    await login(loginOption).then(() => console.log("connected"));
   };
   
   function closeModal() {
@@ -48,7 +48,7 @@ const ConnectWallet = ({ modalIsOpen, setModalIsOpen }) => {
             <div className="w-[90%] mx-auto mt-5 flex flex-col  pt-5 justify-center ">
              
             <div className="mb-4">
-                <button onClick={handleLogin} className="w-full bg-[#303030] text-white py-2 rounded-[10px] flex items-center">
+                <button onClick={()=>handleLogin("Icp")} className="w-full bg-[#303030] text-white py-2 rounded-[10px] flex items-center">
                   
                   <span className="ml-3 absolute">Internet Identity</span>
                   <div className="flex items-center justify-center  ml-[85%] py-2 px-2 bg-white rounded-full">
@@ -58,7 +58,7 @@ const ConnectWallet = ({ modalIsOpen, setModalIsOpen }) => {
               </div>
               
               <div className="mb-4">
-                <button onClick={()=>login("plug")} className="w-full bg-[#303030] text-white py-2 rounded-[10px] flex items-center">
+                <button onClick={()=>handleLogin("Plug")}  className="w-full bg-[#303030] text-white py-2 rounded-[10px] flex items-center">
                   
                   <span className="ml-3 absolute">Plug</span>
                   <div className="flex items-center justify-center  ml-[85%]  py-2 px-2 bg-white rounded-full">
@@ -68,7 +68,7 @@ const ConnectWallet = ({ modalIsOpen, setModalIsOpen }) => {
               </div>
               
               <div className="mb-4">
-                <button onClick={()=>login("plug")} className="w-full bg-[#303030] text-white py-2 rounded-[10px] flex items-center">
+                <button onClick={()=>handleLogin("Icp")}  className="w-full bg-[#303030] text-white py-2 rounded-[10px] flex items-center">
                   
                   <span className="ml-3 absolute">Bifinity</span>
                   <div className="flex items-center justify-center  ml-[85%]  bg-white rounded-full">
@@ -78,7 +78,7 @@ const ConnectWallet = ({ modalIsOpen, setModalIsOpen }) => {
               </div>
 
               <div className="mb-4">
-                <button onClick={()=>login("nfid")} className="w-full bg-[#303030] text-white py-2 rounded-[10px] flex items-center">
+                <button onClick={()=>handleLogin("NFID")}  className="w-full bg-[#303030] text-white py-2 rounded-[10px] flex items-center">
                   
                   <span className="ml-3 absolute">NFID</span>
                   <div className="flex items-center justify-center  ml-[85%] py-2 px-2 bg-white rounded-full">
