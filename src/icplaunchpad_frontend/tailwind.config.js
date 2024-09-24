@@ -24,6 +24,7 @@ export default {
         sm4: "508px",
         sm2: "538px",
         sm3: "550px",
+        sm5: "590px",
         sm: "640px",
         md: "768px",
         md1: "870px",
@@ -50,6 +51,8 @@ export default {
         'inter': ['Inter', 'sans-serif'],
         'adam': ['Adam', 'sans-serif'],
         'monument': ['Monument', 'sans-serif'],
+        'posterama': ['Posterama','sans-serif'],
+        'kumbhSans': ['KumbhSans','sans-serif']
       },
       keyframes: {
         translateY: {

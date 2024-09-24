@@ -21,7 +21,17 @@
     font-family: "Monument";
     src: url("./assets/fonts/MonumentExtended-Regular.otf") format("opentype");
 } 
-  
+
+@font-face {
+    font-family: "posterama";
+    src: url("./assets/fonts/Posterama.ttf") format("opentype");
+} 
+
+@font-face {
+    font-family: "KumbhSans";
+    src: url("./assets/fonts/KumbhSans.ttf") format("opentype");
+} 
+
 body{
     background-color: black;
 }

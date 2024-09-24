@@ -1,19 +1,79 @@
-import React from 'react';
-import { Doughnut } from 'react-chartjs-2';
-import {
-  Chart as ChartJS,
-  ArcElement,
-  Tooltip,
-  Legend,
-} from 'chart.js';
+import React from "react";
+import person1 from "../../assets/images/carousel/person1.png";
 import { useNavigate } from 'react-router-dom';
-import person1 from '../../assets/images/carousel/person1.png';
-import l3 from '../../assets/images/carousel/l3.png';
+import l3 from '../../assets/images/carousel/l3.png'
 
-// Register Chart.js components
-ChartJS.register(ArcElement, Tooltip, Legend);
+const salesData = [
+  {
+    heading: 'PUPPO',
+    subheading: 'FAIR LAUNNCH-MAX BUY 5 SOL',
+    chartData: {
+      datasets: [
+        {
+          data: [70, 30],
+          backgroundColor: ['#FF6384', 'transparent'],
+          borderWidth: 0,
+        },
+      ],
+    },
+    progress: 10.1,
+    raised: 30,
+    details: {
+      type: 'SOFT',
+      amount: '100 SOL',
+      liquidity: '51%',
+      lockTime: '365 DAYS',
+      saleStartsIn: '00:29:23:00',
+    },
+  },
+  {
+    heading: 'SUNNY',
+    subheading: 'EXCITING NEW PROJECT - LIMITED TO 10 ETH',
+    chartData: {
+      datasets: [
+        {
+          data: [60, 40],
+          backgroundColor: ['#FF9F40', 'transparent'],
+          borderWidth: 0,
+        },
+      ],
+    },
+    progress: 10.1,
+    raised: 30,
+    details: {
+      type: 'HARD',
+      amount: '200 ETH',
+      liquidity: '51%',
+      lockTime: '365 DAYS',
+      saleStartsIn: '00:29:23:00',
+    },
+  },
+  {
+    heading: 'STARLIGHT',
+    subheading: 'INNOVATIVE TOKEN SALE - MAX PURCHASE 0.5 BTC',
+    chartData: {
+      datasets: [
+        {
+          data: [80, 20],
+          backgroundColor: ['#9966FF', 'transparent'],
+          borderWidth: 0,
+        },
+      ],
+    },
+    progress: 10.1,
+    raised: 30,
+    details: {
+      type: 'FLEXIBLE',
+      amount: '0.35 BTC',
+      liquidity: '51%',
+      lockTime: '365 DAYS',
+      saleStartsIn: '00:29:23:00',
+    },
+  },
+];
 
 const UpcomingSales = () => {
+
   const navigate = useNavigate();
 
   // Handle navigation to the projects page
@@ -21,146 +81,115 @@ const UpcomingSales = () => {
     navigate('/projects');
   };
 
-  // Array of objects containing data for each card
-  const salesData = [
-    {
-      heading: 'PUPPO',
-      subheading: 'Subheading 1',
-      chartData: {
-        datasets: [
-          {
-            data: [70, 30], // Example data for PUPPO (70% visible)
-            backgroundColor: ['#FF6384', 'transparent'], // Only 70% is visible
-            borderWidth: 0, // Remove the border around the chart
-          },
-        ],
-      },
-      progressText: 'PROGRESS (10.10%) 30 SOL RAISED',
-      details: {
-        type: 'SOFT',
-        amount: '100 SOL',
-        liquidity: '51%',
-        lockTime: '365 DAYS',
-        saleStartsIn: '00:29:23:00',
-      },
-    },
-    {
-      heading: 'SUNNY',
-      subheading: 'EXCITING NEW PROJECT - LIMITED TO 10 ETH',
-      chartData: {
-        datasets: [
-          {
-            data: [60, 40], // Example data for SUNNY (60% visible)
-            backgroundColor: ['#FF9F40', 'transparent'],
-            borderWidth: 0,
-          },
-        ],
-      },
-      progressText: 'PROGRESS (15.00%) 45 SOL RAISED',
-      details: {
-        type: 'HARD',
-        amount: '200 ETH',
-        liquidity: '51%',
-        lockTime: '365 DAYS',
-        saleStartsIn: '00:29:23:00',
-      },
-    },
-    {
-      heading: 'STARLIGHT',
-      subheading: 'INNOVATIVE TOKEN SALE - MAX PURCHASE 0.5 BTC',
-      chartData: {
-        datasets: [
-          {
-            data: [80, 20], // Example data for STARLIGHT (80% visible)
-            backgroundColor: ['#9966FF', 'transparent'],
-            borderWidth: 0,
-          },
-        ],
-      },
-      progressText: 'PROGRESS (20.00%) 50 SOL RAISED',
-      details: {
-        type: 'FLEXIBLE',
-        amount: '0.35 BTC',
-        liquidity: '51%',
-        lockTime: '365 DAYS',
-        saleStartsIn: '00:29:23:00',
-      },
-    },
-  ];
+  const handleViewMoreClick2 = () => {
+    navigate('/project');
+  };
 
   return (
-    <div className="upcoming-sales h-full mb-[300%] xxs:mb-[270%]  md:mb-[80%] lg:mb-0 sm4:mb-3 py-[5%] px-[9%]">
-      <div className="flex justify-between items-center">
-        <h2 className="text-white text-2xl">UPCOMING SALES</h2>
-        <button onClick={handleViewMoreClick} className="text-white underline">
+    <div  className="upcoming-sales h-full   md:mb-[5%] lg:mb-0 sm4:mb-3 py-[5%]">
+      <div className="flex justify-between items-center px-[6%] mb-10">
+        <h2 className="text-white font-bold font-posterama text-[20px] xxs1:text-3xl">UPCOMING SALES</h2>
+        <button onClick={handleViewMoreClick} className="text-white hidden xxs1:block font-posterama underline text-[15px] xxs1:text-xl">
           View More
         </button>
       </div>
 
-      <div className="grid  grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-11  lg:gap-4 h-[580px]  pt-[20%] md:pt-[15%] dxl:pt-[10%]">
-        {salesData.map((sale, index) => (
-          <div key={index} className="bg-[#222222] rounded-2xl  py-6 pr-6 w-full relative mt-[20%] md:mt-6">
-            <div className="absolute -top-[13%] left-1/2 transform -translate-x-1/2">
+    <div className="flex lg:flex-row flex-col items-center flex-wrap w-[95%] m-auto justify-around">
+      
+      {salesData.map((sale, index) => (
+        <div
+          key={index}
+          className="bg-[#FFFFFF1A] text-white p-1 rounded-lg flex flex-col w-[305px] xxs:w-[375px] xxs1:w-[400px] mt-14"
+        >
+          <div className="h-[280px] rounded-lg py-5 flex flex-col">
+            <div className="relative">
               <img
                 src={person1}
-                alt="sale-item"
-                className="rounded-full w-[115px] object-cover"
+                className="absolute top-0 left-[50%] transform -translate-x-1/2 -translate-y-[50%] rounded-full h-[100px] md:min-h-[114px]"
+                alt={sale.heading}
               />
-              <div className="absolute bottom-0 right-0 w-10 h-10 rounded-full border-1 border-gray-300">
+               <div className="absolute top-[20px]  right-[90px] xxs:right-[130px] w-10 h-10  rounded-full border-1 border-gray-300">
                 <img src={l3} alt="small" className="object-cover w-full h-full" />
               </div>
             </div>
-            <div className="mt-14 text-center">
-              <h3 className="text-white lg:text-lg">{sale.heading}</h3>
-              <p className="text-gray-400">{sale.subheading}</p>
-              <p className="text-yellow-500 mt-2">UPCOMING</p>
-              <hr className="my-4 border-gray-600" />
-              <div className="flex items-center relative">
-                <div className="w-1/2 relative overflow-hidden">
-                  <div className="relative" style={{ width: '140%', transform: 'translateX(-40%)' }}>
-                    <Doughnut
-                      data={sale.chartData}
-                      options={{
-                        cutout: '80%',
-                        plugins: {
-                          legend: {
-                            display: false, // Hide the legend
-                          },
-                          tooltip: {
-                            enabled: false, // Disable tooltips
-                          },
-                        },
-                      }}
-                    />
-                    <div className="absolute left-[22%] inset-0 flex items-center justify-center text-white md:text-[8px] lg1:text-[12px] text-center">
-                      <div>
-                        <p>PROGRESS (10.10%)</p>
-                        <p>30 SOL RAISED</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="w-1/2 text-white pl-4">
-                  <p>{sale.details.type}</p>
-                  <p>{sale.details.amount}</p>
-                  <p>LIQUIDITY</p>
-                  <p>{sale.details.liquidity}</p>
-                  <p>LOCK TIME</p>
-                  <p>{sale.details.lockTime}</p>
-                  <p className="mt-2">SALE STARTS IN</p>
-                  <p>{sale.details.saleStartsIn}</p>
-                  <button
-                    onClick={handleViewMoreClick}
-                    className="text-blue-500 underline mt-2"
-                  >
-                    View More
-                  </button>
+
+            <div className="mt-[70px] text-center text-white space-y-5">
+              <div className="text-[24px] font-semibold ">{sale.heading}</div>
+              <div className="text-[16px] text-[#FFFFFFA6] font-medium">{sale.subheading}</div>
+              <div className="text-[#FFC145] text-[18px] font-normal">
+                UPCOMING
+              </div>
+            </div>
+
+            <div className="bg-[#FFFFFF66] h-[2px] w-full xxs1:w-[92%] mx-auto "></div>
+          </div>
+
+          <div className="flex">
+            <div className="relative flex items-center overflow-hidden w-[60%] h-72">
+              <div className="absolute lg:left-[-35%] left-[-70%]  xxs:left-[-30%] sm:left-[-20%] md:left-[-25%] top-0 w-72 h-72">
+                <svg className="transform rotate-90" viewBox="0 0 36 36">
+                  <defs>
+                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" style={{ stopColor: "#f3b3a7", stopOpacity: 1 }} />
+                      <stop offset="100%" style={{ stopColor: "#cac9f5", stopOpacity: 1 }} />
+                    </linearGradient>
+                  </defs>
+                  <path
+                    className="text-gray-800"
+                    d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831a 15.9155 15.9155 0 0 1 0 -31.831"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="3.8"
+                  />
+                  <path
+                    className="text-purple-400"
+                    d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831a 15.9155 15.9155 0 0 1 0 -31.831"
+                    fill="none"
+                    stroke="url(#gradient)"
+                    strokeWidth="3.8"
+                    strokeDasharray={`${sale.progress * 4}, 100`}
+                  />
+                </svg>
+                <div className="absolute ml-10 inset-0 flex flex-col items-center justify-center">
+                  <span>Progress</span>
+                  <span className="text-lg font-semibold text-white">
+                    ({sale.progress}%)
+                  </span>
+                  <span className="text-sm text-gray-400 mt-1">
+                    {sale.raised} SOL RAISED
+                  </span>
                 </div>
               </div>
             </div>
+
+            <div className="mt-6 w-[40%] flex flex-col justify-around">
+              <div className="flex flex-col">
+                <span className="text-sm text-gray-400">{sale.details.type}</span>
+                <span className="text-lg font-semibold">{sale.details.amount}</span>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-sm text-gray-400">Liquidity</span>
+                <span className="text-lg font-semibold">{sale.details.liquidity}</span>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-sm text-gray-400">Lock Time</span>
+                <span className="text-lg font-semibold">{sale.details.lockTime}</span>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-sm text-gray-400">Sale Starts In</span>
+                <span className="text-lg font-semibold">{sale.details.saleStartsIn}</span>
+              </div>
+              <button onClick={handleViewMoreClick2} className="border-b-2 border-r-gray-600 w-20 cursor-pointer">
+                View More
+              </button>
+            </div>
           </div>
-        ))}
-      </div>
+        </div>
+      ))}
+      <button onClick={handleViewMoreClick} className="text-white mt-4  xxs1:hidden font-posterama underline text-[20px] xxs1:text-xl">
+          LOAD MORE
+        </button>
+    </div>
     </div>
   );
 };

@@ -15,11 +15,11 @@ import p12 from '../../assets/images/projectsIcon/p12.png';
 const FundList = () => {
   return (
     <div className="px-[8%] py-[5%] md:py-[6%] lg:py-[3%] bg-black">
-      <h2 className="text-2xl font-bold text-white mb-4">SUCCESSFUL PROJECTS RAISE FUNDING</h2>
+      <h2 className="text-[30px] font-bold text-white font-posterama mb-4">SUCCESSFUL PROJECTS RAISE FUNDING</h2>
       <div className="overflow-x-auto">
-        <table className="min-w-full bg-black border-b border-gray-700">
+        <table className="min-w-full bg-black border-b border-[#FFFFFF33]">
           <thead>
-            <tr className="bg-[#1919194D] text-white  uppercase text-sm leading-normal">
+            <tr className="bg-[#1919194D] text-white font-posterama uppercase text-sm leading-normal">
               <th className="py-3 px-6 text-left">#</th>
               <th className="py-3 px-6 text-left">Projects</th>
               <th className="py-3 px-6 text-left">Total Raised</th>
@@ -28,11 +28,11 @@ const FundList = () => {
               <th className="py-3 px-6 text-left">Ended In</th>
             </tr>
           </thead>
-          <tbody className="text-white text-sm divide-y  md:align-top divide-gray-700">
+          <tbody className="text-white text-sm divide-y  align-top divide-[#FFFFFF33]">
            
             <tr className='text-base'>
               <td className="py-3 px-6">1</td>
-              <td className=" flex items-center py-3 px-6"><img src={p1} alt="infinite" className=" pr-2 " />Name</td>
+              <td className=" flex  py-3 px-6"><img src={p1} alt="infinite" className=" pr-2 " />Name</td>
               <td className="py-3 px-6">$400,000</td>
               <td className="py-3 px-6">$1.5892</td>
               <td className="py-3 px-6">Token Sale</td>
