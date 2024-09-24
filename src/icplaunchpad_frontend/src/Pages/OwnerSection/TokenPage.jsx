@@ -26,8 +26,7 @@ const TokenPage = () => {
   const [sellType, setSellType] = useState('public');
   const [modalIsOpen, setIsOpen] = useState(false);
 
-  
-  const closeModal = () => setIsModalOpen(false);
+
   const openModal = () => {
     setIsOpen(true);
   };
@@ -80,7 +79,7 @@ const TokenPage = () => {
   return (
     <>
       <div className="flex flex-col gap-5 max-w-[90%] mx-auto lg:flex-row">
-        <div className={`bg-[#FFFFFF1A] rounded-lg mt-24 pb-5`}>
+        <div className={` rounded-2xl mt-24 pb-5`}>
           {!isMobile && (
             <div className="h-[314px]">
               <div className="relative">
@@ -120,7 +119,7 @@ const TokenPage = () => {
           )}
 
           {isMobile && (
-            <div className="h-[314px] bg-[#181818] rounded-lg py-5 flex flex-col">
+            <div className="h-[314px] bg-[#181818] rounded-2xl py-5 flex flex-col">
              <div className="relative">
                 <img
                   src={person1}
@@ -129,7 +128,7 @@ const TokenPage = () => {
                 />
               </div>
 
-              <div className="mt-[70px] text-center text-white space-y-2">
+              <div className="mt-[70px] text-center font-posterama text-white space-y-2">
                 <div className="text-[24px] font-bold">PuPPo</div>
                 <div className="text-[16px] font-medium">
                   FAir Launnch - Max buy 5 SOL
@@ -137,9 +136,14 @@ const TokenPage = () => {
                 <div className="text-[#FFC145] text-[18px] font-semibold">
                   Upcoming
                 </div>
+                <div>
+                  soft 100 sol
+                  </div>
               </div>
+              
+              <div className="bg-[#FFFFFF66] h-[2px] w-[100%] mx-auto mt-4 "></div>
 
-              <div className="flex justify-evenly w-[90%] mt-4">
+              <div className="flex justify-evenly text-[25px] w-[90%] mt-4">
               <IoGlobeOutline/>
                    <FaTwitter />
                     <FaFacebook />
@@ -148,8 +152,169 @@ const TokenPage = () => {
                     < FaInstagram/>
                     <FaDiscord/>
               </div>
-              <div className="bg-[#FFFFFF66] h-[2px] w-[100%] mx-auto mt-4 "></div>
             </div>
+          )}
+
+{isMobile && (
+          <div className="bg-[#FFFFFF1A] font-posterama text-[#FFFFFFA6] text-white p-6 mt-8 rounded-2xl w-full max-w-full">
+  {/* Section Heading */}
+  <h2 className="text-[25px]">OWNER SECTION</h2>
+
+  {/* Sale Type */}
+  <div className="mt-4 font-inter">
+    <p className="text-[18px] ">Sale type</p>
+    <div className="flex flex-col items-start gap-4 ml-4 mt-2">
+      <label className="flex  gap-4 items-center">
+        <input
+          type="radio"
+          name="saleType"
+          value="public"
+          checked={sellType === 'public'}
+          onChange={() => setSellType('public')}
+         className="hidden peer"
+        />
+          <div className="w-4 h-4 bg-transparent border-2 border-white  rounded-full  peer-checked:bg-gradient-to-r from-[#f09787]  to-[#CACCF5] flex items-center justify-center mr-2">
+      <div className="w-1.5 h-1.5 bg-transparent peer-checked:bg-gradient-to-r from-[#f09787]  to-[#CACCF5] rounded-full"></div>
+  </div>
+    Public
+      </label>
+      
+      <label className="flex  gap-4 items-center">
+        <input
+          type="radio"
+          name="saleType"
+          value="whitelist"
+          checked={sellType === 'whitelist'}
+          onChange={() => setSellType('whitelist')}
+          className="hidden peer"
+        />
+        <div className="w-4 h-4 bg-transparent border-2 border-white  rounded-full  peer-checked:bg-gradient-to-r from-[#f09787]  to-[#CACCF5] flex items-center justify-center mr-2">
+      <div className="w-1.5 h-1.5 bg-transparent peer-checked:bg-gradient-to-r from-[#f09787]  to-[#CACCF5] rounded-full"></div>
+  </div>
+          Whitelist
+      </label>
+      <p className="ml-8 mt-[-10px]"> (Recommended For speed and private sale)</p>
+    </div>
+  </div>
+
+  {/* Conditionally Render Add User to Whitelist Button */}
+  
+  {sellType === 'whitelist' && (
+      <div>
+    <button onClick={openModal} className="w-full text-white  bg-gradient-to-r from-[#f09787]  to-[#CACCF5] rounded-3xl p-[1.5px] h-[40px] mt-2 ">
+    <div className='flex items-center bg-[#FFFFFF1A] justify-center  w-full h-full  rounded-3xl  '>
+      ADD USER TO WHITELIST
+      </div>
+    </button>
+    <AddToWhitelist modalIsOpen={modalIsOpen} setIsOpen={setIsOpen} />
+    </div>
+  )}
+
+  {/* Pool Actions */}
+  <div className="mt-6">
+    <p className="text-sm font-inter text-gray-400 mb-2">Pool Actions</p>
+
+    {/* Buttons */}
+    <div class="mx-auto flex  items-center justify-center ">
+    <button className="w-full text-white   bg-gradient-to-r from-[#f09787]  to-[#CACCF5] rounded-2xl p-[1.5px] h-[60px] mt-2 ">
+      <div className='flex items-center bg-black justify-center  w-full h-full  rounded-2xl  '>
+      POOL START/END TIME SETTING
+      </div>
+    </button>
+    </div>
+    <button className="w-full text-white bg-gradient-to-r from-[#f09787]  to-[#CACCF5]  rounded-3xl p-[1.5px] h-[40px]  mt-2 ">
+    <div className='flex items-center justify-center  bg-black w-full h-full  rounded-3xl  '>
+      HIDE TOKEN MATRIX CHART
+      </div>
+    </button>
+    <button className="w-full text-white bg-gradient-to-r from-[#f09787]  to-[#CACCF5]  rounded-3xl p-[1.5px] h-[40px]  mt-2">
+    <div className='flex items-center justify-center bg-black w-full h-full  rounded-3xl  '>
+      CANCEL POOL
+      </div>
+    </button>
+  </div>
+</div>
+)}
+
+{isMobile && (
+          <div className="lg:min-w-[406px] w-full h-[153px] mt-8 bg-[#FFFFFF1A] rounded-[17.44px] flex flex-col justify-center items-center text-white">
+            <p className="text-lg mb-2">SALE STARTS IN</p>
+            <div className="text-2xl font-bold">00:29:23:00</div>
+          </div>
+          )}
+
+{isMobile &&(
+          <div className="bg-[#FFFFFF1A] text-white p-1 rounded-lg mt-8 flex w-full h-[350px] lg:min-w-[406px]">
+            <div className="relative flex items-center  overflow-hidden w-[60%] h-72">
+              <div className="absolute lg:left-[-45%] left-[-70%] dxs:left-[-47%] xxs1:left-[-30%] sm:left-[-20%] md:left-[-15%]  top-0 w-72 h-72">
+                <svg className="transform rotate-90" viewBox="0 0 36 36">
+                  <defs>
+                    <linearGradient
+                      id="gradient"
+                      x1="0%"
+                      y1="0%"
+                      x2="100%"
+                      y2="0%"
+                    >
+                      <stop
+                        offset="0%"
+                        style={{ stopColor: "#f3b3a7", stopOpacity: 1 }}
+                      />
+                      <stop
+                        offset="100%"
+                        style={{ stopColor: "#cac9f5", stopOpacity: 1 }}
+                      />
+                    </linearGradient>
+                  </defs>
+                  <path
+                    className="text-gray-800"
+                    d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831a 15.9155 15.9155 0 0 1 0 -31.831"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="3.8"
+                  />
+                  <path
+                    className="text-purple-400"
+                    d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831a 15.9155 15.9155 0 0 1 0 -31.831"
+                    fill="none"
+                    stroke="url(#gradient)"
+                    strokeWidth="3.8"
+                    strokeDasharray={`${progress}, 100`}
+                  />
+                </svg>
+                <div className="absolute ml-10 inset-0 flex flex-col items-center justify-center">
+                  <span>Progress</span>
+                  <span className="text-lg font-semibold text-white">
+                    {" "}
+                    ({progress}%)
+                  </span>
+                  <span className="text-sm text-gray-400 mt-1">
+                    {raised} SOL RAISED
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6 w-[40%] flex flex-col justify-around ">
+              <div className="flex flex-col">
+                <span className="text-sm text-gray-400">SALE TYPE</span>
+                <span className="text-lg font-semibold">{saleType}</span>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-sm text-gray-400">UNSOLD TOKENS</span>
+                <span className="text-lg font-semibold">
+                  {unsoldTokens.toLocaleString()}
+                </span>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-sm text-gray-400">CURRENT RAISED</span>
+                <span className="text-lg font-semibold">
+                  {currentRaised} ICP
+                </span>
+              </div>
+            </div>
+            
+          </div>
           )}
 
           {!isMobile && (
@@ -173,7 +338,9 @@ const TokenPage = () => {
             </div>
           )}
         </div>
+
         <div className="flex lg:flex-col flex-row gap-5 flex-wrap mt-[100px]">
+          {!isMobile &&(
           <div className="bg-[#FFFFFF1A] text-white p-1 rounded-lg flex w-full h-[350px] lg:min-w-[406px]">
             <div className="relative flex items-center  overflow-hidden w-[60%] h-72">
               <div className="absolute lg:left-[-45%] left-[-70%] dxs:left-[-47%] xxs1:left-[-30%] sm:left-[-20%] md:left-[-15%]  top-0 w-72 h-72">
@@ -243,15 +410,19 @@ const TokenPage = () => {
                 </span>
               </div>
             </div>
+            
           </div>
+          )}
 
+         {!isMobile && (
           <div className="lg:min-w-[406px] w-full h-[153px] bg-[#FFFFFF1A] rounded-[17.44px] flex flex-col justify-center items-center text-white">
             <p className="text-lg mb-2">SALE STARTS IN</p>
             <div className="text-2xl font-bold">00:29:23:00</div>
           </div>
+          )}
       
 
-
+          {!isMobile && (
           <div className="bg-[#FFFFFF1A] font-posterama text-[#FFFFFFA6] text-white p-6 rounded-lg w-full max-w-full">
   {/* Section Heading */}
   <h2 className="text-[25px]">OWNER SECTION</h2>
@@ -329,6 +500,7 @@ const TokenPage = () => {
     </button>
   </div>
 </div>
+)}
 
     </div>
         {isMobile && <MobileViewTab />}

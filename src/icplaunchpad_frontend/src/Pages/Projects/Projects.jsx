@@ -157,12 +157,12 @@ const ProjectLists = () => {
 
   return (
     <div  className="upcoming-sales  h-full   md:mb-[5%] lg:mb-0 sm4:mb-3 py-[5%]">
-        <div className="bg-black text-white px-14">
+        <div className="bg-black text-white px-4 xxs1:px-10 ">
       {/* Heading */}
       <h1 className="text-[40px] font-bold">PROJECTS</h1>
 
       {/* Tabs */}
-      <div className="flex space-x-4 mt-4">
+      <div className="flex space-x-4 my-4">
         <button
           className={`text-lg ${
             selectedTab === "all" ? "border-b-2 border-white" : "text-gray-400"
@@ -184,25 +184,27 @@ const ProjectLists = () => {
       </div>
 
       {/* Search Bar */}
-      <div className="flex items-center mt-6 space-x-4">
+      <div className="flex  flex-col md:flex-row items-center  justify-center space-x-4">
         <input
           type="text"
           placeholder="Search"
           className="w-full bg-[#444444] text-white p-2 rounded-lg outline-none placeholder-gray-500"
         />
         
+        <div className="flex space-x-4 md:mt-0 mt-4 w-full md:w-[20%] items-center justify-center">
         {/* Filter and Sort Buttons */}
-        <button className="bg-[#444444] p-2 rounded-lg text-white flex items-center">
+        <button className="bg-[#444444] p-2 rounded-lg text-white flex items-center w-full">
         <TbFilterCheck/>
           <span className="ml-2">Filter</span>
           
         </button>
         
-        <button className="bg-[#444444] p-2 rounded-lg text-white flex items-center">
+        <button className="bg-[#444444] p-2 rounded-lg text-white flex items-center w-full">
         <PiArrowsDownUpBold/>
           <span className="ml-2">Sort</span>
           
         </button>
+        </div>
       </div>
     </div>
 

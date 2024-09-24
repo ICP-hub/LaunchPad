@@ -61,8 +61,8 @@ const ProjectLists = () => {
   
 
   return (
-    <div  className=" h-full   md:mb-[5%] lg:mb-0 sm4:mb-3 py-[5%]">
-    <div className="flex lg:flex-row flex-col flex-wrap items-center w-[95%]  m-auto justify-around">
+    <div  className="    md:mb-[5%] lg:mb-0 sm4:mb-3 py-[5%]">
+    <div className="flex lg:flex-row flex-col gap-6 items-center w-[95%]  m-auto justify-around">
       
       {salesData.map((sale, index) => (
         <div

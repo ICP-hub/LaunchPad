@@ -32,9 +32,7 @@ const Header = () => {
     setProfileModalIsOpen(true);
   };
 
-  const closeProfileModal = () => {
-    setProfileModalIsOpen(false);
-  };
+
 
   const handleSearchClick = () => {
     setIsSearching(true);
@@ -248,9 +246,7 @@ const Header = () => {
           <Link
             to="/projects"
             onClick={() => handleSectionClick('project')}
-            className={`block py-4 ${
-              activeSection === 'project' ? 'text-pink-400' : 'text-white'
-            }`}
+            className={`block py-4 `}
           >
             Projects
           </Link>

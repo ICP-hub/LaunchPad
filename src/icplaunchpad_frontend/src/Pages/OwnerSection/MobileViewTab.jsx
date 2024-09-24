@@ -3,49 +3,47 @@ import { CSSTransition } from "react-transition-group";
 import { GoChevronRight } from "react-icons/go";
 import { GoChevronDown } from "react-icons/go";
 import ProjectTokenAbout from "./about/ProjectTokenAbout";
-
+import PreviousSale from "./PreviousSale/PreviousSale.jsx";
 import FAQsDiscussion from "./FAQsDiscussion/FaqDiscussionTab";
 import Pooolinfo from "./pooolinfo/Pooolinfo";
 import Token from "./token/Token";
-import Tokenomic from "./PreviousSale/PreviousSale";
 import "./tokenpage.css";
 
 const MobileViewTab = () => {
     const [activeTab, setActiveTab] = useState("About");
   const renderContent = () => {
     switch (activeTab) {
-      case "About":
+      case "ABOUT":
         return <ProjectTokenAbout />;
-      case "Token":
+      case "TOKEN":
         return <Token />;
-      case "Pool Info":
+      case "POOL INFO":
         return <Pooolinfo />;
-      case "Tokenomic":
-        return <Tokenomic />;
-      case "FAQs & Discussion":
+      case "FAQs & DISCUSSION":
         return <FAQsDiscussion />;
+      case "PREVIOUS SALE":
+        return <PreviousSale/>;
       default:
         return <ProjectTokenAbout />;
     }
   };
 
   const mobileTabs = [
-    { name: "About", content: renderContent() },
-    { name: "Token", content: renderContent() },
-    { name: "Pool Info", content: renderContent() },
-    { name: "Affiliate Program", content: renderContent() },
-    { name: "Tokenomic", content: renderContent() },
-    { name: "FAQs & Discussion", content: renderContent() },
+    { name: "ABOUT", content: renderContent() },
+    { name: "TOKEN", content: renderContent() },
+    { name: "POOL INFO", content: renderContent() },
+    { name: "FAQs & DISCUSSION", content: renderContent() },
+    { name: "PREVIOUS SALE", content: renderContent() },
   ];
 
   return (
     <>
-     <div className="rounded-[17.44px] p-4 bg-[#FFFFFF1A]">
-              <div className="space-y-4">
+     <div className="rounded-[17.44px] p-4 bg-black">
+              <div className="space-y-4 ">
                 {mobileTabs.map((tab) => (
-                  <div key={tab.name}>
+                  <div key={tab.name} className="bg-[#FFFFFF1A] rounded-2xl">
                     <div
-                      className="bg-black text-white rounded-lg p-4 cursor-pointer flex justify-between"
+                      className=" rounded-lg p-4  my-4 flex justify-between  "
                       onClick={() => setActiveTab(tab.name)}
                     >
                       <div>{tab.name}</div>
@@ -60,7 +58,7 @@ const MobileViewTab = () => {
                     <CSSTransition
                       in={activeTab === tab.name}
                       timeout={300}
-                      classNames="fade"
+                      classNames="fade "
                       unmountOnExit
                     >
                       <div className="mt-5">{tab.content}</div>
