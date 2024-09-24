@@ -1,22 +1,27 @@
-import React, { useState } from 'react';
-import logo from '../../assets/images/icLogo.png';
-import GradientText from '../../common/GradientText';
+import React, { useState } from "react";
+import logo from "../../assets/images/icLogo.png";
+import GradientText from "../../common/GradientText";
 import { IoSearch, IoClose, IoMenu, IoCloseSharp } from "react-icons/io5";
+
 import ConnectWallets from '../Modals/ConnectWallets';
 import { Link} from 'react-router-dom';
 import { useAuth } from '../../auth/useAuthClient';
 import ProfileCard from '../Modals/ProfileCard';
 import { FaUser } from 'react-icons/fa';
 import { BsThreeDotsVertical } from 'react-icons/bs';
+import toast from "react-hot-toast";
+
 
 
 const Header = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
+
   const [searchText, setSearchText] = useState('');
   const [menuOpen, setMenuOpen] = useState(false); // State to toggle hamburger menu
   const [isOpen, setIsOpen] = useState(false);
   const [profileModalIsOpen, setProfileModalIsOpen] = useState(false); // State for ProfileCard modal
+  const { userPrincipal } = useAuth();
 
 
   const {isAuthenticated,userPrincipal,identity}=useAuth();
@@ -24,6 +29,7 @@ const Header = () => {
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
   };
+
 
   const openModal = () => {
     setModalIsOpen(true);
@@ -40,21 +46,38 @@ const Header = () => {
   };
 
   const handleClearSearch = () => {
-    setSearchText('');
+    setSearchText("");
     setIsSearching(false);
   };
 
-  const [activeSection, setActiveSection] = useState('home');
+
+
+  const [activeSection, setActiveSection] = useState("home");
+  const [userDetails, setUserDetails] = useState(null);
+
+  const getStatus = async () => {
+    const getUser = await backendActor.getUser();
+    if (getUser.err === "New user") {
+      // navigate("/register");
+    } else {
+      console.log(getUser.ok);
+      setUserDetails(getUser.ok);
+      toast.success("You are registered");
+    }
+  };
+
 
   const handleSectionClick = (section) => {
     setActiveSection(section);
-    setMenuOpen(false); // Close the menu after a section is clicked
+    setMenuOpen(false);
   };
 
   return (
     <div>
+
       <nav className="relative z-20 text-white bg-black shadow-lg dlg:px-[2%] dlg:py-6 lgx:px-[4%] 
       lgx:py-9 md:px-[4%] md:py-[2%] py-[3%] px-[2.5%] flex justify-between items-center">
+
 
         {/* Hamburger Menu for screens below 768px */}
         <div className="md:hidden flex  items-center">
@@ -81,6 +104,7 @@ const Header = () => {
             draggable="false"
           />
         </div>
+
 
         <div className="hidden  md:flex lgx:px-10 lgx:mr-[28%]  md:mr-[20%] lg:text-[18px] md:text-[13px] lgx:text-[20px] md:gap-[20px] lg:gap-[25px] dxl:gap-[50px]">
         
@@ -143,6 +167,7 @@ const Header = () => {
         </div>
 
         <div className="relative flex items-center">
+
           {!isSearching && (
             <IoSearch
               onClick={handleSearchClick}
@@ -169,7 +194,9 @@ const Header = () => {
         </div>
 
         {/* Connect Wallet Button for screens above 768px */}
+
       {  !isAuthenticated && <div className="hidden font-posterama md:block">
+
           <button
             onClick={openModal}
             className="w-[120px] md:w-[150px] lg:w-[190px] h-[25px] lg:h-[32px] 
@@ -234,6 +261,7 @@ const Header = () => {
 
       {/* Dropdown Menu for screens below 768px */}
       {menuOpen && (
+
         <div className="md:hidden flex flex-col font-posterama justify-center items-center absolute z-20 bg-black w-full py-8 px-6 shadow-lg">
           <Link
             to="/"
@@ -253,6 +281,7 @@ const Header = () => {
             to="/LaunchCoin"
             onClick={() => handleSectionClick('coin')}
             className={`block py-4 `}
+
           >
             Launch a Coin
           </Link>

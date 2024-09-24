@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React from 'react';
 import { Route, Routes } from "react-router-dom";
 import Home from "./Pages/Home";
 import LaunchCoin from "./Pages/LaunchCoin"
+
 import CreatePreLaunch from './Pages/CreatePreLaunch';
 // import { AuthProvider } from "./utils/useAuthClient"
 import Profile from "./Pages/Profile/Profile"
@@ -86,6 +87,7 @@ function AllRoutes() {
         />
       </Routes>
    
+
   )
 }
 

@@ -1,3 +1,4 @@
+
 import React,{useState} from "react";
 import person1 from "../../assets/images/carousel/person1.png";
 import { useNavigate } from 'react-router-dom';
@@ -249,6 +250,7 @@ const ProjectLists = () => {
                     <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
                       <stop offset="0%" style={{ stopColor: "#f3b3a7", stopOpacity: 1 }} />
                       <stop offset="100%" style={{ stopColor: "#cac9f5", stopOpacity: 1 }} />
+
                     </linearGradient>
                   </defs>
                   <path
@@ -264,20 +266,25 @@ const ProjectLists = () => {
                     fill="none"
                     stroke="url(#gradient)"
                     strokeWidth="3.8"
+
                     strokeDasharray={`${sale.progress * 4}, 100`}
+
                   />
                 </svg>
                 <div className="absolute ml-10 inset-0 flex flex-col items-center justify-center">
                   <span>Progress</span>
                   <span className="text-lg font-semibold text-white">
+
                     ({sale.progress}%)
                   </span>
                   <span className="text-sm text-gray-400 mt-1">
                     {sale.raised} SOL RAISED
+
                   </span>
                 </div>
               </div>
             </div>
+
 
             <div className="mt-6 w-[40%] flex flex-col justify-around">
               <div className="flex flex-col">
@@ -309,3 +316,4 @@ const ProjectLists = () => {
 };
 
 export default ProjectLists;
+

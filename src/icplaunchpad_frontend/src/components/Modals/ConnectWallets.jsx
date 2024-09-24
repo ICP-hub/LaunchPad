@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Modal from 'react-modal';
 import { useAuth } from "../../auth/useAuthClient";
@@ -42,10 +43,12 @@ const ConnectWallet = ({ modalIsOpen, setModalIsOpen }) => {
     </div>
   );
 
+
   return (
     <div>
       <Modal
         isOpen={modalIsOpen}
+
         onRequestClose={closeModal}
         contentLabel="Connect Wallet"
         className="fixed inset-0 flex items-center justify-center bg-transparent"
@@ -90,6 +93,7 @@ const ConnectWallet = ({ modalIsOpen, setModalIsOpen }) => {
               label="NFID"
               icon={id}
             />
+
           </div>
 
         </div>

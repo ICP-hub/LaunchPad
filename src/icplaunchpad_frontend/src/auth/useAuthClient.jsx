@@ -1,8 +1,10 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { AuthClient } from "@dfinity/auth-client";
 import { HttpAgent, Actor } from "@dfinity/agent";
+
 import { createActor, idlFactory as DaoFactory } from "../../../declarations/icplaunchpad_backend/index";
 import { NFID } from "@nfid/embed";
+
 
 const AuthContext = createContext();
 
@@ -28,6 +30,7 @@ export const useAuthClient = (options = defaultOptions) => {
   const [authClient, setAuthClient] = useState(null);
   const [identity, setIdentity] = useState(null);
   const [backendActor, setBackendActor] = useState(null);
+
   const [userPrincipal, setUserPrincipal] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [nfid, setNfid] = useState(null);
@@ -38,17 +41,21 @@ export const useAuthClient = (options = defaultOptions) => {
     const principal = identity.getPrincipal();
     setAuthClient(client);
     setIdentity(identity);
+
     setUserPrincipal(principal.toString());
+
 
     if (isAuthenticated && identity && principal && !principal.isAnonymous()) {
       const backendActor = createActor(process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND, {
         agentOptions: { identity, verifyQuerySignatures: false },
       });
       setBackendActor(backendActor);
+
       setIsAuthenticated(true);
     } else {
       setIsAuthenticated(false);
     }
+
   };
 
   useEffect(() => {
@@ -56,6 +63,7 @@ export const useAuthClient = (options = defaultOptions) => {
       const client = await AuthClient.create(options.createOptions);
       await clientInfo(client, client.getIdentity());
     };
+
     
   const initNFID = async () => {
     if (!nfid) {
@@ -157,12 +165,14 @@ export const useAuthClient = (options = defaultOptions) => {
           resolve(true);
         } else {
           reject(new Error("Plug connection failed."));
+
         }
       } catch (error) {
         reject(error);
       }
     });
   };
+
   
 
   const login = async (provider = "Icp") => {
@@ -203,14 +213,17 @@ export const useAuthClient = (options = defaultOptions) => {
     }
   };
 
+
   const createCustomActor = (canisterId) => {
     try {
       const agent = new HttpAgent({ identity });
       if (process.env.DFX_NETWORK !== "ic") {
         agent.fetchRootKey().catch((err) => {
           console.warn("Unable to fetch root key. Check your local replica.");
+
         });
       }
+
       return Actor.createActor(DaoFactory, { agent, canisterId });
     } catch (err) {
       console.error("Error creating DAO actor:", err);
@@ -230,11 +243,14 @@ export const useAuthClient = (options = defaultOptions) => {
     logout,
     backendActor,
     userPrincipal,
+
     isAuthenticated,
     identity,
     createCustomActor,
     loginWithPlug,
     error, // Expose error state
+
+
   };
 };
 

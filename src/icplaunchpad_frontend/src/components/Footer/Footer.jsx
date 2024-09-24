@@ -12,7 +12,7 @@ const Footer = () => {
       <div className='bg-[#222222] mt-[5%] text-[13px] font-kumbhSans xxs1:text-[15px] py-4 px-[9%]'>
         <p>Disclaimer: PinkSale will never endorse or encourage that you invest in any of the projects 
           listed and therefore, accept no liability for any loss occasioned. It is the user(s) responsibility to do 
-          their own research and  seek financial advice from a professional. More information about (DYOR) can be found via Binance Academy.</p>
+          their own research and  seek financial advice from a professional. More information about (DYOR) can be found via Binance Academy.</p>
       </div>
      <div className='px-[9%]   bg-black pt-[4%] pb-6 flex flex-col md:flex-row  justify-between '>
       <div className='my-auto pr-11   bg-black pb-6 w-[85%] md:w-[20%] '>
