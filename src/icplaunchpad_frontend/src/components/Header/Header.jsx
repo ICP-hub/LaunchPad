@@ -238,9 +238,7 @@ const Header = () => {
           <Link
             to="/"
             onClick={() => handleSectionClick('home')}
-            className={`block py-4 ${
-              activeSection === 'home' ? 'text-pink-400' : 'text-white'
-            }`}
+            className={`block py-4`}
           >
             Home
           </Link>
@@ -254,13 +252,23 @@ const Header = () => {
           <Link
             to="/LaunchCoin"
             onClick={() => handleSectionClick('coin')}
-            className={`block py-4 ${
-              activeSection === 'coin' ? 'text-pink-400' : 'text-white'
-            }`}
+            className={`block py-4 `}
           >
             Launch a Coin
           </Link>
-
+          
+          { !isAuthenticated ? ""
+          :
+          <>          
+          <Link
+            to="/profile"
+            onClick={() => handleSectionClick('coin')}
+            className={`block py-4 `}
+          >
+            Profile
+          </Link>
+          </>
+         }
          { !isAuthenticated ? <button
             onClick={openModal}
             className=" mt-[80px]   bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5]
@@ -273,10 +281,12 @@ const Header = () => {
           <>          <button
           onClick={openProfileModal}
             className=" mt-[80px]   bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5]
-             text-black  relative w-[220px] h-[35px] p-[1.5px]
+              relative w-[220px] h-[35px] p-[1.5px]
                 text-[16px] md:text-[18px] font-[600] rounded-3xl "
           > 
+          <div className='bg-gray-950 w-full h-full  rounded-3xl items-center justify-center'>
             Account
+            </div>
           </button>
           <ProfileCard profileModalIsOpen={profileModalIsOpen} setProfileModalIsOpen={setProfileModalIsOpen} />
           </>

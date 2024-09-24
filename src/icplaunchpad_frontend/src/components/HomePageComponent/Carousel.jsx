@@ -99,7 +99,7 @@ const Carousel = () => {
       {/* Dots */}
       <div className="flex mt-4">
         {slides.slice(0, slidesToShow === 3 ? 2 : 3).map((_, index) => (
-          <div key={index} className={`mx-1 h-2 ${currentSlide === index ? 'w-8' : 'w-2'} bg-gray-500 rounded-full transition-all duration-300`}></div>
+          <div key={index} className={`mx-1 h-2 ${currentSlide === index ? 'w-8' : 'w-2'} bg-white rounded-full transition-all duration-300`}></div>
         ))}
       </div>
     </div>

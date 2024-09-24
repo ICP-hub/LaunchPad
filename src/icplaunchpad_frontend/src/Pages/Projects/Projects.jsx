@@ -157,26 +157,28 @@ const ProjectLists = () => {
 
   return (
     <div  className="upcoming-sales  h-full   md:mb-[5%] lg:mb-0 sm4:mb-3 py-[5%]">
-        <div className="bg-black text-white px-4 xxs1:px-10 ">
+        <div className="bg-black text-white px-4 xxs1:px-16 ">
       {/* Heading */}
-      <h1 className="text-[40px] font-bold">PROJECTS</h1>
+      <h1 className="text-[40px] font-posterama font-bold">PROJECTS</h1>
 
       {/* Tabs */}
-      <div className="flex space-x-4 my-4">
+      <div className="flex space-x-12 my-8">
         <button
-          className={`text-lg ${
-            selectedTab === "all" ? "border-b-2 border-white" : "text-gray-400"
-          }`}
+          className={`cursor-pointer relative ${
+                      selectedTab === "all"
+                        ? "before:absolute before:left-0 before:right-0 before:top-7 before:h-[2px] before:bg-gradient-to-r before:from-[#F3B3A7] before:to-[#CACCF5] before:rounded text-transparent bg-clip-text bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5]"
+                        : ""
+                    }`}
           onClick={() => setSelectedTab("all")}
         >
           ALL
         </button>
         <button
-          className={`text-lg ${
-            selectedTab === "advanced"
-              ? "border-b-2 border-white"
-              : "text-gray-400"
-          }`}
+          className={`cursor-pointer relative ${
+                      selectedTab === "advanced"
+                        ? "before:absolute before:left-0 before:right-0 before:top-7 before:h-[2px] before:bg-gradient-to-r before:from-[#F3B3A7] before:to-[#CACCF5] before:rounded text-transparent bg-clip-text bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5]"
+                        : ""
+                    }`}
           onClick={() => setSelectedTab("advanced")}
         >
           ADVANCED
@@ -213,7 +215,8 @@ const ProjectLists = () => {
       {salesData.map((sale, index) => (
         <div
           key={index}
-          className="bg-[#FFFFFF1A] text-white p-1 rounded-lg flex flex-col w-[305px] xxs:w-[375px] xxs1:w-[400px] mt-14"
+          onClick={handleViewMoreClick2} 
+          className="bg-[#FFFFFF1A] cursor-pointer text-white p-1 rounded-lg flex flex-col w-[305px] xxs:w-[375px] xxs1:w-[400px] mt-14"
         >
           <div className="h-[280px] rounded-lg py-5 flex flex-col">
             <div className="relative">
@@ -228,9 +231,9 @@ const ProjectLists = () => {
             </div>
 
             <div className="mt-[70px] text-center text-white space-y-5">
-              <div className="text-[24px] font-bold">{sale.heading}</div>
-              <div className="text-[16px] font-medium">{sale.subheading}</div>
-              <div className="text-[#FFC145] text-[18px] font-semibold">
+              <div className="text-[24px] font-semibold">{sale.heading}</div>
+              <div className="text-[16px] text-[#FFFFFFA6] font-medium">{sale.subheading}</div>
+              <div className="text-[#FFC145] text-[18px] font-normal">
                 UPCOMING
               </div>
             </div>
@@ -279,7 +282,7 @@ const ProjectLists = () => {
             <div className="mt-6 w-[40%] flex flex-col justify-around">
               <div className="flex flex-col">
                 <span className="text-sm text-gray-400">{sale.details.type}</span>
-                <span className="text-lg font-semibold">{sale.details.amount}</span>
+                <span className="text-lg font-semibold bg-gradient-to-r from-[#f09787]  to-[#CACCF5] text-transparent bg-clip-text">{sale.details.amount}</span>
               </div>
               <div className="flex flex-col">
                 <span className="text-sm text-gray-400">Liquidity</span>

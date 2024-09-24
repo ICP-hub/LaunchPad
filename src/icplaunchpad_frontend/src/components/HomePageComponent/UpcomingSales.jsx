@@ -89,7 +89,7 @@ const UpcomingSales = () => {
     <div  className="upcoming-sales h-full   md:mb-[5%] lg:mb-0 sm4:mb-3 py-[5%]">
       <div className="flex justify-between items-center px-[6%] mb-10">
         <h2 className="text-white font-bold font-posterama text-[20px] xxs1:text-3xl">UPCOMING SALES</h2>
-        <button onClick={handleViewMoreClick} className="text-white font-posterama underline text-[15px] xxs1:text-xl">
+        <button onClick={handleViewMoreClick} className="text-white hidden xxs1:block font-posterama underline text-[15px] xxs1:text-xl">
           View More
         </button>
       </div>
@@ -114,14 +114,14 @@ const UpcomingSales = () => {
             </div>
 
             <div className="mt-[70px] text-center text-white space-y-5">
-              <div className="text-[24px] font-bold">{sale.heading}</div>
-              <div className="text-[16px] font-medium">{sale.subheading}</div>
-              <div className="text-[#FFC145] text-[18px] font-semibold">
+              <div className="text-[24px] font-semibold ">{sale.heading}</div>
+              <div className="text-[16px] text-[#FFFFFFA6] font-medium">{sale.subheading}</div>
+              <div className="text-[#FFC145] text-[18px] font-normal">
                 UPCOMING
               </div>
             </div>
 
-            <div className="bg-[#FFFFFF66] h-[2px] w-[92%] mx-auto mt-6"></div>
+            <div className="bg-[#FFFFFF66] h-[2px] w-full xxs1:w-[92%] mx-auto "></div>
           </div>
 
           <div className="flex">
@@ -186,6 +186,9 @@ const UpcomingSales = () => {
           </div>
         </div>
       ))}
+      <button onClick={handleViewMoreClick} className="text-white mt-4  xxs1:hidden font-posterama underline text-[20px] xxs1:text-xl">
+          LOAD MORE
+        </button>
     </div>
     </div>
   );
