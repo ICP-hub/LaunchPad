@@ -4,7 +4,7 @@ import GradientText from "../../common/GradientText";
 import { IoSearch, IoClose, IoMenu, IoCloseSharp } from "react-icons/io5";
 
 import ConnectWallets from '../Modals/ConnectWallets';
-import { Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../auth/useAuthClient';
 import ProfileCard from '../Modals/ProfileCard';
 import { FaUser } from 'react-icons/fa';
@@ -21,10 +21,10 @@ const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false); // State to toggle hamburger menu
   const [isOpen, setIsOpen] = useState(false);
   const [profileModalIsOpen, setProfileModalIsOpen] = useState(false); // State for ProfileCard modal
-  const { userPrincipal } = useAuth();
 
 
-  const {isAuthenticated,userPrincipal,identity}=useAuth();
+
+  const { isAuthenticated, userPrincipal, identity } = useAuth();
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -107,76 +107,74 @@ const Header = () => {
 
 
         <div className="hidden  md:flex lgx:px-10 lgx:mr-[28%]  md:mr-[20%] lg:text-[18px] md:text-[13px] lgx:text-[20px] md:gap-[20px] lg:gap-[25px] dxl:gap-[50px]">
-        
-        <Link
-        to="/"
-        onClick={() => handleSectionClick('home')}
-        className={`relative inline-block decoration-pink-400 underline-offset-8 ${
-          activeSection === 'home' && (
-            <span className="absolute left-0 bottom-0 w-full h-[1px] bg-gradient-to-r from-[#f09787]  to-[#CACCF5]"></span>
-          )
-        }`}
-        >
-        {activeSection === 'home' ? (
-          <GradientText>Home</GradientText>
-        ) : (
-          'Home'
-        )}
-        {activeSection === 'home' && (
-          <span className="absolute left-0 bottom-0 w-full h-[1px] bg-gradient-to-r from-[#f09787]  to-[#CACCF5]"></span>
-        )}
-        </Link>
 
-                <Link
-        to="/projects"
-        onClick={() => handleSectionClick('project')}
-        className={`relative inline-block   ${
-          activeSection === 'project' && (
-            <span className="absolute left-0 bottom-0 w-full h-[1px] bg-gradient-to-r from-[#f09787]  to-[#CACCF5]"></span>
-          )
-        }`}
-        >
-        {activeSection === 'project' ? (
-          <GradientText>Projects</GradientText>
-        ) : (
-          'Projects'
-        )}
-        {activeSection === 'project' && (
-          <span className="absolute left-0 bottom-0 w-full h-[1px] bg-gradient-to-r from-[#f09787]  to-[#CACCF5]"></span>
-        )}
-        </Link>
+          <Link
+            to="/"
+            onClick={() => handleSectionClick('home')}
+            className={`relative inline-block decoration-pink-400 underline-offset-8 ${activeSection === 'home' && (
+                <span className="absolute left-0 bottom-0 w-full h-[1px] bg-gradient-to-r from-[#f09787]  to-[#CACCF5]"></span>
+              )
+              }`}
+          >
+            {activeSection === 'home' ? (
+              <GradientText>Home</GradientText>
+            ) : (
+              'Home'
+            )}
+            {activeSection === 'home' && (
+              <span className="absolute left-0 bottom-0 w-full h-[1px] bg-gradient-to-r from-[#f09787]  to-[#CACCF5]"></span>
+            )}
+          </Link>
 
-        <Link
-        to="/LaunchCoin"
-        onClick={() => handleSectionClick('coin')}
-        className={`relative inline-block decoration-pink-400 underline-offset-8 ${
-          activeSection === 'coin' && (
-            <span className="absolute left-0 bottom-0 w-full h-[1px] bg-gradient-to-r from-[#f09787]  to-[#CACCF5]"></span>
-          )
-        }`}
-        >
-        {activeSection === 'coin' ? (
-          <GradientText>Launch a Coin</GradientText>
-        ) : (
-          'Launch a Coin'
-        )}
-        {activeSection === 'coin' && (
-          <span className="absolute left-0 bottom-0 w-full h-[1px] bg-gradient-to-r from-[#f09787]  to-[#CACCF5]"></span>
-        )}
-        </Link>
+          <Link
+            to="/projects"
+            onClick={() => handleSectionClick('project')}
+            className={`relative inline-block   ${activeSection === 'project' && (
+                <span className="absolute left-0 bottom-0 w-full h-[1px] bg-gradient-to-r from-[#f09787]  to-[#CACCF5]"></span>
+              )
+              }`}
+          >
+            {activeSection === 'project' ? (
+              <GradientText>Projects</GradientText>
+            ) : (
+              'Projects'
+            )}
+            {activeSection === 'project' && (
+              <span className="absolute left-0 bottom-0 w-full h-[1px] bg-gradient-to-r from-[#f09787]  to-[#CACCF5]"></span>
+            )}
+          </Link>
+
+          <Link
+            to="/LaunchCoin"
+            onClick={() => handleSectionClick('coin')}
+            className={`relative inline-block whitespace-nowrap decoration-pink-400 underline-offset-8 ${activeSection === 'coin' && (
+                <span className="absolute left-0 bottom-0 w-full h-[1px] bg-gradient-to-r from-[#f09787]  to-[#CACCF5]"></span>
+              )
+              }`}
+          >
+            {activeSection === 'coin' ? (
+              <GradientText>Launch a Coin</GradientText>
+            ) : (
+              'Launch a Coin'
+            )}
+            {activeSection === 'coin' && (
+              <span className="absolute left-0 bottom-0 w-full h-[1px] bg-gradient-to-r from-[#f09787]  to-[#CACCF5]"></span>
+            )}
+          </Link>
         </div>
 
         <div className="relative flex items-center">
 
-          {!isSearching && (
-            <IoSearch
-              onClick={handleSearchClick}
-              className="cursor-pointer s"
-              size={24}
-            />
-          )}
+
+          <IoSearch
+            onClick={handleSearchClick}
+            className={`cursor-pointer ml-2 ${!isSearching ? "visible" : "invisible"}`}
+            size={24}
+          />
+
+
           {isSearching && (
-            <div className="flex items-center absolute h-[35px] rounded-lg w-[80vw] right-0 md:w-[200px] md3:w-[230px] xl:w-[380px]  bg-[#222222] sm4:right-[23px] md:right-[-15px] lg:right-[-25px] dlg:right-[5px] md:py-[2px]">
+            <div className="flex items-center absolute h-[35px] lg:mr-3 rounded-lg w-[80vw] right-0 md:w-[200px] md3:w-[230px] xl:w-[380px]  bg-[#222222] sm4:right-[23px] md:right-[-15px] lg:right-[-25px] dlg:right-[5px] md:py-[2px]">
               <input
                 type="text"
                 value={searchText}
@@ -186,7 +184,7 @@ const Header = () => {
               />
               <IoClose
                 onClick={handleClearSearch}
-                className="text-gray-500 mr-2 cursor-pointer md:ml-[-8%] md2:ml-[-3%] md1:ml-[6%] lg:ml-[5%] lg1:ml-[17%] lgx:ml-[22%] xl:ml-[45%]"
+                className="text-gray-500 mr-2 cursor-pointer"
                 size={24}
               />
             </div>
@@ -195,7 +193,7 @@ const Header = () => {
 
         {/* Connect Wallet Button for screens above 768px */}
 
-      {  !isAuthenticated && <div className="hidden font-posterama md:block">
+        {!isAuthenticated && <div className="hidden font-posterama md:block">
 
           <button
             onClick={openModal}
@@ -203,60 +201,60 @@ const Header = () => {
             dxl:h-[35px] text-[10px] md:text-[15px] dlg:text-[19px] font-[400] rounded-xl p-[1.5px] bg-gradient-to-r from-[#f09787]  to-[#CACCF5]"
           >
             <div className='bg-gray-950 w-full h-full  rounded-xl items-center justify-center '>
-            Connect Wallet
+              Connect Wallet
             </div>
           </button>
           <ConnectWallets modalIsOpen={modalIsOpen} setModalIsOpen={setModalIsOpen} />
         </div>
-    }
+        }
 
 
-       {/* User Info */}
-{ isAuthenticated &&  
-  <div className=" hidden md:inline-block relative  rounded-2xl bg-gradient-to-r ml-2 from-[#f09787] to-[#CACCF5] text-left p-[1.5px]">
-    <button
-      onClick={toggleDropdown}
-      className="flex items-center text-white rounded-full"
-    >
-      <div className="bg-black h-full w-full rounded-2xl flex items-center p-2">
-        <FaUser className="mr-2" />
-        <div className="flex flex-col items-start w-44">
-          <span className="text-sm">ABCD</span>
-          <span className="text-xs text-gray-400 w-full overflow-hidden whitespace-nowrap text-ellipsis">
-            {userPrincipal}
-          </span>
-        </div>
-        <BsThreeDotsVertical className="ml-2" />
-      </div>
-    </button>
+        {/* User Info */}
+        {isAuthenticated &&
+          <div className=" hidden md:inline-block relative  rounded-2xl bg-gradient-to-r  from-[#f09787] to-[#CACCF5] text-left p-[1.5px]">
+            <button
+              onClick={toggleDropdown}
+              className="flex items-center text-white rounded-full"
+            >
+              <div className="bg-black h-full w-full rounded-2xl flex items-center p-1 px-3">
+                <FaUser className="mr-2" />
+                <div className="flex flex-col items-start w-24 lg:w-40">
+                  <span className="text-sm">ABCD</span>
+                  <span className="text-xs text-gray-400 w-full overflow-hidden whitespace-nowrap text-ellipsis">
+                    {userPrincipal}
+                  </span>
+                </div>
+                <BsThreeDotsVertical className="ml-2" />
+              </div>
+            </button>
 
-    {/* Dropdown menu */}
-    {isOpen && (
-      <div className="absolute right-0 mt-2 font-posterama w-48 bg-[#222222] rounded-md z-50">
-        <div className="py-2 px-2">
-          <div className="hidden border-b md:block">
-          <button
-            onClick={openProfileModal}
-            className="block px-4 py-2 text-[18px] "
-          >
-            Account
-          </button>
-          <ProfileCard profileModalIsOpen={profileModalIsOpen} setProfileModalIsOpen={setProfileModalIsOpen} />
-        </div>
+            {/* Dropdown menu */}
+            {isOpen && (
+              <div className="absolute right-0 mt-2 font-posterama w-48 bg-[#222222] rounded-md z-50">
+                <div className="py-2 px-2">
+                  <div className="hidden border-b md:block">
+                    <button
+                      onClick={openProfileModal}
+                      className="block px-4 py-2 text-[18px] "
+                    >
+                      Account
+                    </button>
+                    <ProfileCard profileModalIsOpen={profileModalIsOpen} setProfileModalIsOpen={setProfileModalIsOpen} />
+                  </div>
 
-          <Link
-            to="/profile"
-            className="block px-4 py-2 text-[18px] border-b "  // Close dropdown on click
-          >
-            Profile
-          </Link>
-        </div>
-      </div>
-    )}
-  </div>
-}
+                  <Link
+                    to="/profile"
+                    className="block px-4 py-2 text-[18px] border-b "  // Close dropdown on click
+                  >
+                    Profile
+                  </Link>
+                </div>
+              </div>
+            )}
+          </div>
+        }
 
-      
+
       </nav>
 
       {/* Dropdown Menu for screens below 768px */}
@@ -285,42 +283,42 @@ const Header = () => {
           >
             Launch a Coin
           </Link>
-          
-          { !isAuthenticated ? ""
-          :
-          <>          
-          <Link
-            to="/profile"
-            onClick={() => handleSectionClick('coin')}
-            className={`block py-4 `}
-          >
-            Profile
-          </Link>
-          </>
-         }
-         { !isAuthenticated ? <button
+
+          {!isAuthenticated ? ""
+            :
+            <>
+              <Link
+                to="/profile"
+                onClick={() => handleSectionClick('coin')}
+                className={`block py-4 `}
+              >
+                Profile
+              </Link>
+            </>
+          }
+          {!isAuthenticated ? <button
             onClick={openModal}
             className=" mt-[80px]   bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5]
              text-black  relative w-[220px] h-[35px] p-[1.5px]
                 text-[16px] md:text-[18px] font-[600] rounded-3xl "
-          > 
+          >
             Connect Wallet
           </button>
-          :
-          <>          <button
-          onClick={openProfileModal}
-            className=" mt-[80px]   bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5]
+            :
+            <>          <button
+              onClick={openProfileModal}
+              className=" mt-[80px]   bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5]
               relative w-[220px] h-[35px] p-[1.5px]
                 text-[16px] md:text-[18px] font-[600] rounded-3xl "
-          > 
-          <div className='bg-gray-950 w-full h-full  rounded-3xl items-center justify-center'>
-            Account
-            </div>
-          </button>
-          <ProfileCard profileModalIsOpen={profileModalIsOpen} setProfileModalIsOpen={setProfileModalIsOpen} />
-          </>
-         }
-          
+            >
+              <div className='bg-gray-950 w-full h-full  rounded-3xl items-center justify-center'>
+                Account
+              </div>
+            </button>
+              <ProfileCard profileModalIsOpen={profileModalIsOpen} setProfileModalIsOpen={setProfileModalIsOpen} />
+            </>
+          }
+
         </div>
       )}
 
