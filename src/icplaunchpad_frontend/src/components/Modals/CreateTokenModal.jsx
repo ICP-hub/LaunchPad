@@ -47,7 +47,7 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
         token_symbol,
         decimals: [decimalsNumber], // Wrap decimals in an optional nat8 array
         total_supply: parseInt(total_supply, 10),
-        
+
       };
 
       const response = await actor.create_token(tokenData);
@@ -81,11 +81,11 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
               {/* Modal Close Button */}
               <button
                 onClick={closeModal}
-                className="absolute right-8 text-[30px] text-white"
+                className="absolute mt-1  right-8 text-[25px] md:text-[30px] text-white"
               >
                 <TfiClose />
               </button>
-              <h2 className="text-[25px] font-semibold">Create Token</h2>
+              <h2 className="text-[20px] font-medium md:text-[25px] md:font-semibold">Create Token</h2>
             </div>
 
             {/* Input Fields */}
@@ -137,17 +137,35 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
             </div>
 
             {/* Terms Checkbox */}
+
             <div className="flex items-center mt-4 mb-6">
-              <input
-                type="checkbox"
-                checked={termsAccepted}
-                onChange={() => setTermsAccepted(!termsAccepted)}
-                className="form-checkbox text-pink-600 bg-[#444444] rounded-md mr-2"
-              />
-              <p className="text-[15px] text-[#cccccc]">
-                By creating this token, I agree to the terms and conditions.
-              </p>
-            </div>
+  <input
+    type="checkbox"
+    id="termsCheckbox"
+    checked={termsAccepted}
+    onChange={() => setTermsAccepted(!termsAccepted)}
+    className="hidden peer" // Hide the default checkbox
+  />
+
+  {/* Custom checkbox UI linked to the hidden checkbox via the peer class */}
+  <div
+    className={`w-4 h-4 border-2 flex items-center justify-center rounded-sm mr-2 cursor-pointer 
+      ${termsAccepted ? '  ' : 'border-white bg-transparent'}`}
+  >
+    <label
+      htmlFor="termsCheckbox"
+      className="cursor-pointer w-full  h-full flex items-center justify-center"
+    >
+      {termsAccepted && <span className="text-[#F3B3A7]  ">✓</span>}
+    </label>
+  </div>
+
+  <p className="text-[15px] text-[#cccccc]">
+    By creating this token, I agree to the terms and conditions.
+  </p>
+</div>
+
+
 
             {/* Validation Error Message */}
             {validationError && (

@@ -424,6 +424,7 @@ const TokenPage = () => {
 
           {!isMobile && (
           <div className="bg-[#FFFFFF1A] font-posterama text-[#FFFFFFA6] text-white p-6 rounded-lg w-full max-w-full">
+
   {/* Section Heading */}
   <h2 className="text-[25px]">OWNER SECTION</h2>
 
@@ -468,7 +469,7 @@ const TokenPage = () => {
   {sellType === 'whitelist' && (
       <div>
     <button onClick={openModal} className="w-full text-white  bg-gradient-to-r from-[#f09787]  to-[#CACCF5] rounded-3xl p-[1.5px] h-[40px] mt-2 ">
-    <div className='flex items-center bg-black justify-center  w-full h-full  rounded-3xl  '>
+    <div className='flex items-center bg-[#191919] justify-center  w-full h-full  rounded-3xl  '>
       ADD USER TO WHITELIST
       </div>
     </button>
@@ -483,18 +484,18 @@ const TokenPage = () => {
     {/* Buttons */}
     <div class="mx-auto flex  items-center justify-center ">
     <button className="w-full text-white  bg-gradient-to-r from-[#f09787]  to-[#CACCF5] rounded-3xl p-[1.5px] h-[40px] mt-2 ">
-      <div className='flex items-center bg-black justify-center  w-full h-full  rounded-3xl  '>
+      <div className='flex items-center bg-[#191919] justify-center  w-full h-full  rounded-3xl  '>
       POOL START/END TIME SETTING
       </div>
     </button>
     </div>
     <button className="w-full text-white bg-gradient-to-r from-[#f09787]  to-[#CACCF5]  rounded-3xl p-[1.5px] h-[40px]  mt-2 ">
-    <div className='flex items-center justify-center  bg-black w-full h-full  rounded-3xl  '>
+    <div className='flex items-center justify-center  bg-[#191919] w-full h-full  rounded-3xl  '>
       HIDE TOKEN MATRIX CHART
       </div>
     </button>
     <button className="w-full text-white bg-gradient-to-r from-[#f09787]  to-[#CACCF5]  rounded-3xl p-[1.5px] h-[40px]  mt-2">
-    <div className='flex items-center justify-center bg-black w-full h-full  rounded-3xl  '>
+    <div className='flex items-center justify-center bg-[#191919] w-full h-full  rounded-3xl  '>
       CANCEL POOL
       </div>
     </button>
