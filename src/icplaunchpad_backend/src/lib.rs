@@ -212,6 +212,10 @@ pub struct CanisterIndexInfo {
     pub token_name: String,       
     pub token_symbol: String, 
 }
+#[derive(CandidType, Deserialize, Debug)]
+pub struct Icrc28TrustedOriginsResponse {
+    trusted_origins: Vec<String>,
+}
 // create canister
 async fn create_canister(
     arg: CreateCanisterArgument, // cycles: u128,
@@ -280,7 +284,7 @@ async fn index_install_code(arg: IndexInstallCodeArgument, wasm_module: Vec<u8>)
     )
     .await
 }
-#[update]
+
 pub async fn add_data(params: IndexCanisterIdWrapper) -> Result<(String, String), String> {
     let index_canister_id_principal = params.index_canister_ids;
 
@@ -560,19 +564,20 @@ pub fn get_sale_params(ledger_canister_id: Principal) -> Result<SaleDetails, Str
     Ok(sale_details)
 }
 
+pub async fn icrc28_trusted_origins() -> Icrc28TrustedOriginsResponse {
+    let trusted_origins = vec![
+        "https://ajzka-lyaaa-aaaak-ak5rq-cai.icp0.io".to_string(),
+        "http://localhost:3000".to_string(),
+        "http://avqkn-guaaa-aaaaa-qaaea-cai.localhost:4943".to_string(),
+        "http://127.0.0.1:4943/?canisterId=aoymu-gaaaa-aaaak-ak5ra-cai".to_string(),
+        "http://127.0.0.1:4943".to_string(),
+        "http://localhost:4200".to_string(),
+    ];
 
-#[ic_cdk_macros::update]
-async fn convert_icp_to_cycles(amount: u64) -> Result<Nat, String> {
-    let icp_amount = Tokens::from_e8s(amount);
-
-    // Call the mint_cycles function
-    match mint_cycles(icp_amount).await {
-        Ok(cycles) => Ok(cycles),
-        Err(err) => Err(format!("Failed to mint cycles: {:?}", err)),
+    Icrc28TrustedOriginsResponse {
+        trusted_origins,
     }
 }
-
-
 
 export_candid!();
 

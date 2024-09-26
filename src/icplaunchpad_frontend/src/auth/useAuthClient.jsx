@@ -94,7 +94,7 @@ export const useAuthClient = (options = defaultOptions) => {
 
   const loginWithNFID = async () => {
     try {
-        if (!nfid) {
+      if (!nfid) {
         throw new Error("NFID is not initialized.");
       }
   
@@ -104,35 +104,44 @@ export const useAuthClient = (options = defaultOptions) => {
         throw new Error("Identity is not available.");
       }
   
-      // Request delegation for the backend canister (add your canister here)
-      const canisterArray = [process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND];
-      const delegationResult = await nfid.getDelegation({ targets: canisterArray });
+      // Define the canisters for delegation (ensure this is correct)
+      const canisterArray = [process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND]
+      // Get the delegation for the backend canister
+      const delegationResult = await nfid.getDelegation({
+        targets: canisterArray, // Canister IDs to which delegation is given
+      });
+  
       if (!delegationResult) {
         throw new Error("Failed to get delegation result.");
       }
   
-      // Fetch principal and delegation type
+      // Fetch the principal and delegation type
       const principal = identity.getPrincipal();
       const delegationType = await nfid.getDelegationType();
   
-      // Log these values for debugging
+      // Log principal and delegation type for debugging
       console.log("NFID Principal:", principal.toText());
       console.log("Delegation Type:", delegationType);
   
-      // Set the principal and update authentication state
+      // Set the user principal and update authentication state
       setUserPrincipal(principal.toString());
       setIsAuthenticated(true);
   
-      // You can also initialize backendActor here if needed
+      // Initialize the backend actor with the identity and delegation
       const backendActor = createActor(process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND, {
-        agentOptions: { identity, verifyQuerySignatures: false },
+        agentOptions: {
+          identity, // Use NFID identity for authentication
+          verifyQuerySignatures: false, // Disable query signature verification (optional)
+        },
       });
       setBackendActor(backendActor);
+  
     } catch (error) {
       console.error("Error during NFID login:", error);
       setError("Failed to log in with NFID. Please try again.");
     }
   };
+  
   
 
 
