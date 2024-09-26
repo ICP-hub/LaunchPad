@@ -1,3 +1,4 @@
+
 type Account = record { owner : principal; subaccount : opt blob };
 type ArchiveOptions = record {
   num_blocks_to_archive : nat64;
@@ -75,4 +76,4 @@ service : () -> {
   search_by_token_name : (text) -> (opt CanisterIndexInfo) query;
   store_sale_params : (principal, SaleDetails) -> (Result_2);
   upload_image : (text, ImageData) -> (Result_3);
-}
+}n

@@ -134,7 +134,8 @@ pub struct SaleDetailsWrapper {
 
 #[derive(CandidType, Deserialize, Serialize, Debug, Clone)]
 pub struct SaleDetails {
-    pub listing_rate: f64,
+    // pub seller_principal: Principal 
+    pub listing_rate: f64, // Price of 1 token in ICP
     pub min_buy: u64,
     pub max_buy: u64,
     pub start_time_utc: u64,

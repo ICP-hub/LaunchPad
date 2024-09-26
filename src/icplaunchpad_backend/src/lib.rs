@@ -13,6 +13,8 @@ use serde::{Deserialize, Serialize};
 use serde_bytes::ByteBuf;
 use state_handler::{mutate_state, read_state, CanisterIdWrapper, ImageIdWrapper, IndexCanisterIdWrapper, SaleDetails, SaleDetailsWrapper};
 mod state_handler;
+mod params;
+mod transaction;
 
 
 
@@ -59,7 +61,7 @@ pub struct InitArgs {
     pub archive_options: ArchiveOptions,
 }
 
-#[derive(CandidType, Serialize, Deserialize, Debug)]
+#[derive(CandidType, Serialize, Deserialize, Debug, Clone)]
 pub struct ArchiveOptions {
     pub num_blocks_to_archive: u64,
     pub max_transactions_per_response: Option<u64>,
@@ -111,6 +113,15 @@ pub struct TokenParams {
     pub fee_collector_account: Option<Account>,
     pub max_memo_length: Option<u16>,
 }
+
+#[derive(CandidType, Serialize, Deserialize, Debug)]
+pub struct UserInputParams {
+    pub token_symbol: String,
+    pub token_name: String,
+    pub decimals: Option<u8>,
+    pub initial_balances: Vec<(Account, Nat)>,
+}
+
 
 #[derive(
     CandidType, Serialize, Deserialize, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Default,
@@ -292,8 +303,9 @@ pub async fn add_data(params: IndexCanisterIdWrapper) -> Result<(String, String)
 
 
 #[update]
-pub async fn create_token(params: TokenParams) -> Result<(String, String), String> {
-    ic_cdk::println!("this is token params : {:?}", params);
+
+pub async fn create_token(user_params: UserInputParams) -> Result<(String, String), String> {
+
     let arg = CreateCanisterArgument { settings: None };
     
     // Create ledger canister
@@ -319,21 +331,30 @@ pub async fn create_token(params: TokenParams) -> Result<(String, String), Strin
     let canister_id_principal = canister_id.canister_id;
     let index_canister_id_principal = index_canister_id.canister_id;
 
+    let minting_account = params::MINTING_ACCOUNT.lock().unwrap().clone().map_err(|e| e.to_string())?;
+
+    // Handle potential error from FEE_COLLECTOR_ACCOUNT
+    let fee_collector_account = params::FEE_COLLECTOR_ACCOUNT.lock().unwrap().clone().map_err(|e| e.to_string())?;
+
+    // Handle potential error from ARCHIVE_OPTIONS
+    let archive_options = params::ARCHIVE_OPTIONS.lock().unwrap().clone().map_err(|e| e.to_string())?;
+
+
     // Ledger Init Args
     let init_args = LedgerArg::Init(InitArgs {
-        minting_account: params.minting_account,
-        fee_collector_account: params.fee_collector_account,
-        transfer_fee: params.transfer_fee,
-        decimals: params.decimals,
-        max_memo_length: params.max_memo_length,
-        token_symbol: params.token_symbol.clone(),  // Clone symbol for later storage
-        token_name: params.token_name.clone(),  // Clone name for later storage
-        metadata: params.metadata,
-        initial_balances: params.initial_balances,
-        feature_flags: params.feature_flags,
-        maximum_number_of_accounts: params.maximum_number_of_accounts,
-        accounts_overflow_trim_quantity: params.accounts_overflow_trim_quantity,
-        archive_options: params.archive_options,
+        minting_account, // Hardcoded value from params.rs
+        fee_collector_account: Some(fee_collector_account), // Hardcoded value from params.rs
+        transfer_fee: params::TRANSFER_FEE.clone(), // Hardcoded value
+        decimals: user_params.decimals, // User-supplied value
+        max_memo_length: Some(params::MAX_MEMO_LENGTH), // Hardcoded value
+        token_symbol: user_params.token_symbol.clone(),  // User-supplied value
+        token_name: user_params.token_name.clone(),  // User-supplied value
+        metadata: vec![], // Empty or pre-defined metadata if needed
+        initial_balances: user_params.initial_balances, // User-supplied value
+        feature_flags: Some(params::FEATURE_FLAGS), // Hardcoded value
+        maximum_number_of_accounts: Some(params::MAXIMUM_NUMBER_OF_ACCOUNTS), // Hardcoded value
+        accounts_overflow_trim_quantity: Some(params::ACCOUNTS_OVERFLOW_TRIM_QUANTITY), // Hardcoded value
+        archive_options, // Hardcoded value from params.rs
     });
 
     let init_arg: Vec<u8> = encode_one(init_args).map_err(|e| e.to_string())?;
@@ -372,8 +393,8 @@ pub async fn create_token(params: TokenParams) -> Result<(String, String), Strin
 
                 state.canister_ids.insert(canister_id_principal.to_string(), CanisterIdWrapper {
                     canister_ids: canister_id_principal,
-                    token_name: params.token_name.clone(),  // Store token name
-                    token_symbol: params.token_symbol.clone(),  // Store token symbol
+                    token_name: user_params.token_name.clone(),  // Store token name
+                    token_symbol: user_params.token_symbol.clone(),  // Store token symbol
                 });
 
             });
@@ -537,6 +558,18 @@ pub fn get_sale_params(ledger_canister_id: Principal) -> Result<SaleDetails, Str
 
     // Return the sale details
     Ok(sale_details)
+}
+
+
+#[ic_cdk_macros::update]
+async fn convert_icp_to_cycles(amount: u64) -> Result<Nat, String> {
+    let icp_amount = Tokens::from_e8s(amount);
+
+    // Call the mint_cycles function
+    match mint_cycles(icp_amount).await {
+        Ok(cycles) => Ok(cycles),
+        Err(err) => Err(format!("Failed to mint cycles: {:?}", err)),
+    }
 }
 
 
