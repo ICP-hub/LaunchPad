@@ -1,31 +1,11 @@
-import { useState } from 'react';
-import { icplaunchpad_backend } from 'declarations/icplaunchpad_backend';
+
+import AllRoutes from "./AllRoutes";
 
 function App() {
-  const [greeting, setGreeting] = useState('');
-
-  function handleSubmit(event) {
-    event.preventDefault();
-    const name = event.target.elements.name.value;
-    icplaunchpad_backend.greet(name).then((greeting) => {
-      setGreeting(greeting);
-    });
-    return false;
-  }
-
   return (
-    <main>
-      <img src="/logo2.svg" alt="DFINITY logo" />
-      <br />
-      <br />
-      <form action="#" onSubmit={handleSubmit}>
-        <label htmlFor="name">Enter your name: &nbsp;</label>
-        <input id="name" alt="Name" type="text" />
-        <button type="submit">Click Me!</button>
-      </form>
-      <section id="greeting">{greeting}</section>
-    </main>
+    <div id="root" className="text-white max-w-[1700px] mx-auto ">
+      <AllRoutes />
+    </div>
   );
 }
-
 export default App;

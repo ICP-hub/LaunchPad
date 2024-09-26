@@ -1,9 +1,12 @@
+use std::clone;
+
 use candid::{encode_one, CandidType, Nat, Principal};
 use ic_cdk::{
     api::{
         call::{call_with_payment128, CallResult, RejectionCode},
         canister_version,
         management_canister::main::{CanisterInstallMode, WasmModule},
+
     }, export_candid, update
 };
 use serde::{Deserialize, Serialize};
@@ -16,6 +19,7 @@ mod transaction;
 
 
 #[derive(CandidType, Serialize, Deserialize, Debug, Clone)]
+
 pub struct Account {
     pub owner: Principal,
     pub subaccount: Option<Vec<u8>>,
@@ -93,7 +97,7 @@ pub enum ChangeFeeCollector {
     SetTo(Account),
 }
 
-#[derive(CandidType, Serialize, Deserialize)]
+#[derive(CandidType, Serialize, Deserialize, Debug)]
 pub struct TokenParams {
     pub token_symbol: String,
     pub token_name: String,
@@ -169,7 +173,6 @@ pub struct InstallCodeArgument {
     pub arg: Vec<u8>,
 }
 
-
 #[derive(
     CandidType, Serialize, Deserialize, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone,
 )]
@@ -209,9 +212,6 @@ pub struct CanisterIndexInfo {
     pub token_name: String,       
     pub token_symbol: String, 
 }
-
-
-
 // create canister
 async fn create_canister(
     arg: CreateCanisterArgument, // cycles: u128,
@@ -280,9 +280,32 @@ async fn index_install_code(arg: IndexInstallCodeArgument, wasm_module: Vec<u8>)
     )
     .await
 }
+#[update]
+pub async fn add_data(params: IndexCanisterIdWrapper) -> Result<(String, String), String> {
+    let index_canister_id_principal = params.index_canister_ids;
+
+    mutate_state(|state| {
+        state.index_canister_ids.insert(
+            index_canister_id_principal.to_string(),
+            IndexCanisterIdWrapper {
+                index_canister_ids: index_canister_id_principal,
+            },
+        )
+    });
+
+    ic_cdk::println!("index canister id: {}", index_canister_id_principal);
+    
+    Ok((
+        index_canister_id_principal.to_string(),
+        index_canister_id_principal.to_string(),
+    ))
+}
+
 
 #[update]
+
 pub async fn create_token(user_params: UserInputParams) -> Result<(String, String), String> {
+
     let arg = CreateCanisterArgument { settings: None };
     
     // Create ledger canister
@@ -336,8 +359,12 @@ pub async fn create_token(user_params: UserInputParams) -> Result<(String, Strin
 
     let init_arg: Vec<u8> = encode_one(init_args).map_err(|e| e.to_string())?;
 
-    let wasm_module = include_bytes!("../../../.dfx/local/canisters/token_deployer/token_deployer.wasm.gz").to_vec();
-    let index_wasm_module = include_bytes!("../../../.dfx/local/canisters/index_canister/index_canister.wasm.gz").to_vec();
+    let wasm_module =
+        include_bytes!("../../../.dfx/local/canisters/token_deployer/token_deployer.wasm.gz")
+            .to_vec();
+    let index_wasm_module =
+        include_bytes!("../../../.dfx/local/canisters/index_canister/index_canister.wasm.gz")
+            .to_vec();
 
     let arg1: InstallCodeArgument = InstallCodeArgument {
         mode: CanisterInstallMode::Install,
@@ -363,11 +390,13 @@ pub async fn create_token(user_params: UserInputParams) -> Result<(String, Strin
     match install_code(arg1.clone(), wasm_module).await {
         Ok(_) => {
             mutate_state(|state| {
+
                 state.canister_ids.insert(canister_id_principal.to_string(), CanisterIdWrapper {
                     canister_ids: canister_id_principal,
                     token_name: user_params.token_name.clone(),  // Store token name
                     token_symbol: user_params.token_symbol.clone(),  // Store token symbol
                 });
+
             });
         }
         Err((code, msg)) => {
@@ -379,16 +408,25 @@ pub async fn create_token(user_params: UserInputParams) -> Result<(String, Strin
     // Install code for the index canister
     match index_install_code(arg2, index_wasm_module).await {
         Ok(_) => {
-            mutate_state(|state|{ 
-                state.index_canister_ids.insert(index_canister_id_principal.to_string(), IndexCanisterIdWrapper {
-                    index_canister_ids : index_canister_id_principal,
-                })
+            mutate_state(|state| {
+                state.index_canister_ids.insert(
+                    index_canister_id_principal.to_string(),
+                    IndexCanisterIdWrapper {
+                        index_canister_ids: index_canister_id_principal,
+                    },
+                )
             });
+
             Ok((canister_id_principal.to_string(), index_canister_id_principal.to_string()))
         }
         Err((code, msg)) => {
             Err(format!("Error installing index code: {} - {}", code as u8, msg))
+
         }
+        Err((code, msg)) => Err(format!(
+            "Error installing index code: {} - {}",
+            code as u8, msg
+        )),
     }
 }
 
@@ -396,6 +434,7 @@ pub async fn create_token(user_params: UserInputParams) -> Result<(String, Strin
 #[ic_cdk::query]
 pub fn get_tokens_info() -> Vec<CanisterIndexInfo> {
     read_state(|state| {
+
         state.canister_ids.iter().zip(state.index_canister_ids.iter()).map(|((canister_key, canister_wrapper), (index_key, _))| {
             CanisterIndexInfo {
                 canister_id: canister_key.clone(),
@@ -536,3 +575,4 @@ async fn convert_icp_to_cycles(amount: u64) -> Result<Nat, String> {
 
 
 export_candid!();
+
