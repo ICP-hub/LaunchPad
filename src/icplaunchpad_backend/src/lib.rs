@@ -6,16 +6,79 @@ use ic_cdk::{
         canister_version,
         management_canister::main::{CanisterInstallMode, WasmModule},
 
-    }, export_candid, update
+    }, export_candid
 };
 use ic_ledger_types::Tokens;
 use serde::{Deserialize, Serialize};
 use serde_bytes::ByteBuf;
-use state_handler::{mutate_state, read_state, CanisterIdWrapper, IndexCanisterIdWrapper, SaleDetails, SaleDetailsWrapper};
+use state_handler::{mutate_state, read_state, CanisterIdWrapper, IndexCanisterIdWrapper, SaleDetails, SaleDetailsWrapper, UserAccountWrapper, STATE};
 mod state_handler;
 mod params;
 mod transaction;
 use mint_cycles::mint_cycles;
+
+#[derive(Serialize, Deserialize, Clone, CandidType, Debug)]
+pub struct UserAccount {
+    pub name: String,
+    pub username: String,
+    pub profile_picture: Option<ByteBuf>,  // Placeholder for profile picture data
+    pub links: Vec<String>,  // Social media links
+    pub tag: String,  // User's role like block explorer, investor, etc.
+}
+
+#[ic_cdk::update]
+pub fn create_user_account(user_input: UserAccount) -> Result<(), String> {
+    // Check if the username is unique
+    let is_unique = STATE.with(|state| {
+        state.borrow().user_accounts.iter().all(|(_, wrapper)| {
+            wrapper.user_account.username != user_input.username
+        })
+    });
+
+    if !is_unique {
+        return Err("Username already exists".to_string());
+    }
+
+    let principal = ic_cdk::api::caller();
+
+    // Create a new UserAccount from the input struct
+    let new_user_account = UserAccount {
+        name: user_input.name,
+        username: user_input.username,
+        profile_picture: user_input.profile_picture,
+        links: user_input.links,
+        tag: user_input.tag,
+    };
+
+    // Store the new user account in the map
+    mutate_state(|state| {
+        state.user_accounts.insert(principal, UserAccountWrapper {
+            user_account: new_user_account,
+        });
+    });
+
+    Ok(())
+}
+
+
+#[ic_cdk::query]
+pub fn get_user_account(principal: Principal) -> Option<UserAccount> {
+    read_state(|state| {
+        state.user_accounts.get(&principal).map(|wrapper| wrapper.user_account.clone())
+    })
+}
+
+#[ic_cdk::query]
+pub fn get_user_by_username(username: String) -> Option<UserAccount> {
+    read_state(|state| {
+        for (_, wrapper) in state.user_accounts.iter() {
+            if wrapper.user_account.username == username {
+                return Some(wrapper.user_account.clone());
+            }
+        }
+        None
+    })
+}
 
 
 
@@ -286,29 +349,16 @@ async fn index_install_code(arg: IndexInstallCodeArgument, wasm_module: Vec<u8>)
     .await
 }
 
-pub async fn add_data(params: IndexCanisterIdWrapper) -> Result<(String, String), String> {
-    let index_canister_id_principal = params.index_canister_ids;
-
-    mutate_state(|state| {
-        state.index_canister_ids.insert(
-            index_canister_id_principal.to_string(),
-            IndexCanisterIdWrapper {
-                index_canister_ids: index_canister_id_principal,
-            },
-        )
-    });
-
-    ic_cdk::println!("index canister id: {}", index_canister_id_principal);
-    
-    Ok((
-        index_canister_id_principal.to_string(),
-        index_canister_id_principal.to_string(),
-    ))
+#[derive(CandidType, Deserialize, Serialize, Debug)]
+pub struct TokenCreationResult {
+    pub ledger_canister_id: Principal,
+    pub index_canister_id: Principal,
 }
 
 
-#[update]
-pub async fn create_token(user_params: UserInputParams) -> Result<(String, String), String> {
+
+#[ic_cdk::update]
+pub async fn create_token(user_params: UserInputParams) -> Result<TokenCreationResult, String> {
 
     let arg = CreateCanisterArgument { settings: None };
     
@@ -422,15 +472,17 @@ pub async fn create_token(user_params: UserInputParams) -> Result<(String, Strin
             )
         });
 
-        Ok((canister_id_principal.to_string(), index_canister_id_principal.to_string()))
+        Ok(TokenCreationResult {
+            ledger_canister_id: canister_id_principal,
+            index_canister_id: index_canister_id_principal,
+        })
     }
     Err((code, msg)) => {
         Err(format!("Error installing index code: {} - {}", code as u8, msg))
     }
 }
-
-
 }
+
 
 
 #[ic_cdk::query]
