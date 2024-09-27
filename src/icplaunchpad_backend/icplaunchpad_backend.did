@@ -1,39 +1,21 @@
-
 type Account = record { owner : principal; subaccount : opt blob };
-type ArchiveOptions = record {
-  num_blocks_to_archive : nat64;
-  max_transactions_per_response : opt nat64;
-  trigger_threshold : nat64;
-  max_message_size_bytes : opt nat64;
-  cycles_for_archive_creation : opt nat64;
-  node_max_memory_size_bytes : opt nat64;
-  controller_id : principal;
-};
 type CanisterIndexInfo = record {
   token_symbol : text;
   canister_id : text;
   index_canister_id : text;
   token_name : text;
 };
-type FeatureFlags = record { icrc2 : bool };
-
 type ImageData = record {
   content : opt blob;
   name : text;
   content_type : text;
+  ledger_id : principal;
 };
-
-type Metadata = record { key : text; value : MetadataValue };
-type MetadataValue = variant {
-  Int : int64;
-  Nat : nat;
-  Blob : blob;
-  Text : text;
-};
-type Result = variant { Ok : record { text; text }; Err : text };
-type Result_1 = variant { Ok : SaleDetails; Err : text };
+type Result = variant { Ok : nat; Err : text };
+type Result_1 = variant { Ok : TokenCreationResult; Err : text };
 type Result_2 = variant { Ok; Err : text };
-type Result_3 = variant { Ok : text; Err : text };
+type Result_3 = variant { Ok : SaleDetails; Err : text };
+type Result_4 = variant { Ok : text; Err : text };
 type SaleDetails = record {
   listing_rate : float64;
   twitter : text;
@@ -52,28 +34,33 @@ type SaleDetails = record {
   github : text;
   reddit : text;
 };
-type TokenParams = record {
+type TokenCreationResult = record {
+  index_canister_id : principal;
+  ledger_canister_id : principal;
+};
+type UserAccount = record {
+  tag : text;
+  username : text;
+  profile_picture : opt blob;
+  name : text;
+  links : vec text;
+};
+type UserInputParams = record {
   decimals : opt nat8;
   token_symbol : text;
-  transfer_fee : nat;
-  metadata : vec Metadata;
-  minting_account : Account;
   initial_balances : vec record { Account; nat };
-  maximum_number_of_accounts : opt nat64;
-  accounts_overflow_trim_quantity : opt nat64;
-  fee_collector_account : opt Account;
-  archive_options : ArchiveOptions;
-  max_memo_length : opt nat16;
   token_name : text;
-  feature_flags : opt FeatureFlags;
 };
 service : () -> {
-  add_data : (IndexCanisterIdWrapper) -> (Result);
-  create_token : (TokenParams) -> (Result);
-  get_image_ids : () -> (vec nat32) query;
-  get_sale_params : (principal) -> (Result_1) query;
+  convert_icp_to_cycles : (nat64) -> (Result);
+  create_token : (UserInputParams) -> (Result_1);
+  create_user_account : (UserAccount) -> (Result_2);
+  get_image_ids : () -> (vec record { nat32; principal }) query;
+  get_sale_params : (principal) -> (Result_3) query;
   get_tokens_info : () -> (vec CanisterIndexInfo) query;
+  get_user_account : (principal) -> (opt UserAccount) query;
+  get_user_by_username : (text) -> (opt UserAccount) query;
   search_by_token_name : (text) -> (opt CanisterIndexInfo) query;
   store_sale_params : (principal, SaleDetails) -> (Result_2);
-  upload_image : (text, ImageData) -> (Result_3);
-}n
+  upload_image : (text, ImageData) -> (Result_4);
+}
