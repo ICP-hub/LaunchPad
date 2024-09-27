@@ -1,4 +1,3 @@
-use std::clone;
 
 use candid::{encode_one, CandidType, Nat, Principal};
 use ic_cdk::{
@@ -9,12 +8,14 @@ use ic_cdk::{
 
     }, export_candid, update
 };
+use ic_ledger_types::Tokens;
 use serde::{Deserialize, Serialize};
 use serde_bytes::ByteBuf;
-use state_handler::{mutate_state, read_state, CanisterIdWrapper, ImageIdWrapper, IndexCanisterIdWrapper, SaleDetails, SaleDetailsWrapper};
+use state_handler::{mutate_state, read_state, CanisterIdWrapper, IndexCanisterIdWrapper, SaleDetails, SaleDetailsWrapper};
 mod state_handler;
 mod params;
 mod transaction;
+use mint_cycles::mint_cycles;
 
 
 
@@ -307,7 +308,6 @@ pub async fn add_data(params: IndexCanisterIdWrapper) -> Result<(String, String)
 
 
 #[update]
-
 pub async fn create_token(user_params: UserInputParams) -> Result<(String, String), String> {
 
     let arg = CreateCanisterArgument { settings: None };
@@ -392,46 +392,44 @@ pub async fn create_token(user_params: UserInputParams) -> Result<(String, Strin
 
     // Install code for the ledger canister
     match install_code(arg1.clone(), wasm_module).await {
-        Ok(_) => {
-            mutate_state(|state| {
-
-                state.canister_ids.insert(canister_id_principal.to_string(), CanisterIdWrapper {
-                    canister_ids: canister_id_principal,
-                    token_name: user_params.token_name.clone(),  // Store token name
-                    token_symbol: user_params.token_symbol.clone(),  // Store token symbol
-                });
-
+    Ok(_) => {
+        mutate_state(|state| {
+            state.canister_ids.insert(canister_id_principal.to_string(), CanisterIdWrapper {
+                canister_ids: canister_id_principal,
+                token_name: user_params.token_name.clone(),  // Store token name
+                token_symbol: user_params.token_symbol.clone(),  // Store token symbol
+                image_id: None,  // Set image_id as None for now
+                ledger_id: Some(canister_id_principal),  // Set ledger_id to the canister ID
             });
-        }
-        Err((code, msg)) => {
-            ic_cdk::println!("Error installing code: {} - {}", code as u8, msg);
-            return Err(format!("Error installing code: {} - {}", code as u8, msg));
-        }
+        });
     }
+    Err((code, msg)) => {
+        ic_cdk::println!("Error installing code: {} - {}", code as u8, msg);
+        return Err(format!("Error installing code: {} - {}", code as u8, msg));
+    }
+}
 
-    // Install code for the index canister
+    
+// Install code for the index canister
     match index_install_code(arg2, index_wasm_module).await {
-        Ok(_) => {
-            mutate_state(|state| {
-                state.index_canister_ids.insert(
-                    index_canister_id_principal.to_string(),
-                    IndexCanisterIdWrapper {
-                        index_canister_ids: index_canister_id_principal,
-                    },
-                )
-            });
+    Ok(_) => {
+        mutate_state(|state| {
+            state.index_canister_ids.insert(
+                index_canister_id_principal.to_string(),
+                IndexCanisterIdWrapper {
+                    index_canister_ids: index_canister_id_principal,
+                },
+            )
+        });
 
-            Ok((canister_id_principal.to_string(), index_canister_id_principal.to_string()))
-        }
-        Err((code, msg)) => {
-            Err(format!("Error installing index code: {} - {}", code as u8, msg))
-
-        }
-        Err((code, msg)) => Err(format!(
-            "Error installing index code: {} - {}",
-            code as u8, msg
-        )),
+        Ok((canister_id_principal.to_string(), index_canister_id_principal.to_string()))
     }
+    Err((code, msg)) => {
+        Err(format!("Error installing index code: {} - {}", code as u8, msg))
+    }
+}
+
+
 }
 
 
@@ -474,33 +472,48 @@ pub fn search_by_token_name(token_name: String) -> Option<CanisterIndexInfo> {
 }
 
 
-
 #[derive(Clone, CandidType, Serialize, Deserialize)]
 pub struct ImageData {
     pub content: Option<ByteBuf>,
     pub name: String,
     pub content_type: String,
+    pub ledger_id: Principal,
     // you can add more params
 }
 
 type ReturnResult = Result<u32, String>;
 
 #[ic_cdk::update]
-pub async fn upload_image(canister_id: String, image_data: ImageData) -> Result<String, String> {
+pub async fn upload_image(asset_canister_id: String, image_data: ImageData) -> Result<String, String> {
+    let ledger_id = image_data.ledger_id;
+
     let response: CallResult<(ReturnResult,)> = ic_cdk::call(
-        Principal::from_text(canister_id).unwrap(),
+        Principal::from_text(asset_canister_id.clone()).unwrap(),
         "create_file",
-        (image_data,)
+        (image_data.clone(),)
     ).await;
 
     let res0: Result<(Result<u32, String>,), (RejectionCode, String)> = response;
 
     let formatted_value = match res0 {
         Ok((Ok(image_id),)) => {
-            // Store the image ID in stable memory
+            // ic_cdk::println!("Image ID returned: {}", image_id);
+            
+            // Store image_id and ledger_id in the state
             mutate_state(|state| {
-                state.image_ids.insert(format!("{}", image_id), ImageIdWrapper { image_id });
+                if let Some(mut canister_entry) = state.canister_ids.get(&ledger_id.to_string()) {
+                    // Modify the image_id and ledger_id fields
+                    // ic_cdk::println!("Storing image_id {} for ledger_id {}", image_id, ledger_id);
+                    canister_entry.image_id = Some(image_id);
+                    canister_entry.ledger_id = Some(ledger_id);
+                    
+                    // Reinsert the modified entry back into the map
+                    state.canister_ids.insert(ledger_id.to_string(), canister_entry);
+                } else {
+                    ic_cdk::println!("No entry found for ledger_id: {}", ledger_id);
+                }
             });
+
             Ok(format!("{}", image_id))
         }
         Ok((Err(err),)) => Err(err),
@@ -521,15 +534,21 @@ pub async fn upload_image(canister_id: String, image_data: ImageData) -> Result<
 
 
 #[ic_cdk::query]
-pub fn get_image_ids() -> Vec<u32> {
-    // Read the image_ids map and collect all image IDs stored in stable memory
+pub fn get_image_ids() -> Vec<(u32, Principal)> {
+    let mut image_ledger_pairs = Vec::new();
+    
     read_state(|state| {
-        let mut image_ids = Vec::new();
-        for (_, image_wrapper) in state.image_ids.iter() {
-            image_ids.push(image_wrapper.image_id);
+        for (_ledger_id, canister_entry) in state.canister_ids.iter() {
+            if let Some(image_id) = canister_entry.image_id {
+                if let Some(ledger_id) = canister_entry.ledger_id {
+                    // Only return image_id and ledger_id
+                    image_ledger_pairs.push((image_id, ledger_id));
+                }
+            }
         }
-        image_ids
-    })
+    });
+
+    image_ledger_pairs
 }
 
 
@@ -564,6 +583,18 @@ pub fn get_sale_params(ledger_canister_id: Principal) -> Result<SaleDetails, Str
     Ok(sale_details)
 }
 
+
+#[ic_cdk::update]
+async fn convert_icp_to_cycles(amount: u64) -> Result<Nat, String> {
+    let icp_amount = Tokens::from_e8s(amount);
+
+    // Call the mint_cycles function
+    match mint_cycles(icp_amount).await {
+        Ok(cycles) => Ok(cycles),
+        Err(err) => Err(format!("Failed to mint cycles: {:?}", err)),
+    }
+}
+
 pub async fn icrc28_trusted_origins() -> Icrc28TrustedOriginsResponse {
     let trusted_origins = vec![
         "https://ajzka-lyaaa-aaaak-ak5rq-cai.icp0.io".to_string(),
@@ -578,6 +609,7 @@ pub async fn icrc28_trusted_origins() -> Icrc28TrustedOriginsResponse {
         trusted_origins,
     }
 }
+
 
 export_candid!();
 

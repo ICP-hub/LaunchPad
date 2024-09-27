@@ -194,7 +194,7 @@ impl Storable for RootChildren {
 
 const BUCKET_MEMORY_ID: MemoryId = MemoryId::new(0);
 const ROOT_CHILDREN_MEMORY_ID: MemoryId = MemoryId::new(1);
-const DIR_METADATA_MEMORY_ID: MemoryId = MemoryId::new(2);
+// const DIR_METADATA_MEMORY_ID: MemoryId = MemoryId::new(2);
 const FS_METADATA_MEMORY_ID: MemoryId = MemoryId::new(3);
 const FS_DATA_MEMORY_ID: MemoryId = MemoryId::new(4);
 const HASH_INDEX_MEMORY_ID: MemoryId = MemoryId::new(5);
@@ -229,11 +229,11 @@ thread_local! {
         )
     );
 
-    static DIR_METADATA: RefCell<StableBTreeMap<u32, DirectoryMetadata, Memory>> = RefCell::new(
-        StableBTreeMap::init(
-            MEMORY_MANAGER.with_borrow(|m| m.get(DIR_METADATA_MEMORY_ID)),
-        )
-    );
+    // static DIR_METADATA: RefCell<StableBTreeMap<u32, DirectoryMetadata, Memory>> = RefCell::new(
+    //     StableBTreeMap::init(
+    //         MEMORY_MANAGER.with_borrow(|m| m.get(DIR_METADATA_MEMORY_ID)),
+    //     )
+    // );
 
     static FS_DATA: RefCell<StableBTreeMap<FileId, Chunk, Memory>> = RefCell::new(
         StableBTreeMap::init(
