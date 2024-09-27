@@ -10,10 +10,19 @@ type ImageData = record {
   name : text;
   content_type : text;
 };
+
+type Metadata = record { key : text; value : MetadataValue };
+type MetadataValue = variant {
+  Int : int64;
+  Nat : nat;
+  Blob : blob;
+  Text : text;
+};
 type Result = variant { Ok : record { text; text }; Err : text };
 type Result_1 = variant { Ok : SaleDetails; Err : text };
 type Result_2 = variant { Ok; Err : text };
-type Result_3 = variant { Ok : text; Err : text };
+type Result_3 = variant { Ok : SaleDetails; Err : text };
+type Result_4 = variant { Ok : text; Err : text };
 type SaleDetails = record {
   listing_rate : float64;
   twitter : text;
@@ -32,18 +41,21 @@ type SaleDetails = record {
   github : text;
   reddit : text;
 };
-type UserInputParams = record {
+type TokenParams = record {
   decimals : opt nat8;
   token_symbol : text;
   initial_balances : vec record { Account; nat };
   token_name : text;
 };
 service : () -> {
-  create_token : (UserInputParams) -> (Result);
+  add_data : (IndexCanisterIdWrapper) -> (Result);
+  create_token : (TokenParams) -> (Result);
   get_image_ids : () -> (vec nat32) query;
   get_sale_params : (principal) -> (Result_1) query;
   get_tokens_info : () -> (vec CanisterIndexInfo) query;
+  get_user_account : (principal) -> (opt UserAccount) query;
+  get_user_by_username : (text) -> (opt UserAccount) query;
   search_by_token_name : (text) -> (opt CanisterIndexInfo) query;
   store_sale_params : (principal, SaleDetails) -> (Result_2);
   upload_image : (text, ImageData) -> (Result_3);
-}
+}n
