@@ -9,12 +9,13 @@ import { useAuth } from '../../auth/useAuthClient';
 import ProfileCard from '../Modals/ProfileCard';
 import { FaUser } from 'react-icons/fa';
 import { BsThreeDotsVertical } from 'react-icons/bs';
-import toast from "react-hot-toast";
 
+import CreateUser from "../Modals/CreateUser";
 
 
 const Header = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [userModalIsOpen, setUserModalIsOpen] =useState(true);
   const [isSearching, setIsSearching] = useState(false);
 
   const [searchText, setSearchText] = useState('');
@@ -26,11 +27,14 @@ const Header = () => {
 
   const { isAuthenticated, userPrincipal, identity } = useAuth();
 
+  
+
+
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
   };
 
-
+  
   const openModal = () => {
     setModalIsOpen(true);
   };
@@ -53,18 +57,6 @@ const Header = () => {
 
 
   const [activeSection, setActiveSection] = useState("home");
-  const [userDetails, setUserDetails] = useState(null);
-
-  const getStatus = async () => {
-    const getUser = await backendActor.getUser();
-    if (getUser.err === "New user") {
-      // navigate("/register");
-    } else {
-      console.log(getUser.ok);
-      setUserDetails(getUser.ok);
-      toast.success("You are registered");
-    }
-  };
 
 
   const handleSectionClick = (section) => {
@@ -74,10 +66,10 @@ const Header = () => {
 
   return (
     <div>
-
+{ isAuthenticated && <CreateUser  userModalIsOpen={userModalIsOpen} setUserModalIsOpen={setUserModalIsOpen} />}
       <nav className="relative z-20 text-white bg-black shadow-lg dlg:px-[2%] dlg:py-6 lgx:px-[4%] 
       lgx:py-9 md:px-[4%] md:py-[2%] py-[3%] px-[2.5%] flex justify-between items-center">
-
+ 
 
         {/* Hamburger Menu for screens below 768px */}
         <div className="md:hidden flex  items-center">
@@ -189,6 +181,7 @@ const Header = () => {
               />
             </div>
           )}
+        
         </div>
 
         {/* Connect Wallet Button for screens above 768px */}
@@ -206,6 +199,7 @@ const Header = () => {
           </button>
           <ConnectWallets modalIsOpen={modalIsOpen} setModalIsOpen={setModalIsOpen} />
         </div>
+        
         }
 
 
@@ -253,7 +247,7 @@ const Header = () => {
             )}
           </div>
         }
-
+        
 
       </nav>
 
@@ -318,7 +312,7 @@ const Header = () => {
               <ProfileCard profileModalIsOpen={profileModalIsOpen} setProfileModalIsOpen={setProfileModalIsOpen} />
             </>
           }
-
+          
         </div>
       )}
 
@@ -335,6 +329,8 @@ const Header = () => {
         <p>#9 DOGA</p>
         <p>#10 MBCGA</p>
       </div>
+      
+      
     </div>
   );
 };

@@ -285,25 +285,7 @@ async fn index_install_code(arg: IndexInstallCodeArgument, wasm_module: Vec<u8>)
     .await
 }
 
-pub async fn add_data(params: IndexCanisterIdWrapper) -> Result<(String, String), String> {
-    let index_canister_id_principal = params.index_canister_ids;
 
-    mutate_state(|state| {
-        state.index_canister_ids.insert(
-            index_canister_id_principal.to_string(),
-            IndexCanisterIdWrapper {
-                index_canister_ids: index_canister_id_principal,
-            },
-        )
-    });
-
-    ic_cdk::println!("index canister id: {}", index_canister_id_principal);
-    
-    Ok((
-        index_canister_id_principal.to_string(),
-        index_canister_id_principal.to_string(),
-    ))
-}
 
 
 #[update]

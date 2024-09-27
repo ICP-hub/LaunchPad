@@ -8,7 +8,7 @@ const CreatePreLaunch = () => {
   const [modalIsOpen, setIsOpen] = useState(false);
 
 
-  const closeModal = () => setIsModalOpen(false);
+  
   const openModal = () => {
     setIsOpen(true);
   };

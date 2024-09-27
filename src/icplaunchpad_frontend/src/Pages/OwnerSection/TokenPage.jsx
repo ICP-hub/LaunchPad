@@ -202,7 +202,7 @@ const TokenPage = () => {
   {sellType === 'whitelist' && (
       <div>
     <button onClick={openModal} className="w-full text-white  bg-gradient-to-r from-[#f09787]  to-[#CACCF5] rounded-3xl p-[1.5px] h-[40px] mt-2 ">
-    <div className='flex items-center bg-[#191919]  justify-center  w-full h-full  rounded-3xl  '>
+    <div className='flex items-center bg-[#191919] justify-center  w-full h-full  rounded-3xl  '>
       ADD USER TO WHITELIST
       </div>
     </button>
@@ -235,6 +235,7 @@ const TokenPage = () => {
   </div>
 </div>
 )}
+
 
 {isMobile && (
           <div className="lg:min-w-[406px] w-full h-[153px] mt-8 bg-[#FFFFFF1A] rounded-[17.44px] flex flex-col justify-center items-center text-white">
