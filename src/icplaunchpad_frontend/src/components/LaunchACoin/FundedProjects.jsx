@@ -20,7 +20,7 @@ const FundedProjects = () => {
             <p className="text-center text-[20px] font-semibold mt-[60px]">FUNDED PROJECTS</p>
             <p className="text-center text-3xl py-4 ">113</p>
           </div>
-
+           
           <div  className="relative px-8  pb-40 h-[180px]  rounded-2xl bg-[#333333]">
             <div className="absolute  -top-[25%] left-1/2  transform -translate-x-1/2">
               <img src={p2} alt="xy" className="object-cover w-[100px]  "  draggable="false"/>
