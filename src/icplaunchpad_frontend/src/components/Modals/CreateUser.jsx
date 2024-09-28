@@ -81,7 +81,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
                 <input
                   type="text"
                   {...register('name', { required: 'name is required' })}
-                  className="w-full p-1 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
+                  className="w-full p-1 pl-4 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
                 />
                 {errors.name && <p className="text-red-500">{errors.name.message}</p>}
               </div>
@@ -91,7 +91,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
                 <input
                   type="text"
                   {...register('username', { required: 'username is required' })}
-                  className="w-full p-1 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
+                  className="w-full p-1 pl-4 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
                 />
                 {errors.username && <p className="text-red-500">{errors.username.message}</p>}
               </div>
@@ -101,7 +101,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
                 <input
                   type="text"
                   {...register('profile', { required: 'profile is required' })}
-                  className="w-full p-1 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
+                  className="w-full p-1 pl-4 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
                 />
                 {errors.profile && <p className="text-red-500">{errors.profile.message}</p>}
               </div>
@@ -111,7 +111,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
                 <input
                   type="text"
                   {...register('social', { required: 'social is required' })}
-                  className="w-full p-1 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
+                  className="w-full p-1 pl-4  bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
                 />
                 {errors.social && <p className="text-red-500">{errors.social.message}</p>}
               </div>
@@ -121,7 +121,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
                 <input
                   type="text"
                   {...register('tag', { required: 'tag is required' })}
-                  className="w-full p-1 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
+                  className="w-full p-1 pl-4 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
                 />
                 {errors.tag && <p className="text-red-500">{errors.tag.message}</p>}
               </div>

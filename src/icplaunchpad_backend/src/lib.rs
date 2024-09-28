@@ -360,12 +360,6 @@ pub struct TokenCreationResult {
 #[ic_cdk::update]
 pub async fn create_token(user_params: UserInputParams) -> Result<TokenCreationResult, String> {
 
-
-
-#[update]
-
-pub async fn create_token(user_params: UserInputParams) -> Result<(String, String), String> {
-
     let arg = CreateCanisterArgument { settings: None };
     
     // Create ledger canister
@@ -670,4 +664,3 @@ pub async fn icrc28_trusted_origins() -> Icrc28TrustedOriginsResponse {
 
 
 export_candid!();
-
