@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import VerifyTokenTab from './Tabs/VerifyTokenTab';
 import LaunchpadInfoTab from './Tabs/LaunchpadInfoTab';
 import AdditionalInfoTab from './Tabs/AdditionalInfoTab';
 import ReviewInfoTab from './Tabs/ReviewInfoTab';
 import StepProgressBar from './StepProgressBar';
 
+
 const VerifyToken = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const navigate = useNavigate();  // React Router's hook for navigation
+  const location = useLocation();
+
+  const { tokenData } = location.state || {}; // Retrieve the passed tokenData
 
   const handleNext = () => {
     if (currentStep < 4) {
@@ -28,7 +32,7 @@ const VerifyToken = () => {
     <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white">
       <StepProgressBar currentStep={currentStep} />
       <div className="w-full max-w-[1070px] mt-8">
-        {currentStep === 1 && <VerifyTokenTab />}
+        {currentStep === 1 && <VerifyTokenTab tokenData={tokenData} />}
         {currentStep === 2 && <LaunchpadInfoTab />}
         {currentStep === 3 && <AdditionalInfoTab />}
         {currentStep === 4 && <ReviewInfoTab />}
