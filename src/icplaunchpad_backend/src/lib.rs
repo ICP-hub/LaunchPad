@@ -1,4 +1,3 @@
-
 use candid::{encode_one, CandidType, Nat, Principal};
 use ic_cdk::{
     api::{

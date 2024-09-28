@@ -21,9 +21,9 @@ const AddToWhitelist = ({ modalIsOpen, setIsOpen }) => {
         overlayClassName="fixed z-[100] inset-0 bg-opacity-50"
       >
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center mx-4 z-50">
-      <div className="bg-[#222222] p-6 rounded-xl font-posterama text-white h-[400px] sm:h-[670px] w-[786px] relative">
+      <div className="bg-[#222222] p-6 rounded-xl  text-white h-[400px] sm:h-[670px] w-[786px] relative">
         <div className=' mx-[-24px] gap-4 flex px-4 p-1  mb-4 rounded-2xl'>
-        <h2 className=" text-[18px] sm:text-[25px] Text-[#FFFFFFA6]  ">ADD USERS TO WHITELIST</h2>
+        <h2 className=" text-[18px] sm:text-[25px] Text-[#FFFFFFA6] font-posterama ">ADD USERS TO WHITELIST</h2>
         {/* Modal Close Button */}
         <button
           onClick={closeModal}
@@ -33,6 +33,10 @@ const AddToWhitelist = ({ modalIsOpen, setIsOpen }) => {
         </button>
         </div>
         <div className=' h-[200px] sm:h-[500px] rounded-2xl w-full bg-[#313030]'>
+                <textarea
+            className='w-full h-full bg-[#313030] border-none p-4 resize-none text-white rounded-2xl outline-none'
+            
+          />
         </div>
 
          {/* Gradient Button */}

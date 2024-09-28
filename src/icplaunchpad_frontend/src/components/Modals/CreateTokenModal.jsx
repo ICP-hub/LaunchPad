@@ -87,11 +87,11 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
         onRequestClose={closeModal}
         contentLabel="Create Token Modal"
         className="fixed inset-0 flex items-center justify-center lg:mb-[60%] lgx:mb-[10%] bg-transparent"
-        overlayClassName="fixed z-[100] inset-0 bg-gray-800 bg-opacity-50"
+        overlayClassName="fixed z-[100] inset-0 bg-opacity-50"
         ariaHideApp={false} // Only if you don't want modal to block the main content from screen readers
       >
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-[#222222] p-6 rounded-md text-white w-[786px] relative">
+          <div className="bg-[#222222] p-6 rounded-md text-white m-4 w-[786px] relative">
             <div className="bg-[#FFFFFF4D] mx-[-24px] mt-[-25px] px-4 py-1 mb-4 rounded-2xl">
               {/* Modal Close Button */}
               <button

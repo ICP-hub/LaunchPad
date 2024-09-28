@@ -39,7 +39,7 @@ const CreatePreLaunch = () => {
               </div>
               <div>
               <button onClick={openModal} className='border-1   bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5] 
-             text-black    w-[200px] md:w-[250px] h-[38px] lg:h-[38px]
+             text-black   w-[130px] xxs1:w-[200px] md:w-[250px] h-[38px] lg:h-[38px]
                  text-[14px] xxs1:text-[16px] md:text-[18px] font-[600] rounded-2xl'>
                 CREATE TOKEN
               </button>
