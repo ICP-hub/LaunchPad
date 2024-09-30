@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import circleGif from '../../assets/images/circle.gif';
+import circleGif from '../../../assets/images/circle.gif';
 import AnimationButton from '../../common/AnimationButton';
 
 

@@ -2,7 +2,7 @@ import React, {useState,useEffect} from 'react';
 import { TfiClose } from "react-icons/tfi";
 
 import Modal from 'react-modal';
-import person1 from "../../assets/images/carousel/person1.png"
+import person1 from "../../../assets/images/carousel/person1.png"
 import { useAuth } from '../../auth/useAuthClient';
 
 const ProfileCard = ({ profileModalIsOpen, setProfileModalIsOpen }) => {

@@ -1,8 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
-import upcomingImage from '../../assets/images/hero1.png'; 
-import hoverImage from '../../assets/images/hero2.png'; 
-import AnimationButton from '../../common/AnimationButton';
+import upcomingImage from '../../../assets/images/hero1.png'; 
+import hoverImage from '../../../assets/images/hero2.png'; 
 
 const Hero = () => {
   const [isHovered, setIsHovered] = useState(false);

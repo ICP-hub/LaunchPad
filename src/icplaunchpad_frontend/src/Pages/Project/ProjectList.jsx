@@ -1,5 +1,5 @@
 import React from "react";
-import tokenHolder from "../../assets/images/tokenHolder.png";
+import tokenHolder from "../../../assets/images/tokenHolder.png";
 
 const ProjectList = () => {
   const progress = 35.1;

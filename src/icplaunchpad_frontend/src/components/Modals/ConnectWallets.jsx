@@ -5,10 +5,10 @@ import { useAuth } from "../../auth/useAuthClient";
 import { RxCross1 } from "react-icons/rx";
 
 // Importing wallet icons
-import infinite from '../../assets/images/icons/infinite.png';
-import id from '../../assets/images/icons/id.png';
-import plug from '../../assets/images/icons/plug.png';
-import bifinity from '../../assets/images/icons/bifinity.png';
+import infinite from '../../../assets/images/icons/infinite.png';
+import id from '../../../assets/images/icons/id.png';
+import plug from '../../../assets/images/icons/plug.png';
+import bifinity from '../../../assets/images/icons/bifinity.png';
 
 // Component to connect wallet using various providers
 const ConnectWallet = ({ modalIsOpen, setModalIsOpen }) => {
