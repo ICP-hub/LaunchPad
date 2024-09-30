@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState,useEffect} from 'react';
 import { TfiClose } from "react-icons/tfi";
 
 import Modal from 'react-modal';
@@ -7,6 +7,16 @@ import { useAuth } from '../../auth/useAuthClient';
 
 const ProfileCard = ({ profileModalIsOpen, setProfileModalIsOpen }) => {
   const { logout, userPrincipal } = useAuth();
+  const [userName, setUserName] =useState();
+
+  useEffect(() => {
+    // Fetch name from sessionStorage if available
+    const name = window.sessionStorage.getItem('userName');
+    if (name) {
+      setUserName(name);
+    }
+  }, []);
+
 
   async function handleLogout(){
       await logout().then(()=>window.location.reload())
@@ -46,7 +56,7 @@ const ProfileCard = ({ profileModalIsOpen, setProfileModalIsOpen }) => {
           className="w-20 h-20 rounded-full object-cover"
         />
          <div className='w-48'>
-        <h2 className="text-lg font-semibold mt-2">ABCD</h2>
+        <h2 className="text-lg font-semibold mt-2">{userName || 'ABCD'}</h2>
         <p className="text-sm text-gray-400 overflow-hidden whitespace-nowrap text-ellipsis"> {userPrincipal} </p>
 
         {/* Block Explorer Button */}

@@ -25,10 +25,16 @@ const Header = () => {
 
   const { isAuthenticated, userPrincipal, identity } = useAuth();
   const [activeSection, setActiveSection] = useState("home");
-  const [registerUser, setRegisterUser] =useState();
+  const [userName, setUserName] =useState();
 
   
- 
+  useEffect(() => {
+    // Fetch name from sessionStorage if available
+    const name = window.sessionStorage.getItem('userName');
+    if (name) {
+      setUserName(name);
+    }
+  }, []);
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -206,7 +212,7 @@ const Header = () => {
               <div className="bg-black h-full w-full rounded-2xl flex items-center p-1 px-3">
                 <FaUser className="mr-2" />
                 <div className="flex flex-col items-start w-24 lg:w-40">
-                  <span className="text-sm">ABCD</span>
+                  <span className="text-sm">{userName || 'ABCD'}</span>
                   <span className="text-xs text-gray-400 w-full overflow-hidden whitespace-nowrap text-ellipsis">
                     {userPrincipal}
                   </span>

@@ -46,8 +46,16 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
       console.log('User created:', response);
       response.Err && setValidationError(response.Err);
 
+
+           // Store name in sessionStorage
+      window.sessionStorage.setItem('registerUser', name);
+
       window.sessionStorage.setItem('RegisterUser', JSON.stringify(true));
       setUserModalIsOpen(false);
+
+ 
+
+
       // Navigate to home page after successful creation
       navigate('/');
       
