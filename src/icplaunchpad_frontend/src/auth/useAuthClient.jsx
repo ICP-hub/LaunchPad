@@ -52,6 +52,7 @@ export const useAuthClient = (options = defaultOptions) => {
       setBackendActor(backendActor);
 
       setIsAuthenticated(true);
+
     } else {
       setIsAuthenticated(false);
     }
@@ -185,6 +186,7 @@ export const useAuthClient = (options = defaultOptions) => {
   
 
   const login = async (provider = "Icp") => {
+    window.sessionStorage.setItem('RegisterUser', JSON.stringify(false));
     try {
       if (!authClient) throw new Error("AuthClient is not initialized yet.");
 

@@ -1,4 +1,3 @@
-
 use candid::{encode_one, CandidType, Nat, Principal};
 use ic_cdk::{
     api::{
@@ -664,4 +663,3 @@ pub async fn icrc28_trusted_origins() -> Icrc28TrustedOriginsResponse {
 
 
 export_candid!();
-

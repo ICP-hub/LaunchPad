@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import logo from "../../assets/images/icLogo.png";
 import GradientText from "../../common/GradientText";
 import { IoSearch, IoClose, IoMenu, IoCloseSharp } from "react-icons/io5";
@@ -9,12 +9,13 @@ import { useAuth } from '../../auth/useAuthClient';
 import ProfileCard from '../Modals/ProfileCard';
 import { FaUser } from 'react-icons/fa';
 import { BsThreeDotsVertical } from 'react-icons/bs';
-import toast from "react-hot-toast";
 
+import CreateUser from "../Modals/CreateUser";
 
 
 const Header = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [userModalIsOpen, setUserModalIsOpen] =useState(true);
   const [isSearching, setIsSearching] = useState(false);
 
   const [searchText, setSearchText] = useState('');
@@ -22,14 +23,22 @@ const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [profileModalIsOpen, setProfileModalIsOpen] = useState(false); // State for ProfileCard modal
 
-
-
   const { isAuthenticated, userPrincipal, identity } = useAuth();
+  const [activeSection, setActiveSection] = useState("home");
+  const [userName, setUserName] =useState();
+
+  
+  useEffect(() => {
+    // Fetch name from sessionStorage if available
+    const name = window.sessionStorage.getItem('userName');
+    if (name) {
+      setUserName(name);
+    }
+  }, []);
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
   };
-
 
   const openModal = () => {
     setModalIsOpen(true);
@@ -38,8 +47,6 @@ const Header = () => {
   const openProfileModal = () => {
     setProfileModalIsOpen(true);
   };
-
-
 
   const handleSearchClick = () => {
     setIsSearching(true);
@@ -51,22 +58,6 @@ const Header = () => {
   };
 
 
-
-  const [activeSection, setActiveSection] = useState("home");
-  const [userDetails, setUserDetails] = useState(null);
-
-  const getStatus = async () => {
-    const getUser = await backendActor.getUser();
-    if (getUser.err === "New user") {
-      // navigate("/register");
-    } else {
-      console.log(getUser.ok);
-      setUserDetails(getUser.ok);
-      toast.success("You are registered");
-    }
-  };
-
-
   const handleSectionClick = (section) => {
     setActiveSection(section);
     setMenuOpen(false);
@@ -74,10 +65,10 @@ const Header = () => {
 
   return (
     <div>
-
+{ ( isAuthenticated && JSON.parse(window.sessionStorage.getItem('RegisterUser')) == false) && <CreateUser  userModalIsOpen={userModalIsOpen} setUserModalIsOpen={setUserModalIsOpen} />}
       <nav className="relative z-20 text-white bg-black shadow-lg dlg:px-[2%] dlg:py-6 lgx:px-[4%] 
       lgx:py-9 md:px-[4%] md:py-[2%] py-[3%] px-[2.5%] flex justify-between items-center">
-
+ 
 
         {/* Hamburger Menu for screens below 768px */}
         <div className="md:hidden flex  items-center">
@@ -189,6 +180,7 @@ const Header = () => {
               />
             </div>
           )}
+        
         </div>
 
         {/* Connect Wallet Button for screens above 768px */}
@@ -206,6 +198,7 @@ const Header = () => {
           </button>
           <ConnectWallets modalIsOpen={modalIsOpen} setModalIsOpen={setModalIsOpen} />
         </div>
+        
         }
 
 
@@ -219,7 +212,7 @@ const Header = () => {
               <div className="bg-black h-full w-full rounded-2xl flex items-center p-1 px-3">
                 <FaUser className="mr-2" />
                 <div className="flex flex-col items-start w-24 lg:w-40">
-                  <span className="text-sm">ABCD</span>
+                  <span className="text-sm">{userName || 'ABCD'}</span>
                   <span className="text-xs text-gray-400 w-full overflow-hidden whitespace-nowrap text-ellipsis">
                     {userPrincipal}
                   </span>
@@ -253,7 +246,7 @@ const Header = () => {
             )}
           </div>
         }
-
+        
 
       </nav>
 
@@ -318,7 +311,7 @@ const Header = () => {
               <ProfileCard profileModalIsOpen={profileModalIsOpen} setProfileModalIsOpen={setProfileModalIsOpen} />
             </>
           }
-
+          
         </div>
       )}
 
@@ -335,6 +328,8 @@ const Header = () => {
         <p>#9 DOGA</p>
         <p>#10 MBCGA</p>
       </div>
+      
+      
     </div>
   );
 };

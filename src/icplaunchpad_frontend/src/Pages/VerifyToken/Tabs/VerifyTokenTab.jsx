@@ -1,7 +1,8 @@
 import React from 'react';
 
 
-const VerifyTokenTab = () => {
+const VerifyTokenTab = ({tokenData}) => {
+  console.log('bals-',tokenData?.initial_balances[0][1])
   return (
     <div  className="flex justify-center items-center  mb-[120px] dxs:mb-[115px] xxs1:mb-[50px] sm2:mb-[40px] md:mb-[30px] dlg:mb-0 m-4   bg-black text-white">
     <div className="bg-[#222222] w-full max-w-[1070px] h-[920px] xxs1:h-[850px] sm2:h-[780px] md:h-[730px] dlg:h-[780px] p-8 rounded-2xl">
@@ -10,28 +11,30 @@ const VerifyTokenTab = () => {
             <span className="text-white text-[22px]">Chain</span>
        </div>
       <h2 className="text-lg font-semibold mb-4">Token Address</h2>
+      
       <input
         type="text"
-        className="w-full py-2 pl-4 mb-4 bg-[#333333]  rounded-md"
+        className="w-full py-2 pl-4 mb-4 bg-[#333333]  text-[9px] ss3:text-[10px] xxs1:text-[17px]  relative  rounded-md"
         placeholder="0xd8319f62626D0b2Fa5027A4ACFFbF52E319b1E7C0"
         disabled
       />
+      
       <div className="mb-8 mt-8">
         <div className="flex justify-between border-b-2 py-1 border-[#FFFFFF80]">
           <p>Name</p>
-          <p>Chambs</p>
+          <p> { tokenData?.token_name } </p>
         </div>
         <div className="flex justify-between border-b-2 py-1 border-[#FFFFFF80]">
           <p>Symbol</p>
-          <p>CHAMBS</p>
+          <p> {tokenData?.token_symbol} </p>
         </div>
         <div className="flex justify-between border-b-2 py-1 border-[#FFFFFF80]">
           <p>Decimals</p>
-          <p>18</p>
+          <p>{tokenData?.decimals}</p>
         </div>
         <div className="flex justify-between border-b-2 py-1 border-[#FFFFFF80]">
           <p>Total Supply</p>
-          <p>10,000,000</p>
+          <p> {Number(tokenData?.initial_balances[0][1])} </p>
         </div>
       </div>
       <div className="mb-4">

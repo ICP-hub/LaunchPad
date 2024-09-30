@@ -5,7 +5,7 @@ import { useAuth } from "../../auth/useAuthClient";
 import { RxCross1 } from "react-icons/rx";
 
 // Importing wallet icons
-import infinite from '../../assets/images/icons/infinity.png';
+import infinite from '../../assets/images/icons/infinite.png';
 import id from '../../assets/images/icons/id.png';
 import plug from '../../assets/images/icons/plug.png';
 import bifinity from '../../assets/images/icons/bifinity.png';
@@ -36,8 +36,8 @@ const ConnectWallet = ({ modalIsOpen, setModalIsOpen }) => {
         className="w-full bg-[#303030] text-white py-2 rounded-[10px] flex items-center"
       >
         <span className="ml-3 absolute">{label}</span>
-        <div className="flex items-center justify-center ml-[85%] py-2 px-2 bg-white rounded-full">
-          <img src={icon} alt={label} className="w-4" />
+        <div className="flex items-center justify-center ml-[85%]  bg-white rounded-full">
+          <img src={icon} alt={label} className="w-8" />
         </div>
       </button>
     </div>
