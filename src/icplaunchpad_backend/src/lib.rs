@@ -79,6 +79,20 @@ pub fn get_user_by_username(username: String) -> Option<UserAccount> {
     })
 }
 
+#[ic_cdk::query]
+pub fn is_account_created() -> String {
+    let caller = ic_cdk::api::caller();
+
+    read_state(|state| {
+        if state.user_accounts.contains_key(&caller) {
+            format!("Account for principal {} is already created.", caller)
+        } else {
+            format!("Account for principal {} has not been created yet.", caller)
+        }
+    })
+}
+
+
 
 
 #[derive(CandidType, Serialize, Deserialize, Debug, Clone)]
