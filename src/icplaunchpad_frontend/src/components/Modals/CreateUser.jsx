@@ -12,6 +12,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const { register, handleSubmit, formState: { errors }, reset } = useForm();
   const [validationError, setValidationError] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
+
   const onSubmit = async (data) => {
     setValidationError('');
     const { name, username, profile, social, tag } = data;
@@ -45,8 +46,11 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
       console.log('User created:', response);
       response.Err && setValidationError(response.Err);
 
+      window.sessionStorage.setItem('RegisterUser', JSON.stringify(true));
+      setUserModalIsOpen(false);
       // Navigate to home page after successful creation
       navigate('/');
+      
       reset(); // Reset form after submission
     } 
     catch (err) {

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import logo from "../../assets/images/icLogo.png";
 import GradientText from "../../common/GradientText";
 import { IoSearch, IoClose, IoMenu, IoCloseSharp } from "react-icons/io5";
@@ -23,18 +23,17 @@ const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [profileModalIsOpen, setProfileModalIsOpen] = useState(false); // State for ProfileCard modal
 
-
-
   const { isAuthenticated, userPrincipal, identity } = useAuth();
+  const [activeSection, setActiveSection] = useState("home");
+  const [registerUser, setRegisterUser] =useState();
 
   
-
+ 
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
   };
 
-  
   const openModal = () => {
     setModalIsOpen(true);
   };
@@ -42,8 +41,6 @@ const Header = () => {
   const openProfileModal = () => {
     setProfileModalIsOpen(true);
   };
-
-
 
   const handleSearchClick = () => {
     setIsSearching(true);
@@ -55,10 +52,6 @@ const Header = () => {
   };
 
 
-
-  const [activeSection, setActiveSection] = useState("home");
-
-
   const handleSectionClick = (section) => {
     setActiveSection(section);
     setMenuOpen(false);
@@ -66,7 +59,7 @@ const Header = () => {
 
   return (
     <div>
-{ isAuthenticated && <CreateUser  userModalIsOpen={userModalIsOpen} setUserModalIsOpen={setUserModalIsOpen} />}
+{ ( isAuthenticated && JSON.parse(window.sessionStorage.getItem('RegisterUser')) == false) && <CreateUser  userModalIsOpen={userModalIsOpen} setUserModalIsOpen={setUserModalIsOpen} />}
       <nav className="relative z-20 text-white bg-black shadow-lg dlg:px-[2%] dlg:py-6 lgx:px-[4%] 
       lgx:py-9 md:px-[4%] md:py-[2%] py-[3%] px-[2.5%] flex justify-between items-center">
  
