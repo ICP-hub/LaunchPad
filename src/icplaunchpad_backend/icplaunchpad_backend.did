@@ -5,12 +5,7 @@ type CanisterIndexInfo = record {
   index_canister_id : text;
   token_name : text;
 };
-type ImageData = record {
-  content : opt blob;
-  name : text;
-  content_type : text;
-  ledger_id : principal;
-};
+type ProfileImageData = record { content : opt blob };
 type Result = variant { Ok : nat; Err : text };
 type Result_1 = variant { Ok : TokenCreationResult; Err : text };
 type Result_2 = variant { Ok; Err : text };
@@ -38,6 +33,7 @@ type TokenCreationResult = record {
   index_canister_id : principal;
   ledger_canister_id : principal;
 };
+type TokenImageData = record { content : opt blob; ledger_id : principal };
 type UserAccount = record {
   tag : text;
   username : text;
@@ -55,13 +51,16 @@ service : () -> {
   convert_icp_to_cycles : (nat64) -> (Result);
   create_token : (UserInputParams) -> (Result_1);
   create_user_account : (UserAccount) -> (Result_2);
-  get_image_ids : () -> (vec record { nat32; principal }) query;
+  get_profile_image_id : () -> (opt nat32) query;
   get_sale_params : (principal) -> (Result_3) query;
+  get_token_image_id : (principal) -> (opt nat32) query;
+  get_token_image_ids : () -> (vec record { nat32; principal }) query;
   get_tokens_info : () -> (vec CanisterIndexInfo) query;
   get_user_account : (principal) -> (opt UserAccount) query;
   get_user_by_username : (text) -> (opt UserAccount) query;
   is_account_created : () -> (text) query;
   search_by_token_name : (text) -> (opt CanisterIndexInfo) query;
   store_sale_params : (principal, SaleDetails) -> (Result_2);
-  upload_image : (text, ImageData) -> (Result_4);
+  upload_profile_image : (text, ProfileImageData) -> (Result_4);
+  upload_token_image : (text, TokenImageData) -> (Result_4);
 }

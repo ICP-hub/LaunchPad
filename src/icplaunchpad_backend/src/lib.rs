@@ -15,6 +15,7 @@ mod state_handler;
 mod params;
 mod transaction;
 use mint_cycles::mint_cycles;
+use crate::state_handler::ImageIdWrapper;
 
 #[derive(Serialize, Deserialize, Clone, CandidType, Debug)]
 pub struct UserAccount {
@@ -538,44 +539,65 @@ pub fn search_by_token_name(token_name: String) -> Option<CanisterIndexInfo> {
 
 
 #[derive(Clone, CandidType, Serialize, Deserialize)]
-pub struct ImageData {
+pub struct TokenImageData {
     pub content: Option<ByteBuf>,
-    pub name: String,
-    pub content_type: String,
     pub ledger_id: Principal,
     // you can add more params
+}
+
+#[derive(Clone, CandidType, Serialize, Deserialize)]
+pub struct ProfileImageData {
+    pub content: Option<ByteBuf>,
+    // You can add more fields if necessary
+}
+
+#[derive(CandidType, Clone, Debug, Default, Deserialize, Serialize)]
+pub struct CreateFileInput {
+    // pub parent: u32,
+    pub name: String,
+    pub content_type: String,
+    pub size: Option<Nat>, // if provided, can be used to detect the file is fully filled
+    pub content: Option<ByteBuf>, // should <= 1024 * 1024 * 2 - 1024
+    pub status: Option<i8>, // when set to 1, the file must be fully filled, and hash must be provided
+    pub hash: Option<ByteBuf>, // recommend sha3 256
+    pub ert: Option<String>,
+    pub crc32: Option<u32>,
 }
 
 type ReturnResult = Result<u32, String>;
 
 #[ic_cdk::update]
-pub async fn upload_image(asset_canister_id: String, image_data: ImageData) -> Result<String, String> {
+pub async fn upload_token_image(asset_canister_id: String, image_data: TokenImageData) -> Result<String, String> {
     let ledger_id = image_data.ledger_id;
+    
+    // Ensure the mandatory fields for CreateFileInput
+    let input = CreateFileInput {
+        name: "token_image.png".to_string(),   // Example name for token images
+        content_type: "image/png".to_string(), // Default content type for images
+        size: None,                           // You can calculate or leave None
+        content: image_data.content.clone(),  // Pass the content received from the struct
+        status: Some(1),                      // Example status, can customize as needed
+        hash: None,                           // Optional, but can calculate SHA-256 if needed
+        ert: None,                            // Optional field
+        crc32: None,                          // Optional, can calculate checksum if needed
+    };
 
     let response: CallResult<(ReturnResult,)> = ic_cdk::call(
         Principal::from_text(asset_canister_id.clone()).unwrap(),
         "create_file",
-        (image_data.clone(),)
+        (input,)
     ).await;
 
     let res0: Result<(Result<u32, String>,), (RejectionCode, String)> = response;
 
     let formatted_value = match res0 {
         Ok((Ok(image_id),)) => {
-            // ic_cdk::println!("Image ID returned: {}", image_id);
-            
             // Store image_id and ledger_id in the state
             mutate_state(|state| {
                 if let Some(mut canister_entry) = state.canister_ids.get(&ledger_id.to_string()) {
-                    // Modify the image_id and ledger_id fields
-                    // ic_cdk::println!("Storing image_id {} for ledger_id {}", image_id, ledger_id);
                     canister_entry.image_id = Some(image_id);
                     canister_entry.ledger_id = Some(ledger_id);
-                    
-                    // Reinsert the modified entry back into the map
                     state.canister_ids.insert(ledger_id.to_string(), canister_entry);
-                } else {
-                    ic_cdk::println!("No entry found for ledger_id: {}", ledger_id);
                 }
             });
 
@@ -598,8 +620,9 @@ pub async fn upload_image(asset_canister_id: String, image_data: ImageData) -> R
 }
 
 
+
 #[ic_cdk::query]
-pub fn get_image_ids() -> Vec<(u32, Principal)> {
+pub fn get_token_image_ids() -> Vec<(u32, Principal)> {
     let mut image_ledger_pairs = Vec::new();
     
     read_state(|state| {
@@ -615,6 +638,85 @@ pub fn get_image_ids() -> Vec<(u32, Principal)> {
 
     image_ledger_pairs
 }
+
+#[ic_cdk::query]
+pub fn get_token_image_id(ledger_id: Principal) -> Option<u32> {
+    read_state(|state| {
+        // Search for the given ledger_id in the canister_ids map
+        state.canister_ids.get(&ledger_id.to_string()).and_then(|canister_entry| {
+            // Return the image_id if available
+            canister_entry.image_id
+        })
+    })
+}
+
+
+#[ic_cdk::update]
+pub async fn upload_profile_image(asset_canister_id: String, image_data: ProfileImageData) -> Result<String, String> {
+    let principal = ic_cdk::api::caller();  // Get the caller's principal
+
+    // Ensure the mandatory fields for CreateFileInput
+    let input = CreateFileInput {
+        name: "profile_image.png".to_string(),   // Example name for profile images
+        content_type: "image/png".to_string(),   // Default content type for images
+        size: None,                             // You can calculate or leave None
+        content: image_data.content.clone(),    // Pass the content received from the struct
+        status: Some(1),                        // Example status, can customize as needed
+        hash: None,                             // Optional, but can calculate SHA-256 if needed
+        ert: None,                              // Optional field
+        crc32: None,                            // Optional, can calculate checksum if needed
+    };
+
+    let response: CallResult<(ReturnResult,)> = ic_cdk::call(
+        Principal::from_text(asset_canister_id.clone()).unwrap(),
+        "create_file",
+        (input,)
+    ).await;
+
+    let res0: Result<(Result<u32, String>,), (RejectionCode, String)> = response;
+
+    let formatted_value = match res0 {
+        Ok((Ok(image_id),)) => {
+            // Store image_id and principal in the state for the profile image
+            mutate_state(|state| {
+                state.image_ids.insert(
+                    principal.to_string(),
+                    ImageIdWrapper {
+                        image_id,
+                    }
+                );
+            });
+
+            Ok(format!("Profile image uploaded with ID: {}", image_id))
+        }
+        Ok((Err(err),)) => Err(err),
+        Err((code, message)) => {
+            match code {
+                RejectionCode::NoError => Err("NoError".to_string()),
+                RejectionCode::SysFatal => Err("SysFatal".to_string()),
+                RejectionCode::SysTransient => Err("SysTransient".to_string()),
+                RejectionCode::DestinationInvalid => Err("DestinationInvalid".to_string()),
+                RejectionCode::CanisterReject => Err("CanisterReject".to_string()),
+                _ => Err(format!("Unknown rejection code: {:?}: {}", code, message)),
+            }
+        }
+    };
+
+    formatted_value
+}
+
+
+
+#[ic_cdk::query]
+pub fn get_profile_image_id() -> Option<u32> {
+    let principal = ic_cdk::api::caller();  // Get the caller's principal
+
+    read_state(|state| {
+        state.image_ids.get(&principal.to_string()).map(|wrapper| wrapper.image_id)
+    })
+}
+
+
 
 
 
