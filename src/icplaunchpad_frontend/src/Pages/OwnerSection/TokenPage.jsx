@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import ProjectRectangleBg from "../../assets/images/project-rectangle-bg.png";
+import ProjectRectangleBg from "../../../assets/images/project-rectangle-bg.png";
 
 import { FaFacebook } from "react-icons/fa";
 import { FaTwitter } from "react-icons/fa";
@@ -9,7 +9,7 @@ import { FaTelegram } from "react-icons/fa6";
 import { FaInstagram } from "react-icons/fa";
 import { FaDiscord } from "react-icons/fa";
 
-import person1 from "../../assets/images/carousel/person1.png"
+import person1 from "../../../assets/images/carousel/person1.png"
 import ProjectTokenAbout from "./about/ProjectTokenAbout";
 import FAQsDiscussion from "./FAQsDiscussion/FaqDiscussionTab.jsx";
 import Pooolinfo from "./pooolinfo/Pooolinfo";

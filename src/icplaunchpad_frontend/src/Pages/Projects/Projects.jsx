@@ -1,8 +1,8 @@
 
 import React,{useState} from "react";
-import person1 from "../../assets/images/carousel/person1.png";
+import person1 from "../../../assets/images/carousel/person1.png";
 import { useNavigate } from 'react-router-dom';
-import l3 from '../../assets/images/carousel/l3.png'
+import l3 from '../../../assets/images/carousel/l3.png'
 import { TbFilterCheck } from "react-icons/tb";
 import { PiArrowsDownUpBold } from "react-icons/pi";
 

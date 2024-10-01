@@ -1,7 +1,7 @@
 import React from 'react';
-import l3 from '../../assets/images/carousel/l3.png';
-import l1 from '../../assets/images/partner.png'
-import p2 from '../../assets/images/projectsIcon/p2.png';
+import l3 from '../../../assets/images/carousel/l3.png';
+import l1 from '../../../assets/images/partner.png'
+import p2 from '../../../assets/images/projectsIcon/p2.png';
 
 const FundedProjects = () => {
   return (

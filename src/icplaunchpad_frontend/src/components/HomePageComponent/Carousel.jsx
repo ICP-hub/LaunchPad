@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { FiArrowLeftCircle, FiArrowRightCircle } from "react-icons/fi";
-import l1 from '../../assets/images/carousel/l1.png';
-import l2 from '../../assets/images/carousel/l2.png';
-import l3 from '../../assets/images/carousel/l3.png';
-import l4 from '../../assets/images/carousel/l4.png';
-import l5 from '../../assets/images/carousel/l5.png';
-import l6 from '../../assets/images/carousel/l6.png';
+import l1 from '../../../assets/images/carousel/l1.png';
+import l2 from '../../../assets/images/carousel/l2.png';
+import l3 from '../../../assets/images/carousel/l3.png';
+import l4 from '../../../assets/images/carousel/l4.png';
+import l5 from '../../../assets/images/carousel/l5.png';
+import l6 from '../../../assets/images/carousel/l6.png';
 
-import person1 from '../../assets/images/carousel/person1.png';
-import person2 from '../../assets/images/carousel/person2.png';
-import person3 from '../../assets/images/carousel/person3.png';
-import person4 from '../../assets/images/carousel/person4.png';
-import person5 from '../../assets/images/carousel/person5.png';
-import person6 from '../../assets/images/carousel/person6.png';
+import person1 from '../../../assets/images/carousel/person1.png';
+import person2 from '../../../assets/images/carousel/person2.png';
+import person3 from '../../../assets/images/carousel/person3.png';
+import person4 from '../../../assets/images/carousel/person4.png';
+import person5 from '../../../assets/images/carousel/person5.png';
+import person6 from '../../../assets/images/carousel/person6.png';
 
 const Carousel = () => {
   const [currentSlide, setCurrentSlide] = useState(0);

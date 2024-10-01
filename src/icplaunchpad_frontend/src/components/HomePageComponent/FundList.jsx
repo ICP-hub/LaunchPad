@@ -1,16 +1,16 @@
 import React from 'react';
-import p1 from '../../assets/images/projectsIcon/p1.png';
-import p2 from '../../assets/images/projectsIcon/p2.png';
-import p3 from '../../assets/images/projectsIcon/p3.png';
-import p4 from '../../assets/images/projectsIcon/p4.png';
-import p5 from '../../assets/images/projectsIcon/p5.png';
-import p6 from '../../assets/images/projectsIcon/p6.png';
-import p7 from '../../assets/images/projectsIcon/p7.png';
-import p8 from '../../assets/images/projectsIcon/p8.png';
-import p9 from '../../assets/images/projectsIcon/p9.png';
-import p10 from '../../assets/images/projectsIcon/p10.png';
-import p11 from '../../assets/images/projectsIcon/p11.png';
-import p12 from '../../assets/images/projectsIcon/p12.png';
+import p1 from '../../../assets/images/projectsIcon/p1.png';
+import p2 from '../../../assets/images/projectsIcon/p2.png';
+import p3 from '../../../assets/images/projectsIcon/p3.png';
+import p4 from '../../../assets/images/projectsIcon/p4.png';
+import p5 from '../../../assets/images/projectsIcon/p5.png';
+import p6 from '../../../assets/images/projectsIcon/p6.png';
+import p7 from '../../../assets/images/projectsIcon/p7.png';
+import p8 from '../../../assets/images/projectsIcon/p8.png';
+import p9 from '../../../assets/images/projectsIcon/p9.png';
+import p10 from '../../../assets/images/projectsIcon/p10.png';
+import p11 from '../../../assets/images/projectsIcon/p11.png';
+import p12 from '../../../assets/images/projectsIcon/p12.png';
 
 const FundList = () => {
   return (

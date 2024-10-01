@@ -1,6 +1,6 @@
 import React from 'react'
-import RectangleVideo from "../../../assets/images/RectangleVideo.png"
-import ExcludeButton from "../../../assets/images/ExcludeButton.png"
+import RectangleVideo from "../../../../assets/images/RectangleVideo.png"
+import ExcludeButton from "../../../../assets/images/ExcludeButton.png"
 
 const ProjectTokenAbout = () => {
   return (
