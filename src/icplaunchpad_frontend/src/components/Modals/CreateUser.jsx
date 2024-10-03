@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../../auth/useAuthClient';
 
-const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
+const CreateUser = ({ setUserData, userModalIsOpen, setUserModalIsOpen }) => {
   const navigate = useNavigate();
   const { createCustomActor } = useAuth();
   const { register, handleSubmit, formState: { errors }, reset } = useForm();
@@ -24,7 +24,6 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
 
     try {
       const actor = createCustomActor(process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND);
-
       let profilePicture = null;
 
       // Handling the profile picture as a file upload
@@ -34,39 +33,43 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
         profilePicture = Array.from(new Uint8Array(arrayBuffer)); // Convert ArrayBuffer to an array of bytes
       }
 
-      const UserData = {
-        name: name,
-        username: username,
+      const userData = {
+        name,
+        username,
         profile_picture: profilePicture && profilePicture.length > 0 ? [profilePicture] : [],
         links: [social],
-        tag: tag,
+        tag,
       };
 
-      const response = await actor.create_user_account(UserData);
+      const response = await actor.create_user_account(userData);
       console.log('User created:', response);
-      response.Err && setValidationError(response.Err);
+      if (response) setUserData(response);
+      if (response.Err) setValidationError(response.Err);
 
 
-           // Store name in sessionStorage
-      window.sessionStorage.setItem('registerUser', name);
 
-      window.sessionStorage.setItem('RegisterUser', JSON.stringify(true));
+  
+      if (userData.profile_picture.length > 0) {
+        const ImageData= {
+          content: userData?.profile_picture,
+          }
+        try {
+          const responseImg = await actor.upload_profile_image("br5f7-7uaaa-aaaaa-qaaca-cai",ImageData );
+          console.log('Profile pic uploaded:', responseImg);
+        } catch (imgErr) {
+          console.error("Error uploading profile picture:", imgErr);
+        }
+      }
+
+
       setUserModalIsOpen(false);
-
- 
-
-
-      // Navigate to home page after successful creation
-      navigate('/');
-      
+      navigate('/'); // Navigate to home page after successful creation
       reset(); // Reset form after submission
-    } 
-    catch (err) {
+    } catch (err) {
       console.error(err);
       setValidationError("An error occurred while creating the User.");
     }
   };
-
 
   const closeModal = () => {
     setUserModalIsOpen(false);
@@ -95,6 +98,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
 
           {/* Form Fields */}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {/* Name */}
             <div>
               <label className="block mb-2 text-[16px]">Name</label>
               <input
@@ -105,6 +109,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               {errors.name && <p className="text-red-500">{errors.name.message}</p>}
             </div>
 
+            {/* Username */}
             <div>
               <label className="block mb-2 text-[16px]">Username</label>
               <input
@@ -115,16 +120,18 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               {errors.username && <p className="text-red-500">{errors.username.message}</p>}
             </div>
 
+            {/* Profile Picture */}
             <div>
               <label className="block mb-2 text-[16px]">Profile Picture</label>
               <input
-                type="file" // Use file input for profile picture
+                type="file"
                 {...register('profile')}
                 className="w-full p-1 pl-4 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
               />
               {errors.profile && <p className="text-red-500">{errors.profile.message}</p>}
             </div>
 
+            {/* Social */}
             <div>
               <label className="block mb-2 text-[16px]">Social</label>
               <input
@@ -135,6 +142,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               {errors.social && <p className="text-red-500">{errors.social.message}</p>}
             </div>
 
+            {/* Tag */}
             <div>
               <label className="block mb-2 text-[16px]">Tag</label>
               <input
@@ -145,7 +153,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               {errors.tag && <p className="text-red-500">{errors.tag.message}</p>}
             </div>
 
-            {/* Terms Checkbox */}
+            {/* Terms and Conditions */}
             <div className="flex items-center mt-4 mb-6">
               <input
                 type="checkbox"
@@ -175,8 +183,8 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               <p className="text-red-500 mb-4">{validationError}</p>
             )}
 
-            {/* Gradient Button */}
-            <div onClick={() => navigate("/")} className="flex justify-center items-center">
+            {/* Submit Button */}
+            <div className="flex justify-center items-center">
               <AnimationButton text="Submit" />
             </div>
           </form>
