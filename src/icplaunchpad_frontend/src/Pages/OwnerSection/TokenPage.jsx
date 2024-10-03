@@ -17,12 +17,11 @@ import Token from "./token/Token";
 import PreviousSale from "./PreviousSale/PreviousSale.jsx";
 import MobileViewTab from "./MobileViewTab";
 import { FiEdit3 } from "react-icons/fi";
-import { useNavigate } from 'react-router-dom';
 
 import AddToWhitelist from "../../components/Modals/AddToWhitelist.jsx";
 import { useAuth } from "../../auth/useAuthClient.jsx";
 import { Principal } from '@dfinity/principal';
-import { useLocation } from 'react-router-dom';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 
 const TokenPage = () => {
   const [activeTab, setActiveTab] = useState("About");
@@ -37,6 +36,8 @@ const TokenPage = () => {
 
   const location = useLocation();
   const { ledgerPrincipalId } = location.state || {};
+
+  const navigate = useNavigate();
 
   const fetchData = async () => {
     try {
@@ -90,7 +91,6 @@ const TokenPage = () => {
     }
   }, [isAuthenticated, userPrincipal]);
 
-  const navigate = useNavigate();
 
   const openModal = () => {
     setIsOpen(true);
@@ -174,12 +174,9 @@ const TokenPage = () => {
                     <FaDiscord className="size-6" />
                   </div>
                 </div>
-                <div className="right flex flex-col gap-5">
+                <div onClick={()=>navigate("/verify-token")} className="right flex flex-col gap-5 cursor-pointer">
                   <FiEdit3 />
 
-                <div onClick={() => navigate("/verify-token")} className="right flex flex-col gap-5 cursor-pointer">
-                <FiEdit3/>
-                  
                 </div>
               </div>
 

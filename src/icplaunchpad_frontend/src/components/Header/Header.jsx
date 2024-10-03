@@ -119,7 +119,7 @@ const Header = () => {
           />
         </div>
 
-        <div className="hidden  md:flex lgx:px-10 lgx:mr-[28%]  md:mr-[20%] lg:text-[18px] md:text-[13px] lgx:text-[20px] md:gap-[20px] lg:gap-[25px] dxl:gap-[50px]">
+        <div className="hidden  md:flex lgx:px-10 lgx:mr-[28%]  md:mr-[20%] lg:text-[18px] md:text-[17px] lgx:text-[20px] md:gap-[20px] lg:gap-[25px] dxl:gap-[50px]">
 
           <Link
             to="/"
@@ -232,7 +232,7 @@ const Header = () => {
             >
               <div className="bg-black h-full w-full rounded-2xl flex items-center p-1 px-3">
                 <FaUser className="mr-2" />
-                <div className="flex flex-col items-start w-24 lg:w-40">
+                <div className="flex flex-col items-start w-24 h-8 lg:w-40 lg:h-full ">
                   <span className="text-sm">{userData  ? userData[0]?.username : 'ABCD'}</span>
                   <span className="text-xs text-gray-400 w-full overflow-hidden whitespace-nowrap text-ellipsis">
                     {userPrincipal}
