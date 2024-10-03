@@ -12,12 +12,14 @@ import bifinity from '../../../assets/images/icons/bifinity.png';
 
 // Component to connect wallet using various providers
 const ConnectWallet = ({ modalIsOpen, setModalIsOpen }) => {
-  const { login } = useAuth(); // Hook to handle authentication
+  const { login, isAuthenticated,  createCustomActor } = useAuth(); // Hook to handle authentication
+
 
   // Handle login for different wallet options
   const handleLogin = async (loginOption) => {
     try {
       await login(loginOption).then(() => console.log("Connected"));
+    
     } catch (e) {
       console.error('Error while connecting:', e);
     }
