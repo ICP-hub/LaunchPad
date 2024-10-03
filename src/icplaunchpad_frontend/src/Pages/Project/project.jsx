@@ -147,7 +147,7 @@ const TokenPage = () => {
 
           {!isMobile && (
             <div className="max-w-[90%] mx-auto">
-              <div className="flex font-posterama text-[10px] xl:text-[18px]  justify-between">
+              <div className="flex font-posterama text-[10px] xl:text-[15px]  justify-between">
                 {tabNames.map((tab) => (
                   <div
                     key={tab}

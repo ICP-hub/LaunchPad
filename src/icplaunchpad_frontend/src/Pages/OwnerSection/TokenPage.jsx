@@ -17,6 +17,7 @@ import Token from "./token/Token";
 import PreviousSale from "./PreviousSale/PreviousSale.jsx";
 import MobileViewTab from "./MobileViewTab";
 import { FiEdit3 } from "react-icons/fi";
+import { useNavigate } from 'react-router-dom';
 
 import AddToWhitelist from "../../components/Modals/AddToWhitelist.jsx";
 
@@ -26,6 +27,7 @@ const TokenPage = () => {
   const [sellType, setSellType] = useState('public');
   const [modalIsOpen, setIsOpen] = useState(false);
 
+  const navigate = useNavigate();
 
   const openModal = () => {
     setIsOpen(true);
@@ -108,7 +110,7 @@ const TokenPage = () => {
                     <FaDiscord className="size-6"/>
                   </div>
                 </div>
-                <div className="right flex flex-col gap-5">
+                <div onClick={() => navigate("/verify-token")} className="right flex flex-col gap-5 cursor-pointer">
                 <FiEdit3/>
                   
                 </div>
