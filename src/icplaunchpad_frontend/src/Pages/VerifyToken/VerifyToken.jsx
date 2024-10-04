@@ -64,7 +64,7 @@ const VerifyToken = () => {
 
       // Prepare presale data
       const presaleData = {
-        listing_rate: parseFloat(presaleRate),  // f64
+        listing_rate: parseFloat(presaleRate) || parseFloat(0.4),  // f64
         min_buy: parseInt(minimumBuy),          // u64
         max_buy: parseInt(maximumBuy),          // u64
         start_time_utc,
@@ -87,13 +87,13 @@ const VerifyToken = () => {
         ? Principal.fromUint8Array(ledger_canister_id)
         : null;
       if (!ledgerPrincipalId) throw new Error('Invalid ledger canister ID');
-
+      console.log('verify ledgerId--',ledgerPrincipalId, 'presaleData=', presaleData)
       // Create actor and submit presale data
       const actor = createCustomActor(process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND);
       const response = await actor.store_sale_params(ledgerPrincipalId, presaleData);
 
       // Upload token image if available
-      if (TokenPicture) {
+      if (!response.Err && TokenPicture) {
         const imgUrl = { content: [TokenPicture], ledger_id: ledgerPrincipalId };
         const responseImg = await actor.upload_token_image("br5f7-7uaaa-aaaaa-qaaca-cai", imgUrl);
         console.log('Token image uploaded:', responseImg);
@@ -103,7 +103,7 @@ const VerifyToken = () => {
       console.log('Presale data submitted:', response);
 
       // Navigate to token page on success
-       navigate('/token-page', { state: { ledgerPrincipalId } });
+       navigate('/token-page', { state: { ledger_canister_id } });
 
   
     } catch (error) {

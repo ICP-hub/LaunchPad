@@ -36,22 +36,22 @@ const AdditionalInfoTab = ({ setPresaleDetails }) => {
   //   return regex.test(url);
   // };
 
-  // const handleInputChange = (e, platform) => {
-  //   const value = e.target.value;
-  //   setPresaleDetails((prev) => ({ ...prev, [platform]: value }));
+  const handleInputChange = (e, platform) => {
+    const value = e.target.value;
+    setPresaleDetails((prev) => ({ ...prev, [platform]: value }));
 
-  //   if (!validateURL(value, platform)) {
-  //     setErrors((prevErrors) => ({
-  //       ...prevErrors,
-  //       [platform]: `Please enter a valid ${platform} link.`,
-  //     }));
-  //   } else {
-  //     setErrors((prevErrors) => ({
-  //       ...prevErrors,
-  //       [platform]: '',
-  //     }));
-  //   }
-  // };
+    // if (!validateURL(value, platform)) {
+    //   setErrors((prevErrors) => ({
+    //     ...prevErrors,
+    //     [platform]: `Please enter a valid ${platform} link.`,
+    //   }));
+    // } else {
+    //   setErrors((prevErrors) => ({
+    //     ...prevErrors,
+    //     [platform]: '',
+    //   }));
+    // }
+  };
 
   return (
     <div className="bg-[#222222] p-3 xxs1:p-8 rounded-2xl lg:h-[1050px] mx-8 mb-[120px] xxs1:mb-11 sm5:mb-6 md:mb-4 lg:mb-0 h-[1350px] xxs1:h-[1000px]">
@@ -163,7 +163,7 @@ const AdditionalInfoTab = ({ setPresaleDetails }) => {
         <label className="block text-[19px] mb-1">YouTube Video</label>
         <input
           type="text"
-          onChange={(e) => handleInputChange(e, 'youtube')}
+          onChange={(e) => handleInputChange(e, 'youtubeVideo')}
           className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
         />
         {errors.youtube && <p className="text-red-500">{errors.youtube}</p>}

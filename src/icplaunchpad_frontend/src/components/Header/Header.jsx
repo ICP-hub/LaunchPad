@@ -252,7 +252,7 @@ const Header = () => {
                     >
                       Account
                     </button>
-                    <ProfileCard profileModalIsOpen={profileModalIsOpen} setProfileModalIsOpen={setProfileModalIsOpen} />
+                    <ProfileCard userData={userData && userData} profileModalIsOpen={profileModalIsOpen} setProfileModalIsOpen={setProfileModalIsOpen} />
                   </div>
 
                   <Link

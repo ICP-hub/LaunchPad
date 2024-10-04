@@ -5,14 +5,16 @@ import Modal from 'react-modal';
 import person1 from "../../../assets/images/carousel/person1.png"
 import { useAuth } from '../../auth/useAuthClient';
 
-const ProfileCard = ({ profileModalIsOpen, setProfileModalIsOpen }) => {
+const ProfileCard = ({ userData, profileModalIsOpen, setProfileModalIsOpen }) => {
   const { logout, userPrincipal } = useAuth();
-  const [userName, setUserName] =useState();
+  const [userName, setUserName]=useState();
+
 
   useEffect(() => {
-      
+    if(userData)
+    setUserName(userData[0].username)
     
-  }, []);
+  }, [userData]);
 
 
   async function handleLogout(){
@@ -53,7 +55,8 @@ const ProfileCard = ({ profileModalIsOpen, setProfileModalIsOpen }) => {
           className="w-20 h-20 rounded-full object-cover"
         />
          <div className='w-48'>
-        <h2 className="text-lg font-semibold mt-2">{userName || 'ABCD'}</h2>
+        <h2 className="text-lg font-semibold mt-2">{userName ? userName
+ : 'ABCD'}</h2>
         <p className="text-sm text-gray-400 overflow-hidden whitespace-nowrap text-ellipsis"> {userPrincipal} </p>
 
         {/* Block Explorer Button */}

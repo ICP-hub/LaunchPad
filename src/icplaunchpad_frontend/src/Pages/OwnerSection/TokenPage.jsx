@@ -36,9 +36,10 @@ const TokenPage = () => {
   const protocol = process.env.DFX_NETWORK === "ic" ? "https" : "http";
   const domain = process.env.DFX_NETWORK === "ic" ? "raw.icp0.io" : "localhost:4943";
   const canisterId = process.env.CANISTER_ID_IC_ASSET_HANDLER;
-
+  const [presaleData, sePresaleData]= useState(null);
   const location = useLocation();
-  const { ledgerPrincipalId } = location.state || {};
+
+    const { ledger_canister_id } = location.state || {};
 
   const fetchData = async () => {
     try {
@@ -62,6 +63,14 @@ const TokenPage = () => {
       //   setImageIds(prev => ({ ...prev, tokenId: token_imageId }));
       //   console.log("tokenImg", token_imageId);
       // }
+
+      if (ledger_canister_id) {
+        const ledgerPrincipalId= Principal.fromUint8Array(ledger_canister_id)
+       const presaleData= await actor.get_sale_params(ledgerPrincipalId);
+       sePresaleData(presaleData.Ok);
+       console.log("presale data--",presaleData);
+       }
+
 
     } catch (error) {
       console.error("Error fetching data:", error);
