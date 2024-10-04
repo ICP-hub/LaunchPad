@@ -33,8 +33,7 @@ const Header = () => {
 
   
   useEffect(() => {
-        userCheck();
-        
+        userCheck();      
   }, [isAuthenticated,isUserRegistered]);
 
   async function userCheck() {

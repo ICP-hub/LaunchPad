@@ -14,8 +14,8 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
     token_name: '',
     token_symbol: '',
     decimals: '',
+    listingRate:0.4,
     total_supply: '',
-    initial_balances: []
   });
 
   const amount = 0.1; // Transaction amount in ICP
@@ -83,7 +83,7 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
         const  ledger_canister_id= response.Ok.ledger_canister_id._arr;
 
         // Navigate to verify-token page
-        navigate('/verify-token', { state: { tokenData, ledger_canister_id } });
+        navigate('/verify-token', { state: { formData, ledger_canister_id } });
 
       // } else {
       //   setValidationError("Transaction failed.");

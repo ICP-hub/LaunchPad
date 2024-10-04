@@ -28,7 +28,7 @@ const VerifyToken = () => {
   const location = useLocation();
 
   // Extract token data and ledger canister ID from location state
-  const { tokenData, ledger_canister_id } = location.state || {};
+  const { formData, ledger_canister_id } = location.state || {};
 
   // Auth context for actor creation
   const { createCustomActor } = useAuth();
@@ -116,6 +116,11 @@ const VerifyToken = () => {
   const handleNext = () => {
     if (currentStep < 4) {
       setCurrentStep((prevStep) => prevStep + 1);
+      console.log(presaleDetails)
+      
+      if(currentStep == 1)
+          setPresaleDetails(prev => ({ ...prev, ...formData }))
+
     } else if (currentStep === 4) {
       submitPresaleDetails();
     }
@@ -133,7 +138,7 @@ const VerifyToken = () => {
       {/* Dynamic Step Content */}
       <div className="w-full max-w-[1070px] mt-8">
         {currentStep === 1 && (
-          <VerifyTokenTab tokenData={tokenData} setPresaleDetails={setPresaleDetails} />
+          <VerifyTokenTab tokenData={formData} setPresaleDetails={setPresaleDetails} />
         )}
         {currentStep === 2 && (
           <LaunchpadInfoTab setPresaleDetails={setPresaleDetails} />

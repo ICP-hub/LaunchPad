@@ -26,47 +26,48 @@ const CreateUser = ({ setUserData, userModalIsOpen, setUserModalIsOpen }) => {
       const actor = createCustomActor(process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND);
       let profilePicture = null;
 
-      // Handling the profile picture as a file upload
+      // Handle profile picture file upload
       if (profile && profile.length > 0 && profile[0]) {
         const file = profile[0];
         const arrayBuffer = await file.arrayBuffer();
-        profilePicture = Array.from(new Uint8Array(arrayBuffer)); // Convert ArrayBuffer to an array of bytes
+        profilePicture = Array.from(new Uint8Array(arrayBuffer));
       }
 
       const userData = {
         name,
         username,
-        profile_picture: profilePicture && profilePicture.length > 0 ? [profilePicture] : [],
+        profile_picture: profilePicture?.length > 0 ? [profilePicture] : [],
         links: [social],
         tag,
       };
 
       const response = await actor.create_user_account(userData);
+      if (response?.Err) {
+        setValidationError(response.Err);
+        return;
+      }
+
+      setUserData([{username:userData.username}]);
       console.log('User created:', response);
-      if (response) setUserData(response);
-      if (response.Err) setValidationError(response.Err);
 
-
-
-  
+      // Upload profile picture if exists
       if (userData.profile_picture.length > 0) {
-        const ImageData= {
-          content: userData?.profile_picture,
-          }
         try {
-          const responseImg = await actor.upload_profile_image("br5f7-7uaaa-aaaaa-qaaca-cai",ImageData );
+          const responseImg = await actor.upload_profile_image("br5f7-7uaaa-aaaaa-qaaca-cai", {
+            content: userData.profile_picture,
+          });
           console.log('Profile pic uploaded:', responseImg);
         } catch (imgErr) {
           console.error("Error uploading profile picture:", imgErr);
         }
       }
 
-
+      // Close modal, reset form, and navigate to home
       setUserModalIsOpen(false);
-      navigate('/'); // Navigate to home page after successful creation
-      reset(); // Reset form after submission
+      navigate('/');
+      reset();
     } catch (err) {
-      console.error(err);
+      console.error("An error occurred:", err);
       setValidationError("An error occurred while creating the User.");
     }
   };
@@ -86,7 +87,7 @@ const CreateUser = ({ setUserData, userModalIsOpen, setUserModalIsOpen }) => {
         ariaHideApp={false}
       >
         <div className="bg-[#222222] p-6 rounded-2xl text-white mx-6 max-h-[100vh] overflow-y-auto w-[786px] relative">
-          <div className="bg-[#FFFFFF4D] mx-[-24px] mt-[-25px] px-4 py-1 mb-4 rounded-2xl">
+          <div className="bg-[#FFFFFF4D] mx-[-24px] mt-[-25px] px-4 py-1 mb-4 rounded-2xl relative">
             <button
               onClick={closeModal}
               className="absolute mt-1 right-8 text-[25px] md:text-[30px] text-white"
@@ -96,7 +97,7 @@ const CreateUser = ({ setUserData, userModalIsOpen, setUserModalIsOpen }) => {
             <h2 className="text-[20px] font-medium md:text-[25px] md:font-semibold">Create User</h2>
           </div>
 
-          {/* Form Fields */}
+          {/* Form */}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {/* Name */}
             <div>
@@ -128,7 +129,6 @@ const CreateUser = ({ setUserData, userModalIsOpen, setUserModalIsOpen }) => {
                 {...register('profile')}
                 className="w-full p-1 pl-4 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
               />
-              {errors.profile && <p className="text-red-500">{errors.profile.message}</p>}
             </div>
 
             {/* Social */}
@@ -164,7 +164,7 @@ const CreateUser = ({ setUserData, userModalIsOpen, setUserModalIsOpen }) => {
               />
               <div
                 className={`w-4 h-4 border-2 flex items-center justify-center rounded-sm mr-2 cursor-pointer 
-                ${termsAccepted ? '' : 'border-white bg-transparent'}`}
+                ${termsAccepted ? 'border-[#F3B3A7]' : 'border-white bg-transparent'}`}
               >
                 <label
                   htmlFor="termsCheckbox"
@@ -179,9 +179,7 @@ const CreateUser = ({ setUserData, userModalIsOpen, setUserModalIsOpen }) => {
             </div>
 
             {/* Validation Error Message */}
-            {validationError && (
-              <p className="text-red-500 mb-4">{validationError}</p>
-            )}
+            {validationError && <p className="text-red-500 mb-4">{validationError}</p>}
 
             {/* Submit Button */}
             <div className="flex justify-center items-center">

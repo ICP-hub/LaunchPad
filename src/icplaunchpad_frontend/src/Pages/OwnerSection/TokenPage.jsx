@@ -21,7 +21,7 @@ import { FiEdit3 } from "react-icons/fi";
 import AddToWhitelist from "../../components/Modals/AddToWhitelist.jsx";
 import { useAuth } from "../../auth/useAuthClient.jsx";
 import { Principal } from '@dfinity/principal';
-import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 const TokenPage = () => {
   const [activeTab, setActiveTab] = useState("About");
@@ -33,57 +33,40 @@ const TokenPage = () => {
   const [imageIds, setImageIds] = useState({});
   const [profileImg, setProfileImg] = useState();
   const [isLoading, setIsLoading] = useState(true);
+  const protocol = process.env.DFX_NETWORK === "ic" ? "https" : "http";
+  const domain = process.env.DFX_NETWORK === "ic" ? "raw.icp0.io" : "localhost:4943";
+  const canisterId = process.env.CANISTER_ID_IC_ASSET_HANDLER;
 
   const location = useLocation();
   const { ledgerPrincipalId } = location.state || {};
 
-  const navigate = useNavigate();
-
   const fetchData = async () => {
     try {
-
       const actor = createCustomActor(process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND);
       const ownerPrincipal = Principal.fromText(userPrincipal);
       const response = await actor.get_user_account(ownerPrincipal);
-      console.log("Response--:", response);
-      setUserData(response)
+      console.log("Response-:", response);
+      setUserData(response);
     
-      if (response && response[0]?.profile_picture) {
-        const ImgURL = await uint8ArrayToBase64(response[0].profile_picture);
-         setProfileImg(ImgURL)
-         console.log("ImgUrl--", ImgURL);
-      }
       
-      // getting profileimage  id
+      // Getting profile image ID
       const profile_ImgId = await actor.get_profile_image_id();
-      setImageIds(prev => ({ ...prev, profileId: profile_ImgId }));
-      console.log("userImg", profile_ImgId)
+      console.log("Image id", profile_ImgId[0]);
+      const imageUrl = `${protocol}://${canisterId}.${domain}/f/${profile_ImgId[0]}`;
+      setProfileImg(imageUrl);
+      console.log("userImg", imageUrl);
 
-      // getting tokenImage id
-      if(ledgerPrincipalId){
-      const token_imageId = await actor.get_token_image_id(ledgerPrincipalId);
-      setImageIds(prev => ({ ...prev, tokenId: token_imageId }));
-      console.log("tokenImg", token_imageId);
-      }
-      
-
+      // Getting token image ID
+      // if (ledgerPrincipalId) {
+      //   const token_imageId = await actor.get_token_image_id(ledgerPrincipalId);
+      //   setImageIds(prev => ({ ...prev, tokenId: token_imageId }));
+      //   console.log("tokenImg", token_imageId);
+      // }
 
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
-
-  const uint8ArrayToBase64 = (uint8Array) => {
-    const blob = new Blob([uint8Array], { type: 'image/png' });
-    const reader = new FileReader();
-
-    return new Promise((resolve, reject) => {
-      reader.onloadend = () => resolve(reader.result);
-      reader.onerror = reject;
-      reader.readAsDataURL(blob); // Converts Blob to Base64 Data URL
-    });
-  };
-
 
   useEffect(() => {
     if (isAuthenticated && userPrincipal) {
@@ -174,7 +157,7 @@ const TokenPage = () => {
                     <FaDiscord className="size-6" />
                   </div>
                 </div>
-                <div onClick={()=>navigate("/verify-token")} className="right flex flex-col gap-5 cursor-pointer">
+                <div className="right flex flex-col gap-5">
                   <FiEdit3 />
 
                 </div>

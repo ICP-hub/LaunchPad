@@ -50,7 +50,7 @@ const VerifyTokenTab = ({ tokenData, setPresaleDetails }) => {
           </div>
           <div className="flex justify-between border-b-2 py-1 border-[#FFFFFF80]">
             <p>Total Supply</p>
-            <p>{Number(tokenData?.initial_balances?.[0]?.[1]) || 0}</p>
+            <p>{Number(tokenData?.total_supply) || 0}</p>
           </div>
         </div>
 

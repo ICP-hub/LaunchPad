@@ -10,11 +10,8 @@ const ProfileCard = ({ profileModalIsOpen, setProfileModalIsOpen }) => {
   const [userName, setUserName] =useState();
 
   useEffect(() => {
-    // Fetch name from sessionStorage if available
-    const name = window.sessionStorage.getItem('userName');
-    if (name) {
-      setUserName(name);
-    }
+      
+    
   }, []);
 
 

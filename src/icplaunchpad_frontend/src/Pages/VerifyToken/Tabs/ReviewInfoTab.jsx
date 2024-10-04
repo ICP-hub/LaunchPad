@@ -1,36 +1,35 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
-const ReviewInfoTab = () => {
-
+const ReviewInfoTab = ({ presaleDetails }) => {
 
   return (
     <div className="bg-[#222222] p-4 xxs1:p-8 overflow-x-auto rounded-2xl mb-[120px] xxs1:mb-[50px] sm3:mb-8 mx-8 h-[1270px] xxs1:h-[1450px] sm3:h-[1350px] md:h-[1250px] lg:h-[1150px]">
       <table className="w-full text-left text-[10px] xxs1:text-[14px] pr-2 mb-4">
         <tbody>
           {[
-            ["Total token", "585.000 ICP"],
-            ["Token name", "Chambs"],
-            ["Token symbol", "CHAMBS"],
-            ["Token decimals", "18"],
-            ["Presale rate", "2000 ICP"],
-            ["Listing rate", "2000 ICP"],
-            ["Sale method", "Public"],
-            ["Softcap", "100 BNB"],
-            ["Hardcap", "200 BNB"],
-            ["Minimum buy", "1 BNB"],
-            ["Maximum buy", "2 BNB"],
-            ["Start time", "2023-12-13T16:45 (UTC)"],
-            ["End time", "2023-12-14T16:40 (UTC)"],
-            ["Website", "https://pinksale.finance"],
-            ["Facebook", "https://facebook.com/pinksaleTEST"],
-            ["Twitter", "https://twitter.com/pinkecosystem"],
-            ["Telegram", "https://t.me/pinkecosystem"],
-            ["Github", "https://github.com/pinksaleTEST"],
-            ["Instagram", "https://instagram.com/pinksaleTEST"],
-            ["Discord", "https://discord.com/pinksaleTEST"],
-            ["Reddit", "https://reddit.com/pinksaleTEST"],
-            ["Description", "PinkSale helps everyone to create their own tokens and token sales in a few seconds. Tokens created on"],
-            ["Youtube Video", "https://www.youtube.com/watch?v=NHlyrXmcC8ss"],
+            ["Total token", presaleDetails?.total_supply || "N/A"],
+            ["Token name", presaleDetails?.token_name || "N/A"],
+            ["Token symbol", presaleDetails?.token_symbol || "N/A"],
+            ["Token decimals", presaleDetails?.decimals || "N/A"],
+            ["Presale rate", presaleDetails?.presaleRate || "N/A"],
+            ["Listing rate", presaleDetails?.listingRate || "N/A"],
+            ["Sale method", presaleDetails?.currencyICP == true ?  "ICP" : "N/A"],
+            ["Softcap", presaleDetails?.softcapToken || "N/A"],
+            ["Hardcap", presaleDetails?.hardcapToken|| "N/A"],
+            ["Minimum buy", presaleDetails?. minimumBuy|| "N/A"],
+            ["Maximum buy", presaleDetails?. maximumBuy || "N/A"],
+            ["Start time", presaleDetails?.startTime || "N/A"],
+            ["End time", presaleDetails?.endTime || "N/A"],
+            ["Website", presaleDetails?.website || "N/A"],
+            ["Facebook", presaleDetails?.facebook || "N/A"],
+            ["Twitter", presaleDetails?.twitter || "N/A"],
+            ["Telegram", presaleDetails?.telegram || "N/A"],
+            ["Github", presaleDetails?.github || "N/A"],
+            ["Instagram", presaleDetails?.instagram || "N/A"],
+            ["Discord", presaleDetails?.discord || "N/A"],
+            ["Reddit", presaleDetails?.reddit || "N/A"],
+            ["Description", presaleDetails?.description || "N/A"],
+            ["Youtube Video", presaleDetails?.youtubeVideo || "N/A"],
           ].map(([label, value], idx) => (
             <tr key={idx} className="border-b border-gray-600">
               <td className="py-2">{label}</td>

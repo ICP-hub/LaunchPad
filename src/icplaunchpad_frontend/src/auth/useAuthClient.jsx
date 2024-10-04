@@ -147,53 +147,41 @@ export const useAuthClient = (options = defaultOptions) => {
 
 
   const loginWithPlug = async () => {
-    try {
+    return new Promise(async (resolve, reject) => {
       if (!window.ic?.plug) {
-        throw new Error("Plug wallet not detected. Please install or enable the Plug extension.");
+        reject(new Error("Plug wallet not detected. Please install or enable the Plug extension."));
+        return;
       }
-  
-      // Request connection to Plug
-      const connected = await window.ic.plug.requestConnect({
-        whitelist: [process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND],
-        timeout: 10000, // Increased timeout to 10 seconds to account for slow connections
-      });
-  
-      if (!connected) {
-        throw new Error("Plug wallet connection failed.");
-      }
-  
-      // Ensure agent creation if it hasn't been created already
-      if (!window.ic.plug.agent) {
-        await window.ic.plug.createAgent({
+
+      try {
+        const connected = await window.ic.plug.requestConnect({
           whitelist: [process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND],
+          timeout: 5000,
         });
+
+        if (connected) {
+          if (!window.ic.plug.agent) await window.ic.plug.createAgent();
+
+          const principal = await window.ic.plug.agent.getPrincipal();
+          setUserPrincipal(principal.toString());
+
+          const backendActor = await window.ic.plug.createActor({
+            canisterId: process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND,
+            interfaceFactory: DaoFactory,
+          });
+
+          setBackendActor(backendActor);
+          setIsAuthenticated(true);
+          resolve(true);
+        } else {
+          reject(new Error("Plug connection failed."));
+
+        }
+      } catch (error) {
+        reject(error);
       }
-  
-      // Get the principal from Plug's agent
-      const principal = await window.ic.plug.agent.getPrincipal();
-      if (!principal) {
-        throw new Error("Failed to retrieve principal from Plug.");
-      }
-  
-      // Set the user principal and authenticated state
-      setUserPrincipal(principal.toString());
-  
-      // Create backend actor using Plug
-      const backendActor = await window.ic.plug.createActor({
-        canisterId: process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND,
-        interfaceFactory: DaoFactory,
-      });
-  
-      setBackendActor(backendActor);
-      setIsAuthenticated(true);
-    } catch (error) {
-      // Detailed error logging
-      console.error("Plug login error:", error);
-      setError(error.message || "An unknown error occurred during Plug login.");
-      setIsAuthenticated(false); // Ensure to reset authentication state on failure
-    }
+    });
   };
-  
 
   
 
