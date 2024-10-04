@@ -131,17 +131,20 @@ const TokenPage = () => {
           {!isMobile && (
             <div className="h-[314px]">
               <div className="relative">
+                
                 <img
                   src={ProjectRectangleBg}
                   className="min-h-[147px] w-full rounded-lg"
                   alt=""
                 />
                 
+                
                  <img
                   src={profileImg || person1} // Show person1 as a fallback if profileImg is not available yet
-                  className="absolute top-0 left-[50%] transform -translate-x-1/2 -translate-y-[35%] rounded-full h-[130px] md:min-h-[177px]"
+                  className="absolute  top-0 left-[50%] transform -translate-x-1/2 -translate-y-[35%] rounded-full   h-[130px] w-[130px]"
                   alt="Profile Picture"
                 />
+
               </div>
               <div className="content-div flex font-posterama justify-between w-[90%] m-auto mt-7 ">
                 <div className="left flex flex-col gap-5">
@@ -172,7 +175,7 @@ const TokenPage = () => {
               <div className="relative">
                 <img
                   src={profileImg || person1}
-                  className="absolute top-0 left-[50%] transform -translate-x-1/2 -translate-y-[50%] rounded-full h-[130px] md:min-h-[177px]"
+                  className="absolute top-0 left-[50%] transform -translate-x-1/2 -translate-y-[50%] rounded-full h-[130px] w-[130px]"
                   alt=""
                 />
               </div>
