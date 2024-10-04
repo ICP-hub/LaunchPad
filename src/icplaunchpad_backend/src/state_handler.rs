@@ -164,7 +164,6 @@ pub struct SaleDetails {
     pub max_buy: u64,
     pub start_time_utc: u64,
     pub end_time_utc: u64,
-    pub logo_url: String,
     pub website: String,
     pub facebook: String,
     pub twitter: String,

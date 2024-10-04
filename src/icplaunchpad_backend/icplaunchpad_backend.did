@@ -19,7 +19,6 @@ type SaleDetails = record {
   description : text;
   youtube_video : text;
   website : text;
-  logo_url : text;
   facebook : text;
   end_time_utc : nat64;
   discord : text;

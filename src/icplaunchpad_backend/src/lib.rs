@@ -281,7 +281,9 @@ pub(crate) struct CreateCanisterArgumentExtended {
 #[derive(CandidType, Serialize, Deserialize, Debug)]
 pub struct IndexInitArgs {
     pub ledger_id: Principal,
+    pub retrieve_blocks_from_ledger_interval_seconds: Option<u64>, // Add this field
 }
+
 
 #[derive(CandidType, Serialize, Deserialize, Debug)]
 pub struct CanisterIndexInfo {
@@ -369,70 +371,92 @@ pub struct TokenCreationResult {
     pub index_canister_id: Principal,
 }
 
+#[derive(CandidType, Serialize, Deserialize, Debug)]
+pub enum IndexArg {
+    Init(IndexInitArgs),
+    Upgrade(UpgradeArgs),
+}
 
 
 #[ic_cdk::update]
 pub async fn create_token(user_params: UserInputParams) -> Result<TokenCreationResult, String> {
 
     let arg = CreateCanisterArgument { settings: None };
-    
+
     // Create ledger canister
     let (canister_id,) = match create_canister(arg.clone()).await {
         Ok(id) => id,
         Err((_, err_string)) => {
-            ic_cdk::println!("error in canister id");
+            ic_cdk::println!("Error creating ledger canister: {}", err_string);
             return Err(format!("Error: {}", err_string));
         }
     };
-    
+
     // Create index canister
     let (index_canister_id,) = match create_canister(arg.clone()).await {
         Ok(id) => id,
         Err((_, err_string)) => {
-            ic_cdk::println!("error in canister id");
+            ic_cdk::println!("Error creating index canister: {}", err_string);
             return Err(format!("Error: {}", err_string));
         }
     };
 
-    let _addcycles = deposit_cycles(canister_id, 150_000_000_000).await.unwrap();
-    let _addcycles_index = deposit_cycles(index_canister_id, 100_000_000_000).await.unwrap();
+    // Add cycles to the ledger canister
+    if let Err((_, err_string)) = deposit_cycles(canister_id, 150_000_000_000).await {
+        ic_cdk::println!("Error adding cycles to ledger canister: {}", err_string);
+        return Err(format!("Error: {}", err_string));
+    }
+
+    // Add cycles to the index canister
+    if let Err((_, err_string)) = deposit_cycles(index_canister_id, 100_000_000_000).await {
+        ic_cdk::println!("Error adding cycles to index canister: {}", err_string);
+        return Err(format!("Error: {}", err_string));
+    }
+
     let canister_id_principal = canister_id.canister_id;
     let index_canister_id_principal = index_canister_id.canister_id;
 
-    let minting_account = params::MINTING_ACCOUNT.lock().unwrap().clone().map_err(|e| e.to_string())?;
+    let minting_account = params::MINTING_ACCOUNT
+        .lock()
+        .unwrap()
+        .clone()
+        .map_err(|e| e.to_string())?;
 
     // Handle potential error from FEE_COLLECTOR_ACCOUNT
-    let fee_collector_account = params::FEE_COLLECTOR_ACCOUNT.lock().unwrap().clone().map_err(|e| e.to_string())?;
+    let fee_collector_account = params::FEE_COLLECTOR_ACCOUNT
+        .lock()
+        .unwrap()
+        .clone()
+        .map_err(|e| e.to_string())?;
 
     // Handle potential error from ARCHIVE_OPTIONS
-    let archive_options = params::ARCHIVE_OPTIONS.lock().unwrap().clone().map_err(|e| e.to_string())?;
-
+    let archive_options = params::ARCHIVE_OPTIONS
+        .lock()
+        .unwrap()
+        .clone()
+        .map_err(|e| e.to_string())?;
 
     // Ledger Init Args
     let init_args = LedgerArg::Init(InitArgs {
-        minting_account, // Hardcoded value from params.rs
+        minting_account,                          // Hardcoded value from params.rs
         fee_collector_account: Some(fee_collector_account), // Hardcoded value from params.rs
-        transfer_fee: params::TRANSFER_FEE.clone(), // Hardcoded value
-        decimals: user_params.decimals, // User-supplied value
-        max_memo_length: Some(params::MAX_MEMO_LENGTH), // Hardcoded value
-        token_symbol: user_params.token_symbol.clone(),  // User-supplied value
-        token_name: user_params.token_name.clone(),  // User-supplied value
-        metadata: vec![], // Empty or pre-defined metadata if needed
-        initial_balances: user_params.initial_balances, // User-supplied value
-        feature_flags: Some(params::FEATURE_FLAGS), // Hardcoded value
+        transfer_fee: params::TRANSFER_FEE.clone(),       // Hardcoded value
+        decimals: user_params.decimals,           // User-supplied value
+        max_memo_length: Some(params::MAX_MEMO_LENGTH),   // Hardcoded value
+        token_symbol: user_params.token_symbol.clone(),   // User-supplied value
+        token_name: user_params.token_name.clone(),       // User-supplied value
+        metadata: vec![],                          // Empty or pre-defined metadata if needed
+        initial_balances: user_params.initial_balances,   // User-supplied value
+        feature_flags: Some(params::FEATURE_FLAGS),       // Hardcoded value
         maximum_number_of_accounts: Some(params::MAXIMUM_NUMBER_OF_ACCOUNTS), // Hardcoded value
         accounts_overflow_trim_quantity: Some(params::ACCOUNTS_OVERFLOW_TRIM_QUANTITY), // Hardcoded value
-        archive_options, // Hardcoded value from params.rs
+        archive_options,                          // Hardcoded value from params.rs
     });
 
     let init_arg: Vec<u8> = encode_one(init_args).map_err(|e| e.to_string())?;
 
-    let wasm_module =
-        include_bytes!("../../../.dfx/local/canisters/token_deployer/token_deployer.wasm.gz")
-            .to_vec();
-    let index_wasm_module =
-        include_bytes!("../../../.dfx/local/canisters/index_canister/index_canister.wasm.gz")
-            .to_vec();
+    let wasm_module = include_bytes!("../../../.dfx/local/canisters/token_deployer/token_deployer.wasm.gz").to_vec();
+    let index_wasm_module = include_bytes!("../../../.dfx/local/canisters/index_canister/index_canister.wasm.gz").to_vec();
 
     let arg1: InstallCodeArgument = InstallCodeArgument {
         mode: CanisterInstallMode::Install,
@@ -443,59 +467,77 @@ pub async fn create_token(user_params: UserInputParams) -> Result<TokenCreationR
 
     // Index Init Args
     let index_init_args = IndexInitArgs {
-        ledger_id: canister_id_principal,
+        ledger_id: canister_id_principal,               // Ledger canister ID
+        retrieve_blocks_from_ledger_interval_seconds: Some(10),  // 10 seconds
     };
-    let index_init_arg: Vec<u8> = encode_one(index_init_args).map_err(|e| e.to_string())?;
+
+    // Wrap the IndexInitArgs in a variant { Init }
+    let index_arg = IndexArg::Init(index_init_args);
+
+    // Log index init args for debugging
+    ic_cdk::println!("Index init args: {:?}", index_arg);
+
+    // Encode the variant
+    let index_init_arg: Vec<u8> = encode_one(Some(index_arg)).map_err(|e| {
+        ic_cdk::println!("Error encoding init args for index canister: {}", e);
+        e.to_string()
+    })?;
 
     let arg2: IndexInstallCodeArgument = IndexInstallCodeArgument {
         mode: CanisterInstallMode::Install,
         canister_id: index_canister_id_principal,
         wasm_module: WasmModule::from(index_wasm_module.clone()),
-        arg: index_init_arg,
+        arg: index_init_arg,  // Pass the encoded init argument
     };
 
     // Install code for the ledger canister
     match install_code(arg1.clone(), wasm_module).await {
-    Ok(_) => {
-        mutate_state(|state| {
-            state.canister_ids.insert(canister_id_principal.to_string(), CanisterIdWrapper {
-                canister_ids: canister_id_principal,
-                token_name: user_params.token_name.clone(),  // Store token name
-                token_symbol: user_params.token_symbol.clone(),  // Store token symbol
-                image_id: None,  // Set image_id as None for now
-                ledger_id: Some(canister_id_principal),  // Set ledger_id to the canister ID
+        Ok(_) => {
+            mutate_state(|state| {
+                state.canister_ids.insert(
+                    canister_id_principal.to_string(), 
+                    CanisterIdWrapper {
+                        canister_ids: canister_id_principal,
+                        token_name: user_params.token_name.clone(),  // Store token name
+                        token_symbol: user_params.token_symbol.clone(),  // Store token symbol
+                        image_id: None,  // Set image_id as None for now
+                        ledger_id: Some(canister_id_principal),  // Set ledger_id to the canister ID
+                    }
+                );
             });
-        });
+        }
+        Err((code, msg)) => {
+            ic_cdk::println!("Error installing ledger code: {} - {}", code as u8, msg);
+            return Err(format!("Error installing ledger code: {} - {}", code as u8, msg));
+        }
     }
-    Err((code, msg)) => {
-        ic_cdk::println!("Error installing code: {} - {}", code as u8, msg);
-        return Err(format!("Error installing code: {} - {}", code as u8, msg));
-    }
-}
 
-    
-// Install code for the index canister
+    // Install code for the index canister
     match index_install_code(arg2, index_wasm_module).await {
-    Ok(_) => {
-        mutate_state(|state| {
-            state.index_canister_ids.insert(
-                index_canister_id_principal.to_string(),
-                IndexCanisterIdWrapper {
-                    index_canister_ids: index_canister_id_principal,
-                },
-            )
-        });
+        Ok(_) => {
+            mutate_state(|state| {
+                state.index_canister_ids.insert(
+                    index_canister_id_principal.to_string(),
+                    IndexCanisterIdWrapper {
+                        index_canister_ids: index_canister_id_principal,
+                    },
+                )
+            });
 
-        Ok(TokenCreationResult {
-            ledger_canister_id: canister_id_principal,
-            index_canister_id: index_canister_id_principal,
-        })
-    }
-    Err((code, msg)) => {
-        Err(format!("Error installing index code: {} - {}", code as u8, msg))
+            Ok(TokenCreationResult {
+                ledger_canister_id: canister_id_principal,
+                index_canister_id: index_canister_id_principal,
+            })
+        }
+        Err((code, msg)) => {
+            ic_cdk::println!("Error installing index code: {} - {}", code as u8, msg);
+            Err(format!("Error installing index code: {} - {}", code as u8, msg))
+        }
     }
 }
-}
+
+
+
 
 
 
