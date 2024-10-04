@@ -4,80 +4,95 @@ import Modal from 'react-modal';
 import AnimationButton from '../../common/AnimationButton';
 import { useAuth } from '../../auth/useAuthClient';
 import { useNavigate } from 'react-router-dom';
-import { Principal } from '@dfinity/principal';// Import Principal from the Dfinity library
+import { Principal } from '@dfinity/principal';
 
 const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
-  const { createCustomActor, userPrincipal } = useAuth();
-  const navigate = useNavigate();
-
+  const { createCustomActor, userPrincipal } = useAuth(); // Auth context
+  const [validationError, setValidationError] = useState(''); // Validation error state
+  const [termsAccepted, setTermsAccepted] = useState(false); // Terms acceptance state
   const [formData, setFormData] = useState({
     token_name: '',
     token_symbol: '',
     decimals: '',
+    listingRate:0.4,
     total_supply: '',
-    initial_balances: []
   });
 
-  const [validationError, setValidationError] = useState('');
-  const [termsAccepted, setTermsAccepted] = useState(false);
+  const amount = 0.1; // Transaction amount in ICP
+  const navigate = useNavigate(); // For navigation
 
+  // Close modal handler
+  const closeModal = () => {
+    setIsOpen(false);
+  };
 
+  // Form submission handler
   const handleSubmit = async (e) => {
     e.preventDefault();
     setValidationError('');
 
     const { token_name, token_symbol, decimals, total_supply } = formData;
-
     const decimalsNumber = parseInt(decimals);
 
-    // Validating decimals is a number between 0 and 255
+    // Validate decimals
     if (isNaN(decimalsNumber) || decimalsNumber < 0 || decimalsNumber > 255) {
       setValidationError("Decimals must be a number between 0 and 255.");
       return;
     }
 
-    // Check if all fields are filled and terms are accepted
+    // Validate form fields and terms acceptance
     if (!token_name || !token_symbol || !decimals || !total_supply || !termsAccepted) {
       setValidationError("Please fill in all the details and accept the terms.");
       return;
     }
 
     try {
-      const actor = createCustomActor(process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND);
+      // Send transaction using Plug Wallet
+      // const transactionResult = await window.ic.plug.requestTransfer({
+      // //   to: userPrincipal,
+      // //   amount: amount * 1e8, // Convert ICP to its smallest unit (8 decimals)
+      // // });
 
-      // Convert userPrincipal from text to Principal type
-      const ownerPrincipal = Principal.fromText(userPrincipal);  // Convert to Principal
+      // if (transactionResult) {
 
-      // Structuring the initial_balances as Vec<(Account, Nat)>
-      const tokenData = {
-        token_name,
-        token_symbol,
-        decimals: [decimalsNumber],
-        initial_balances: [
-          [
-            {
-              owner: ownerPrincipal,  // Principal object for owner
-              subaccount: [],         // Optional subaccount, empty array if unused
-            },
-            BigInt(total_supply)      // Total supply as Nat (BigInt)
+        const actor = createCustomActor(process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND);
+
+        // Convert userPrincipal to Principal type
+        const ownerPrincipal = Principal.fromText(userPrincipal);
+
+        // Token data structure for canister call
+        const tokenData = {
+          token_name,
+          token_symbol,
+          decimals: [decimalsNumber],
+          initial_balances: [
+            [
+              {
+                owner: ownerPrincipal,  // Principal object for owner
+                subaccount: [],         // Optional subaccount, empty array if unused
+              },
+              BigInt(total_supply)      // Total supply as Nat (BigInt)
+            ]
           ]
-        ]
-      };
-      console.log('tokenData = ',tokenData)
-      const response = await actor.create_token(tokenData);
-      console.log('Token created:', response);
+        };
 
-      // Navigate to verify-token page after successful creation
-      navigate('/verify-token', { state: { tokenData } });
+        console.log('Token data:', tokenData);
+        const response = await actor.create_token(tokenData);
+        console.log('Token created:', response);
+
+        const  ledger_canister_id= response.Ok.ledger_canister_id._arr;
+
+        // Navigate to verify-token page
+        navigate('/verify-token', { state: { formData, ledger_canister_id } });
+
+      // } else {
+      //   setValidationError("Transaction failed.");
+     // }
+
     } catch (err) {
-      console.error(err);
+      console.error("Error creating token:", err);
       setValidationError("An error occurred while creating the token.");
     }
-  };
-
-
-  const closeModal = () => {
-    setIsOpen(false);
   };
 
   return (
@@ -88,7 +103,7 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
         contentLabel="Create Token Modal"
         className="fixed inset-0 flex items-center justify-center lg:mb-[60%] lgx:mb-[10%] bg-transparent"
         overlayClassName="fixed z-[100] inset-0 bg-opacity-50"
-        ariaHideApp={false} // Only if you don't want modal to block the main content from screen readers
+        ariaHideApp={false} // Disable blocking main content for screen readers
       >
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-[#222222] p-6 rounded-md text-white m-4 w-[786px] relative">
@@ -96,15 +111,18 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
               {/* Modal Close Button */}
               <button
                 onClick={closeModal}
-                className="absolute mt-1  right-8 text-[25px] md:text-[30px] text-white"
+                className="absolute mt-1 right-8 text-[25px] md:text-[30px] text-white"
               >
                 <TfiClose />
               </button>
-              <h2 className="text-[20px] font-medium md:text-[25px] md:font-semibold">Create Token</h2>
+              <h2 className="text-[20px] font-medium md:text-[25px] md:font-semibold">
+                Create Token
+              </h2>
             </div>
 
             {/* Input Fields */}
             <div className="space-y-4">
+              {/* Token Name */}
               <div>
                 <label className="block mb-2 text-[18px]">Name</label>
                 <input
@@ -113,11 +131,10 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
                   onChange={(e) => setFormData({ ...formData, token_name: e.target.value })}
                   className="w-full p-2 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
                 />
-                <small className="block text-[#cccccc] ml-6 mt-1">
-                  Creation Fee: 0.4 BNB
-                </small>
+                <small className="block text-[#cccccc] ml-6 mt-1">Creation Fee: 0.4 BNB</small>
               </div>
 
+              {/* Token Symbol */}
               <div>
                 <label className="block mb-2 text-[18px]">Symbol</label>
                 <input
@@ -128,6 +145,7 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
                 />
               </div>
 
+              {/* Token Decimals */}
               <div>
                 <label className="block mb-2 text-[18px]">Decimals</label>
                 <input
@@ -140,6 +158,7 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
                 />
               </div>
 
+              {/* Total Supply */}
               <div>
                 <label className="block mb-2 text-[18px]">Total Supply</label>
                 <input
@@ -151,42 +170,37 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
               </div>
             </div>
 
-            {/* Terms Checkbox */}
-
+            {/* Terms and Conditions Checkbox */}
             <div className="flex items-center mt-4 mb-6">
               <input
                 type="checkbox"
                 id="termsCheckbox"
                 checked={termsAccepted}
                 onChange={() => setTermsAccepted(!termsAccepted)}
-                className="hidden peer" // Hide the default checkbox
+                className="hidden peer"
               />
-
-              {/* Custom checkbox UI linked to the hidden checkbox via the peer class */}
               <div
                 className={`w-4 h-4 border-2 flex items-center justify-center rounded-sm mr-2 cursor-pointer 
-      ${termsAccepted ? '  ' : 'border-white bg-transparent'}`}
+                ${termsAccepted ? '' : 'border-white bg-transparent'}`}
               >
                 <label
                   htmlFor="termsCheckbox"
-                  className="cursor-pointer w-full  h-full flex items-center justify-center"
+                  className="cursor-pointer w-full h-full flex items-center justify-center"
                 >
-                  {termsAccepted && <span className="text-[#F3B3A7]  ">✓</span>}
+                  {termsAccepted && <span className="text-[#F3B3A7]">✓</span>}
                 </label>
               </div>
-
               <p className="text-[15px] text-[#cccccc]">
                 By creating this token, I agree to the terms and conditions.
               </p>
             </div>
-
 
             {/* Validation Error Message */}
             {validationError && (
               <p className="text-red-500 mb-4">{validationError}</p>
             )}
 
-            {/* Gradient Button */}
+            {/* Create Token Button */}
             <div className="flex justify-center items-center">
               <AnimationButton text="CREATE TOKEN" onClick={handleSubmit} />
             </div>

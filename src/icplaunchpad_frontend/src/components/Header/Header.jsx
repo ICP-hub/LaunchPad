@@ -11,6 +11,7 @@ import { FaUser } from 'react-icons/fa';
 import { BsThreeDotsVertical } from 'react-icons/bs';
 
 import CreateUser from "../Modals/CreateUser";
+import { Principal } from '@dfinity/principal';
 
 
 const Header = () => {
@@ -23,18 +24,40 @@ const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [profileModalIsOpen, setProfileModalIsOpen] = useState(false); // State for ProfileCard modal
 
-  const { isAuthenticated, userPrincipal, identity } = useAuth();
   const [activeSection, setActiveSection] = useState("home");
-  const [userName, setUserName] =useState();
+  const [isUserRegistered, setUserRegister]= useState(null);
+  const [userData, setUserData] =useState(null);
+  const [images, setImages]=useState(null);
+
+  const { isAuthenticated, userPrincipal,createCustomActor } = useAuth();
 
   
   useEffect(() => {
-    // Fetch name from sessionStorage if available
-    const name = window.sessionStorage.getItem('userName');
-    if (name) {
-      setUserName(name);
+        userCheck();      
+  }, [isAuthenticated,isUserRegistered]);
+
+  async function userCheck() {
+    const actor = createCustomActor(process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND);
+    const response = await actor.is_account_created();
+    console.log("Account creation response:", response);
+
+    const resultResponse = response.slice(-16);
+    if (resultResponse === "already created.") {
+        setUserRegister(true);
+        
+        // Fetch user account data if the user is registered
+        const ownerPrincipal = Principal.fromText(userPrincipal);
+        const fetchedUserData = await actor.get_user_account(ownerPrincipal);
+        
+        if (fetchedUserData) {
+            setUserData(fetchedUserData); // This will trigger re-render
+        }
+        console.log("Fetched user data:", fetchedUserData);
+    } else {
+        setUserRegister(false);
     }
-  }, []);
+}
+
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -57,7 +80,6 @@ const Header = () => {
     setIsSearching(false);
   };
 
-
   const handleSectionClick = (section) => {
     setActiveSection(section);
     setMenuOpen(false);
@@ -65,7 +87,7 @@ const Header = () => {
 
   return (
     <div>
-{ ( isAuthenticated && JSON.parse(window.sessionStorage.getItem('RegisterUser')) == false) && <CreateUser  userModalIsOpen={userModalIsOpen} setUserModalIsOpen={setUserModalIsOpen} />}
+{ (isAuthenticated && isUserRegistered === false ) && <CreateUser setUserData={setUserData}  userModalIsOpen={userModalIsOpen} setUserModalIsOpen={setUserModalIsOpen} />}
       <nav className="relative z-20 text-white bg-black shadow-lg dlg:px-[2%] dlg:py-6 lgx:px-[4%] 
       lgx:py-9 md:px-[4%] md:py-[2%] py-[3%] px-[2.5%] flex justify-between items-center">
  
@@ -96,8 +118,7 @@ const Header = () => {
           />
         </div>
 
-
-        <div className="hidden  md:flex lgx:px-10 lgx:mr-[28%]  md:mr-[20%] lg:text-[18px] md:text-[13px] lgx:text-[20px] md:gap-[20px] lg:gap-[25px] dxl:gap-[50px]">
+        <div className="hidden  md:flex lgx:px-10 lgx:mr-[28%]  md:mr-[20%] lg:text-[18px] md:text-[17px] lgx:text-[20px] md:gap-[20px] lg:gap-[25px] dxl:gap-[50px]">
 
           <Link
             to="/"
@@ -163,7 +184,6 @@ const Header = () => {
             size={24}
           />
 
-
           {isSearching && (
             <div className="flex items-center absolute h-[35px] lg:mr-3 rounded-lg w-[80vw] right-0 md:w-[200px] md3:w-[230px] xl:w-[380px]  bg-[#222222] sm4:right-[23px] md:right-[-15px] lg:right-[-25px] dlg:right-[5px] md:py-[2px]">
               <input
@@ -200,7 +220,7 @@ const Header = () => {
         </div>
         
         }
-
+       
 
         {/* User Info */}
         {isAuthenticated &&
@@ -211,8 +231,8 @@ const Header = () => {
             >
               <div className="bg-black h-full w-full rounded-2xl flex items-center p-1 px-3">
                 <FaUser className="mr-2" />
-                <div className="flex flex-col items-start w-24 lg:w-40">
-                  <span className="text-sm">{userName || 'ABCD'}</span>
+                <div className="flex flex-col items-start w-24 h-8 lg:w-40 lg:h-full ">
+                  <span className="text-sm">{userData  ? userData[0]?.username : 'ABCD'}</span>
                   <span className="text-xs text-gray-400 w-full overflow-hidden whitespace-nowrap text-ellipsis">
                     {userPrincipal}
                   </span>
@@ -245,9 +265,7 @@ const Header = () => {
               </div>
             )}
           </div>
-        }
-        
-
+        } 
       </nav>
 
       {/* Dropdown Menu for screens below 768px */}
@@ -310,8 +328,7 @@ const Header = () => {
             </button>
               <ProfileCard profileModalIsOpen={profileModalIsOpen} setProfileModalIsOpen={setProfileModalIsOpen} />
             </>
-          }
-          
+          }    
         </div>
       )}
 
@@ -327,11 +344,8 @@ const Header = () => {
         <p>#8 MAGATRUMP</p>
         <p>#9 DOGA</p>
         <p>#10 MBCGA</p>
-      </div>
-      
-      
+      </div>   
     </div>
   );
 };
-
 export default Header;
