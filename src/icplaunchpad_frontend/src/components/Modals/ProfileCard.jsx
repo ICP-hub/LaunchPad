@@ -15,9 +15,20 @@ const ProfileCard = ({ profileModalIsOpen, setProfileModalIsOpen }) => {
   }, []);
 
 
-  async function handleLogout(){
-      await logout().then(()=>window.location.reload())
-  }
+  // async function handleLogout(){
+  //     await logout().then(()=>window.location.reload())
+  // }
+  const handleLogout = async () => {
+    try {
+      console.log("Logging out...");
+      await logout();
+
+      window.location.href = "/";
+       console.log("Logged out successfully. Redirecting...");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
   function closeModal() {
     setProfileModalIsOpen(false);
   }

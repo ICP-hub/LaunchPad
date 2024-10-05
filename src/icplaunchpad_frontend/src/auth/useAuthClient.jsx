@@ -259,7 +259,7 @@ export const useAuthClient = (options = defaultOptions) => {
     identity,
     createCustomActor,
     loginWithPlug,
-    error, // Expose error state
+    error, 
 
 
   };
@@ -271,3 +271,16 @@ export const AuthProvider = ({ children }) => {
 };
 
 export const useAuth = () => useContext(AuthContext);
+
+
+
+
+
+
+
+
+
+
+
+
+
