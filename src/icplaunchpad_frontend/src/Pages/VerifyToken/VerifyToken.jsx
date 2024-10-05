@@ -138,13 +138,13 @@ const VerifyToken = () => {
       {/* Dynamic Step Content */}
       <div className="w-full max-w-[1070px] mt-8">
         {currentStep === 1 && (
-          <VerifyTokenTab tokenData={formData} setPresaleDetails={setPresaleDetails} />
+          <VerifyTokenTab tokenData={formData} setPresaleDetails={setPresaleDetails}  presaleDetails={presaleDetails} />
         )}
         {currentStep === 2 && (
-          <LaunchpadInfoTab setPresaleDetails={setPresaleDetails} />
+          <LaunchpadInfoTab setPresaleDetails={setPresaleDetails} presaleDetails={presaleDetails} />
         )}
         {currentStep === 3 && (
-          <AdditionalInfoTab setPresaleDetails={setPresaleDetails} />
+          <AdditionalInfoTab setPresaleDetails={setPresaleDetails} presaleDetails={presaleDetails}  />
         )}
         {currentStep === 4 && (
           <ReviewInfoTab presaleDetails={presaleDetails} />

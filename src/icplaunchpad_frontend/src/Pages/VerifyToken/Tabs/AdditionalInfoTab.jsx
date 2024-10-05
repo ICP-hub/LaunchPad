@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const AdditionalInfoTab = ({ setPresaleDetails }) => {
+const AdditionalInfoTab = ({presaleDetails, setPresaleDetails }) => {
   const [errors, setErrors] = useState({});
 
   // const validateURL = (url, platform) => {
@@ -75,6 +75,7 @@ const AdditionalInfoTab = ({ setPresaleDetails }) => {
           <label className="block text-[19px] mb-1">Website</label>
           <input
             type="text"
+            value={presaleDetails.website}
             onChange={(e) => handleInputChange(e, 'website')}
             className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
           />
@@ -87,6 +88,7 @@ const AdditionalInfoTab = ({ setPresaleDetails }) => {
           <label className="block text-[19px] mb-1">Facebook</label>
           <input
             type="text"
+            value={presaleDetails.facebook}
             onChange={(e) => handleInputChange(e, 'facebook')}
             className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
           />
@@ -96,6 +98,7 @@ const AdditionalInfoTab = ({ setPresaleDetails }) => {
           <label className="block text-[19px] mb-1">Twitter</label>
           <input
             type="text"
+            value={presaleDetails.twitter}
             onChange={(e) => handleInputChange(e, 'twitter')}
             className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
           />
@@ -109,6 +112,7 @@ const AdditionalInfoTab = ({ setPresaleDetails }) => {
           <label className="block text-[19px] mb-1">GitHub</label>
           <input
             type="text"
+            value={presaleDetails.github}
             onChange={(e) => handleInputChange(e, 'github')}
             className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
           />
@@ -118,6 +122,7 @@ const AdditionalInfoTab = ({ setPresaleDetails }) => {
           <label className="block text-[19px] mb-1">Telegram</label>
           <input
             type="text"
+            value={presaleDetails.telegram}
             onChange={(e) => handleInputChange(e, 'telegram')}
             className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
           />
@@ -131,6 +136,7 @@ const AdditionalInfoTab = ({ setPresaleDetails }) => {
           <label className="block text-[19px] mb-1">Instagram</label>
           <input
             type="text"
+            value={presaleDetails.instagram}
             onChange={(e) => handleInputChange(e, 'instagram')}
             className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
           />
@@ -140,6 +146,7 @@ const AdditionalInfoTab = ({ setPresaleDetails }) => {
           <label className="block text-[19px] mb-1">Discord</label>
           <input
             type="text"
+            value={presaleDetails.discord}
             onChange={(e) => handleInputChange(e, 'discord')}
             className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
           />
@@ -152,6 +159,7 @@ const AdditionalInfoTab = ({ setPresaleDetails }) => {
         <label className="block text-[19px] mb-1">Reddit</label>
         <input
           type="text"
+          value={presaleDetails.reddit}
           onChange={(e) => handleInputChange(e, 'reddit')}
           className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
         />
@@ -163,6 +171,7 @@ const AdditionalInfoTab = ({ setPresaleDetails }) => {
         <label className="block text-[19px] mb-1">YouTube Video</label>
         <input
           type="text"
+          value={presaleDetails.youtubeVideo}
           onChange={(e) => handleInputChange(e, 'youtubeVideo')}
           className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
         />
@@ -173,6 +182,7 @@ const AdditionalInfoTab = ({ setPresaleDetails }) => {
       <div className="mb-6">
         <label className="block text-[19px] mb-1">Description</label>
         <textarea
+          value={presaleDetails.description}
           onChange={(e) => setPresaleDetails(prev => ({ ...prev, description: e.target.value }))}
           className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2 h-32"
         ></textarea>

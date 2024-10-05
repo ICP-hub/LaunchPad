@@ -21,7 +21,7 @@ import { FiEdit3 } from "react-icons/fi";
 import AddToWhitelist from "../../components/Modals/AddToWhitelist.jsx";
 import { useAuth } from "../../auth/useAuthClient.jsx";
 import { Principal } from '@dfinity/principal';
-import { useLocation } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 
 const TokenPage = () => {
   const [activeTab, setActiveTab] = useState("About");
@@ -49,7 +49,6 @@ const TokenPage = () => {
       console.log("Response-:", response);
       setUserData(response);
     
-      
       // Getting profile image ID
       const profile_ImgId = await actor.get_profile_image_id();
       console.log("Image id", profile_ImgId[0]);
@@ -169,7 +168,7 @@ const TokenPage = () => {
                     <FaDiscord className="size-6" />
                   </div>
                 </div>
-                <div className="right flex flex-col gap-5">
+                <div   className="right flex flex-col gap-5">
                   <FiEdit3 />
 
                 </div>
