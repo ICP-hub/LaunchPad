@@ -150,7 +150,7 @@ const TokenPage = () => {
                 
                  <img
                   src={profileImg || person1} // Show person1 as a fallback if profileImg is not available yet
-                  className="absolute  top-0 left-[50%] transform -translate-x-1/2 -translate-y-[35%] rounded-full   h-[130px] w-[130px]"
+                  className="absolute  top-0 left-[50%] transform -translate-x-1/2 -translate-y-[35%] rounded-full object-cover   h-[130px] w-[130px]"
                   alt="Profile Picture"
                 />
 

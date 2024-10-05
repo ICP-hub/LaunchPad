@@ -5,10 +5,27 @@ import Modal from 'react-modal';
 import person1 from "../../../assets/images/carousel/person1.png"
 import { useAuth } from '../../auth/useAuthClient';
 
-const ProfileCard = ({ userData, profileModalIsOpen, setProfileModalIsOpen }) => {
-  const { logout, userPrincipal } = useAuth();
-  const [userName, setUserName]=useState();
 
+
+const ProfileCard = ({ userData, profileModalIsOpen, setProfileModalIsOpen }) => {
+  const { logout, isAuthenticated, userPrincipal, createCustomActor } = useAuth();
+  const protocol = process.env.DFX_NETWORK === "ic" ? "https" : "http";
+const domain = process.env.DFX_NETWORK === "ic" ? "raw.icp0.io" : "localhost:4943";
+const canisterId = process.env.CANISTER_ID_IC_ASSET_HANDLER;
+  const [userName, setUserName]=useState();
+  const[profileImg,setProfileImg]=useState();
+
+  useEffect(()=>{
+    getProfileIMG();
+  },[isAuthenticated])
+
+async function getProfileIMG(){
+  const actor = createCustomActor(process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND);
+  const profile_ImgId = await actor.get_profile_image_id();
+  const imageUrl = `${protocol}://${canisterId}.${domain}/f/${profile_ImgId[0]}`;
+  setProfileImg(imageUrl);
+  console.log("userImg", imageUrl);
+} 
 
   useEffect(() => {
     if(userData)
@@ -50,7 +67,7 @@ const ProfileCard = ({ userData, profileModalIsOpen, setProfileModalIsOpen }) =>
       {/* Profile Image */}
       <div className="flex  items-center mt-4 gap-8 ">
         <img
-          src={person1}
+          src={profileImg || person1}
           alt="Profile"
           className="w-20 h-20 rounded-full object-cover"
         />
