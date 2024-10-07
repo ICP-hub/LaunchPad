@@ -5,11 +5,14 @@ import AnimationButton from '../../common/AnimationButton';
 import { useAuth } from '../../auth/useAuthClient';
 import { useNavigate } from 'react-router-dom';
 import { Principal } from '@dfinity/principal';
+import { useDispatch } from 'react-redux';
+import { addTokenData } from '../../Redux-Config/ReduxSlices/TokenSlice';
 
 const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
   const { createCustomActor, userPrincipal } = useAuth(); // Auth context
   const [validationError, setValidationError] = useState(''); // Validation error state
   const [termsAccepted, setTermsAccepted] = useState(false); // Terms acceptance state
+  const dispatch =useDispatch();
   const [formData, setFormData] = useState({
     token_name: '',
     token_symbol: '',
@@ -79,6 +82,14 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
         console.log('Token data:', tokenData);
         const response = await actor.create_token(tokenData);
         console.log('Token created:', response);
+
+
+        // fetching token data and storing into redux store
+        if(response){
+         const tokenData= await actor.get_tokens_info();
+         console.log('Token data after creation:', tokenData);
+         dispatch(addTokenData(tokenData))
+        }
 
         const  ledger_canister_id= response.Ok.ledger_canister_id._arr;
 

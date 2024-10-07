@@ -12,6 +12,9 @@ import { BsThreeDotsVertical } from 'react-icons/bs';
 
 import CreateUser from "../Modals/CreateUser";
 import { Principal } from '@dfinity/principal';
+import { useDispatch, useSelector } from "react-redux";
+import { addUserData } from "../../Redux-Config/ReduxSlices/UserSlice";
+
 
 
 const Header = () => {
@@ -26,11 +29,11 @@ const Header = () => {
 
   const [activeSection, setActiveSection] = useState("home");
   const [isUserRegistered, setUserRegister]= useState(null);
-  const [userData, setUserData] =useState(null);
   const [images, setImages]=useState(null);
 
   const { isAuthenticated, userPrincipal,createCustomActor } = useAuth();
-
+  const dispatch =useDispatch();
+  const userData = useSelector((state) => state.user);
   
   useEffect(() => {
         userCheck();      
@@ -49,10 +52,12 @@ const Header = () => {
         const ownerPrincipal = Principal.fromText(userPrincipal);
         const fetchedUserData = await actor.get_user_account(ownerPrincipal);
         
-        if (fetchedUserData) {
-            setUserData(fetchedUserData); // This will trigger re-render
-        }
         console.log("Fetched user data:", fetchedUserData);
+        if (fetchedUserData) {
+          const { profile_picture, ...restUserData } = fetchedUserData[0];
+          dispatch(addUserData(restUserData));  
+        }
+
     } else {
         setUserRegister(false);
     }
@@ -87,7 +92,7 @@ const Header = () => {
 
   return (
     <div>
-{ (isAuthenticated && isUserRegistered === false ) && <CreateUser setUserData={setUserData}  userModalIsOpen={userModalIsOpen} setUserModalIsOpen={setUserModalIsOpen} />}
+{ (isAuthenticated && isUserRegistered === false ) && <CreateUser userModalIsOpen={userModalIsOpen} setUserModalIsOpen={setUserModalIsOpen} />}
       <nav className="relative z-20 text-white bg-black shadow-lg dlg:px-[2%] dlg:py-6 lgx:px-[4%] 
       lgx:py-9 md:px-[4%] md:py-[2%] py-[3%] px-[2.5%] flex justify-between items-center">
  
@@ -232,7 +237,7 @@ const Header = () => {
               <div className="bg-black h-full w-full rounded-2xl flex items-center p-1 px-3">
                 <FaUser className="mr-2" />
                 <div className="flex flex-col items-start w-24 h-8 lg:w-40 lg:h-full ">
-                  <span className="text-sm">{userData  ? userData[0]?.username : 'ABCD'}</span>
+                <span className="text-sm">{ userData ? userData.username : 'ABCD' }</span>
                   <span className="text-xs text-gray-400 w-full overflow-hidden whitespace-nowrap text-ellipsis">
                     {userPrincipal}
                   </span>
@@ -252,7 +257,7 @@ const Header = () => {
                     >
                       Account
                     </button>
-                    <ProfileCard userData={userData && userData} profileModalIsOpen={profileModalIsOpen} setProfileModalIsOpen={setProfileModalIsOpen} />
+                    <ProfileCard profileModalIsOpen={profileModalIsOpen} setProfileModalIsOpen={setProfileModalIsOpen} />
                   </div>
 
                   <Link
