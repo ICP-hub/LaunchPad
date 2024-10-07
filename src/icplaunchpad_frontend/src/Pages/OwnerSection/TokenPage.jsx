@@ -21,7 +21,7 @@ import { FiEdit3 } from "react-icons/fi";
 import AddToWhitelist from "../../components/Modals/AddToWhitelist.jsx";
 import { useAuth } from "../../auth/useAuthClient.jsx";
 import { Principal } from '@dfinity/principal';
-import { useLocation } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 
 const TokenPage = () => {
   const [activeTab, setActiveTab] = useState("About");
@@ -36,9 +36,10 @@ const TokenPage = () => {
   const protocol = process.env.DFX_NETWORK === "ic" ? "https" : "http";
   const domain = process.env.DFX_NETWORK === "ic" ? "raw.icp0.io" : "localhost:4943";
   const canisterId = process.env.CANISTER_ID_IC_ASSET_HANDLER;
-
+  const [presaleData, sePresaleData]= useState(null);
   const location = useLocation();
-  const { ledgerPrincipalId } = location.state || {};
+
+    const { ledger_canister_id } = location.state || {};
 
   const fetchData = async () => {
     try {
@@ -48,7 +49,6 @@ const TokenPage = () => {
       console.log("Response-:", response);
       setUserData(response);
     
-      
       // Getting profile image ID
       const profile_ImgId = await actor.get_profile_image_id();
       console.log("Image id", profile_ImgId[0]);
@@ -62,6 +62,14 @@ const TokenPage = () => {
       //   setImageIds(prev => ({ ...prev, tokenId: token_imageId }));
       //   console.log("tokenImg", token_imageId);
       // }
+
+      if (ledger_canister_id) {
+        const ledgerPrincipalId= Principal.fromUint8Array(ledger_canister_id)
+       const presaleData= await actor.get_sale_params(ledgerPrincipalId);
+       sePresaleData(presaleData.Ok);
+       console.log("presale data--",presaleData);
+       }
+
 
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -131,17 +139,20 @@ const TokenPage = () => {
           {!isMobile && (
             <div className="h-[314px]">
               <div className="relative">
+                
                 <img
                   src={ProjectRectangleBg}
                   className="min-h-[147px] w-full rounded-lg"
                   alt=""
                 />
                 
+                
                  <img
                   src={profileImg || person1} // Show person1 as a fallback if profileImg is not available yet
-                  className="absolute top-0 left-[50%] transform -translate-x-1/2 -translate-y-[35%] rounded-full h-[130px] md:min-h-[177px]"
+                  className="absolute  top-0 left-[50%] transform -translate-x-1/2 -translate-y-[35%] rounded-full object-cover   h-[130px] w-[130px]"
                   alt="Profile Picture"
                 />
+
               </div>
               <div className="content-div flex font-posterama justify-between w-[90%] m-auto mt-7 ">
                 <div className="left flex flex-col gap-5">
@@ -157,7 +168,7 @@ const TokenPage = () => {
                     <FaDiscord className="size-6" />
                   </div>
                 </div>
-                <div className="right flex flex-col gap-5">
+                <div   className="right flex flex-col gap-5">
                   <FiEdit3 />
 
                 </div>
@@ -172,7 +183,7 @@ const TokenPage = () => {
               <div className="relative">
                 <img
                   src={profileImg || person1}
-                  className="absolute top-0 left-[50%] transform -translate-x-1/2 -translate-y-[50%] rounded-full h-[130px] md:min-h-[177px]"
+                  className="absolute top-0 left-[50%] transform -translate-x-1/2 -translate-y-[50%] rounded-full h-[130px] w-[130px]"
                   alt=""
                 />
               </div>

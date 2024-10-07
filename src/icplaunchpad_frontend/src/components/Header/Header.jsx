@@ -112,8 +112,8 @@ const Header = () => {
         <div className="flex items-center">
           <img
             src={logo}
-            alt="Logo"
-            className=" md:h-[18px] lg:h-[25px] lg:w-[150px] dlg:w-[170px] lg1:w-[160px] lgx:w-[220px] lgx:h-[30px] dxl:w-[190px] dxl:h-[30px]  "
+            alt="Internet Identity"
+            className=" h-[20px]  ss2:h-[24px] md:h-[25px] lg:w-[150px] dlg:w-[170px] lg1:w-[160px] lgx:w-[220px] lgx:h-[30px] dxl:w-[190px] dxl:h-[30px]  "
             draggable="false"
           />
         </div>
@@ -252,7 +252,7 @@ const Header = () => {
                     >
                       Account
                     </button>
-                    <ProfileCard profileModalIsOpen={profileModalIsOpen} setProfileModalIsOpen={setProfileModalIsOpen} />
+                    <ProfileCard userData={userData && userData} profileModalIsOpen={profileModalIsOpen} setProfileModalIsOpen={setProfileModalIsOpen} />
                   </div>
 
                   <Link
@@ -271,7 +271,7 @@ const Header = () => {
       {/* Dropdown Menu for screens below 768px */}
       {menuOpen && (
 
-        <div className="md:hidden flex flex-col font-posterama justify-center items-center absolute z-20 bg-black w-full py-8 px-6 shadow-lg">
+        <div className="md:hidden flex flex-col font-posterama text-[17px] xxs1:text-[20px] justify-center items-center absolute z-20 bg-black w-full py-8 px-6 shadow-lg">
           <Link
             to="/"
             onClick={() => handleSectionClick('home')}

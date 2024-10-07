@@ -1,6 +1,58 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-const AdditionalInfoTab = ({ setPresaleDetails }) => {
+const AdditionalInfoTab = ({presaleDetails, setPresaleDetails }) => {
+  const [errors, setErrors] = useState({});
+
+  // const validateURL = (url, platform) => {
+  //   let regex;
+  //   switch (platform) {
+  //     case 'facebook':
+  //       regex = /^(https?:\/\/)?(www\.)?facebook\.com\/[A-Za-z0-9_.-]+$/;
+  //       break;
+  //     case 'twitter':
+  //       regex = /^(https?:\/\/)?(www\.)?twitter\.com\/[A-Za-z0-9_]+$/;
+  //       break;
+  //     case 'github':
+  //       regex = /^(https?:\/\/)?(www\.)?github\.com\/[A-Za-z0-9_.-]+$/;
+  //       break;
+  //     case 'telegram':
+  //       regex = /^(https:\/\/)?(www\.)?t\.me\/[A-Za-z0-9_]+$/;
+  //       break;
+  //     case 'instagram':
+  //       regex = /^(https?:\/\/)?(www\.)?instagram\.com\/[A-Za-z0-9_.-]+$/;
+  //       break;
+  //     case 'discord':
+  //       regex = /^(https?:\/\/)?(www\.)?(discord\.gg|discord\.com)\/[A-Za-z0-9]+$/;
+  //       break;
+  //     case 'reddit':
+  //       regex = /^(https?:\/\/)?(www\.)?reddit\.com\/[A-Za-z0-9_]+$/;
+  //       break;
+  //     case 'youtube':
+  //       regex = /^(https?:\/\/)?(www\.)?youtube\.com\/watch\?v=[A-Za-z0-9_-]+$/;
+  //       break;
+  //     default:
+  //       return true;
+  //   }
+  //   return regex.test(url);
+  // };
+
+  const handleInputChange = (e, platform) => {
+    const value = e.target.value;
+    setPresaleDetails((prev) => ({ ...prev, [platform]: value }));
+
+    // if (!validateURL(value, platform)) {
+    //   setErrors((prevErrors) => ({
+    //     ...prevErrors,
+    //     [platform]: `Please enter a valid ${platform} link.`,
+    //   }));
+    // } else {
+    //   setErrors((prevErrors) => ({
+    //     ...prevErrors,
+    //     [platform]: '',
+    //   }));
+    // }
+  };
+
   return (
     <div className="bg-[#222222] p-3 xxs1:p-8 rounded-2xl lg:h-[1050px] mx-8 mb-[120px] xxs1:mb-11 sm5:mb-6 md:mb-4 lg:mb-0 h-[1350px] xxs1:h-[1000px]">
       
@@ -15,7 +67,7 @@ const AdditionalInfoTab = ({ setPresaleDetails }) => {
           <label className="block text-[19px] mb-1">Logo URL</label>
           <input
              type="file"
-            onChange={(e) =>setPresaleDetails((prevDetails) => ({...prevDetails,logoURL: e.target.files[0]}))}
+            onChange={(e) => setPresaleDetails((prevDetails) => ({...prevDetails, logoURL: e.target.files[0]}))}
             className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
           />
         </div>
@@ -23,7 +75,8 @@ const AdditionalInfoTab = ({ setPresaleDetails }) => {
           <label className="block text-[19px] mb-1">Website</label>
           <input
             type="text"
-            onChange={(e) => setPresaleDetails(prev => ({ ...prev, website: e.target.value }))}
+            value={presaleDetails.website}
+            onChange={(e) => handleInputChange(e, 'website')}
             className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
           />
         </div>
@@ -35,17 +88,21 @@ const AdditionalInfoTab = ({ setPresaleDetails }) => {
           <label className="block text-[19px] mb-1">Facebook</label>
           <input
             type="text"
-            onChange={(e) => setPresaleDetails(prev => ({ ...prev, facebook: e.target.value }))}
+            value={presaleDetails.facebook}
+            onChange={(e) => handleInputChange(e, 'facebook')}
             className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
           />
+          {errors.facebook && <p className="text-red-500">{errors.facebook}</p>}
         </div>
         <div className="w-full xxs1:w-1/2 xxs1:pl-2 mb-4">
           <label className="block text-[19px] mb-1">Twitter</label>
           <input
             type="text"
-            onChange={(e) => setPresaleDetails(prev => ({ ...prev, twitter: e.target.value }))}
+            value={presaleDetails.twitter}
+            onChange={(e) => handleInputChange(e, 'twitter')}
             className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
           />
+          {errors.twitter && <p className="text-red-500">{errors.twitter}</p>}
         </div>
       </div>
 
@@ -55,17 +112,21 @@ const AdditionalInfoTab = ({ setPresaleDetails }) => {
           <label className="block text-[19px] mb-1">GitHub</label>
           <input
             type="text"
-            onChange={(e) => setPresaleDetails(prev => ({ ...prev, github: e.target.value }))}
+            value={presaleDetails.github}
+            onChange={(e) => handleInputChange(e, 'github')}
             className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
           />
+          {errors.github && <p className="text-red-500">{errors.github}</p>}
         </div>
         <div className="w-full xxs1:w-1/2 xxs1:pl-2">
           <label className="block text-[19px] mb-1">Telegram</label>
           <input
             type="text"
-            onChange={(e) => setPresaleDetails(prev => ({ ...prev, telegram: e.target.value }))}
+            value={presaleDetails.telegram}
+            onChange={(e) => handleInputChange(e, 'telegram')}
             className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
           />
+          {errors.telegram && <p className="text-red-500">{errors.telegram}</p>}
         </div>
       </div>
 
@@ -75,17 +136,21 @@ const AdditionalInfoTab = ({ setPresaleDetails }) => {
           <label className="block text-[19px] mb-1">Instagram</label>
           <input
             type="text"
-            onChange={(e) => setPresaleDetails(prev => ({ ...prev, instagram: e.target.value }))}
+            value={presaleDetails.instagram}
+            onChange={(e) => handleInputChange(e, 'instagram')}
             className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
           />
+          {errors.instagram && <p className="text-red-500">{errors.instagram}</p>}
         </div>
         <div className="w-full xxs1:w-1/2 xxs1:pl-2">
           <label className="block text-[19px] mb-1">Discord</label>
           <input
             type="text"
-            onChange={(e) => setPresaleDetails(prev => ({ ...prev, discord: e.target.value }))}
+            value={presaleDetails.discord}
+            onChange={(e) => handleInputChange(e, 'discord')}
             className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
           />
+          {errors.discord && <p className="text-red-500">{errors.discord}</p>}
         </div>
       </div>
 
@@ -94,9 +159,11 @@ const AdditionalInfoTab = ({ setPresaleDetails }) => {
         <label className="block text-[19px] mb-1">Reddit</label>
         <input
           type="text"
-          onChange={(e) => setPresaleDetails(prev => ({ ...prev, reddit: e.target.value }))}
+          value={presaleDetails.reddit}
+          onChange={(e) => handleInputChange(e, 'reddit')}
           className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
         />
+        {errors.reddit && <p className="text-red-500">{errors.reddit}</p>}
       </div>
 
       {/* YouTube Video Link */}
@@ -104,15 +171,18 @@ const AdditionalInfoTab = ({ setPresaleDetails }) => {
         <label className="block text-[19px] mb-1">YouTube Video</label>
         <input
           type="text"
-          onChange={(e) => setPresaleDetails(prev => ({ ...prev, youtubeVideo: e.target.value }))}
+          value={presaleDetails.youtubeVideo}
+          onChange={(e) => handleInputChange(e, 'youtubeVideo')}
           className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
         />
+        {errors.youtube && <p className="text-red-500">{errors.youtube}</p>}
       </div>
 
       {/* Description */}
       <div className="mb-6">
         <label className="block text-[19px] mb-1">Description</label>
         <textarea
+          value={presaleDetails.description}
           onChange={(e) => setPresaleDetails(prev => ({ ...prev, description: e.target.value }))}
           className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2 h-32"
         ></textarea>

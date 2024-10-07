@@ -96,7 +96,7 @@ const Clients = () => {
       {salesData.map((sale, index) => (
         <div
           key={index}
-          className="bg-[#FFFFFF1A] text-white  p-1 rounded-lg flex flex-col w-[305px] xxs:w-[375px] xxs1:w-[400px] mt-14"
+          className="bg-[#FFFFFF1A] text-white  p-1 rounded-lg flex flex-col  ss2:w-[305px] xxs:w-[375px] xxs1:w-[400px] mt-14"
         >
           <div className="h-[280px] rounded-lg py-5 flex flex-col">
             <div className="relative">
@@ -105,7 +105,7 @@ const Clients = () => {
                 className="absolute top-0 left-[50%] transform -translate-x-1/2 -translate-y-[50%] rounded-full h-[100px] md:min-h-[114px]"
                 alt={sale.heading}
               />
-               <div className="absolute top-[20px] right-[90px] xxs:right-[130px] w-10 h-10  rounded-full border-1 border-gray-300">
+               <div className="absolute top-[20px] right-[60px] ss2:right-[90px] xxs:right-[130px] w-10 h-10  rounded-full border-1 border-gray-300">
                 <img src={l3} alt="small" className="object-cover w-full h-full" />
               </div>
             </div>
@@ -123,7 +123,7 @@ const Clients = () => {
 
           <div className="flex">
             <div className="relative flex items-center overflow-hidden w-[60%] h-72">
-              <div className="absolute lg:left-[-35%] left-[-70%]  xxs:left-[-30%] sm:left-[-20%] md:left-[-25%] top-0 w-72 h-72">
+              <div className="absolute left-[-110%] lg:left-[-35%] ss2:left-[-70%]  xxs:left-[-30%] sm:left-[-20%] md:left-[-25%] top-0 w-72 h-72">
                 <svg className="transform rotate-90" viewBox="0 0 36 36">
                   <defs>
                     <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -147,7 +147,7 @@ const Clients = () => {
                     strokeDasharray={`${sale.progress * 4}, 100`}
                   />
                 </svg>
-                <div className="absolute ml-10 inset-0 flex flex-col items-center justify-center">
+                <div className="absolute ml-28 ss2:ml-10 inset-0 flex flex-col items-center justify-center">
                   <span>Progress</span>
                   <span className="text-lg font-semibold text-white">
                     ({sale.progress}%)
