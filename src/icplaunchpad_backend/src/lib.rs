@@ -502,8 +502,8 @@ pub async fn create_token(user_params: UserInputParams) -> Result<TokenCreationR
 
     let init_arg: Vec<u8> = encode_one(init_args).map_err(|e| e.to_string())?;
 
-    let wasm_module = include_bytes!("../../../.dfx/local/canisters/token_deployer/token_deployer.wasm.gz").to_vec();
-    let index_wasm_module = include_bytes!("../../../.dfx/local/canisters/index_canister/index_canister.wasm.gz").to_vec();
+    let wasm_module = include_bytes!("../../../.dfx/ic/canisters/token_deployer/token_deployer.wasm.gz").to_vec();
+    let index_wasm_module = include_bytes!("../../../.dfx/ic/canisters/index_canister/index_canister.wasm.gz").to_vec();
 
     let arg1: InstallCodeArgument = InstallCodeArgument {
         mode: CanisterInstallMode::Install,

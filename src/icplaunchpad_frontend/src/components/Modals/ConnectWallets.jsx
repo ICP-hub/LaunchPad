@@ -1,7 +1,8 @@
 
 import React from 'react';
 import Modal from 'react-modal';
-import { useAuth } from "../../StateManagement/useContext/useAuth";
+import { useAuth } from '../../StateManagement/useContext/useAuth'
+// import { useAuth } from '../../auth/useAuthClient';
 import { RxCross1 } from "react-icons/rx";
 
 // Importing wallet icons
@@ -13,25 +14,27 @@ import bifinity from '../../../assets/images/icons/bifinity.png';
 // Component to connect wallet using various providers
 const ConnectWallet = ({ modalIsOpen, setModalIsOpen }) => {
    const {
-     login,
-     loginWithPlug,
-     nfidConnect,
+      authenticateWithII,
+  authenticateWithPlug,
+     authenticateWithNFID,
      isAuthenticated,
-     createCustomActor,
+     actor
+  //    createCustomActor,
    } = useAuth(); 
 
+   console.log('actor',actor)
    // Handle login for different wallet options
      const handleLogin = async (loginOption) => {
        try {
          switch (loginOption) {
            case "Icp":
-             await login("ii");
+             await authenticateWithII("ii");
              break;
            case "Plug":
-             await loginWithPlug();
+             await authenticateWithPlug();
              break;
            case "Nfid":
-             await nfidConnect();
+             await authenticateWithNFID();
              break;
            default:
              console.log("Unknown login option");
@@ -42,9 +45,9 @@ const ConnectWallet = ({ modalIsOpen, setModalIsOpen }) => {
        }
      };
   // Close modal handler
-  // const closeModal = () => {
-  //   setModalIsOpen(false);
-  // };
+  const closeModal = () => {
+    setModalIsOpen(false);
+  };
 
   // Render wallet options as buttons
   const WalletButton = ({ onClick, label, icon }) => (
