@@ -19,10 +19,10 @@ const AffiliateProgram = () => {
         <div>Total Ref Amount</div>
         <div>3.250091 BNB</div>
       </div>
-      <div className="min-h-[192px] bg-[#FFFFFF1A] rounded-3xl gap-8 flex flex-col p-4">
+      <div className="min-h-[102px] bg-[#FFFFFF1A] rounded-3xl gap-4 text-[10px] xxs1:text-[17px] xxs1:gap-8 flex flex-col p-3">
         <div>Top rewards</div>
-        <div className='flex gap-4 flex-col'>
-          <div className='flex justify-between'>
+        <div className='flex gap-2 flex-col'>
+          <div className='flex justify-between '>
             <div>0x6ECe...d4d0</div>
             <div>1.714 (52.76%)</div>
             <div>0.1039</div>
@@ -32,7 +32,7 @@ const AffiliateProgram = () => {
             <div>1.4533 (44.72%)</div>
             <div>0.0881</div>
           </div>
-          <div className='flex justify-between'>
+          <div className='flex justify-between '>
             <div>0x722f...0257</div>
             <div>0.082 (2.52%)</div>
             <div>0.005</div>

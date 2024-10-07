@@ -345,11 +345,11 @@ const TokenPage = () => {
                   </svg>
                   <div className="absolute ml-28 ss2:ml-10 inset-0 flex flex-col items-center justify-center">
                     <span>Progress</span>
-                    <span className="text-lg font-semibold text-white">
+                    <span className="text-[14px] xxs1:text-lg font-semibold text-white">
                       {" "}
                       ({progress}%)
                     </span>
-                    <span className="text-sm text-gray-400 mt-1">
+                    <span className=" text-[11px] xxs1:text-sm text-gray-400 mt-1">
                       {raised} SOL RAISED
                     </span>
                   </div>

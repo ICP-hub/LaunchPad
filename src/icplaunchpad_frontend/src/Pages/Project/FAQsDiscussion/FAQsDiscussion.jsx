@@ -35,7 +35,7 @@ const FaqDiscussionTab = () => {
   };
 
   return (
-    <div className="max-w-full mx-2   rounded-lg">
+    <div className="max-w-full mx-2    rounded-lg">
       {/* FAQ Section */}
       <div className="mb-6">
         <h2 className="text-xl text-white mb-4">Frequently Asked Questions</h2>
@@ -67,21 +67,21 @@ const FaqDiscussionTab = () => {
         <h2 className="text-xl text-white mb-4">Discussion</h2>
         <p className="text-gray-400">{comments.length} Comments</p>
         
-        <div className="w-full flex  mt-2 p-3 bg-[#222222]  rounded-2xl border-b-2 outline-none">
+        <div className="w-full flex  flex-col ss2:flex-row  mt-2 p-3 bg-[#222222]  rounded-2xl border-b-2 outline-none">
          
         <textarea 
           rows="4"
           placeholder="Start The Discussion..."
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
-          className='w-[800px] h-[30px] bg-[#222222]'
+          className='w-full h-[30px] text-[14px] bg-[#222222] mb-2'
         />
          <div className='justify-center items-center'>
         <button
-          className=" bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5]  w-[100px]  p-[1.5px] h-[35px] mx-2 rounded-3xl"
+          className=" bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5]  w-[100px]  p-[1.5px] h-[35px] mx-2 items-center justify-center rounded-3xl"
           onClick={handleCommentSubmit}
         >
-          <div className='bg-[#222222] rounded-3xl w-full h-full '>
+          <div className='bg-[#222222] rounded-3xl justify-center  w-full h-full '>
           Comment
           </div>
         </button>

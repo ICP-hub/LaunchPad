@@ -42,12 +42,12 @@ const MobileViewTab = () => {
 
   return (
     <>
-     <div className="rounded-[17.44px] p-4 bg-black">
+     <div className="rounded-[17.44px]   bg-black">
               <div className="space-y-4">
                 {mobileTabs.map((tab) => (
                   <div key={tab.name}>
                     <div
-                      className="bg-[#FFFFFF1A] text-white rounded-lg p-4 cursor-pointer flex justify-between"
+                      className="bg-[#FFFFFF1A] text-white rounded-lg p-4  cursor-pointer flex justify-between"
                       onClick={() => setActiveTab(tab.name)}
                     >
                       <div>{tab.name}</div>

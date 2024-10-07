@@ -175,18 +175,17 @@ const Header = () => {
             )}
           </Link>
         </div>
-
+         
+        
         <div className="relative flex items-center">
-
-
           <IoSearch
             onClick={handleSearchClick}
-            className={`cursor-pointer ml-2 ${!isSearching ? "visible" : "invisible"}`}
+            className={`cursor-pointer mr-2  ${!isSearching ? "visible" : "invisible"}`}
             size={24}
           />
 
           {isSearching && (
-            <div className="flex items-center absolute h-[35px] lg:mr-3 rounded-lg w-[80vw] right-0 md:w-[200px] md3:w-[230px] xl:w-[380px]  bg-[#222222] sm4:right-[23px] md:right-[-15px] lg:right-[-25px] dlg:right-[5px] md:py-[2px]">
+            <div className="flex items-center absolute h-[35px]  lg:mr-3 rounded-lg w-[80vw] right-0 md:w-[150px] md3:w-[230px] xl:w-[380px]  bg-[#222222] sm4:right-[23px] lg:right-[-25px] dlg:right-[5px] md:py-[2px]">
               <input
                 type="text"
                 value={searchText}
@@ -211,14 +210,15 @@ const Header = () => {
           <button
             onClick={openModal}
             className="w-[120px] md:w-[150px] lg:w-[190px] h-[25px] lg:h-[32px] 
-            dxl:h-[35px] text-[10px] md:text-[15px] dlg:text-[19px] font-[400] rounded-xl p-[1.5px] bg-gradient-to-r from-[#f09787]  to-[#CACCF5]"
+            dxl:h-[35px] text-[10px] md:text-[15px] dlg:text-[19px] font-[400] items-center justify-center  rounded-xl p-[1.5px] bg-gradient-to-r from-[#f09787]  to-[#CACCF5]"
           >
-            <div className='bg-gray-950 w-full h-full  rounded-xl items-center justify-center '>
+            <div className='bg-gray-950 w-full h-full  rounded-xl '>
               Connect Wallet
             </div>
           </button>
           <ConnectWallets modalIsOpen={modalIsOpen} setModalIsOpen={setModalIsOpen} />
         </div>
+      
         
         }
        

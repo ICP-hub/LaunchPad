@@ -21,7 +21,7 @@ const AddToWhitelist = ({ modalIsOpen, setIsOpen }) => {
         overlayClassName="fixed z-[100] inset-0 bg-opacity-50"
       >
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center  z-50">
-      <div className="bg-[#222222] p-6 mx-16 ss2:mx-4 rounded-xl  text-white h-[400px] sm:h-[670px] w-[786px] relative">
+      <div className="bg-[#222222] p-6 mx-16 ss2:mx-4 rounded-xl  text-white h-[400px] sm:h-[670px] w-[250px] ss2:w-[786px] relative">
         <div className='mx-[-24px] gap-4 flex px-4 p-1  mb-4 rounded-2xl'>
         <h2 className=" text-[18px] sm:text-[25px] Text-[#FFFFFFA6] font-posterama ">ADD USERS TO WHITELIST</h2>
         {/* Modal Close Button */}
@@ -43,7 +43,7 @@ const AddToWhitelist = ({ modalIsOpen, setIsOpen }) => {
          <div className='flex justify-center py-4 items-center'>
           <Link to="/verify-token">
         <button className='border-1  font-posterama  bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5] 
-             text-black  relative w-[250px] h-[35px] md:h-[40px] 
+             text-black  relative w-[200px] ss2:w-[250px] h-[35px] md:h-[40px] 
                 text-[16px] md:text-[18px] font-[600] rounded-3xl'>Add to whitelist</button>
       </Link>
       </div>

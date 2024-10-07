@@ -2,7 +2,7 @@ import React from 'react'
 
 const TokenTab = () => {
   return (
-    <div className=" bg-[#FFFFFF1A] sm:bg-transparent text-gray-300 p-6 rounded-lg w-full max-w-full">
+    <div className=" bg-[#FFFFFF1A] sm:bg-transparent text-gray-300 p-3 xxs1:p-6 rounded-lg w-full max-w-full">
     {/* Token Address */}
     <div className="flex justify-between mb-4">
       <span>Address</span>
