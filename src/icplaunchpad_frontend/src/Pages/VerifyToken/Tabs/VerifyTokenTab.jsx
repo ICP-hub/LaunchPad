@@ -93,7 +93,7 @@ const VerifyTokenTab = ({ tokenData, setPresaleDetails }) => {
 
         { /* Disclaimer Section */ }
         <div className="bg-[#F5F5F51A] text-white p-3 rounded-md dlg:mb-8">
-          <ul className="text-[12px] dxs:text-[15px] px-7 py-4 list-disc">
+          <ul className="text-[12px] dxs:text-[15px] px-2 ss2:px-7 ss2:py-4 list-disc">
             <li>Lorem ipsum dolor sit amet consectetur. Egestas faucibus suspendisse turpis cras sed bibendum massa arcu.</li>
             <li>Quisque enim amet ipsum ipsum faucibus leo adipiscing molestie. Tincidunt enim dis lobortis ac gravida. Non mollis lacus convallis non sit ac sit.</li>
           </ul>

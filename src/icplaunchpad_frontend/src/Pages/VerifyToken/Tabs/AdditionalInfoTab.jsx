@@ -63,7 +63,7 @@ const AdditionalInfoTab = ({presaleDetails, setPresaleDetails }) => {
 
       {/* Logo URL and Website */}
       <div className="flex flex-col xxs1:flex-row justify-between mb-4">
-        <div className="w-full xxs1:w-1/2 xxs1:pr-2 mb-6">
+        <div className="w-full  ss2:xxs1:w-1/2 xxs1:pr-2 mb-6">
           <label className="block text-[19px] mb-1">Logo URL</label>
           <input
              type="file"

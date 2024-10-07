@@ -68,6 +68,53 @@ pub fn get_user_account(principal: Principal) -> Option<UserAccount> {
     })
 }
 
+#[ic_cdk::update]
+pub fn update_user_account(principal: Principal, updated_account: UserAccount) -> Result<(), String> {
+    // Check if the user account exists
+    let existing_user_account = STATE.with(|state| {
+        state.borrow().user_accounts.get(&principal)
+    });
+
+    if existing_user_account.is_none() {
+        return Err("User account not found".to_string());
+    }
+
+    let mut user_account_wrapper = existing_user_account.unwrap().clone();
+
+    // Ensure the username remains unique if it has changed
+    if user_account_wrapper.user_account.username != updated_account.username {
+        let is_unique = STATE.with(|state| {
+            state.borrow().user_accounts.iter().all(|(_, wrapper)| {
+                wrapper.user_account.username != updated_account.username
+            })
+        });
+
+        if !is_unique {
+            return Err("Username already exists".to_string());
+        }
+
+        // Update the username since it has passed the uniqueness check
+        user_account_wrapper.user_account.username = updated_account.username.clone();
+    }
+
+    // Update the user account fields
+    user_account_wrapper.user_account.name = updated_account.name;
+    user_account_wrapper.user_account.profile_picture = updated_account.profile_picture;
+    user_account_wrapper.user_account.links = updated_account.links;
+    user_account_wrapper.user_account.tag = updated_account.tag;
+
+    // Reinsert the updated user account back into the map
+    mutate_state(|state| {
+        state.user_accounts.insert(principal, user_account_wrapper);
+    });
+
+    Ok(())
+}
+
+
+
+
+
 #[ic_cdk::query]
 pub fn get_user_by_username(username: String) -> Option<UserAccount> {
     read_state(|state| {
@@ -791,6 +838,57 @@ pub fn get_sale_params(ledger_canister_id: Principal) -> Result<SaleDetails, Str
     // Return the sale details
     Ok(sale_details)
 }
+
+#[derive(CandidType, Deserialize, Serialize, Debug, Clone)]
+pub struct SaleDetailsUpdate {
+    pub start_time_utc: u64,
+    pub end_time_utc: u64,
+    pub website: String,
+    pub facebook: String,
+    pub twitter: String,
+    pub github: String,
+    pub telegram: String,
+    pub instagram: String,
+    pub discord: String,
+    pub reddit: String,
+    pub youtube_video: String,
+    pub description: String,
+}
+
+#[ic_cdk::update]
+pub fn update_sale_params(
+    ledger_canister_id: Principal,
+    updated_details: SaleDetailsUpdate,
+) -> Result<(), String> {
+    // Update the SaleDetails in stable memory using the ledger_canister_id
+    mutate_state(|state| {
+        // Retrieve the existing sale details
+        if let Some(mut wrapper) = state.sale_details.get(&ledger_canister_id.to_string()) {
+            // Update only the specified fields in SaleDetailsUpdate
+            wrapper.sale_details.start_time_utc = updated_details.start_time_utc;
+            wrapper.sale_details.end_time_utc = updated_details.end_time_utc;
+            wrapper.sale_details.website = updated_details.website;
+            wrapper.sale_details.facebook = updated_details.facebook;
+            wrapper.sale_details.twitter = updated_details.twitter;
+            wrapper.sale_details.github = updated_details.github;
+            wrapper.sale_details.telegram = updated_details.telegram;
+            wrapper.sale_details.instagram = updated_details.instagram;
+            wrapper.sale_details.discord = updated_details.discord;
+            wrapper.sale_details.reddit = updated_details.reddit;
+            wrapper.sale_details.youtube_video = updated_details.youtube_video;
+            wrapper.sale_details.description = updated_details.description;
+
+            // Reinsert the updated wrapper back into the map
+            state.sale_details.insert(ledger_canister_id.to_string(), wrapper);
+            Ok(())
+        } else {
+            Err("Sale details not found.".into())
+        }
+    })
+}
+
+
+
 
 
 #[ic_cdk::update]

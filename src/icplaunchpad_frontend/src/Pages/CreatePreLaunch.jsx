@@ -39,8 +39,8 @@ const CreatePreLaunch = () => {
               </div>
               <div>
               <button onClick={openModal} className='border-1   bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5] 
-             text-black   w-[130px] xxs1:w-[200px] md:w-[250px] h-[38px] lg:h-[38px]
-                 text-[14px] xxs1:text-[16px] md:text-[18px] font-[600] rounded-2xl'>
+             text-black   w-[100px] ss2:w-[130px] xxs1:w-[200px] md:w-[250px] h-[38px] lg:h-[38px]
+                 text-[12px] xxs1:text-[16px] md:text-[18px] font-[600] rounded-2xl'>
                 CREATE TOKEN
               </button>
               <CreateTokenModal modalIsOpen={modalIsOpen} setIsOpen={setIsOpen} />
@@ -50,7 +50,7 @@ const CreatePreLaunch = () => {
 
           {/* 3 Line Lorem Ipsum with Light Background */}
           <div className="bg-[#F5F5F51A]  text-white p-3 rounded-md mb-8">
-            <ul className='text-[15px] px-7 py-4 list-disc '>
+            <ul className='text-[15px] px-2 ss2:px-7 py-4 list-disc '>
               <li>  Lorem ipsum dolor sit amet consectetur. Egestas faucibus suspendisse turpis cras sed bibendum massa arcu.</li>
               <li> Quisque enim amet ipsum ipsum faucibus leo adipiscing molestie. Tincidunt enim dis lobortis ac gravida. Non mollis lacus convallis non sit ac sit.</li>
             </ul>
