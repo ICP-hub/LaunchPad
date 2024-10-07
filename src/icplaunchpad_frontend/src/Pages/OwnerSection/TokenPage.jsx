@@ -203,7 +203,7 @@ const TokenPage = () => {
 
               <div className="bg-[#FFFFFF66] h-[2px] w-[100%] mx-auto mt-4 "></div>
 
-              <div className="flex justify-evenly text-[25px] w-[90%] mt-4">
+              <div className="flex justify-evenly gap-1 ss2:text-[25px] w-[90%] mt-4">
                 <IoGlobeOutline />
                 <FaTwitter />
                 <FaFacebook />
@@ -218,7 +218,7 @@ const TokenPage = () => {
           {isMobile && (
             <div className="bg-[#FFFFFF1A] font-posterama text-[#FFFFFFA6] text-white p-6 mt-8 rounded-2xl w-full max-w-full">
               {/* Section Heading */}
-              <h2 className="text-[25px]">OWNER SECTION</h2>
+              <h2 className=" text-[22px] ss2:text-[25px]">OWNER SECTION</h2>
 
               {/* Sale Type */}
               <div className="mt-4 font-inter">
@@ -307,7 +307,7 @@ const TokenPage = () => {
           {isMobile && (
             <div className="bg-[#FFFFFF1A] text-white p-1 rounded-lg mt-8 flex w-full h-[350px] lg:min-w-[406px]">
               <div className="relative flex items-center  overflow-hidden w-[60%] h-72">
-                <div className="absolute lg:left-[-45%] left-[-70%] dxs:left-[-47%] xxs1:left-[-30%] sm:left-[-20%] md:left-[-15%]  top-0 w-72 h-72">
+                <div className="absolute left-[-120%] lg:left-[-45%] ss2:left-[-70%] dxs:left-[-47%] xxs1:left-[-30%] sm:left-[-20%] md:left-[-15%]  top-0 w-72 h-72">
                   <svg className="transform rotate-90" viewBox="0 0 36 36">
                     <defs>
                       <linearGradient
@@ -343,7 +343,7 @@ const TokenPage = () => {
                       strokeDasharray={`${progress}, 100`}
                     />
                   </svg>
-                  <div className="absolute ml-10 inset-0 flex flex-col items-center justify-center">
+                  <div className="absolute ml-28 ss2:ml-10 inset-0 flex flex-col items-center justify-center">
                     <span>Progress</span>
                     <span className="text-lg font-semibold text-white">
                       {" "}

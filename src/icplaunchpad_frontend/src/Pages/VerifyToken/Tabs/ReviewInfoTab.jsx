@@ -3,7 +3,7 @@ import React from 'react';
 const ReviewInfoTab = ({ presaleDetails }) => {
 
   return (
-    <div className="bg-[#222222] p-4 xxs1:p-8 overflow-x-auto rounded-2xl mb-[120px] xxs1:mb-[50px] sm3:mb-8 mx-8 h-[1270px] xxs1:h-[1450px] sm3:h-[1350px] md:h-[1250px] lg:h-[1150px]">
+    <div className="bg-[#222222] p-4 xxs1:p-8  rounded-2xl mb-[120px] xxs1:mb-[50px] sm3:mb-8 mx-8 h-[1340px] xxs1:h-[1450px] sm3:h-[1350px] md:h-[1250px] lg:h-[1150px]">
       <table className="w-full text-left text-[10px] xxs1:text-[14px] pr-2 mb-4">
         <tbody>
           {[

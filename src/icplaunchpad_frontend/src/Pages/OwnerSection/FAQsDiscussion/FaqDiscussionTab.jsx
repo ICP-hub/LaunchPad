@@ -35,7 +35,7 @@ const FaqDiscussionTab = () => {
   };
 
   return (
-    <div className="max-w-full mx-auto   rounded-lg">
+    <div className="max-w-full mx-2   rounded-lg">
       {/* FAQ Section */}
       <div className="mb-6">
         <h2 className="text-xl text-white mb-4">Frequently Asked Questions</h2>
