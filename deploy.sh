@@ -1,7 +1,9 @@
 #!/bin/bash
 
+dfx identity new controller
+dfx identity use controller 
 
-dfx deploy token_deployer --argument '(
+dfx deploy token_deployer --ic --argument '(
   variant {
     Init = record {
       decimals = opt (1 : nat8);
@@ -31,7 +33,7 @@ dfx deploy token_deployer --argument '(
         controller_id = principal "aaaaa-aa";
       };
       max_memo_length = null;
-      token_name = "blahh";
+      token_name = "example";
       feature_flags = opt record { icrc2 = true };
     }
   }
@@ -40,6 +42,34 @@ dfx deploy token_deployer --argument '(
 
 dfx deploy index_canister --argument '(opt variant { Init = record { ledger_id = principal "aaaaa-aa"; retrieve_blocks_from_ledger_interval_seconds = opt 10 } })'
 
+  dfx identity use minter
+  export MINTER_ACCOUNT_ID=$(dfx ledger account-id)
+
+  dfx identity use default
+  export DEFAULT_ACCOUNT_ID=$(dfx ledger account-id)
+
+  dfx deploy --specified-id ryjl3-tyaaa-aaaaa-aaaba-cai icp_ledger_canister --argument "
+    (variant {
+      Init = record {
+        minting_account = \"$MINTER_ACCOUNT_ID\";
+        initial_values = vec {
+          record {
+            \"$DEFAULT_ACCOUNT_ID\";
+            record {
+              e8s = 10_000_000_000 : nat64;
+            };
+          };
+        };
+        send_whitelist = vec {};
+        transfer_fee = opt record {
+          e8s = 10_000 : nat64;
+        };
+        token_symbol = opt \"LICP\";
+        token_name = opt \"Local ICP\";
+        feature_flags = opt record { icrc2 = true };
+      }
+    })
+  "
 
 dfx deploy ic_asset_handler
 
