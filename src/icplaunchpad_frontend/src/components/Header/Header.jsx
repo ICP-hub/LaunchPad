@@ -18,6 +18,7 @@ const Header = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [userModalIsOpen, setUserModalIsOpen] =useState(true);
   const [isSearching, setIsSearching] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const [searchText, setSearchText] = useState('');
   const [menuOpen, setMenuOpen] = useState(false); // State to toggle hamburger menu
@@ -29,12 +30,12 @@ const Header = () => {
   const [userData, setUserData] =useState(null);
   const [images, setImages]=useState(null);
 
-  const { isAuthenticated, userPrincipal,createCustomActor } = useAuth();
+  // const { isAuthenticated, userPrincipal,createCustomActor } = useAuth();
 
   
-  useEffect(() => {
-        userCheck();      
-  }, [isAuthenticated,isUserRegistered]);
+  // useEffect(() => {
+  //       userCheck();      
+  // }, [isAuthenticated,isUserRegistered]);
 
   async function userCheck() {
     const actor = createCustomActor(process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND);
