@@ -101,7 +101,7 @@ const TokenPage = () => {
                     <FaDiscord className="size-6"/>
                   </div>
                 </div>
-                <div className="right flex flex-col gap-5">
+                <div className="right flex flex-col text-[17px] mr-8 lgx:mr-0 gap-4">
                   <div className="text-[#FFC145]">Upcoming</div>
                   <div>Soft 100 SOL</div>
                 </div>

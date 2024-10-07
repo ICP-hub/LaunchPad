@@ -9,7 +9,7 @@ const Tokenomic = () => {
         <div className="bg-[#3E3E3E] w-[183px] h-[58px]"></div>
         <div className="bg-[#FFFFFF] w-[183px] h-[58px]"></div>
       </div>
-      <div className="flex justify-between">
+      <div className="flex justify-between text-[10px] xxs1:text-[17px]">
         <div className="w-[114px] h-[24px] flex">
           <div className="bg-[#F3B3A7] w-[50%]"></div>
           <div className="w-[50%] flex justify-end"> Presale </div>
