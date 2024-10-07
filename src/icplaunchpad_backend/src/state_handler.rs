@@ -151,7 +151,7 @@ pub struct ImageIdWrapper {
 pub struct SaleDetailsWrapper {
     pub sale_details: SaleDetails,
 }
-#[derive(CandidType, Deserialize, Debug)]
+#[derive(CandidType, Deserialize, Debug, Clone)]
 pub struct UserAccountWrapper {
     pub user_account: UserAccount,
 }

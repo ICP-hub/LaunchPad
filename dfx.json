@@ -26,6 +26,16 @@
       "package": "ic_asset_handler",
       "type": "rust"
     },
+    "icp_ledger_canister": {
+      "type": "custom",
+      "candid": "https://raw.githubusercontent.com/dfinity/ic/08f32722df2f56f1e5c1e603fee0c87c40b77cba/rs/rosetta-api/icp_ledger/ledger.did",
+      "wasm": "https://download.dfinity.systems/ic/08f32722df2f56f1e5c1e603fee0c87c40b77cba/canisters/ledger-canister.wasm.gz",
+      "remote": {
+        "id": {
+          "ic": "ryjl3-tyaaa-aaaaa-aaaba-cai"
+        }
+      }
+    },
     "icplaunchpad_frontend": {
       "dependencies": [
         "icplaunchpad_backend"
