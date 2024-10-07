@@ -4,9 +4,9 @@ const PoolInfoTab = () => {
   return (
     <div className=" text-gray-300 p-6 rounded-lg w-full max-w-full">
       {/* Pool Address */}
-      <div className="flex justify-between mb-4">
+      <div className="flex justify-between gap-1 mb-4">
         <span>Address</span>
-        <span className="border-b-2 text-right">0x55112e6092B12b2bA177A3C9f334C5a5cE84B5c2F</span>
+        <span className="border-b-2  overflow-hidden text-right">0x55112e6092B12b2bA177A3C9f334C5a5cE84B5c2F</span>
       </div>
 
       {/* Pool Information */}

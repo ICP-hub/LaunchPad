@@ -1,46 +1,36 @@
 import React from 'react'
 
-const AffiliateProgram = () => {
+const TokenTab = () => {
   return (
-    <div className='min-h-[228px] mt-[40px] flex flex-col gap-4'>
-       <div className="flex justify-between border-b-2 border-[#FFFFFF80]">
-        <div>Pool Referrer Count</div>
-        <div>3</div>
+    <div className=" bg-[#FFFFFF1A] sm:bg-transparent text-gray-300 p-6 rounded-lg w-full max-w-full">
+    {/* Token Address */}
+    <div className="flex justify-between mb-4">
+      <span>Address</span>
+      <span className=" border-b-2 ml-2 text-right overflow-hidden text-ellipsis whitespace-nowrap">0xd8319162260Db2Fa5027AACFfBf52E319b1E7C0</span>
+    </div>
+    <p className="text-xs  mb-6">Do not send BNB to the token address</p>
+
+    {/* Token Details */}
+    <div className="border-t  pt-4">
+      <div className="flex border-b-2 justify-between py-2">
+        <span>Name</span>
+        <span>Chambs</span>
       </div>
-      <div className="flex justify-between border-b-2 border-[#FFFFFF80]">
-        <div>Realtime Reward Percentage</div>
-        <div>6%</div>
+      <div className="flex border-b-2 justify-between py-2">
+        <span>Symbol</span>
+        <span>CHAMBS</span>
       </div>
-      <div className="flex justify-between border-b-2 border-[#FFFFFF80]">
-        <div>Current Rewards</div>
-        <div>0.196932 BNB</div>
+      <div className="flex  border-b-2 justify-between py-2">
+        <span>Decimals</span>
+        <span>18</span>
       </div>
-      <div className="flex justify-between border-b-2 border-[#FFFFFF80]">
-        <div>Total Ref Amount</div>
-        <div>3.250091 BNB</div>
-      </div>
-      <div className="min-h-[192px] bg-[#FFFFFF1A] rounded-3xl gap-8 flex flex-col p-4">
-        <div>Top rewards</div>
-        <div className='flex gap-4 flex-col'>
-          <div className='flex justify-between'>
-            <div>0x6ECe...d4d0</div>
-            <div>1.714 (52.76%)</div>
-            <div>0.1039</div>
-          </div>
-          <div className='flex justify-between'>
-            <div>0x8913...8445</div>
-            <div>1.4533 (44.72%)</div>
-            <div>0.0881</div>
-          </div>
-          <div className='flex justify-between'>
-            <div>0x722f...0257</div>
-            <div>0.082 (2.52%)</div>
-            <div>0.005</div>
-          </div>
-        </div>
+      <div className="flex border-b-2 justify-between py-2">
+        <span className="text-gray-400">Total Supply</span>
+        <span className="text-white">10,000,000</span>
       </div>
     </div>
+  </div>
   )
 }
 
-export default AffiliateProgram
+export default TokenTab

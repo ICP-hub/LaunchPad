@@ -156,7 +156,7 @@ const VerifyToken = () => {
         {/* Back Button */}
         {currentStep > 1 && (
           <button
-            className="bg-transparent font-posterama border-2 w-[120px] lg:w-[211px] h-[35px] mx-2 text-[17px] md:text-[18px] font-[400] rounded-2xl"
+            className="bg-transparent font-posterama border-2 w-[80px] ss2:w-[120px] lg:w-[211px] h-[35px] mx-2 text-[17px] md:text-[18px] font-[400] rounded-2xl"
             onClick={handleBack}
           >
             <div className="w-full h-full rounded-xl bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5] text-transparent bg-clip-text">
@@ -168,7 +168,7 @@ const VerifyToken = () => {
         {/* Next/Submit Button */}
         {currentStep <= 4 && (
           <button
-            className="border-1 bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5] text-black w-[120px] lg:w-[211px] h-[35px] text-[17px] md:text-[18px] font-[600] rounded-2xl"
+            className="border-1 bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5] text-black w-[80px] ss2:w-[120px] lg:w-[211px] h-[35px] text-[17px] md:text-[18px] font-[600] rounded-2xl"
             onClick={handleNext}
           >
             {currentStep === 4 ? 'Submit' : 'Next'}

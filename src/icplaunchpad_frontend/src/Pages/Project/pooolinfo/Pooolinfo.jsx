@@ -2,42 +2,60 @@ import React from 'react'
 
 const AffiliateProgram = () => {
   return (
-    <div className='min-h-[228px] mt-[40px] flex flex-col gap-4'>
-       <div className="flex justify-between border-b-2 border-[#FFFFFF80]">
-        <div>Pool Referrer Count</div>
-        <div>3</div>
+    <div className=" bg-[#FFFFFF1A]  sm:bg-transparent text-gray-300 p-6 rounded-lg w-full max-w-full">
+      {/* Pool Address */}
+      <div className="flex justify-between gap-1 mb-4">
+        <span>Address</span>
+        <span className="border-b-2  overflow-hidden text-right">0x55112e6092B12b2bA177A3C9f334C5a5cE84B5c2F</span>
       </div>
-      <div className="flex justify-between border-b-2 border-[#FFFFFF80]">
-        <div>Realtime Reward Percentage</div>
-        <div>6%</div>
-      </div>
-      <div className="flex justify-between border-b-2 border-[#FFFFFF80]">
-        <div>Current Rewards</div>
-        <div>0.196932 BNB</div>
-      </div>
-      <div className="flex justify-between border-b-2 border-[#FFFFFF80]">
-        <div>Total Ref Amount</div>
-        <div>3.250091 BNB</div>
-      </div>
-      <div className="min-h-[192px] bg-[#FFFFFF1A] rounded-3xl gap-8 flex flex-col p-4">
-        <div>Top rewards</div>
-        <div className='flex gap-4 flex-col'>
-          <div className='flex justify-between'>
-            <div>0x6ECe...d4d0</div>
-            <div>1.714 (52.76%)</div>
-            <div>0.1039</div>
-          </div>
-          <div className='flex justify-between'>
-            <div>0x8913...8445</div>
-            <div>1.4533 (44.72%)</div>
-            <div>0.0881</div>
-          </div>
-          <div className='flex justify-between'>
-            <div>0x722f...0257</div>
-            <div>0.082 (2.52%)</div>
-            <div>0.005</div>
-          </div>
+
+      {/* Pool Information */}
+      <div className="border-t  pt-4">
+        {/* Tokens for Presale */}
+        <div className="flex justify-between border-b py-2">
+          <span>Tokens For Presale</span>
+          <span className="text-white">3,000,000 CHAMBS</span>
         </div>
+
+        {/* Initial Market Cap */}
+        <div className="flex  border-b justify-between py-2">
+          <span>Initial Market Cap</span>
+          <span className="text-white">1,453,500 CHAMBS</span>
+        </div>
+
+        {/* SoftCap */}
+        <div className="flex  border-b justify-between py-2">
+          <span>SoftCap</span>
+          <span className="text-white">1 BNB</span>
+        </div>
+
+        {/* Start Time */}
+        <div className="flex border-b justify-between py-2">
+          <span>Start Time</span>
+          <span className="text-white">2024.06.11 09:00 (UTC)</span>
+        </div>
+
+        {/* End Time */}
+        <div className="flex border-b justify-between py-2">
+          <span>End Time</span>
+          <span className="text-white">2024.06.13 23:59 (UTC)</span>
+        </div>
+
+          <div className="flex  border-b justify-between py-2">
+          <span>Listing On</span>
+          <span className="text-white underline">Pancakeswap</span>
+        </div>
+
+        <div className="flex  border-b justify-between py-2">
+          <span>Liquidity Percent</span>
+          <span className="text-white">51%</span>
+        </div>
+
+        <div className="flex  border-b justify-between py-2">
+          <span>Liquidity Lockup Time</span>
+          <span className="text-white">500 days after pool ends</span>
+        </div>
+        
       </div>
     </div>
   )
