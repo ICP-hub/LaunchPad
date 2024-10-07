@@ -19,7 +19,7 @@ const Hero = () => {
           amet efficitur mauris lacus vel ex.
         </p>
         <button type='submit'  className='border-1  font-posterama  bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5] 
-             text-black  relative w-[250px] h-[35px]
+             text-black  relative w-[240px] h-[35px]
                 text-[16px] md:text-[18px] font-[600] rounded-3xl'>
                 UPCOMING SALES
             </button>

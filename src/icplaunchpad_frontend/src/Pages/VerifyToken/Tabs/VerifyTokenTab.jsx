@@ -57,12 +57,13 @@ const VerifyTokenTab = ({ tokenData, setPresaleDetails }) => {
         {/* Currency Selection */}
         <div className="mb-4">
           <p className="mb-2">Currency</p>
-          <label className="flex items-center">
+          <label className="flex items-center ">
             <input
               type="checkbox"
               checked={currencyICP}
               onChange={handleCurrencyChange}
-              className="hidden peer"
+              className="hidden peer "
+              required
             />
             <div className="w-4 h-4 bg-transparent border-2 border-white rounded-full peer-checked:bg-gradient-to-r from-[#f09787] to-[#CACCF5] flex items-center justify-center mr-2">
               <div className="w-1.5 h-1.5 bg-transparent peer-checked:bg-gradient-to-r from-[#f09787] to-[#CACCF5] rounded-full"></div>
@@ -81,6 +82,7 @@ const VerifyTokenTab = ({ tokenData, setPresaleDetails }) => {
               checked={feeOption}
               onChange={handleFeeOptionChange}
               className="hidden peer"
+              required
             />
             <div className="w-4 h-4 bg-transparent border-2 border-white rounded-full peer-checked:bg-gradient-to-r from-[#f09787] to-[#CACCF5] flex items-center justify-center mr-2">
               <div className="w-1.5 h-1.5 bg-transparent peer-checked:bg-gradient-to-r from-[#f09787] to-[#CACCF5] rounded-full"></div>

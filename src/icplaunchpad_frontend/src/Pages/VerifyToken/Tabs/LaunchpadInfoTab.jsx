@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const LaunchpadInfoTab = ({ setPresaleDetails }) => {
+const LaunchpadInfoTab = ({presaleDetails, setPresaleDetails }) => {
   const [whiteList, setWhitelist] = useState(false);
 
   // Handle Whitelist toggle
@@ -22,6 +22,7 @@ const LaunchpadInfoTab = ({ setPresaleDetails }) => {
         <label className="block text-[19px] mb-2">Presale Rate</label>
         <input
           type="number"
+          value={presaleDetails.presaleRate}
           onChange={(e) => setPresaleDetails(prev => ({ ...prev, presaleRate: e.target.value }))}
           className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
           aria-label="Presale Rate"
@@ -33,6 +34,7 @@ const LaunchpadInfoTab = ({ setPresaleDetails }) => {
         <label className="block text-[19px] mb-2">Hardcap Token</label>
         <input
           type="number"
+          value={presaleDetails.hardcapToken}
           onChange={(e) => setPresaleDetails(prev => ({ ...prev, hardcapToken: e.target.value }))}
           className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
           aria-label="Hardcap Token"
@@ -44,6 +46,7 @@ const LaunchpadInfoTab = ({ setPresaleDetails }) => {
         <label className="block text-[19px] mb-2">Softcap Token</label>
         <input
           type="number"
+          value={presaleDetails.softcapToken}
           onChange={(e) => setPresaleDetails(prev => ({ ...prev, softcapToken: e.target.value }))}
           className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
           aria-label="Softcap Token"
@@ -95,6 +98,7 @@ const LaunchpadInfoTab = ({ setPresaleDetails }) => {
           <label className="block text-[19px] mb-1">Minimum Buy</label>
           <input
             type="number"
+            value={presaleDetails.minimumBuy}
             onChange={(e) => setPresaleDetails(prev => ({ ...prev, minimumBuy: e.target.value }))}
             className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
             aria-label="Minimum Buy"
@@ -104,6 +108,7 @@ const LaunchpadInfoTab = ({ setPresaleDetails }) => {
           <label className="block text-[19px] mb-1">Maximum Buy</label>
           <input
             type="number"
+            value={presaleDetails.maximumBuy}
             onChange={(e) => setPresaleDetails(prev => ({ ...prev, maximumBuy: e.target.value }))}
             className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
             aria-label="Maximum Buy"
@@ -117,6 +122,7 @@ const LaunchpadInfoTab = ({ setPresaleDetails }) => {
           <label className="block text-[19px] mb-1">Start Time</label>
           <input
             type="datetime-local"
+            value={presaleDetails.startTime}
             onChange={(e) => setPresaleDetails(prev => ({ ...prev, startTime: e.target.value }))}
             className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
             aria-label="Start Time"
@@ -126,6 +132,7 @@ const LaunchpadInfoTab = ({ setPresaleDetails }) => {
           <label className="block text-[19px] mb-1">End Time</label>
           <input
             type="datetime-local"
+            value={presaleDetails.endTime}
             onChange={(e) => setPresaleDetails(prev => ({ ...prev, endTime: e.target.value }))}
             className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
             aria-label="End Time"

@@ -3,7 +3,7 @@ import React from 'react';
 const WhyLaunch = () => {
   return (
     <div className="container   mx-auto sm1:px-[9%] py-8 font-posterama text-center">
-      <h2 className=" text-[22px] xxs1:text-3xl font-bold mb-7 xxs1:mb-11">WHY LAUNCH WITH US</h2>
+      <h2 className=" text-[20px] ss2:text-[22px] xxs1:text-3xl font-bold mb-7 xxs1:mb-11">WHY LAUNCH WITH US</h2>
       <div className="flex items-center   justify-center  h-[270px] md:h-[200px] gap-4 lg:gap-11 ">
         
         <div className="bg-[#333333] hidden sm1:block h-[220px] w-[400px]  py-9 rounded-lg ">

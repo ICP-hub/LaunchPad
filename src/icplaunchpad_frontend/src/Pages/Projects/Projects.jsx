@@ -147,9 +147,7 @@ const ProjectLists = () => {
   const navigate = useNavigate();
 
   // Handle navigation to the projects page
-  const handleViewMoreClick = () => {
-    navigate('/projects');
-  };
+ 
 
   const handleViewMoreClick2 = () => {
     navigate('/project');
@@ -163,7 +161,7 @@ const ProjectLists = () => {
       <h1 className="text-[40px] font-posterama font-bold">PROJECTS</h1>
 
       {/* Tabs */}
-      <div className="flex space-x-12 my-8">
+      <div className="flex space-x-8 ss2:space-x-12 my-8">
         <button
           className={`cursor-pointer relative ${
                       selectedTab === "all"
@@ -194,9 +192,9 @@ const ProjectLists = () => {
           className="w-full bg-[#444444] text-white p-2 rounded-lg outline-none placeholder-gray-500"
         />
         
-        <div className="flex space-x-4 md:mt-0 mt-4 w-full md:w-[20%] items-center justify-center">
+        <div className="flex pr-2 gap-2 md:mt-0 mt-4 w-full md:w-[20%] items-center  justify-center">
         {/* Filter and Sort Buttons */}
-        <button className="bg-[#444444] p-2 rounded-lg text-white flex items-center w-full">
+        <button className="bg-[#444444] ml-[-3%]  p-2 rounded-lg text-white flex items-center w-full">
         <TbFilterCheck/>
           <span className="ml-2">Filter</span>
           
@@ -217,7 +215,7 @@ const ProjectLists = () => {
         <div
           key={index}
           onClick={handleViewMoreClick2} 
-          className="bg-[#FFFFFF1A] cursor-pointer text-white p-1 rounded-lg flex flex-col w-[305px] xxs:w-[375px] xxs1:w-[400px] mt-14"
+          className="bg-[#FFFFFF1A] cursor-pointer text-white p-1 rounded-lg flex flex-col  ss2:w-[305px] xxs:w-[375px] xxs1:w-[400px] mt-14"
         >
           <div className="h-[280px] rounded-lg py-5 flex flex-col">
             <div className="relative">
@@ -226,7 +224,7 @@ const ProjectLists = () => {
                 className="absolute top-0 left-[50%] transform -translate-x-1/2 -translate-y-[50%] rounded-full h-[100px] md:min-h-[114px]"
                 alt={sale.heading}
               />
-               <div className="absolute top-[20px] right-[90px] xxs1:right-[130px] w-10 h-10  rounded-full border-1 border-gray-300">
+               <div className="absolute top-[20px] right-[60px] ss2:right-[90px] xxs1:right-[130px] w-10 h-10  rounded-full border-1 border-gray-300">
                 <img src={l3} alt="small" className="object-cover w-full h-full" />
               </div>
             </div>
@@ -244,7 +242,7 @@ const ProjectLists = () => {
 
           <div className="flex">
             <div className="relative flex items-center overflow-hidden w-[60%] h-72">
-              <div className="absolute lg:left-[-35%] left-[-62%]  xxs1:left-[-30%] sm:left-[-20%] md:left-[-30%] top-0 w-72 h-72">
+              <div className="absolute left-[-110%] lg:left-[-35%] ss2:left-[-62%]  xxs1:left-[-30%] sm:left-[-20%] md:left-[-30%] top-0 w-72 h-72">
                 <svg className="transform rotate-90" viewBox="0 0 36 36">
                   <defs>
                     <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -271,7 +269,7 @@ const ProjectLists = () => {
 
                   />
                 </svg>
-                <div className="absolute ml-10 inset-0 flex flex-col items-center justify-center">
+                <div className="absolute ml-28 ss2:ml-10 inset-0 flex flex-col items-center justify-center">
                   <span>Progress</span>
                   <span className="text-lg font-semibold text-white">
 

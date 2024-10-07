@@ -36,7 +36,7 @@ const OurPartner = () => {
           <p className="text-sm md:text-lg font-medium text-white">NAME</p>
         </div>
 
-        <div className="h-[180px] w-2  ml-[-90px]  xxs1:ml-0 xxs1:h-[140px] sm3:h-[175px] md:h-[190px] xxs1:w-1  md:w-2 rounded-full transition-all duration-500 bg-gradient-to-t from-[#212121] to-[#F3B3A7]"></div>
+        <div className="h-[180px] w-2 ml-[-30px]  ss2:ml-[-90px]  xxs1:ml-0 xxs1:h-[140px] sm3:h-[175px] md:h-[190px] xxs1:w-1  md:w-2 rounded-full transition-all duration-500 bg-gradient-to-t from-[#212121] to-[#F3B3A7]"></div>
 
         {/* Partner 3 */}
         <div className="text-center mr-[10px] xxs1:mr-0">
