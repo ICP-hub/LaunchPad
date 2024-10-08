@@ -11,14 +11,14 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 
 import CreateUser from "../Modals/CreateUser";
 import { Principal } from "@dfinity/principal";
-import { useAuth } from "../../StateManagement/useContext/useAuth";import { useDispatch, useSelector } from "react-redux";
+import { useAuth } from "../../StateManagement/useContext/useAuth";
+import { useDispatch, useSelector } from "react-redux";
 import { addUserData } from "../../Redux-Config/ReduxSlices/UserSlice";
 
 
 
 const Header = () => {
-  const { isAuthenticated, userPrincipal, createCustomActor, principal } =
-    useAuth();
+
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [userModalIsOpen, setUserModalIsOpen] = useState(true);
   const [isSearching, setIsSearching] = useState(false);
@@ -30,21 +30,19 @@ const Header = () => {
 
   const [activeSection, setActiveSection] = useState("home");
   const [isUserRegistered, setUserRegister] = useState(null);
-  const [userData, setUserData] = useState(null);
+  // const [userData, setUserData] = useState(null);
   const [images, setImages] = useState(null);
-
-  // const { isAuthenticated, userPrincipal,createCustomActor } = useAuth();
+  
+  const { isAuthenticated, principal,actor } = useAuth();
   const dispatch =useDispatch();
-  // const userData = useSelector((state) => state.user);
+  const userData = useSelector((state) => state.user);
   
   useEffect(() => {
         userCheck();      
-  }, [isAuthenticated,isUserRegistered]);
+  }, [isAuthenticated, actor,isUserRegistered]);
 
   async function userCheck() {
-    const actor = createCustomActor(
-      process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND
-    );
+    console.log("actor---", actor)
     const response = await actor.is_account_created();
     console.log("Account creation response:", response);
 
@@ -53,11 +51,12 @@ const Header = () => {
         setUserRegister(true);
         
         // Fetch user account data if the user is registered
-        const ownerPrincipal = Principal.fromText(userPrincipal);
+        const ownerPrincipal = Principal.fromText(principal);
         const fetchedUserData = await actor.get_user_account(ownerPrincipal);
         
         if (fetchedUserData) {
 const { profile_picture, ...restUserData } = fetchedUserData[0];
+
           dispatch(addUserData(restUserData));  
         }
         console.log("Fetched user data:", fetchedUserData);
@@ -126,7 +125,7 @@ const { profile_picture, ...restUserData } = fetchedUserData[0];
           <img
             src={logo}
             alt="Internet Identity"
-            className=" h-[20px]  ss2:h-[24px] md:h-[25px] lg:w-[150px] dlg:w-[170px] lg1:w-[160px] lgx:w-[220px] lgx:h-[30px] dxl:w-[190px] dxl:h-[35px]  "
+            className=" h-[20px]  ss2:h-[24px] md:h-[25px] lg:w-[150px] dlg:w-[170px] lg1:w-[160px] lgx:w-[220px] lgx:h-[30px] dxl:w-[190px] dxl:h-[30px]  "
             draggable="false"
           />
         </div>
@@ -193,7 +192,7 @@ const { profile_picture, ...restUserData } = fetchedUserData[0];
         <div className="relative flex items-center">
           <IoSearch
             onClick={handleSearchClick}
-            className={`cursor-pointer -mr-4  ${
+            className={`cursor-pointer mr-2  ${
               !isSearching ? "visible" : "invisible"
             }`}
             size={24}
@@ -247,11 +246,9 @@ const { profile_picture, ...restUserData } = fetchedUserData[0];
               <div className="bg-black h-full w-full rounded-2xl flex items-center p-1 px-3">
                 <FaUser className="mr-2" />
                 <div className="flex flex-col items-start w-24 h-8 lg:w-40 lg:h-full ">
-                  <span className="text-sm">
-                    {userData ? userData[0]?.username : "ABCD"}
-                  </span>
-                  <span className="text-xs text-gray-400 w-full overflow-hidden whitespace-nowrap text-ellipsis">
-                  {principal || "User"}
+                <span className="text-sm">{ userData ? userData.username : 'ABCD' }</span>
+                  <span className=" text-[10px] lg:text-xs text-gray-400 w-full overflow-hidden whitespace-nowrap text-ellipsis">
+                    {principal}
                   </span>
                 </div>
                 <BsThreeDotsVertical className="ml-2" />
@@ -360,8 +357,8 @@ const { profile_picture, ...restUserData } = fetchedUserData[0];
       )}
 
       <div className="flex items-center bg-[#222222] py-1 px-[4%] md:text-[8px] md1:text-[10px] lg:text-[12px] lg:gap-4 lg1:gap-6 dlg:text-[14px] 
-      dxl:text-[15px] xl:text-[17px] md:gap-6 dxl:gap-8 gap-7 whitespace-nowrap overflow-x-auto no-scrollbar">
-        <p className="lg:text-[12px] dxl:text-lg font-semibold">TRENDING</p>
+      dxl:text-[15px] xl:text-[16px] md:gap-6 dxl:gap-8 gap-7 whitespace-nowrap overflow-x-auto no-scrollbar">
+        <p className="lg:text-[12px] dxl:text-lg">TRENDING</p>
         <p>#1 TRUMPBB</p>
         <p>#2 SWIF</p>
         <p>#3 MustPepe</p>
