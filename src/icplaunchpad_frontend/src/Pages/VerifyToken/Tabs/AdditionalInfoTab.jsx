@@ -54,7 +54,7 @@ const AdditionalInfoTab = ({presaleDetails, setPresaleDetails }) => {
   };
 
   return (
-    <div className="bg-[#222222] p-3 xxs1:p-8 rounded-2xl lg:h-[1050px] mx-8 mb-[120px] xxs1:mb-11 sm5:mb-6 md:mb-4 lg:mb-0 h-[1350px] xxs1:h-[1000px]">
+    <div className="bg-[#222222] p-3 xxs1:p-8 rounded-2xl lg:h-[1050px] mx-3 xxs1:mx-8 mb-[120px] xxs1:mb-11 sm5:mb-6 md:mb-4 lg:mb-0 h-[1350px] xxs1:h-[1000px]">
       
       {/* Chain Text with Gray Background on mobile only */}
       <div className="flex xxs1:hidden mb-8 bg-[#444444] pl-6 p-2 mt-[-15px] mx-[-12px] rounded-2xl">
@@ -68,7 +68,7 @@ const AdditionalInfoTab = ({presaleDetails, setPresaleDetails }) => {
           <input
              type="file"
             onChange={(e) => setPresaleDetails((prevDetails) => ({...prevDetails, logoURL: e.target.files[0]}))}
-            className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
+            className="w-full  py-2 xxs1:p-2  xxs1:bg-[#333333] text-white rounded-md xxs1:border-b-2"
           />
         </div>
         <div className="w-full xxs1:w-1/2 xxs1:pl-2 mb-4">

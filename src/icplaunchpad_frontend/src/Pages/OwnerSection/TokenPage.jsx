@@ -19,9 +19,10 @@ import MobileViewTab from "./MobileViewTab";
 import { FiEdit3 } from "react-icons/fi";
 
 import AddToWhitelist from "../../components/Modals/AddToWhitelist.jsx";
-import { useAuth } from "../../auth/useAuthClient.jsx";
+import { useAuth } from "../../StateManagement/useContext/useAuth.jsx";
 import { Principal } from '@dfinity/principal';
 import { Navigate, useLocation } from 'react-router-dom';
+import { useSelector } from "react-redux";
 
 const TokenPage = () => {
   const [activeTab, setActiveTab] = useState("About");
@@ -29,7 +30,6 @@ const TokenPage = () => {
   const [sellType, setSellType] = useState('public');
   const [modalIsOpen, setIsOpen] = useState(false);
   const { createCustomActor, isAuthenticated, userPrincipal } = useAuth();
-  const [userData, setUserData] = useState(null);
   const [imageIds, setImageIds] = useState({});
   const [profileImg, setProfileImg] = useState();
   const [isLoading, setIsLoading] = useState(true);
@@ -39,16 +39,13 @@ const TokenPage = () => {
   const [presaleData, sePresaleData]= useState(null);
   const location = useLocation();
 
+  const userData=useSelector((state)=>state.user);
+
     const { ledger_canister_id } = location.state || {};
 
   const fetchData = async () => {
     try {
       const actor = createCustomActor(process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND);
-      const ownerPrincipal = Principal.fromText(userPrincipal);
-      const response = await actor.get_user_account(ownerPrincipal);
-      console.log("Response-:", response);
-      setUserData(response);
-    
       // Getting profile image ID
       const profile_ImgId = await actor.get_profile_image_id();
       console.log("Image id", profile_ImgId[0]);
@@ -156,7 +153,7 @@ const TokenPage = () => {
               </div>
               <div className="content-div flex font-posterama justify-between w-[90%] m-auto mt-7 ">
                 <div className="left flex flex-col gap-5">
-                  <div className="text-[25px]"> {userData ? userData[0]?.name : "PUPPO"}</div>
+                  <div className="text-[25px]"> {userData ? userData.username : "PUPPO"}</div>
                   <div className="font-extralight">FAir Launnch - Max buy 5 SOL</div>
                   <div className="logos flex  gap-11">
                     <IoGlobeOutline className="size-6" />
@@ -345,11 +342,11 @@ const TokenPage = () => {
                   </svg>
                   <div className="absolute ml-28 ss2:ml-10 inset-0 flex flex-col items-center justify-center">
                     <span>Progress</span>
-                    <span className="text-[14px] xxs1:text-lg font-semibold text-white">
+                    <span className="text-lg font-semibold text-white">
                       {" "}
                       ({progress}%)
                     </span>
-                    <span className=" text-[11px] xxs1:text-sm text-gray-400 mt-1">
+                    <span className="text-sm text-gray-400 mt-1">
                       {raised} SOL RAISED
                     </span>
                   </div>

@@ -5,20 +5,22 @@ import { IoSearch, IoClose, IoMenu, IoCloseSharp } from "react-icons/io5";
 
 import ConnectWallets from '../Modals/ConnectWallets';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../../auth/useAuthClient';
+import { useAuth } from '../../StateManagement/useContext/useAuth';
 import ProfileCard from '../Modals/ProfileCard';
 import { FaUser } from 'react-icons/fa';
 import { BsThreeDotsVertical } from 'react-icons/bs';
 
 import CreateUser from "../Modals/CreateUser";
 import { Principal } from '@dfinity/principal';
+import { useDispatch, useSelector } from "react-redux";
+import { addUserData } from "../../Redux-Config/ReduxSlices/UserSlice";
+
 
 
 const Header = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [userModalIsOpen, setUserModalIsOpen] =useState(true);
   const [isSearching, setIsSearching] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const [searchText, setSearchText] = useState('');
   const [menuOpen, setMenuOpen] = useState(false); // State to toggle hamburger menu
@@ -27,15 +29,15 @@ const Header = () => {
 
   const [activeSection, setActiveSection] = useState("home");
   const [isUserRegistered, setUserRegister]= useState(null);
-  const [userData, setUserData] =useState(null);
   const [images, setImages]=useState(null);
 
-  // const { isAuthenticated, userPrincipal,createCustomActor } = useAuth();
-
+  const { isAuthenticated, userPrincipal,createCustomActor } = useAuth();
+  const dispatch =useDispatch();
+  const userData = useSelector((state) => state.user);
   
-  // useEffect(() => {
-  //       userCheck();      
-  // }, [isAuthenticated,isUserRegistered]);
+  useEffect(() => {
+        userCheck();      
+  }, [isAuthenticated,isUserRegistered]);
 
   async function userCheck() {
     const actor = createCustomActor(process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND);
@@ -50,10 +52,12 @@ const Header = () => {
         const ownerPrincipal = Principal.fromText(userPrincipal);
         const fetchedUserData = await actor.get_user_account(ownerPrincipal);
         
-        if (fetchedUserData) {
-            setUserData(fetchedUserData); // This will trigger re-render
-        }
         console.log("Fetched user data:", fetchedUserData);
+        if (fetchedUserData) {
+          const { profile_picture, ...restUserData } = fetchedUserData[0];
+          dispatch(addUserData(restUserData));  
+        }
+
     } else {
         setUserRegister(false);
     }
@@ -88,7 +92,7 @@ const Header = () => {
 
   return (
     <div>
-{ (isAuthenticated && isUserRegistered === false ) && <CreateUser setUserData={setUserData}  userModalIsOpen={userModalIsOpen} setUserModalIsOpen={setUserModalIsOpen} />}
+{ (isAuthenticated && isUserRegistered === false ) && <CreateUser userModalIsOpen={userModalIsOpen} setUserModalIsOpen={setUserModalIsOpen} />}
       <nav className="relative z-20 text-white bg-black shadow-lg dlg:px-[2%] dlg:py-6 lgx:px-[4%] 
       lgx:py-9 md:px-[4%] md:py-[2%] py-[3%] px-[2.5%] flex justify-between items-center">
  
@@ -114,12 +118,12 @@ const Header = () => {
           <img
             src={logo}
             alt="Internet Identity"
-            className=" h-[20px]  ss2:h-[24px] md:h-[25px] lg:w-[150px] dlg:w-[170px] lg1:w-[160px] lgx:w-[220px] lgx:h-[30px] dxl:w-[190px] dxl:h-[30px]  "
+            className=" h-[20px]  ss2:h-[24px] md:h-[25px] lg:w-[150px] dlg:w-[170px] lg1:w-[160px] lgx:w-[220px] lgx:h-[30px] dxl:w-[190px] dxl:h-[35px]  "
             draggable="false"
           />
         </div>
 
-        <div className="hidden  md:flex lgx:px-10 lgx:mr-[28%]  md:mr-[20%] lg:text-[18px] md:text-[17px] lgx:text-[20px] md:gap-[20px] lg:gap-[25px] dxl:gap-[50px]">
+        <div className="hidden  ml-2 md:flex lgx:px-10 lgx:mr-[28%]  md:mr-[20%] lg:text-[18px] md:text-[17px] lgx:text-[20px] md:gap-[20px] lg:gap-[25px] dxl:gap-[50px]">
 
           <Link
             to="/"
@@ -180,7 +184,7 @@ const Header = () => {
         <div className="relative flex items-center">
           <IoSearch
             onClick={handleSearchClick}
-            className={`cursor-pointer mr-2  ${!isSearching ? "visible" : "invisible"}`}
+            className={`cursor-pointer -mr-4  ${!isSearching ? "visible" : "invisible"}`}
             size={24}
           />
 
@@ -212,7 +216,7 @@ const Header = () => {
             className="w-[120px] md:w-[150px] lg:w-[190px] h-[25px] lg:h-[32px] 
             dxl:h-[35px] text-[10px] md:text-[15px] dlg:text-[19px] font-[400] items-center justify-center  rounded-xl p-[1.5px] bg-gradient-to-r from-[#f09787]  to-[#CACCF5]"
           >
-            <div className='bg-gray-950 w-full h-full  rounded-xl '>
+            <div className='bg-gray-950 w-full h-full  rounded-xl flex items-center justify-center '>
               Connect Wallet
             </div>
           </button>
@@ -233,8 +237,8 @@ const Header = () => {
               <div className="bg-black h-full w-full rounded-2xl flex items-center p-1 px-3">
                 <FaUser className="mr-2" />
                 <div className="flex flex-col items-start w-24 h-8 lg:w-40 lg:h-full ">
-                  <span className="text-sm">{userData  ? userData[0]?.username : 'ABCD'}</span>
-                  <span className="text-xs text-gray-400 w-full overflow-hidden whitespace-nowrap text-ellipsis">
+                <span className="text-sm">{ userData ? userData.username : 'ABCD' }</span>
+                  <span className=" text-[10px] lg:text-xs text-gray-400 w-full overflow-hidden whitespace-nowrap text-ellipsis">
                     {userPrincipal}
                   </span>
                 </div>
@@ -253,7 +257,7 @@ const Header = () => {
                     >
                       Account
                     </button>
-                    <ProfileCard userData={userData && userData} profileModalIsOpen={profileModalIsOpen} setProfileModalIsOpen={setProfileModalIsOpen} />
+                    <ProfileCard profileModalIsOpen={profileModalIsOpen} setProfileModalIsOpen={setProfileModalIsOpen} />
                   </div>
 
                   <Link
@@ -312,29 +316,31 @@ const Header = () => {
             onClick={openModal}
             className=" mt-[80px]   bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5]
              text-black  relative w-[220px] h-[35px] p-[1.5px]
-                text-[16px] md:text-[18px] font-[600] rounded-3xl "
+                text-[16px] md:text-[18px] font-[600] rounded-3xl flex items-center justify-center "
           >
             Connect Wallet
           </button>
             :
-            <>          <button
+            <>        <button
               onClick={openProfileModal}
-              className=" mt-[80px]   bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5]
+              className=" mt-[80px] flex   bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5]
               relative w-[220px] h-[35px] p-[1.5px]
-                text-[16px] md:text-[18px] font-[600] rounded-3xl "
+                text-[16px] md:text-[18px] font-[600] rounded-3xl  "
             >
-              <div className='bg-gray-950 w-full h-full  rounded-3xl items-center justify-center'>
+              <div className='bg-black w-full h-full  rounded-3xl flex items-center justify-center '>
                 Account
               </div>
             </button>
               <ProfileCard profileModalIsOpen={profileModalIsOpen} setProfileModalIsOpen={setProfileModalIsOpen} />
+
             </>
           }    
         </div>
       )}
 
-      <div className="flex items-center bg-[#222222] py-1 px-[4%] md:text-[8px] md1:text-[10px] lg:text-[12px] lg:gap-4 lg1:gap-6 dlg:text-[14px] dxl:text-[15px] xl:text-[16px] md:gap-6 dxl:gap-8 gap-7 whitespace-nowrap">
-        <p className="lg:text-[12px] dxl:text-lg">TRENDING</p>
+      <div className="flex items-center bg-[#222222] py-1 px-[4%] md:text-[8px] md1:text-[10px] lg:text-[12px] lg:gap-4 lg1:gap-6 dlg:text-[14px] 
+      dxl:text-[15px] xl:text-[17px] md:gap-6 dxl:gap-8 gap-7 whitespace-nowrap overflow-x-auto no-scrollbar">
+        <p className="lg:text-[12px] dxl:text-lg font-semibold">TRENDING</p>
         <p>#1 TRUMPBB</p>
         <p>#2 SWIF</p>
         <p>#3 MustPepe</p>

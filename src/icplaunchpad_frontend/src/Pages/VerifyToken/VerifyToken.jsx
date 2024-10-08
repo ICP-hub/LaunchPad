@@ -5,7 +5,7 @@ import LaunchpadInfoTab from './Tabs/LaunchpadInfoTab';
 import AdditionalInfoTab from './Tabs/AdditionalInfoTab';
 import ReviewInfoTab from './Tabs/ReviewInfoTab';
 import StepProgressBar from './StepProgressBar';
-import { useAuth } from '../../auth/useAuthClient';
+import { useAuth } from '../../StateManagement/useContext/useAuth';
 import { Principal } from '@dfinity/principal';
 
 // Utility function to convert an image file to a byte array
@@ -177,7 +177,7 @@ const VerifyToken = () => {
       </div>
 
       {/* Error message */}
-      {error && <div className="text-red-500 mt-4">{error}</div>}
+      {error && <div className="text-red-500 mt-4 px-8 items-center">{error}</div>}
     </div>
   );
 };

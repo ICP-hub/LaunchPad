@@ -3,7 +3,7 @@ import React from 'react';
 const ReviewInfoTab = ({ presaleDetails }) => {
 
   return (
-    <div className="bg-[#222222] p-4 xxs1:p-8  rounded-2xl mb-[120px] xxs1:mb-[50px] sm3:mb-8 mx-8 h-[1340px] xxs1:h-[1450px] sm3:h-[1350px] md:h-[1250px] lg:h-[1150px]">
+    <div className="bg-[#222222] p-4 xxs1:p-8  rounded-2xl mb-[120px] xxs1:mb-[50px] sm3:mb-8 mx-2 xxs1:mx-8 h-[1340px] xxs1:h-[1450px] sm3:h-[1350px] md:h-[1250px] lg:h-[1150px]">
       <table className="w-full text-left text-[10px] xxs1:text-[14px] pr-2 mb-4">
         <tbody>
           {[
@@ -40,7 +40,7 @@ const ReviewInfoTab = ({ presaleDetails }) => {
       </table>
 
       <div className="bg-[#F5F5F51A] text-white p-3 rounded-md mb-8">
-        <ul className="text-[13px] xxs1:text-[15px] px-7 py-4 list-disc">
+        <ul className="text-[13px] xxs1:text-[15px] px-3 xxs1:px-7 py-4 list-disc">
           <li>Lorem ipsum dolor sit amet consectetur. Egestas faucibus suspendisse turpis cras sed bibendum massa arcu.</li>
           <li>Quisque enim amet ipsum ipsum faucibus leo adipiscing molestie. Tincidunt enim dis lobortis ac gravida. Non mollis lacus convallis non sit ac sit.</li>
         </ul>

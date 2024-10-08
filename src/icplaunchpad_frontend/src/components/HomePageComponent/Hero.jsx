@@ -30,7 +30,7 @@ const Hero = () => {
         <img
           src={isHovered ? hoverImage : upcomingImage}
           alt="Hero"
-          className={`transition-transform duration-700 ease-in-out ${isHovered ? 'transform ' : ''}`}
+          className={`transition-transform duration-700  ease-in-out ${isHovered ? 'transform ' : ''}`}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         />

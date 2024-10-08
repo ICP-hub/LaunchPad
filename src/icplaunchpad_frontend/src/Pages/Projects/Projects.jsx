@@ -189,10 +189,10 @@ const ProjectLists = () => {
         <input
           type="text"
           placeholder="Search"
-          className="w-full bg-[#444444] text-white p-2 rounded-lg outline-none placeholder-gray-500"
+          className="w-full bg-[#444444] text-white p-2 rounded-xl outline-none placeholder-gray-500"
         />
         
-        <div className="flex pr-2 gap-2 md:mt-0 mt-4 w-full md:w-[20%] items-center  justify-center">
+        <div className="flex pr-2 gap-2 md:mt-0 mt-4 w-full md:w-[30%] items-center  justify-center">
         {/* Filter and Sort Buttons */}
         <button className="bg-[#444444] ml-[-3%]  p-2 rounded-lg text-white flex items-center w-full">
         <TbFilterCheck/>
@@ -209,15 +209,15 @@ const ProjectLists = () => {
       </div>
     </div>
 
-    <div className="flex lg:flex-row flex-col flex-wrap items-center w-[95%] m-auto justify-around">
+    <div className="flex lg:flex-row flex-col flex-wrap items-center w-[95%] m-auto  justify-around">
       
       {salesData.map((sale, index) => (
         <div
           key={index}
           onClick={handleViewMoreClick2} 
-          className="bg-[#FFFFFF1A] cursor-pointer text-white p-1 rounded-lg flex flex-col  ss2:w-[305px] xxs:w-[375px] xxs1:w-[400px] mt-14"
+          className="bg-[#FFFFFF1A] cursor-pointer text-white p-1 rounded-xl flex flex-col  ss2:w-[305px] xxs:w-[375px] xxs1:w-[400px]  mt-14"
         >
-          <div className="h-[280px] rounded-lg py-5 flex flex-col">
+          <div className="h-[280px]  rounded-lg py-5 flex flex-col">
             <div className="relative">
               <img
                 src={person1}
@@ -242,7 +242,7 @@ const ProjectLists = () => {
 
           <div className="flex">
             <div className="relative flex items-center overflow-hidden w-[60%] h-72">
-              <div className="absolute left-[-110%] lg:left-[-35%] ss2:left-[-62%]  xxs1:left-[-30%] sm:left-[-20%] md:left-[-30%] top-0 w-72 h-72">
+              <div className="absolute left-[-110%]  ss2:left-[-62%]  xxs1:left-[-30%] sm:left-[-20%] md:left-[-45%] top-0 w-72 h-72">
                 <svg className="transform rotate-90" viewBox="0 0 36 36">
                   <defs>
                     <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
