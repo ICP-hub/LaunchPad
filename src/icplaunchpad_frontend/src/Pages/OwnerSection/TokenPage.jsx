@@ -29,8 +29,9 @@ const TokenPage = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 640);
   const [sellType, setSellType] = useState('public');
   const [modalIsOpen, setIsOpen] = useState(false);
-  const { createCustomActor, isAuthenticated, userPrincipal } = useAuth();
-  const [imageIds, setImageIds] = useState({});
+  
+  const { actor, isAuthenticated, principal } = useAuth();
+  const [tokenData, setTokenData] = useState(null);
   const [profileImg, setProfileImg] = useState();
   const [isLoading, setIsLoading] = useState(true);
   const protocol = process.env.DFX_NETWORK === "ic" ? "https" : "http";
@@ -45,7 +46,13 @@ const TokenPage = () => {
 
   const fetchData = async () => {
     try {
-      const actor = createCustomActor(process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND);
+
+     // getting token data
+     const tokenData= await actor.get_tokens_info();
+     setTokenData(tokenData[tokenData.length-1])
+     console.log("tokenData-",tokenData[tokenData.length-1]);
+
+       
       // Getting profile image ID
       const profile_ImgId = await actor.get_profile_image_id();
       console.log("Image id", profile_ImgId[0]);
@@ -74,10 +81,10 @@ const TokenPage = () => {
   };
 
   useEffect(() => {
-    if (isAuthenticated && userPrincipal) {
+    if (isAuthenticated && principal) {
       fetchData();
     }
-  }, [isAuthenticated, userPrincipal]);
+  }, [isAuthenticated, principal]);
 
 
   const openModal = () => {
@@ -153,7 +160,7 @@ const TokenPage = () => {
               </div>
               <div className="content-div flex font-posterama justify-between w-[90%] m-auto mt-7 ">
                 <div className="left flex flex-col gap-5">
-                  <div className="text-[25px]"> {userData ? userData.username : "PUPPO"}</div>
+                  <div className="text-[25px]"> {tokenData ? tokenData.token_name: "PUPPO"}</div>
                   <div className="font-extralight">FAir Launnch - Max buy 5 SOL</div>
                   <div className="logos flex  gap-11">
                     <IoGlobeOutline className="size-6" />

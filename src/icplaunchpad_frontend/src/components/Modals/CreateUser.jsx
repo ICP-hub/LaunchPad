@@ -4,14 +4,14 @@ import Modal from 'react-modal';
 import AnimationButton from '../../common/AnimationButton';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { useAuth } from '../../auth/useAuthClient';
+import { useAuth } from '../../StateManagement/useContext/useAuth';
 import { useDispatch } from 'react-redux';
 import { addUserData } from '../../Redux-Config/ReduxSlices/UserSlice';
 import { Principal } from '@dfinity/principal';
 
 const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const navigate = useNavigate();
-  const { createCustomActor,userPrincipal } = useAuth();
+  const { actor,principal } = useAuth();
   const { register, handleSubmit, formState: { errors }, reset } = useForm();
   const [validationError, setValidationError] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
@@ -27,7 +27,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
     }
 
     try {
-      const actor = createCustomActor(process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND);
+      
       let profilePicture = null;
 
       // Handle profile picture file upload
@@ -67,7 +67,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
       }
 
            // Fetch user account data if the user is registered
-       const ownerPrincipal = Principal.fromText(userPrincipal);
+       const ownerPrincipal = Principal.fromText(principal);
        const fetchedUserData = await actor.get_user_account(ownerPrincipal);
        console.log("Fetched user data:", fetchedUserData);
        if (fetchedUserData) {

@@ -9,7 +9,7 @@ import { useDispatch } from 'react-redux';
 import { addTokenData } from '../../Redux-Config/ReduxSlices/TokenSlice';
 
 const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
-  const { createCustomActor, userPrincipal } = useAuth(); // Auth context
+  const { actor, principal } = useAuth(); // Auth context
   const [validationError, setValidationError] = useState(''); // Validation error state
   const [termsAccepted, setTermsAccepted] = useState(false); // Terms acceptance state
   const dispatch =useDispatch();
@@ -58,10 +58,9 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
 
       // if (transactionResult) {
 
-        const actor = createCustomActor(process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND);
 
         // Convert userPrincipal to Principal type
-        const ownerPrincipal = Principal.fromText(userPrincipal);
+        const ownerPrincipal = Principal.fromText(principal);
 
         // Token data structure for canister call
         const tokenData = {
