@@ -3,8 +3,8 @@ import { TfiClose } from "react-icons/tfi";
 
 import Modal from 'react-modal';
 import person1 from "../../../assets/images/carousel/person1.png"
-import { useAuth } from '../../auth/useAuthClient';
-import { useSelector } from 'react-redux';
+import { useAuth } from '../../StateManagement/useContext/useAuth';
+import { useSelector } from "react-redux";
 
 
 
