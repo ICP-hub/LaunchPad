@@ -1,23 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import GradientText from '../../common/GradientText';
-import { useAuth } from "../../auth/useAuthClient";
 
 import Activities from './Activities/Activities';
 import Affiliate from './Affiliate/Affiliate';
 import Favorited from './Favorited/Favorited';
 import RecentlyViewed from './RecentlyViewed/RecentlyViewed';
 import MyContribution from './MyContribution/MyContribution';
+import { useAuth } from '../../StateManagement/useContext/useAuth';
+import { useNavigate } from 'react-router-dom';
 
 const Profile = () => {
   const [activeTab, setActiveTab] = useState("Activities");
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const { logout,isAuthenticated, userPrincipal } = useAuth();
+ const navigate = useNavigate();
 
-
+  // const handleLogout = async (e) => {
+  //   e.preventDefault();
+  //     await logout().then(() => window.location.reload()); 
+  
+  // };
   const handleLogout = async (e) => {
     e.preventDefault();
-      await logout().then(() => window.location.reload()); 
-  
+    await logout().then(() => {
+      navigate("/");
+      window.location.reload(); 
+    });
   };
 
   useEffect(() => {

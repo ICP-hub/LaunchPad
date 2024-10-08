@@ -1,0 +1,8 @@
+.transform-image {
+    transform: scale(1) rotate(0deg);
+    transition: transform 1s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.transform-image:hover {
+    transform: scale(1.05) rotate(15deg);
+}
