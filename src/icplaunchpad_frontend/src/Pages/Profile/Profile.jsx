@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import GradientText from '../../common/GradientText';
-import { useAuth } from "../../StateManagement/useContext/useAuth";
+
 
 import Activities from './Activities/Activities';
 import Affiliate from './Affiliate/Affiliate';
