@@ -5,7 +5,7 @@ const Activities= () => {
     <div className='  flex flex-col items-center justify-center  gap-8'>
        {/* Investment Summary */}
        <div className='flex md:flex-row flex-col '>
-                <div className="flex  md:flex-col gap-4 md:gap-6 lg:gap-2 pt-14 text-[10px] sm5:text-[14px] dlg:text-[18px]    ">
+                <div className="flex  md:flex-col font-posterama gap-3 ss2:gap-6 lg:gap-2 pt-14 text-[10px] sm5:text-[14px] dlg:text-[18px]    ">
                     <div >
                     <p class="whitespace-nowrap">Total Pool Invested</p>
                         <h2 className="text-2xl mt-2">0</h2>
@@ -25,8 +25,8 @@ const Activities= () => {
                    
 
                     {/* Transaction Table */}
-                    <div className="bg-[#FFFFFF0A]  ml-8  w-[210px] xxs1:w-[300px]   sm5:w-[450px]  md1:w-[500px] lg:w-[570px] lgx:w-[750px] h-[275px]  mt-4 rounded-2xl text-center ">
-                        <div className="grid grid-cols-5 bg-[#3f3d3d] m-0 py-4  rounded-t-2xl text-xs mb-4 ">
+                    <div className="bg-[#FFFFFF0A]  md:ml-8 w-full sm:w-[500px] lg:w-[570px] lgx:w-[750px] h-[275px] font-posterama  mt-4 rounded-2xl text-center ">
+                        <div className="flex gap-11 px-1 bg-[#3f3d3d]  py-4  rounded-t-2xl text-[15px] mb-4 ">
                             <span>Name</span>
                             <span >Date</span>
                             <span className='md:block hidden'>Amount</span>

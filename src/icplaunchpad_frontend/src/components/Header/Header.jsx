@@ -184,7 +184,7 @@ const Header = () => {
         <div className="relative flex items-center">
           <IoSearch
             onClick={handleSearchClick}
-            className={`cursor-pointer -mr-4  ${!isSearching ? "visible" : "invisible"}`}
+            className={`cursor-pointer xl:-mr-4  ${!isSearching ? "visible" : "invisible"}`}
             size={24}
           />
 

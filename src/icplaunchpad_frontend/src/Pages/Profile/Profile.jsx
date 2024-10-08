@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import GradientText from '../../common/GradientText';
-import { useAuth } from "../../auth/useAuthClient";
+import { useAuth } from "../../StateManagement/useContext/useAuth";
 
 import Activities from './Activities/Activities';
 import Affiliate from './Affiliate/Affiliate';
@@ -108,33 +108,33 @@ const Profile = () => {
         </>
       )}
 
-     {/* Mobile View */}
+     
 {/* Mobile View */}
 {isMobile && (
   <>
-    <div className="bg-black text-white p-8 max-w-[1170px] mx-auto">
+    <div className="bg-black text-white p-2 max-w-[1170px] mx-auto">
       {/* Header Section */}
       <div className="mx-[-30px]">
-        <div className="flex flex-col min-h-[100px] items-start bg-[#111] p-4 mb-4 w-full">
+        <div className="flex flex-col min-h-[100px] items-start bg-[#111] p-4 mx-4 mb-4 w-full">
           <p className="text-[14px] text-[#A5A5A5] font-inter">Connect as</p>
           <p className="text-[14px] font-500">{userPrincipal}</p>
         </div>
       </div>
 
       {/* Share Profile Button */}
-      <div className="mx-8">
-        <button className="bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5] text-black py-2 px-4 rounded-2xl w-full text-center mb-4">
+      <div className="md:mx-8 justify-center items-center">
+        <button className="bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5] text-black py-2 px-4 rounded-2xl w-full xxs1:w-1/2 text-center mb-4">
           SHARE YOUR PROFILE
         </button>
       </div>
 
       {/* Dropdown Section */}
-      <div className="p-4 bg-[#1F1F1F] rounded-2xl mb-6">
-        <div className="relative w-full bg-black font-posterama p-2 mb-4">
+      <div className="p-2 bg-[#1F1F1F] rounded-2xl mb-6">
+        <div className="relative w-full ss2:w-1/2 bg-black font-posterama p-2 mb-4">
           {/* Container for the underline effect */}
           <div className={`relative ${activeTab ? 'after:absolute after:left-0 after:right-0 after:bottom-[-2px] after:h-[2px] after:bg-gradient-to-r after:from-[#F3B3A7] after:to-[#CACCF5] after:rounded' : ''}`}>
             <select
-              className={`w-full bg-transparent text-left py-2 px-3
+              className={`w-full bg-transparent text-left ss2:py-2 ss2:px-3 p-1
               ${activeTab ? 'text-transparent bg-clip-text bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5]' : 'text-white'}`}
               value={activeTab}
               onChange={(e) => setActiveTab(e.target.value)}
@@ -143,7 +143,7 @@ const Profile = () => {
                 <option
                   key={tab}
                   value={tab}
-                  className={`bg-black text-white ${activeTab === tab ? 'text-transparent bg-clip-text bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5]' : ''}`}
+                  className={`bg-black text-white text-[14px] ${activeTab === tab ? 'text-[10px] text-transparent ' : ''}`}
                 >
                   {tab}
                 </option>

@@ -78,10 +78,10 @@ const FaqDiscussionTab = () => {
         />
          <div className='justify-center items-center'>
         <button
-          className=" bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5]  w-[100px]  p-[1.5px] h-[35px] mx-2 items-center justify-center rounded-3xl"
+          className=" bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5]  w-[100px]  p-[1.5px] h-[35px] mx-2 items-center justify-center rounded-xl"
           onClick={handleCommentSubmit}
         >
-          <div className='bg-[#222222] rounded-3xl justify-center  w-full h-full '>
+          <div className='bg-[#222222] rounded-xl justify-center  w-full h-full '>
           Comment
           </div>
         </button>
