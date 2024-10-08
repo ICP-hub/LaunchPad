@@ -5,7 +5,7 @@ import LaunchpadInfoTab from './Tabs/LaunchpadInfoTab';
 import AdditionalInfoTab from './Tabs/AdditionalInfoTab';
 import ReviewInfoTab from './Tabs/ReviewInfoTab';
 import StepProgressBar from './StepProgressBar';
-import { useAuth } from '../../auth/useAuthClient';
+import { useAuth } from '../../StateManagement/useContext/useAuth';
 import { Principal } from '@dfinity/principal';
 
 // Utility function to convert an image file to a byte array

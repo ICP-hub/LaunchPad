@@ -682,6 +682,7 @@ dependencies = [
  "base64 0.13.1",
  "candid",
  "ic-cdk 0.16.0",
+ "ic-cdk-macros 0.14.0",
  "ic-cdk-timers 0.10.0",
  "ic-ledger-types",
  "ic-stable-structures 0.6.5",

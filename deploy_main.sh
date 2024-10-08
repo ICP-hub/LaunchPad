@@ -1,9 +1,8 @@
 #!/bin/bash
 
-dfx identity new controller
-dfx identity use controller 
+dfx identity use Mohit 
 
-dfx deploy token_deployer --argument '(
+dfx deploy token_deployer --ic --argument '(
   variant {
     Init = record {
       decimals = opt (1 : nat8);
@@ -40,7 +39,7 @@ dfx deploy token_deployer --argument '(
 )'
 
 
-dfx deploy index_canister --argument '(opt variant { Init = record { ledger_id = principal "aaaaa-aa"; retrieve_blocks_from_ledger_interval_seconds = opt 10 } })'
+dfx deploy index_canister --ic --argument '(opt variant { Init = record { ledger_id = principal "aaaaa-aa"; retrieve_blocks_from_ledger_interval_seconds = opt 10 } })'
 
   dfx identity use minter
   export MINTER_ACCOUNT_ID=$(dfx ledger account-id)
@@ -48,7 +47,7 @@ dfx deploy index_canister --argument '(opt variant { Init = record { ledger_id =
   dfx identity use default
   export DEFAULT_ACCOUNT_ID=$(dfx ledger account-id)
 
-  dfx deploy --specified-id ryjl3-tyaaa-aaaaa-aaaba-cai icp_ledger_canister --argument "
+  dfx deploy --ic --specified-id ryjl3-tyaaa-aaaaa-aaaba-cai icp_ledger_canister --argument "
     (variant {
       Init = record {
         minting_account = \"$MINTER_ACCOUNT_ID\";
@@ -71,16 +70,16 @@ dfx deploy index_canister --argument '(opt variant { Init = record { ledger_id =
     })
   "
 
-dfx deploy ic_asset_handler
+dfx deploy ic_asset_handler --ic
 
-dfx deploy icplaunchpad_frontend
+dfx deploy icplaunchpad_frontend --ic
 
 
 cargo build --release --target wasm32-unknown-unknown --package icplaunchpad_backend
 candid-extractor target/wasm32-unknown-unknown/release/icplaunchpad_backend.wasm > src/icplaunchpad_backend/icplaunchpad_backend.did
 
 # Deploy canister_creater_backend
-dfx deploy icplaunchpad_backend
+dfx deploy icplaunchpad_backend --ic
 
 echo "Deployment complete. Please use the Candid UI to call the 'create_token' function with your parameters."
 echo "Or run ./tokendeploy.sh to run example token parameters"

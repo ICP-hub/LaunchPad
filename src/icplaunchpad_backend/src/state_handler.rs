@@ -151,7 +151,7 @@ pub struct ImageIdWrapper {
 pub struct SaleDetailsWrapper {
     pub sale_details: SaleDetails,
 }
-#[derive(CandidType, Deserialize, Debug)]
+#[derive(CandidType, Deserialize, Debug, Clone)]
 pub struct UserAccountWrapper {
     pub user_account: UserAccount,
 }
@@ -164,7 +164,6 @@ pub struct SaleDetails {
     pub max_buy: u64,
     pub start_time_utc: u64,
     pub end_time_utc: u64,
-    pub logo_url: String,
     pub website: String,
     pub facebook: String,
     pub twitter: String,

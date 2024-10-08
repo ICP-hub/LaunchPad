@@ -1,7 +1,8 @@
 
 import React from 'react';
 import Modal from 'react-modal';
-import { useAuth } from "../../auth/useAuthClient";
+import { useAuth } from '../../StateManagement/useContext/useAuth'
+// import { useAuth } from '../../auth/useAuthClient';
 import { RxCross1 } from "react-icons/rx";
 
 // Importing wallet icons
@@ -12,19 +13,37 @@ import bifinity from '../../../assets/images/icons/bifinity.png';
 
 // Component to connect wallet using various providers
 const ConnectWallet = ({ modalIsOpen, setModalIsOpen }) => {
-  const { login, isAuthenticated,  createCustomActor } = useAuth(); // Hook to handle authentication
+   const {
+      authenticateWithII,
+  authenticateWithPlug,
+     authenticateWithNFID,
+     isAuthenticated,
+     actor
+  //    createCustomActor,
+   } = useAuth(); 
 
-
-  // Handle login for different wallet options
-  const handleLogin = async (loginOption) => {
-    try {
-      await login(loginOption).then(() => console.log("Connected"));
-    
-    } catch (e) {
-      console.error('Error while connecting:', e);
-    }
-  };
-
+   console.log('actor',actor)
+   // Handle login for different wallet options
+     const handleLogin = async (loginOption) => {
+       try {
+         switch (loginOption) {
+           case "Icp":
+             await authenticateWithII("ii");
+             break;
+           case "Plug":
+             await authenticateWithPlug();
+             break;
+           case "Nfid":
+             await authenticateWithNFID();
+             break;
+           default:
+             console.log("Unknown login option");
+         }
+         setModalIsOpen(false);
+       } catch (e) {
+         console.error("Error while connecting:", e);
+       }
+     };
   // Close modal handler
   const closeModal = () => {
     setModalIsOpen(false);
@@ -82,13 +101,6 @@ const ConnectWallet = ({ modalIsOpen, setModalIsOpen }) => {
               icon={plug}
             />
 
-            {/* Bifinity Wallet Login */}
-            <WalletButton
-              onClick={() => handleLogin("Icp")}
-              label="Bifinity"
-              icon={bifinity}
-            />
-
             {/* NFID Login */}
             <WalletButton
               onClick={() => handleLogin("Nfid")}
@@ -105,3 +117,4 @@ const ConnectWallet = ({ modalIsOpen, setModalIsOpen }) => {
 };
 
 export default ConnectWallet;
+

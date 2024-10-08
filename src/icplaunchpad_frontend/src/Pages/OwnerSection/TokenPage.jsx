@@ -19,7 +19,7 @@ import MobileViewTab from "./MobileViewTab";
 import { FiEdit3 } from "react-icons/fi";
 
 import AddToWhitelist from "../../components/Modals/AddToWhitelist.jsx";
-import { useAuth } from "../../auth/useAuthClient.jsx";
+import { useAuth } from "../../StateManagement/useContext/useAuth.jsx";
 import { Principal } from '@dfinity/principal';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useSelector } from "react-redux";

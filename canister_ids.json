@@ -1,5 +1,7 @@
 {
-
+  "ic_asset_handler": {
+    "ic": "m2gfi-4qaaa-aaaam-admpa-cai"
+  },
   "icplaunchpad_backend": {
     "ic": "aoymu-gaaaa-aaaak-ak5ra-cai"
   },
@@ -13,4 +15,3 @@
     "ic": "a375z-hiaaa-aaaak-ak5sq-cai"
   }
 }
-

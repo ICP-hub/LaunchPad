@@ -8,6 +8,7 @@ function App() {
     <Provider store={myStore}>
     <div id="root" className="text-white max-w-[1700px] mx-auto ">
       <AllRoutes />
+      
     </div>
     </Provider>
   );

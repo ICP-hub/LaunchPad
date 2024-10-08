@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { TfiClose } from "react-icons/tfi";
 import Modal from 'react-modal';
 import AnimationButton from '../../common/AnimationButton';
-import { useAuth } from '../../auth/useAuthClient';
+import { useAuth } from '../../StateManagement/useContext/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { Principal } from '@dfinity/principal';
 import { useDispatch } from 'react-redux';

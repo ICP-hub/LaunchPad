@@ -5,7 +5,7 @@ import { IoSearch, IoClose, IoMenu, IoCloseSharp } from "react-icons/io5";
 
 import ConnectWallets from '../Modals/ConnectWallets';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../../auth/useAuthClient';
+import { useAuth } from '../../StateManagement/useContext/useAuth';
 import ProfileCard from '../Modals/ProfileCard';
 import { FaUser } from 'react-icons/fa';
 import { BsThreeDotsVertical } from 'react-icons/bs';
