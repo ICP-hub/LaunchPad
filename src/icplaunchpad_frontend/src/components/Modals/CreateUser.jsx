@@ -5,13 +5,17 @@ import AnimationButton from '../../common/AnimationButton';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../../auth/useAuthClient';
+import { useDispatch } from 'react-redux';
+import { addUserData } from '../../Redux-Config/ReduxSlices/UserSlice';
+import { Principal } from '@dfinity/principal';
 
-const CreateUser = ({ setUserData, userModalIsOpen, setUserModalIsOpen }) => {
+const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const navigate = useNavigate();
-  const { createCustomActor } = useAuth();
+  const { createCustomActor,userPrincipal } = useAuth();
   const { register, handleSubmit, formState: { errors }, reset } = useForm();
   const [validationError, setValidationError] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const dispatch=useDispatch();
 
   const onSubmit = async (data) => {
     setValidationError('');
@@ -46,12 +50,12 @@ const CreateUser = ({ setUserData, userModalIsOpen, setUserModalIsOpen }) => {
         setValidationError(response.Err);
         return;
       }
-
-      setUserData([{username:userData.username}]);
+      
       console.log('User created:', response);
-
+     
+  
       // Upload profile picture if exists
-      if (userData.profile_picture.length > 0) {
+      if (response && userData.profile_picture.length > 0) {
         try {
           const responseImg = await actor.upload_profile_image("br5f7-7uaaa-aaaaa-qaaca-cai", {
             content: userData.profile_picture,
@@ -61,6 +65,17 @@ const CreateUser = ({ setUserData, userModalIsOpen, setUserModalIsOpen }) => {
           console.error("Error uploading profile picture:", imgErr);
         }
       }
+
+           // Fetch user account data if the user is registered
+       const ownerPrincipal = Principal.fromText(userPrincipal);
+       const fetchedUserData = await actor.get_user_account(ownerPrincipal);
+       console.log("Fetched user data:", fetchedUserData);
+       if (fetchedUserData) {
+         const { profile_picture, ...restUserData } = fetchedUserData[0];
+         dispatch(addUserData(restUserData));  
+       }
+
+
 
       // Close modal, reset form, and navigate to home
       setUserModalIsOpen(false);
