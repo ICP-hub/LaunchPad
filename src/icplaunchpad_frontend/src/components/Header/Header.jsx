@@ -123,7 +123,7 @@ const Header = () => {
           />
         </div>
 
-        <div className="hidden  md:flex lgx:px-10 lgx:mr-[28%]  md:mr-[20%] lg:text-[18px] md:text-[17px] lgx:text-[20px] md:gap-[20px] lg:gap-[25px] dxl:gap-[50px]">
+        <div className="hidden  ml-2 md:flex lgx:px-10 lgx:mr-[28%]  md:mr-[20%] lg:text-[18px] md:text-[17px] lgx:text-[20px] md:gap-[20px] lg:gap-[25px] dxl:gap-[50px]">
 
           <Link
             to="/"
@@ -238,7 +238,7 @@ const Header = () => {
                 <FaUser className="mr-2" />
                 <div className="flex flex-col items-start w-24 h-8 lg:w-40 lg:h-full ">
                 <span className="text-sm">{ userData ? userData.username : 'ABCD' }</span>
-                  <span className="text-xs text-gray-400 w-full overflow-hidden whitespace-nowrap text-ellipsis">
+                  <span className=" text-[10px] lg:text-xs text-gray-400 w-full overflow-hidden whitespace-nowrap text-ellipsis">
                     {userPrincipal}
                   </span>
                 </div>
