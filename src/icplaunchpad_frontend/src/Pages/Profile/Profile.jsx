@@ -7,17 +7,26 @@ import Affiliate from './Affiliate/Affiliate';
 import Favorited from './Favorited/Favorited';
 import RecentlyViewed from './RecentlyViewed/RecentlyViewed';
 import MyContribution from './MyContribution/MyContribution';
+import { useAuth } from '../../StateManagement/useContext/useAuth';
+import { useNavigate } from 'react-router-dom';
 
 const Profile = () => {
   const [activeTab, setActiveTab] = useState("Activities");
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const { logout,isAuthenticated, userPrincipal } = useAuth();
+  const { logout,isAuthenticated, principal } = useAuth();
+ const navigate = useNavigate();
 
-
+  // const handleLogout = async (e) => {
+  //   e.preventDefault();
+  //     await logout().then(() => window.location.reload()); 
+  
+  // };
   const handleLogout = async (e) => {
     e.preventDefault();
-      await logout().then(() => window.location.reload()); 
-  
+    await logout().then(() => {
+      navigate("/");
+      window.location.reload(); 
+    });
   };
 
   useEffect(() => {
@@ -30,7 +39,7 @@ const Profile = () => {
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, [userPrincipal]);
+  }, [principal]);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -66,7 +75,7 @@ const Profile = () => {
             {/* Header Section */}
             <div className="flex flex-col items-start bg-[#FFFFFF1A] p-8  pl-[100px] rounded-2xl gap-12 mb-6">
               <p className="text-[19px] font-inter">
-                Connect as {userPrincipal}
+                Connect as {principal}
               </p>
               <div className="flex space-x-6">
                 <button className="bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5] font-semibold text-black py-2 px-4 rounded-2xl">
@@ -117,7 +126,7 @@ const Profile = () => {
       <div className="mx-[-30px]">
         <div className="flex flex-col min-h-[100px] items-start bg-[#111] p-4 mx-4 mb-4 w-full">
           <p className="text-[14px] text-[#A5A5A5] font-inter">Connect as</p>
-          <p className="text-[14px] font-500">{userPrincipal}</p>
+          <p className="text-[14px] font-500">{principal}</p>
         </div>
       </div>
 

@@ -3,13 +3,13 @@ import { TfiClose } from "react-icons/tfi";
 
 import Modal from 'react-modal';
 import person1 from "../../../assets/images/carousel/person1.png"
-import { useAuth } from '../../auth/useAuthClient';
+import { useAuth } from '../../StateManagement/useContext/useAuth';
 import { useSelector } from 'react-redux';
 
 
 
 const ProfileCard = ({ profileModalIsOpen, setProfileModalIsOpen }) => {
-  const { logout, isAuthenticated, userPrincipal, createCustomActor } = useAuth();
+  const { logout, isAuthenticated, principal, actor } = useAuth();
   const protocol = process.env.DFX_NETWORK === "ic" ? "https" : "http";
 const domain = process.env.DFX_NETWORK === "ic" ? "raw.icp0.io" : "localhost:4943";
 const canisterId = process.env.CANISTER_ID_IC_ASSET_HANDLER;
@@ -21,7 +21,7 @@ const canisterId = process.env.CANISTER_ID_IC_ASSET_HANDLER;
   },[isAuthenticated])
 
 async function getProfileIMG(){
-  const actor = createCustomActor(process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND);
+  // const actor = createCustomActor(process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND);
   const profile_ImgId = await actor.get_profile_image_id();
   const imageUrl = `${protocol}://${canisterId}.${domain}/f/${profile_ImgId[0]}`;
   setProfileImg(imageUrl);
@@ -78,7 +78,7 @@ async function getProfileIMG(){
         />
          <div className='w-48'>
         <h2 className="text-lg font-semibold mt-2">{UserData ? UserData?.username : 'ABCD'}</h2>
-        <p className="text-sm text-gray-400 overflow-hidden whitespace-nowrap text-ellipsis"> {userPrincipal} </p>
+        <p className="text-sm text-gray-400 overflow-hidden whitespace-nowrap text-ellipsis"> {principal} </p>
 
         {/* Block Explorer Button */}
         <button className="bg-[#3c3c3c] text-xs text-gray-400 px-3 py-1 mt-1 rounded-full">
@@ -109,3 +109,10 @@ async function getProfileIMG(){
 }
 
 export default ProfileCard;
+
+
+
+
+
+
+

@@ -31,7 +31,7 @@ const VerifyToken = () => {
   const { formData, ledger_canister_id } = location.state || {};
 
   // Auth context for actor creation
-  const { createCustomActor } = useAuth();
+  const { actor } = useAuth();
 
   // Function to handle presale submission
   const submitPresaleDetails = async () => {
@@ -89,7 +89,6 @@ const VerifyToken = () => {
       if (!ledgerPrincipalId) throw new Error('Invalid ledger canister ID');
       console.log('verify ledgerId--',ledgerPrincipalId, 'presaleData=', presaleData)
       // Create actor and submit presale data
-      const actor = createCustomActor(process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND);
       const response = await actor.store_sale_params(ledgerPrincipalId, presaleData);
 
       // Upload token image if available
