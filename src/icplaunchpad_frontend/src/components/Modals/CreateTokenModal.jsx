@@ -106,7 +106,7 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
         ariaHideApp={false} // Disable blocking main content for screen readers
       >
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-[#222222] p-6 rounded-md text-white m-4 w-[786px] relative">
+          <div className="bg-[#222222] p-6 rounded-2xl text-white m-4 w-[786px] relative">
             <div className="bg-[#FFFFFF4D] mx-[-24px] mt-[-25px] px-4 py-1 mb-4 rounded-2xl">
               {/* Modal Close Button */}
               <button
@@ -131,7 +131,7 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
                   onChange={(e) => setFormData({ ...formData, token_name: e.target.value })}
                   className="w-full p-2 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
                 />
-                <small className="block text-[#cccccc] ml-6 mt-1">Creation Fee: 0.4 BNB</small>
+                <small className="block text-[#cccccc]  xxs1:ml-6 mt-1">Creation Fee: 0.4 BNB</small>
               </div>
 
               {/* Token Symbol */}
@@ -171,7 +171,7 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
             </div>
 
             {/* Terms and Conditions Checkbox */}
-            <div className="flex items-center mt-4 mb-6">
+            <div className="flex items-start xxs1:items-center mt-4 mb-6">
               <input
                 type="checkbox"
                 id="termsCheckbox"
@@ -180,12 +180,12 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
                 className="hidden peer"
               />
               <div
-                className={`w-4 h-4 border-2 flex items-center justify-center rounded-sm mr-2 cursor-pointer 
+                className={`w-4 h-4 border-2 flex items-center mt-1 justify-center rounded-sm mr-2 cursor-pointer 
                 ${termsAccepted ? '' : 'border-white bg-transparent'}`}
               >
                 <label
                   htmlFor="termsCheckbox"
-                  className="cursor-pointer w-full h-full flex items-center justify-center"
+                  className="cursor-pointer w-full h-full flex items-center justify-center "
                 >
                   {termsAccepted && <span className="text-[#F3B3A7]">✓</span>}
                 </label>

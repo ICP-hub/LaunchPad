@@ -211,7 +211,7 @@ const Header = () => {
             className="w-[120px] md:w-[150px] lg:w-[190px] h-[25px] lg:h-[32px] 
             dxl:h-[35px] text-[10px] md:text-[15px] dlg:text-[19px] font-[400] items-center justify-center  rounded-xl p-[1.5px] bg-gradient-to-r from-[#f09787]  to-[#CACCF5]"
           >
-            <div className='bg-gray-950 w-full h-full  rounded-xl '>
+            <div className='bg-gray-950 w-full h-full  rounded-xl flex items-center justify-center '>
               Connect Wallet
             </div>
           </button>
@@ -311,28 +311,30 @@ const Header = () => {
             onClick={openModal}
             className=" mt-[80px]   bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5]
              text-black  relative w-[220px] h-[35px] p-[1.5px]
-                text-[16px] md:text-[18px] font-[600] rounded-3xl "
+                text-[16px] md:text-[18px] font-[600] rounded-3xl flex items-center justify-center "
           >
             Connect Wallet
           </button>
             :
-            <>          <button
+            <>        <button
               onClick={openProfileModal}
-              className=" mt-[80px]   bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5]
+              className=" mt-[80px] flex   bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5]
               relative w-[220px] h-[35px] p-[1.5px]
-                text-[16px] md:text-[18px] font-[600] rounded-3xl "
+                text-[16px] md:text-[18px] font-[600] rounded-3xl  "
             >
-              <div className='bg-gray-950 w-full h-full  rounded-3xl items-center justify-center'>
+              <div className='bg-black w-full h-full  rounded-3xl flex items-center justify-center '>
                 Account
               </div>
             </button>
               <ProfileCard profileModalIsOpen={profileModalIsOpen} setProfileModalIsOpen={setProfileModalIsOpen} />
+
             </>
           }    
         </div>
       )}
 
-      <div className="flex items-center bg-[#222222] py-1 px-[4%] md:text-[8px] md1:text-[10px] lg:text-[12px] lg:gap-4 lg1:gap-6 dlg:text-[14px] dxl:text-[15px] xl:text-[16px] md:gap-6 dxl:gap-8 gap-7 whitespace-nowrap">
+      <div className="flex items-center bg-[#222222] py-1 px-[4%] md:text-[8px] md1:text-[10px] lg:text-[12px] lg:gap-4 lg1:gap-6 dlg:text-[14px] 
+      dxl:text-[15px] xl:text-[16px] md:gap-6 dxl:gap-8 gap-7 whitespace-nowrap overflow-x-auto no-scrollbar">
         <p className="lg:text-[12px] dxl:text-lg">TRENDING</p>
         <p>#1 TRUMPBB</p>
         <p>#2 SWIF</p>

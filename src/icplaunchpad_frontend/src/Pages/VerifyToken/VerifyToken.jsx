@@ -177,7 +177,7 @@ const VerifyToken = () => {
       </div>
 
       {/* Error message */}
-      {error && <div className="text-red-500 mt-4">{error}</div>}
+      {error && <div className="text-red-500 mt-4 px-8 items-center">{error}</div>}
     </div>
   );
 };
