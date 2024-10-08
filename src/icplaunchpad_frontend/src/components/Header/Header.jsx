@@ -118,7 +118,7 @@ const Header = () => {
           <img
             src={logo}
             alt="Internet Identity"
-            className=" h-[20px]  ss2:h-[24px] md:h-[25px] lg:w-[150px] dlg:w-[170px] lg1:w-[160px] lgx:w-[220px] lgx:h-[30px] dxl:w-[190px] dxl:h-[30px]  "
+            className=" h-[20px]  ss2:h-[24px] md:h-[25px] lg:w-[150px] dlg:w-[170px] lg1:w-[160px] lgx:w-[220px] lgx:h-[30px] dxl:w-[190px] dxl:h-[35px]  "
             draggable="false"
           />
         </div>
@@ -184,7 +184,7 @@ const Header = () => {
         <div className="relative flex items-center">
           <IoSearch
             onClick={handleSearchClick}
-            className={`cursor-pointer mr-2  ${!isSearching ? "visible" : "invisible"}`}
+            className={`cursor-pointer -mr-4  ${!isSearching ? "visible" : "invisible"}`}
             size={24}
           />
 
@@ -339,8 +339,8 @@ const Header = () => {
       )}
 
       <div className="flex items-center bg-[#222222] py-1 px-[4%] md:text-[8px] md1:text-[10px] lg:text-[12px] lg:gap-4 lg1:gap-6 dlg:text-[14px] 
-      dxl:text-[15px] xl:text-[16px] md:gap-6 dxl:gap-8 gap-7 whitespace-nowrap overflow-x-auto no-scrollbar">
-        <p className="lg:text-[12px] dxl:text-lg">TRENDING</p>
+      dxl:text-[15px] xl:text-[17px] md:gap-6 dxl:gap-8 gap-7 whitespace-nowrap overflow-x-auto no-scrollbar">
+        <p className="lg:text-[12px] dxl:text-lg font-semibold">TRENDING</p>
         <p>#1 TRUMPBB</p>
         <p>#2 SWIF</p>
         <p>#3 MustPepe</p>

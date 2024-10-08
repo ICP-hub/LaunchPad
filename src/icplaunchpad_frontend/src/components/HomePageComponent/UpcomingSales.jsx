@@ -99,7 +99,7 @@ const UpcomingSales = () => {
       {salesData.map((sale, index) => (
         <div
           key={index}
-          className="bg-[#FFFFFF1A] text-white p-1 rounded-lg flex flex-col w-[240px] ss2:w-[305px] xxs:w-[375px] xxs1:w-[400px] mt-14"
+          className="bg-[#FFFFFF1A] text-white p-1 rounded-xl flex flex-col w-[240px] ss2:w-[305px] xxs:w-[375px] xxs1:w-[400px] mt-14"
         >
           <div className="h-[280px] rounded-lg py-5 flex flex-col">
             <div className="relative">
@@ -126,7 +126,7 @@ const UpcomingSales = () => {
 
           <div className="flex">
             <div className="relative flex items-center overflow-hidden w-[60%] h-72">
-              <div className="absolute  left-[-110%] lg:left-[-35%] ss2:left-[-70%]  xxs:left-[-30%] sm:left-[-20%] md:left-[-25%] top-0 w-72 h-72">
+              <div className="absolute   left-[-110%]  ss2:left-[-70%]  xxs:left-[-30%] sm:left-[-45%] top-0 w-72 h-72">
                 <svg className="transform rotate-90" viewBox="0 0 36 36">
                   <defs>
                     <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -142,7 +142,7 @@ const UpcomingSales = () => {
                     strokeWidth="3.8"
                   />
                   <path
-                    className="text-purple-400"
+                    className="text-purple-400 "
                     d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831a 15.9155 15.9155 0 0 1 0 -31.831"
                     fill="none"
                     stroke="url(#gradient)"

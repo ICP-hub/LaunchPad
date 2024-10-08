@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 const Footer = () => {
   return (
     <div>
-      <div className='bg-[#222222] mt-[5%] text-[13px] font-kumbhSans xxs1:text-[15px] py-4 px-[9%]'>
+      <div className='bg-[#222222] mt-[2%] text-[13px] font-kumbhSans xxs1:text-[15px] py-4 px-[9%]'>
         <p>Disclaimer: PinkSale will never endorse or encourage that you invest in any of the projects 
           listed and therefore, accept no liability for any loss occasioned. It is the user(s) responsibility to do 
           their own research and  seek financial advice from a professional. More information about (DYOR) can be found via Binance Academy.</p>
