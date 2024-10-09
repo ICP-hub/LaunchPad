@@ -7,12 +7,12 @@ const RecentlyViewed = () => {
     {
       name: 'PUPPO',
       description: 'FAIR LAUNCH - MAX BUY 5 SOL',
-      src: 'https://via.placeholder.com/50', // Replace this with the actual image URL
+      
     },
     {
       name: 'PUPPO',
       description: 'FAIR LAUNCH - MAX BUY 5 SOL',
-      image: 'https://via.placeholder.com/50', // Replace this with the actual image URL
+      
     },
   ];
 
@@ -37,8 +37,8 @@ const RecentlyViewed = () => {
           </div>
 
           {/* View Button */}
-          <button className="hidden xxs1:block text-lg border-b-2  px-1 mr-6  hover:bg-gray-600">
-            VIEW
+          <button className="hidden xxs1:block text-[15px] border-b-2  px-1 mr-6  hover:bg-gray-600">
+            VIEW Again
           </button>
         </div>
       ))}
