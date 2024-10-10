@@ -150,7 +150,7 @@ const UpcomingSales = () => {
                     strokeDasharray={`${sale.progress * 4}, 100`}
                   />
                 </svg>
-                <div className="absolute ml-24 ss2:ml-10 inset-0 flex flex-col items-center justify-center">
+                <div className="absolute ml-24 ss2:ml-14 inset-0 flex flex-col items-center justify-center">
                   <span>Progress</span>
                   <span className=" text-[12px] ss2:text-lg font-semibold text-white">
                     ({sale.progress}%)

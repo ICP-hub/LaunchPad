@@ -16,7 +16,7 @@ const CreatePreLaunch = () => {
   return (
     <div className="flex justify-center items-center  bg-black text-white">
       <div className="w-full max-w-[1070px] p-8 rounded-2xl">
-        <h1 className="text-3xl font-bold text-start mb-6">CREATE PRELAUNCH</h1>
+        <h1 className="text-3xl font-bold text-start font-posterama mb-6">CREATE PRELAUNCH</h1>
 
         <div className="bg-[#222222] p-4 rounded-lg">
           {/* Chain Text with Gray Background */}

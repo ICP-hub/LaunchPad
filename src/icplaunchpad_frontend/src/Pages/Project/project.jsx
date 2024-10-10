@@ -217,7 +217,7 @@ const TokenPage = () => {
                     strokeDasharray={`${progress}, 100`}
                   />
                 </svg>
-                <div className="absolute ml-28 dxs:ml-10 inset-0 flex flex-col items-center justify-center">
+                <div className="absolute ml-12 ss2:ml-28 dxs:ml-10 inset-0 flex flex-col items-center justify-center">
                   <span>Progress</span>
                   <span className="text-lg font-semibold text-white">
                     {" "}
@@ -230,7 +230,7 @@ const TokenPage = () => {
               </div>
             </div>
 
-            <div className="mt-6 w-[40%] gap-4 relative  flex ss2:flex-col  justify-around ">
+            <div className="mt-6 w-[40%] gap-4 sxs3:gap-8 px-2 relative  flex ss2:flex-col  justify-around ">
               <div className="flex flex-col">
                 <span className="text-sm text-gray-400">SALE TYPE</span>
                 <span className="text-lg font-semibold">{saleType}</span>

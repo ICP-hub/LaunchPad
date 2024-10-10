@@ -11,6 +11,7 @@ import VerifyToken from './Pages/VerifyToken/VerifyToken';
 import ProjectList from './Pages/Projects/Projects';
 import TokenPage from './Pages/OwnerSection/TokenPage';
 import Project from './Pages/Project/project'
+import ConnectFirst from './Pages/ConnectFirst';
 
 function AllRoutes() {
   return (
@@ -37,6 +38,15 @@ function AllRoutes() {
         element={
           <PrivateLayout>
             <CreatePreLaunch />
+          </PrivateLayout>
+        } 
+        />
+
+        <Route 
+        path="/connect-first" 
+        element={
+          <PrivateLayout>
+            <ConnectFirst />
           </PrivateLayout>
         } 
         />
