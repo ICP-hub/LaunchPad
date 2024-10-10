@@ -30,11 +30,12 @@ const ProjectTokenAbout = () => {
         Lorem ipsum dolor sit amet consectetur. Proin volutpat ornare arcu sit vulputate pellentesque id viverra. Malesuada id tellus et at. Ut morbi faucibus id commodo ac eget. Hendrerit nisl vestibulum lectus varius euismod molestie euismod urna phasellus. Ante sit proin mi donec elit sodales. Ac sed amet sed vestibulum pulvinar dui faucibus. Nullam et enim odio cursus bibendum amet parturient.
       </div>
       <div className="relative">
-        <img src={RectangleVideo} alt="Video Thumbnail" className="rounded-lg w-full h-auto" />
+        <img src={RectangleVideo} alt="Video Thumbnail" className="rounded-lg w-full h-auto" draggable="false" />
         <img
           src={ExcludeButton}
           alt="Play Button"
           className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 cursor-pointer"
+          draggable="false"
         />
       </div>
 
@@ -52,11 +53,12 @@ const ProjectTokenAbout = () => {
         Lorem ipsum dolor sit amet consectetur. Proin volutpat ornare arcu sit vulputate pellentesque id viverra. Malesuada id tellus et at. Ut morbi faucibus id commodo ac eget. Hendrerit nisl vestibulum lectus varius euismod molestie euismod urna phasellus. Ante sit proin mi donec elit sodales. Ac sed amet sed vestibulum pulvinar dui faucibus. Nullam et enim odio cursus bibendum amet parturient.
       </div>
       <div className="relative">
-        <img src={RectangleVideo} alt="Video Thumbnail" className="rounded-lg w-full h-auto" />
+        <img src={RectangleVideo} alt="Video Thumbnail" className="rounded-lg w-full h-auto" draggable="false" />
         <img
           src={ExcludeButton}
           alt="Play Button"
           className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 cursor-pointer"
+          draggable="false"
         />
       </div>
 

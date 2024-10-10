@@ -157,6 +157,7 @@ const TokenPage = () => {
                   src={ProjectRectangleBg}
                   className="min-h-[147px] w-full rounded-lg"
                   alt=""
+                  draggable="false"
                 />
                 
                 
@@ -164,6 +165,7 @@ const TokenPage = () => {
                   src={profileImg || person1} // Show person1 as a fallback if profileImg is not available yet
                   className="absolute  top-0 left-[50%] transform -translate-x-1/2 -translate-y-[35%] rounded-full object-cover   h-[130px] w-[130px]"
                   alt="Profile Picture"
+                  draggable="false"
                 />
 
               </div>
@@ -198,6 +200,7 @@ const TokenPage = () => {
                   src={profileImg || person1}
                   className="absolute top-0 left-[50%] transform -translate-x-1/2 -translate-y-[50%] rounded-full h-[130px] w-[130px]"
                   alt=""
+                  draggable="false"
                 />
               </div>
 
