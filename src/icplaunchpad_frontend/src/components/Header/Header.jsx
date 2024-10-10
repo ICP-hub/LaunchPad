@@ -38,8 +38,9 @@ const Header = () => {
   const userData = useSelector((state) => state.user);
   
   useEffect(() => {
+    if(isAuthenticated)
         userCheck();      
-  }, [isAuthenticated, actor,isUserRegistered]);
+  }, [isAuthenticated]);
 
   async function userCheck() {
     console.log("actor---", actor)

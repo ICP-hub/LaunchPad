@@ -30,7 +30,7 @@ const TokenPage = () => {
   const [sellType, setSellType] = useState('public');
   const [modalIsOpen, setIsOpen] = useState(false);
   
-  const { actor, isAuthenticated, principal } = useAuth();
+  const { actor,createCustomActor, isAuthenticated, principal } = useAuth();
   const [tokenData, setTokenData] = useState(null);
   const [profileImg, setProfileImg] = useState();
   const [isLoading, setIsLoading] = useState(true);
@@ -52,6 +52,15 @@ const TokenPage = () => {
      setTokenData(tokenData[tokenData.length-1])
      console.log("tokenData-",tokenData[tokenData.length-1]);
 
+   
+     if(tokenData){
+      const ledgeractor = await createCustomActor(ledger_canister_id)
+      console.log("actor=",actor )
+
+      // from here we have to get functions from ledgeractor
+
+      
+    }
        
       // Getting profile image ID
       const profile_ImgId = await actor.get_profile_image_id();
@@ -193,7 +202,7 @@ const TokenPage = () => {
               </div>
 
               <div className="mt-[70px] text-center font-posterama text-white space-y-2">
-                <div className="text-[24px] font-bold"> {userData ? userData[0]?.name : "PUPPO"} </div>
+                <div className="text-[24px] font-bold"> {tokenData ? tokenData.token_name : "PUPPO"} </div>
                 <div className="text-[16px] font-medium">
                   FAir Launnch - Max buy 5 SOL
                 </div>
