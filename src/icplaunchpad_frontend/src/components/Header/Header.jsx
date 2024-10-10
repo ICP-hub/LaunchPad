@@ -199,7 +199,7 @@ const { profile_picture, ...restUserData } = fetchedUserData[0];
           />
 
           {isSearching && (
-            <div className="flex items-center absolute h-[35px]  lg:mr-3 rounded-lg w-[80vw] right-0 md:w-[150px] md3:w-[230px] xl:w-[380px]  bg-[#222222] sm4:right-[23px] lg:right-[-25px] dlg:right-[5px] md:py-[2px]">
+            <div className="flex items-center absolute h-[35px]  lg:mr-3 rounded-lg w-[80vw] right-0 md:w-[150px] lg:w-[245px] xl:w-[380px]  bg-[#222222] sm4:right-[23px] lg:right-[-25px] dlg:right-[5px] md:py-[2px]">
               <input
                 type="text"
                 value={searchText}

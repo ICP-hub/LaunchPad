@@ -179,9 +179,9 @@ const TokenPage = () => {
             </button>
           </div>
 
-          <div className="bg-[#FFFFFF1A] text-white p-1 rounded-lg flex w-full lg:min-w-[406px]">
-            <div className="relative flex items-center  overflow-hidden w-[60%] h-72">
-              <div className="absolute left-[-120%] lg:left-[-45%] ss2:left-[-70%] dxs:left-[-47%] xxs1:left-[-30%] sm:left-[-20%] md:left-[-15%]  top-0 w-72 h-72">
+          <div className="bg-[#FFFFFF1A] text-white p-1 rounded-lg flex flex-col ss2:flex-row    w-full lg:min-w-[406px]">
+            <div className="relative flex  items-center  overflow-hidden w-full ss2:w-[60%] h-72">
+              <div className="absolute left-[-33%] lg:left-[-45%] ss2:left-[-70%] dxs:left-[-47%] xxs1:left-[-30%] sm:left-[-20%] md:left-[-15%]  top-0 w-72 h-72">
                 <svg className="transform rotate-90" viewBox="0 0 36 36">
                   <defs>
                     <linearGradient
@@ -230,7 +230,7 @@ const TokenPage = () => {
               </div>
             </div>
 
-            <div className="mt-6 w-[40%] flex flex-col justify-around ">
+            <div className="mt-6 w-[40%] gap-4 relative  flex ss2:flex-col  justify-around ">
               <div className="flex flex-col">
                 <span className="text-sm text-gray-400">SALE TYPE</span>
                 <span className="text-lg font-semibold">{saleType}</span>

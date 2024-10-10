@@ -86,9 +86,9 @@ const UpcomingSales = () => {
   };
 
   return (
-    <div  className="upcoming-sales h-full   md:mb-[5%] lg:mb-0 sm4:mb-3 py-[5%]">
+    <div  className="upcoming-sales h-full mt-8   md:mb-[5%] lg:mb-0 sm4:mb-3 py-[5%]">
       <div className="flex justify-between items-center px-[6%] mb-10">
-        <h2 className="text-white font-bold font-posterama text-[20px] xxs1:text-3xl">UPCOMING SALES</h2>
+        <h2 className="text-white font-bold font-posterama text-[24px] xxs1:text-3xl">UPCOMING SALES</h2>
         <button onClick={handleViewMoreClick} className="text-white hidden xxs1:block font-posterama underline text-[15px] xxs1:text-xl">
           View More
         </button>

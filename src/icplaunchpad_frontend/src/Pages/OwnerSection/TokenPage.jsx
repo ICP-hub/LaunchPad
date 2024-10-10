@@ -223,7 +223,7 @@ const TokenPage = () => {
           )}
 
           {isMobile && (
-            <div className="bg-[#FFFFFF1A] font-posterama text-[#FFFFFFA6] text-white p-6 mt-8 rounded-2xl w-full max-w-full">
+            <div className="bg-[#FFFFFF1A] font-posterama text-[#FFFFFFA6] text-white p-3 xxs1:p-6 mt-8 rounded-2xl w-full max-w-full">
               {/* Section Heading */}
               <h2 className=" text-[22px] ss2:text-[25px]">OWNER SECTION</h2>
 
@@ -284,18 +284,18 @@ const TokenPage = () => {
                 {/* Buttons */}
                 <div class="mx-auto flex  items-center justify-center ">
                   <button className="w-full text-white   bg-gradient-to-r from-[#f09787]  to-[#CACCF5] rounded-2xl p-[1.5px] h-[60px] mt-2 ">
-                    <div className='flex items-center bg-[#191919] justify-center  w-full h-full  rounded-2xl  '>
+                    <div className='flex items-center bg-[#191919] text-[13px] ss2:text-[17px] justify-center  w-full h-full  rounded-2xl  '>
                       POOL START/END TIME SETTING
                     </div>
                   </button>
                 </div>
                 <button className="w-full text-white bg-gradient-to-r from-[#f09787]  to-[#CACCF5]  rounded-3xl p-[1.5px] h-[40px]  mt-2 ">
-                  <div className='flex items-center justify-center  bg-[#191919] w-full h-full  rounded-3xl  '>
+                  <div className='flex items-center justify-center text-[13px] ss2:text-[17px]   bg-[#191919] w-full h-full  rounded-3xl  '>
                     HIDE TOKEN MATRIX CHART
                   </div>
                 </button>
                 <button className="w-full text-white bg-gradient-to-r from-[#f09787]  to-[#CACCF5]  rounded-3xl p-[1.5px] h-[40px]  mt-2">
-                  <div className='flex items-center justify-center bg-[#191919] w-full h-full  rounded-3xl  '>
+                  <div className='flex items-center justify-center text-[13px] ss2:text-[17px] bg-[#191919] w-full h-full  rounded-3xl  '>
                     CANCEL POOL
                   </div>
                 </button>
