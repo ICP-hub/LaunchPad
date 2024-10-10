@@ -31,7 +31,7 @@ const Launch = () => {
           auctor, nunc at laoreet dapibus, felis ligula scelerisque orci, sit
           amet efficitur mauris lacus vel ex.
         </p>
-        <Link to="/connect-first">
+        <Link to="/create-prelaunch">
         <AnimationButton text="LAUNCH NOW" />
       </Link>
       </div>

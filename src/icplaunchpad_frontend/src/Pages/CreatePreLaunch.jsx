@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import AnimationButton from '../common/AnimationButton';
 import { Link } from 'react-router-dom';
 import CreateTokenModal from '../components/Modals/CreateTokenModal';
+import { useAuth } from '../StateManagement/useContext/useAuth';
+import ConnectFirst from './ConnectFirst';
 
 const CreatePreLaunch = () => {
-
+  const {isAuthenticated}=useAuth()
   const [modalIsOpen, setIsOpen] = useState(false);
 
 
-  
   const openModal = () => {
     setIsOpen(true);
   };
@@ -18,7 +19,9 @@ const CreatePreLaunch = () => {
       <div className="w-full max-w-[1070px] p-8 rounded-2xl">
         <h1 className="text-3xl font-bold text-start font-posterama mb-6">CREATE PRELAUNCH</h1>
 
-        <div className="bg-[#222222] p-4 rounded-lg">
+        { !isAuthenticated ? <ConnectFirst/>
+             :
+          <div className="bg-[#222222] p-4 rounded-lg">
           {/* Chain Text with Gray Background */}
           <div className="flex items-center mb-8 bg-[rgb(68,68,68)] p-2 mt-[-15px] mx-[-15px] rounded-2xl">
             <span className="text-white text-[20px]">Chain</span>
@@ -63,6 +66,7 @@ const CreatePreLaunch = () => {
             </Link>
           </div>
         </div>
+        }
       </div>
     </div>
   );
