@@ -264,6 +264,33 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+
+
+  // Function to dynamically create an actor for any canister
+  const createCustomActor = async (canisterId) => {
+    try {
+      const agent = new HttpAgent({ identity });
+  
+      // Fetch the root key for local development (but not on IC mainnet)
+      if (process.env.DFX_NETWORK !== "ic") {
+        await agent.fetchRootKey().catch((err) => {
+          console.warn("Unable to fetch root key. Check your local replica.", err);
+        });
+      }
+  
+      // Dynamically create the actor using the canisterId
+      const actor = createActor({
+        canisterId,
+        agent,
+      });
+  
+      return actor;
+    } catch (err) {
+      console.error("Error creating actor:", err);
+    }
+  };
+  
+
   return (
     <AuthContext.Provider
       value={{
@@ -271,6 +298,7 @@ export const AuthProvider = ({ children }) => {
         principal,
         actor,
         greeting,
+        createCustomActor,
         authenticateWithII,
         authenticateWithNFID,
         authenticateWithPlug,

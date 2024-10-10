@@ -80,6 +80,7 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
 
         console.log('Token data:', tokenData);
         const response = await actor.create_token(tokenData);
+        dispatch(addTokenData(response.Ok.ledger_canister_id))
         console.log('Token created:', response);
 
 

@@ -7,10 +7,12 @@ const tokenSlice = createSlice({
     tokenData:null
   },
   reducers: {
-    addTokenData: (state, action) => {
-      return action.payload;  // Correct way to replace the entire state
+    addTokenIds: (state, action) => {
+      state.ledgerId= action.payload;  // Correct way to replace the entire state
     },
-    // You can add more reducer functions as per your need...
+    addTokenData: (state, action) => {
+      state.tokenData = action.payload;  // Correct way to replace the entire state
+    },
   }
 });
 

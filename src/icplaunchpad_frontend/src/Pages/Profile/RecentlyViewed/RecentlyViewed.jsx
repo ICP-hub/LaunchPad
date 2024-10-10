@@ -7,28 +7,28 @@ const RecentlyViewed = () => {
     {
       name: 'PUPPO',
       description: 'FAIR LAUNCH - MAX BUY 5 SOL',
-      src: 'https://via.placeholder.com/50', // Replace this with the actual image URL
+      
     },
     {
       name: 'PUPPO',
       description: 'FAIR LAUNCH - MAX BUY 5 SOL',
-      image: 'https://via.placeholder.com/50', // Replace this with the actual image URL
+      
     },
   ];
 
   return (
-    <div className="max-w-3xl mx-auto  font-posterama p-4 rounded-lg">
+    <div className="max-w-3xl mx-auto  font-posterama p-1 ss2:p-4 rounded-lg">
       {sales.map((sale, index) => (
         <div
           key={index}
-          className="flex items-center justify-between p-4 mb-4 bg-[#222222] rounded-2xl"
+          className="flex xxs1:items-center justify-between  p-1 mb-4 bg-[#222222] rounded-2xl"
         >
           {/* Sale Info */}
-          <div className="flex items-center">
+          <div className="flex  items-center">
             <img
               src={person1}
               alt={sale.name}
-              className="w-12 h-12 rounded-full object-cover mr-4"
+              className="w-12 h-12 mr-1 rounded-full object-cover xxs1:mr-4"
             />
             <div>
               <h3 className="text-lg text-white">{sale.name}</h3>
@@ -37,8 +37,8 @@ const RecentlyViewed = () => {
           </div>
 
           {/* View Button */}
-          <button className="hidden xxs1:block text-sm border-b-2  px-1 mr-6  hover:bg-gray-600">
-            VIEW
+          <button className="hidden xxs1:block text-[15px] border-b-2  px-1 mr-6  hover:bg-gray-600">
+            VIEW Again
           </button>
         </div>
       ))}

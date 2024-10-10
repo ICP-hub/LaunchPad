@@ -29,6 +29,7 @@ const PreviousSaleTab = () => {
               src={person1}
               alt={sales.image}
               className="w-12 h-12 rounded-full object-cover mr-4"
+              draggable="false"
             />
             <div>
               <h3 className="text-lg text-white">{sale.name}</h3>

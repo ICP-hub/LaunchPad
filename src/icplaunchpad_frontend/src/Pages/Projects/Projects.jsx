@@ -192,11 +192,11 @@ const ProjectLists = () => {
           className="w-full bg-[#444444] text-white p-2 rounded-xl outline-none placeholder-gray-500"
         />
         
-        <div className="flex pr-2 gap-2 md:mt-0 mt-4 w-full md:w-[30%] items-center  justify-center">
+        <div className="flex pr-2 gap-5 md:gap-2 md:mt-0 mt-4 w-full md:w-[30%] items-center  justify-center">
         {/* Filter and Sort Buttons */}
-        <button className="bg-[#444444] ml-[-3%]  p-2 rounded-lg text-white flex items-center w-full">
+        <button className="bg-[#444444] ml-[-2%]  p-2  rounded-lg text-white flex items-center w-full">
         <TbFilterCheck/>
-          <span className="ml-2">Filter</span>
+          <span className="md:ml-2">Filter</span>
           
         </button>
         
@@ -215,7 +215,7 @@ const ProjectLists = () => {
         <div
           key={index}
           onClick={handleViewMoreClick2} 
-          className="bg-[#FFFFFF1A] cursor-pointer text-white p-1 rounded-xl flex flex-col  ss2:w-[305px] xxs:w-[375px] xxs1:w-[400px]  mt-14"
+          className="bg-[#FFFFFF1A] cursor-pointer text-white p-1 rounded-xl flex flex-col  ss2:w-[325px]  xxs1:w-[400px]  mt-14"
         >
           <div className="h-[280px]  rounded-lg py-5 flex flex-col">
             <div className="relative">
@@ -224,7 +224,7 @@ const ProjectLists = () => {
                 className="absolute top-0 left-[50%] transform -translate-x-1/2 -translate-y-[50%] rounded-full h-[100px] md:min-h-[114px]"
                 alt={sale.heading}
               />
-               <div className="absolute top-[20px] right-[60px] ss2:right-[90px] xxs1:right-[130px] w-10 h-10  rounded-full border-1 border-gray-300">
+               <div className="absolute top-[20px] right-[60px] ss2:right-[100px] xxs1:right-[130px] w-10 h-10  rounded-full border-1 border-gray-300">
                 <img src={l3} alt="small" className="object-cover w-full h-full" />
               </div>
             </div>

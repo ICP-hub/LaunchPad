@@ -165,7 +165,7 @@ const UpcomingSales = () => {
             <div className="mt-6 w-[40%] flex flex-col justify-around">
               <div className="flex flex-col">
                 <span className="text-sm text-gray-400">{sale.details.type}</span>
-                <span className="text-lg font-semibold">{sale.details.amount}</span>
+                <span className="text-lg font-semibold  bg-gradient-to-r from-[#f09787]  to-[#CACCF5] text-transparent bg-clip-text">{sale.details.amount}</span>
               </div>
               <div className="flex flex-col">
                 <span className="text-sm text-gray-400">Liquidity</span>

@@ -30,7 +30,7 @@ const TokenPage = () => {
   const [sellType, setSellType] = useState('public');
   const [modalIsOpen, setIsOpen] = useState(false);
   
-  const { actor, isAuthenticated, principal } = useAuth();
+  const { actor,createCustomActor, isAuthenticated, principal } = useAuth();
   const [tokenData, setTokenData] = useState(null);
   const [profileImg, setProfileImg] = useState();
   const [isLoading, setIsLoading] = useState(true);
@@ -52,6 +52,15 @@ const TokenPage = () => {
      setTokenData(tokenData[tokenData.length-1])
      console.log("tokenData-",tokenData[tokenData.length-1]);
 
+   
+     if(tokenData){
+      const ledgeractor = await createCustomActor(ledger_canister_id)
+      console.log("actor=",actor )
+
+      // from here we have to get functions from ledgeractor
+
+      
+    }
        
       // Getting profile image ID
       const profile_ImgId = await actor.get_profile_image_id();
@@ -148,6 +157,7 @@ const TokenPage = () => {
                   src={ProjectRectangleBg}
                   className="min-h-[147px] w-full rounded-lg"
                   alt=""
+                  draggable="false"
                 />
                 
                 
@@ -155,6 +165,7 @@ const TokenPage = () => {
                   src={profileImg || person1} // Show person1 as a fallback if profileImg is not available yet
                   className="absolute  top-0 left-[50%] transform -translate-x-1/2 -translate-y-[35%] rounded-full object-cover   h-[130px] w-[130px]"
                   alt="Profile Picture"
+                  draggable="false"
                 />
 
               </div>
@@ -189,11 +200,12 @@ const TokenPage = () => {
                   src={profileImg || person1}
                   className="absolute top-0 left-[50%] transform -translate-x-1/2 -translate-y-[50%] rounded-full h-[130px] w-[130px]"
                   alt=""
+                  draggable="false"
                 />
               </div>
 
               <div className="mt-[70px] text-center font-posterama text-white space-y-2">
-                <div className="text-[24px] font-bold"> {userData ? userData[0]?.name : "PUPPO"} </div>
+                <div className="text-[24px] font-bold"> {tokenData ? tokenData.token_name : "PUPPO"} </div>
                 <div className="text-[16px] font-medium">
                   FAir Launnch - Max buy 5 SOL
                 </div>

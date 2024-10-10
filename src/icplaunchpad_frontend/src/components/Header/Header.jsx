@@ -38,8 +38,9 @@ const Header = () => {
   const userData = useSelector((state) => state.user);
   
   useEffect(() => {
+    if(isAuthenticated)
         userCheck();      
-  }, [isAuthenticated, actor,isUserRegistered]);
+  }, [isAuthenticated]);
 
   async function userCheck() {
     console.log("actor---", actor)
@@ -95,7 +96,6 @@ const { profile_picture, ...restUserData } = fetchedUserData[0];
     <div>
       {isAuthenticated && isUserRegistered === false && (
         <CreateUser
-          setUserData={setUserData}
           userModalIsOpen={userModalIsOpen}
           setUserModalIsOpen={setUserModalIsOpen}
         />

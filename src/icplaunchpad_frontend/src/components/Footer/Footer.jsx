@@ -20,7 +20,7 @@ const Footer = () => {
       <p className=' font-[400]  text-[13px] xxs1:text-[15px] dxl:text-[18px] text-white  '>PinkSale helps everyone to create their own tokens and token sales in few seconds.</p>
       </div> 
       <div className='flex flex-col  md:flex-row lg:flex-col lg:pr-[-5%]  lgx:pr-[6%] dxl:pr-[7%] gap-8  bg-black'>
-        <div className=' flex flex-col md:flex-col lg:flex-row gap-[7px] md:gap-[20px] lg:gap-[85px]'>
+        <div className=' flex flex-col md:flex-col lg:flex-row gap-[7px] md:gap-[20px] lg:gap-[60px]'>
           <div>
         <p className=' font-[400] text-[17px] xxs1:text-[20px] text-white'>USEFUL LINKS</p>
         </div>
@@ -40,7 +40,7 @@ const Footer = () => {
         <Link to="" target="__blank" className='text-[#96839B]'>< AiOutlineFacebook size={33} /></Link>
         </div>
         </div>
-        <div className=' flex flex-col ss2:flex-row md:flex-col lg:flex-row gap-[10px] ss2:gap-[15px] md:gap-[20px] lg:gap-[85px]'>
+        <div className=' flex flex-col ss2:flex-row md:flex-col lg:flex-row gap-[10px] ss2:gap-[15px] md:gap-[20px] lg:gap-[95px]'>
         <p className=' font-[400]  text-[14px] ss2:text-[17px] xxs1:text-[20px] text-white'>INTERFACE</p>
         <div className='flex md:flex-col lg:flex-row gap-[10px] ss2:gap-[15px] md:gap-[20px] lg:gap-[85px]'>
          {/* Light View */}
