@@ -17,10 +17,14 @@ import Pooolinfo from "./pooolinfo/Pooolinfo.jsx";
 import Token from "./token/Token.jsx";
 import Tokenomic from "./Tokenomic/Tokenomic.jsx";
 import MobileViewTab from "./MobileViewTab.jsx";
+import { useLocation } from "react-router-dom";
 
 const TokenPage = () => {
   const [activeTab, setActiveTab] = useState("About");
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 640);
+  const location = useLocation();
+  const {projectData} = location.state || {};
+  console.log(projectData)
 
   const renderContent = () => {
     switch (activeTab) {
@@ -89,7 +93,7 @@ const TokenPage = () => {
               </div>
               <div className="content-div font-posterama flex justify-between w-[90%] m-auto mt-7 ">
                 <div className="left flex flex-col gap-5">
-                  <div>PuPPo</div>
+                  <div> { projectData && projectData?.token_name } </div>
                   <div>FAir Launnch - Max buy 5 SOL</div>
                   <div className="logos flex  gap-11">
                    <IoGlobeOutline  className="size-6"/>
@@ -121,7 +125,7 @@ const TokenPage = () => {
               </div>
 
               <div className="mt-[70px] font-posterama text-center text-white space-y-2">
-                <div className=" text-[24px] font-bold">PuPPo</div>
+                <div className=" text-[24px] font-bold"> { projectData && projectData?.token_name }</div>
                 <div className=" text-[16px] font-medium">
                   FAir Launnch - Max buy 5 SOL
                 </div>

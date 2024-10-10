@@ -9,7 +9,6 @@ import { useDispatch } from 'react-redux';
 import { addUserData } from '../../Redux-Config/ReduxSlices/UserSlice';
 import { Principal } from '@dfinity/principal';
 
-
 const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const navigate = useNavigate();
   const { actor,principal } = useAuth();

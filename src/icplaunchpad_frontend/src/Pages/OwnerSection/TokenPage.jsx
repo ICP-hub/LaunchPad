@@ -59,7 +59,7 @@ const TokenPage = () => {
 
       // from here we have to get functions from ledgeractor
 
-      
+
     }
        
       // Getting profile image ID
