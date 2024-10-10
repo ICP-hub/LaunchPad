@@ -95,7 +95,6 @@ const { profile_picture, ...restUserData } = fetchedUserData[0];
     <div>
       {isAuthenticated && isUserRegistered === false && (
         <CreateUser
-          setUserData={setUserData}
           userModalIsOpen={userModalIsOpen}
           setUserModalIsOpen={setUserModalIsOpen}
         />
