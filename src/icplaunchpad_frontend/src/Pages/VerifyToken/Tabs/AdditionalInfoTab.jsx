@@ -1,56 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 
-const AdditionalInfoTab = ({presaleDetails, setPresaleDetails }) => {
+const AdditionalInfoTab = ({ presaleDetails, setPresaleDetails }) => {
   const [errors, setErrors] = useState({});
+  const [fileName, setFileName] = useState(""); // State to store the file name
+  const fileInputRef = useRef(null);
 
-  // const validateURL = (url, platform) => {
-  //   let regex;
-  //   switch (platform) {
-  //     case 'facebook':
-  //       regex = /^(https?:\/\/)?(www\.)?facebook\.com\/[A-Za-z0-9_.-]+$/;
-  //       break;
-  //     case 'twitter':
-  //       regex = /^(https?:\/\/)?(www\.)?twitter\.com\/[A-Za-z0-9_]+$/;
-  //       break;
-  //     case 'github':
-  //       regex = /^(https?:\/\/)?(www\.)?github\.com\/[A-Za-z0-9_.-]+$/;
-  //       break;
-  //     case 'telegram':
-  //       regex = /^(https:\/\/)?(www\.)?t\.me\/[A-Za-z0-9_]+$/;
-  //       break;
-  //     case 'instagram':
-  //       regex = /^(https?:\/\/)?(www\.)?instagram\.com\/[A-Za-z0-9_.-]+$/;
-  //       break;
-  //     case 'discord':
-  //       regex = /^(https?:\/\/)?(www\.)?(discord\.gg|discord\.com)\/[A-Za-z0-9]+$/;
-  //       break;
-  //     case 'reddit':
-  //       regex = /^(https?:\/\/)?(www\.)?reddit\.com\/[A-Za-z0-9_]+$/;
-  //       break;
-  //     case 'youtube':
-  //       regex = /^(https?:\/\/)?(www\.)?youtube\.com\/watch\?v=[A-Za-z0-9_-]+$/;
-  //       break;
-  //     default:
-  //       return true;
-  //   }
-  //   return regex.test(url);
-  // };
+  const handleFileUploadClick = () => {
+    fileInputRef.current.click(); // Trigger the hidden file input
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFileName(file.name); // Update state with file name
+      setPresaleDetails((prevDetails) => ({
+        ...prevDetails,
+        logoURL: file, // Store file in presale details
+      }));
+    }
+  };
 
   const handleInputChange = (e, platform) => {
     const value = e.target.value;
     setPresaleDetails((prev) => ({ ...prev, [platform]: value }));
-
-    // if (!validateURL(value, platform)) {
-    //   setErrors((prevErrors) => ({
-    //     ...prevErrors,
-    //     [platform]: `Please enter a valid ${platform} link.`,
-    //   }));
-    // } else {
-    //   setErrors((prevErrors) => ({
-    //     ...prevErrors,
-    //     [platform]: '',
-    //   }));
-    // }
   };
 
   return (
@@ -61,16 +33,30 @@ const AdditionalInfoTab = ({presaleDetails, setPresaleDetails }) => {
         <span className="text-white text-[22px]">Chain</span>
       </div>
 
-      {/* Logo URL and Website */}
+      {/* Logo URL (with custom upload button) and Website */}
       <div className="flex flex-col xxs1:flex-row justify-between mb-4">
-        <div className="w-full  ss2:xxs1:w-1/2 xxs1:pr-2 mb-6">
-          <label className="block text-[19px] mb-1">Logo URL</label>
+        <div className="w-full ss2:xxs1:w-1/2 xxs1:pr-2 mb-6">
+          <label className="block text-[19px] mb-1">Logo</label>
+
+          {/* Hidden File Input */}
           <input
-             type="file"
-            onChange={(e) => setPresaleDetails((prevDetails) => ({...prevDetails, logoURL: e.target.files[0]}))}
-            className="w-full  py-2 xxs1:p-2  xxs1:bg-[#333333] text-white rounded-md xxs1:border-b-2"
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            style={{ display: 'none' }}
           />
+
+          {/* Custom Upload Button */}
+          <div
+            onClick={handleFileUploadClick}
+            className="cursor-pointer w-full flex items-center justify-start p-1.5  bg-[#333333] text-white rounded-md border-b-2"
+          >
+            {/* Conditionally render the file name or the default "Upload Image" text */}
+            <span className="text-xl font-bold mr-2">+</span>
+            <span>{fileName ? fileName : "Upload Image"}</span>
+          </div>
         </div>
+        
         <div className="w-full xxs1:w-1/2 xxs1:pl-2 mb-4">
           <label className="block text-[19px] mb-1">Website</label>
           <input
@@ -183,18 +169,12 @@ const AdditionalInfoTab = ({presaleDetails, setPresaleDetails }) => {
         <label className="block text-[19px] mb-1">Description</label>
         <textarea
           value={presaleDetails.description}
-          onChange={(e) => setPresaleDetails(prev => ({ ...prev, description: e.target.value }))}
+          onChange={(e) =>
+            setPresaleDetails((prev) => ({ ...prev, description: e.target.value }))
+          }
           className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2 h-32"
         ></textarea>
       </div>
-
-      {/* Approve Spending Token Button */}
-      <div className="flex justify-center items-center">
-        <button className="hidden xxs1:block bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5] text-black w-[120px] xxs1:w-[250px] md:w-[360px] h-[35px] text-[15px] md:text-[18px] font-[600] rounded-2xl">
-          APPROVE SPENDING TOKEN
-        </button>
-      </div>
-      
     </div>
   );
 };
