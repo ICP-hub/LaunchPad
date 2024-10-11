@@ -43,7 +43,7 @@ const ProjectTokenAbout = () => {
     )}
 
 {isMobile &&(
-    <div className="flex gap-5 text-[14px] flex-col ">
+    <div className="flex gap-5 p-2 text-[14px] flex-col ">
       <div >
         Lorem ipsum dolor sit amet consectetur. Proin volutpat ornare arcu sit vulputate pellentesque id viverra. Malesuada id tellus et at. Ut morbi faucibus id commodo ac eget. Hendrerit nisl vestibulum lectus varius euismod molestie euismod urna phasellus.
       </div>

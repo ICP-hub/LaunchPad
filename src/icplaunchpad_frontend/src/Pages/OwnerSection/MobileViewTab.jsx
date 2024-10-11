@@ -38,7 +38,7 @@ const MobileViewTab = () => {
 
   return (
     <>
-     <div className="rounded-[17.44px] p-4 bg-black">
+     <div className="rounded-[17.44px] p-1 xxs1:p-4 bg-black">
               <div className="space-y-4 ">
                 {mobileTabs.map((tab) => (
                   <div key={tab.name} className="bg-[#FFFFFF1A] rounded-2xl">
