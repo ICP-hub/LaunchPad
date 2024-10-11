@@ -86,9 +86,9 @@ const UpcomingSales = () => {
   };
 
   return (
-    <div  className="upcoming-sales h-full   md:mb-[5%] lg:mb-0 sm4:mb-3 py-[5%]">
+    <div  className="upcoming-sales h-full mt-8   md:mb-[5%] lg:mb-0 sm4:mb-3 py-[5%]">
       <div className="flex justify-between items-center px-[6%] mb-10">
-        <h2 className="text-white font-bold font-posterama text-[20px] xxs1:text-3xl">UPCOMING SALES</h2>
+        <h2 className="text-white font-bold font-posterama text-[24px] xxs1:text-3xl">UPCOMING SALES</h2>
         <button onClick={handleViewMoreClick} className="text-white hidden xxs1:block font-posterama underline text-[15px] xxs1:text-xl">
           View More
         </button>
@@ -150,7 +150,7 @@ const UpcomingSales = () => {
                     strokeDasharray={`${sale.progress * 4}, 100`}
                   />
                 </svg>
-                <div className="absolute ml-24 ss2:ml-10 inset-0 flex flex-col items-center justify-center">
+                <div className="absolute ml-24 ss2:ml-14 inset-0 flex flex-col items-center justify-center">
                   <span>Progress</span>
                   <span className=" text-[12px] ss2:text-lg font-semibold text-white">
                     ({sale.progress}%)

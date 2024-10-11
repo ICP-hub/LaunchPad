@@ -50,7 +50,6 @@
 
 import React from "react";
 import upcomingImage from "../../../assets/images/hero1.png";
-import hoverImage from "../../../assets/images/hero2.png";
 
 const Hero = () => {
   return (
@@ -67,7 +66,7 @@ const Hero = () => {
         </p>
         <button
           type="submit"
-          className="border-1 font-posterama bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5] text-black relative w-[240px] h-[35px] text-[16px] md:text-[18px] font-[600] rounded-3xl"
+          className="border-1 font-posterama bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5] text-black relative w-[230px] h-[35px] text-[16px] md:text-[18px] font-[600] rounded-3xl"
         >
           UPCOMING SALES
         </button>

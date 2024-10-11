@@ -8,7 +8,6 @@ import { useAuth } from '../../StateManagement/useContext/useAuth';
 import { useDispatch } from 'react-redux';
 import { addUserData } from '../../Redux-Config/ReduxSlices/UserSlice';
 import { Principal } from '@dfinity/principal';
-import { useAuth } from '../../StateManagement/useContext/useAuth';
 
 const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const navigate = useNavigate();
