@@ -69,7 +69,7 @@ service : () -> {
   get_token_image_id : (principal) -> (opt nat32) query;
   get_token_image_ids : () -> (vec record { nat32; principal }) query;
   get_tokens_info : () -> (vec CanisterIndexInfo) query;
-  get_user_account : (principal) -> (opt UserAccount) query;
+   get_user_account  : (principal) -> (opt UserAccount) query;
   get_user_by_username : (text) -> (opt UserAccount) query;
   is_account_created : () -> (text) query;
   search_by_token_name : (text) -> (opt CanisterIndexInfo) query;

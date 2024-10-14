@@ -17,5 +17,5 @@ const tokenSlice = createSlice({
 });
 
 // Export actions and reducer
-export const { addTokenData } = tokenSlice.actions;
+export const {addTokenIds, addTokenData } = tokenSlice.actions;
 export default tokenSlice.reducer;
