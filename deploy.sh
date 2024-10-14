@@ -42,6 +42,7 @@ dfx deploy token_deployer --argument '(
 
 dfx deploy index_canister --argument '(opt variant { Init = record { ledger_id = principal "aaaaa-aa"; retrieve_blocks_from_ledger_interval_seconds = opt 10 } })'
 
+dfx identity new minter
   dfx identity use minter
   export MINTER_ACCOUNT_ID=$(dfx ledger account-id)
 

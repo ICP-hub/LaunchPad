@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { TfiClose } from "react-icons/tfi";
 import Modal from 'react-modal';
 import AnimationButton from '../../common/AnimationButton';
@@ -11,15 +11,19 @@ import { Principal } from '@dfinity/principal';
 
 const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const navigate = useNavigate();
-  const { actor,principal } = useAuth();
+  const { actor, principal } = useAuth();
   const { register, handleSubmit, formState: { errors }, reset } = useForm();
   const [validationError, setValidationError] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
-  const dispatch=useDispatch();
+  const [fileName, setFileName] = useState('');
+  const [profilePicture, setProfilePicture] = useState(null);
+
+  const dispatch = useDispatch();
+  const fileInputRef = useRef(null);
 
   const onSubmit = async (data) => {
     setValidationError('');
-    const { name, username, profile, social, tag } = data;
+    const { name, username, social, tag } = data;
 
     if (!termsAccepted) {
       setValidationError("Please accept the terms and conditions.");
@@ -27,55 +31,48 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
     }
 
     try {
-      
-      let profilePicture = null;
-
-      // Handle profile picture file upload
-      if (profile && profile.length > 0 && profile[0]) {
-        const file = profile[0];
-        const arrayBuffer = await file.arrayBuffer();
-        profilePicture = Array.from(new Uint8Array(arrayBuffer));
+      // Convert profile picture to Uint8Array if exists
+      let profilePictureData = [];
+      if (profilePicture) {
+        profilePictureData = await convertFileToUint8Array(profilePicture);
       }
 
       const userData = {
         name,
         username,
-        profile_picture: profilePicture?.length > 0 ? [profilePicture] : [],
+        profile_picture: profilePictureData.length > 0 ? [profilePictureData] : [],
         links: [social],
         tag,
       };
 
+      // Create the user account
       const response = await actor.create_user_account(userData);
       if (response?.Err) {
         setValidationError(response.Err);
         return;
       }
-      
-      console.log('User created:', response);
-     
-  
-      // Upload profile picture if exists
-      if (response && userData.profile_picture.length > 0) {
+
+      // Upload profile picture if it exists
+      if (userData.profile_picture.length > 0) {
         try {
           const responseImg = await actor.upload_profile_image("br5f7-7uaaa-aaaaa-qaaca-cai", {
             content: userData.profile_picture,
           });
-          console.log('Profile pic uploaded:', responseImg);
+          console.log('Profile picture uploaded:', responseImg);
         } catch (imgErr) {
           console.error("Error uploading profile picture:", imgErr);
         }
       }
 
-           // Fetch user account data if the user is registered
-       const ownerPrincipal = Principal.fromText(principal);
-       const fetchedUserData = await actor.get_user_account(ownerPrincipal);
-       console.log("Fetched user data:", fetchedUserData);
-       if (fetchedUserData) {
-         const { profile_picture, ...restUserData } = fetchedUserData[0];
-         dispatch(addUserData(restUserData));  
-       }
+      // Fetch and store user data
+      const ownerPrincipal = Principal.fromText(principal);
+      const fetchedUserData = await actor.get_user_account(ownerPrincipal);
+      console.log("Fetched user data:", fetchedUserData);
 
-
+      if (fetchedUserData) {
+        const { profile_picture, ...restUserData } = fetchedUserData[0];
+        dispatch(addUserData(restUserData));
+      }
 
       // Close modal, reset form, and navigate to home
       setUserModalIsOpen(false);
@@ -87,8 +84,36 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
     }
   };
 
+  // Helper function to convert file to Uint8Array
+  const convertFileToUint8Array = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const arrayBuffer = event.target.result;
+        const uint8Array = new Uint8Array(arrayBuffer);
+        resolve(uint8Array);
+      };
+      reader.onerror = (error) => {
+        reject(error);
+      };
+      reader.readAsArrayBuffer(file);
+    });
+  };
+
   const closeModal = () => {
     setUserModalIsOpen(false);
+  };
+
+  const handleFileUploadClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFileName(file.name);
+      setProfilePicture(file);
+    }
   };
 
   return (
@@ -141,11 +166,18 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               <label className="block mb-2 text-[16px]">Profile Picture</label>
               <input
                 type="file"
-                {...register('profile')}
-                className="w-full p-1 xxs1:pl-4  xxs1:bg-[#444444] text-white rounded-3xl xxs1:border-b-2 outline-none"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                style={{ display: 'none' }}
               />
+              <div
+                onClick={handleFileUploadClick}
+                className="cursor-pointer w-full flex items-center justify-start p-1.5 bg-[#333333] text-white rounded-md border-b-2"
+              >
+                <span className="text-xl font-bold mr-2">+</span>
+                <span>{fileName ? fileName : "Upload Image"}</span>
+              </div>
             </div>
-
 
             {/* Social */}
             <div>
