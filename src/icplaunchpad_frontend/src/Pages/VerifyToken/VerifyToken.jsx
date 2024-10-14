@@ -69,7 +69,6 @@ const VerifyToken = () => {
         max_buy: parseInt(maximumBuy),          // u64
         start_time_utc,
         end_time_utc,
-        logo_url: "",
         website,
         facebook,
         twitter,

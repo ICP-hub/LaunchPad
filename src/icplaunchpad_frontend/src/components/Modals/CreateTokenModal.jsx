@@ -6,7 +6,7 @@ import { useAuth } from '../../StateManagement/useContext/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { Principal } from '@dfinity/principal';
 import { useDispatch } from 'react-redux';
-import { addTokenData } from '../../Redux-Config/ReduxSlices/TokenSlice';
+import { addTokenIds, addTokenData } from '../../Redux-Config/ReduxSlices/TokenSlice';
 
 const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
   const { actor, principal } = useAuth(); // Auth context
@@ -80,21 +80,24 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
 
         console.log('Token data:', tokenData);
         const response = await actor.create_token(tokenData);
-        dispatch(addTokenData(response.Ok.ledger_canister_id))
         console.log('Token created:', response);
+        if(response){
+        const {ledger_canister_id, index_canister_id}=response.Ok;
+        dispatch( addTokenIds({ledger_canister_id:ledger_canister_id.toText(),index_canister_id: index_canister_id.toText() }))
+        }
 
 
         // fetching token data and storing into redux store
-        if(response){
-         const tokenData= await actor.get_tokens_info();
-         console.log('Token data after creation:', tokenData);
-         dispatch(addTokenData(tokenData))
-        }
+        // if(response){
+        //  const tokenData= await actor.get_tokens_info();
+        //  console.log('Token data after creation:', tokenData);
+        //  dispatch(addTokenData(tokenData))
+        // }
 
         const  ledger_canister_id= response.Ok.ledger_canister_id._arr;
 
         // Navigate to verify-token page
-        navigate('/verify-token', { state: { formData, ledger_canister_id } });
+        navigate('/verify-token', { state: { formData, ledger_canister_id} });
 
       // } else {
       //   setValidationError("Transaction failed.");

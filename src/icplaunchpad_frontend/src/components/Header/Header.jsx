@@ -14,6 +14,7 @@ import { Principal } from "@dfinity/principal";
 import { useAuth } from "../../StateManagement/useContext/useAuth";
 import { useDispatch, useSelector } from "react-redux";
 import { addUserData } from "../../Redux-Config/ReduxSlices/UserSlice";
+import UpdateUser from "../Modals/UpdateUser";
 
 
 
@@ -22,6 +23,7 @@ const Header = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [userModalIsOpen, setUserModalIsOpen] = useState(true);
   const [isSearching, setIsSearching] = useState(false);
+  const [userUpdateIsOpen, setUserUpdateIsOpen] = useState(false);
 
   const [searchText, setSearchText] = useState("");
   const [menuOpen, setMenuOpen] = useState(false); // State to toggle hamburger menu
@@ -77,6 +79,10 @@ const { profile_picture, ...restUserData } = fetchedUserData[0];
   const openProfileModal = () => {
     setProfileModalIsOpen(true);
   };
+
+  const openUserModal = () => {
+    setUserUpdateIsOpen(true);
+  };  
 
   const handleSearchClick = () => {
     setIsSearching(true);
@@ -279,6 +285,20 @@ const { profile_picture, ...restUserData } = fetchedUserData[0];
                   >
                     Profile
                   </Link>
+
+                  <div className="hidden border-b md:block">
+                    <button
+                      onClick={openUserModal}
+                      className="block px-4 py-2 text-[18px] "
+                    >
+                      Update User
+                    </button>
+                    <UpdateUser
+                      userModalIsOpen={userUpdateIsOpen}
+                      setUserModalIsOpen={setUserUpdateIsOpen}
+                    />
+                  </div>
+                  
                 </div>
               </div>
             )}
