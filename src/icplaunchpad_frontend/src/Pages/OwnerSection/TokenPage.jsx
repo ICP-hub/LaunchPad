@@ -62,7 +62,7 @@ const TokenPage = () => {
          const ledgeractor = await createCustomActor(
            latestTokenData?.canister_id
          );
-         console.log("actor=>>", ledgeractor);
+         console.log("ledger actor=>>", ledgeractor);
 
          // from here we have to get functions from ledgeractor
        }
