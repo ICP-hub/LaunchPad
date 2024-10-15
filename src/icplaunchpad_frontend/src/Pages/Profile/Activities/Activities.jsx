@@ -7,7 +7,7 @@ const Activities= () => {
        <div className='flex md:flex-row flex-col '>
                 <div className="flex  md:flex-col font-posterama gap-3 ss2:gap-6 lg:gap-2 pt-14 text-[10px] sm5:text-[14px] dlg:text-[18px]    ">
                     <div >
-                    <p class="whitespace-nowrap">Total Pool Invested</p>
+                    <p className="whitespace-nowrap">Total Pool Invested</p>
                         <h2 className="text-2xl mt-2">0</h2>
                     </div>
                     <div className="text-start">

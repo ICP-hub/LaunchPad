@@ -57,14 +57,15 @@ const TokenPage = () => {
      const latestTokenData = tokensInfo[tokensInfo.length - 1];
      setTokenData(latestTokenData);
      console.log("Fetched token data:", latestTokenData);
+  console.log("Fetched token data canisterid:", latestTokenData?.canister_id);
+       if (latestTokenData?.canister_id) {
+         const ledgeractor = await createCustomActor(
+           latestTokenData?.canister_id
+         );
+         console.log("actor=>>", ledgeractor);
 
-      //  if(tokenData){
-    //   const ledgeractor = await createCustomActor(ledger_canister_id)
-    //   console.log("actor=",actor )
-
-    //   // from here we have to get functions from ledgeractor
-
-    // }
+         // from here we have to get functions from ledgeractor
+       }
 
      if (latestTokenData) {
        // Fetch token image using the token's canister_id
@@ -94,10 +95,10 @@ const TokenPage = () => {
   };
 
   useEffect(() => {
-    if (isAuthenticated && principal) {
+    if (isAuthenticated && actor) {
       fetchData();
     }
-  }, [isAuthenticated, principal]);
+  }, [isAuthenticated, actor]);
 
 
   const openModal = () => {
@@ -302,7 +303,7 @@ const TokenPage = () => {
                 <p className="text-sm font-inter text-gray-400 mb-2">Pool Actions</p>
 
                 {/* Buttons */}
-                <div class="mx-auto flex  items-center justify-center ">
+                <div className="mx-auto flex  items-center justify-center ">
                   <button className="w-full text-white   bg-gradient-to-r from-[#f09787]  to-[#CACCF5] rounded-2xl p-[1.5px] h-[60px] mt-2 ">
                     <div className='flex items-center bg-[#191919] text-[13px] ss2:text-[17px] justify-center  w-full h-full  rounded-2xl  '>
                       POOL START/END TIME SETTING
@@ -569,7 +570,7 @@ const TokenPage = () => {
                 <p className="text-sm font-inter text-gray-400 mb-2">Pool Actions</p>
 
                 {/* Buttons */}
-                <div class="mx-auto flex  items-center justify-center ">
+                <div className="mx-auto flex  items-center justify-center ">
                   <button className="w-full text-white  bg-gradient-to-r from-[#f09787]  to-[#CACCF5] rounded-3xl p-[1.5px] h-[40px] mt-2 ">
                     <div className='flex items-center bg-[#191919] justify-center  w-full h-full  rounded-3xl  '>
                       POOL START/END TIME SETTING
