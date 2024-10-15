@@ -12,6 +12,7 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
   const { actor, principal } = useAuth(); // Auth context
   const [validationError, setValidationError] = useState(''); // Validation error state
   const [termsAccepted, setTermsAccepted] = useState(false); // Terms acceptance state
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const dispatch =useDispatch();
   const [formData, setFormData] = useState({
     token_name: '',
@@ -31,6 +32,7 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
 
   // Form submission handler
   const handleSubmit = async (e) => {
+    setIsSubmitting(true)
     e.preventDefault();
     setValidationError('');
 
@@ -40,12 +42,14 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
     // Validate decimals
     if (isNaN(decimalsNumber) || decimalsNumber < 0 || decimalsNumber > 255) {
       setValidationError("Decimals must be a number between 0 and 255.");
+      setIsSubmitting(false);
       return;
     }
 
     // Validate form fields and terms acceptance
     if (!token_name || !token_symbol || !decimals || !total_supply || !termsAccepted) {
       setValidationError("Please fill in all the details and accept the terms.");
+      setIsSubmitting(false);
       return;
     }
 
@@ -58,25 +62,24 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
 
       // if (transactionResult) {
 
+      // Convert userPrincipal to Principal type
+      const ownerPrincipal = Principal.fromText(principal);
 
-        // Convert userPrincipal to Principal type
-        const ownerPrincipal = Principal.fromText(principal);
-
-        // Token data structure for canister call
-        const tokenData = {
-          token_name,
-          token_symbol,
-          decimals: [decimalsNumber],
-          initial_balances: [
-            [
-              {
-                owner: ownerPrincipal,  // Principal object for owner
-                subaccount: [],         // Optional subaccount, empty array if unused
-              },
-              BigInt(total_supply)      // Total supply as Nat (BigInt)
-            ]
-          ]
-        };
+      // Token data structure for canister call
+      const tokenData = {
+        token_name,
+        token_symbol,
+        decimals: [decimalsNumber],
+        initial_balances: [
+          [
+            {
+              owner: ownerPrincipal, // Principal object for owner
+              subaccount: [], // Optional subaccount, empty array if unused
+            },
+            BigInt(total_supply), // Total supply as Nat (BigInt)
+          ],
+        ],
+      };
 
         console.log('Token data:', tokenData);
         const response = await actor.create_token(tokenData);
@@ -94,18 +97,19 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
         //  dispatch(addTokenData(tokenData))
         // }
 
-        const  ledger_canister_id= response.Ok.ledger_canister_id._arr;
+      const ledger_canister_id = response.Ok.ledger_canister_id._arr;
 
         // Navigate to verify-token page
         navigate('/verify-token', { state: { formData, ledger_canister_id} });
 
       // } else {
       //   setValidationError("Transaction failed.");
-     // }
-
+      // }
     } catch (err) {
       console.error("Error creating token:", err);
       setValidationError("An error occurred while creating the token.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -142,10 +146,14 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
                 <input
                   type="text"
                   value={formData.token_name}
-                  onChange={(e) => setFormData({ ...formData, token_name: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, token_name: e.target.value })
+                  }
                   className="w-full p-2 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
                 />
-                <small className="block text-[#cccccc]  xxs1:ml-6 mt-1">Creation Fee: 0.4 BNB</small>
+                <small className="block text-[#cccccc]  xxs1:ml-6 mt-1">
+                  Creation Fee: 0.4 BNB
+                </small>
               </div>
 
               {/* Token Symbol */}
@@ -154,7 +162,9 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
                 <input
                   type="text"
                   value={formData.token_symbol}
-                  onChange={(e) => setFormData({ ...formData, token_symbol: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, token_symbol: e.target.value })
+                  }
                   className="w-full p-2 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
                 />
               </div>
@@ -167,7 +177,9 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
                   value={formData.decimals}
                   min="0"
                   max="255"
-                  onChange={(e) => setFormData({ ...formData, decimals: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, decimals: e.target.value })
+                  }
                   className="w-full p-2 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
                 />
               </div>
@@ -178,7 +190,9 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
                 <input
                   type="number"
                   value={formData.total_supply}
-                  onChange={(e) => setFormData({ ...formData, total_supply: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, total_supply: e.target.value })
+                  }
                   className="w-full p-2 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
                 />
               </div>
@@ -195,7 +209,7 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
               />
               <div
                 className={`w-4 h-4 border-2 flex items-center mt-1 justify-center rounded-sm mr-2 cursor-pointer 
-                ${termsAccepted ? '' : 'border-white bg-transparent'}`}
+                ${termsAccepted ? "" : "border-white bg-transparent"}`}
               >
                 <label
                   htmlFor="termsCheckbox"
@@ -216,7 +230,12 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
 
             {/* Create Token Button */}
             <div className="flex justify-center items-center">
-              <AnimationButton text="CREATE TOKEN" onClick={handleSubmit} />
+              <AnimationButton
+                text="CREATE TOKEN"
+                onClick={handleSubmit}
+                loading={isSubmitting}
+                isDisabled={isSubmitting}
+              />
             </div>
           </div>
         </div>

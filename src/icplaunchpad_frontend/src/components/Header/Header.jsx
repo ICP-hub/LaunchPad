@@ -96,7 +96,10 @@ const { profile_picture, ...restUserData } = fetchedUserData[0];
   const handleSectionClick = (section) => {
     setActiveSection(section);
     setMenuOpen(false);
+    setIsOpen(false);
   };
+
+
 
   return (
     <div>
@@ -252,7 +255,9 @@ const { profile_picture, ...restUserData } = fetchedUserData[0];
               <div className="bg-black h-full w-full rounded-2xl flex items-center p-1 px-3">
                 <FaUser className="mr-2" />
                 <div className="flex flex-col items-start w-24 h-8 lg:w-40 lg:h-full ">
-                <span className="text-sm">{ userData ? userData.username : 'ABCD' }</span>
+                  <span className="text-sm">
+                    {userData ? userData.username : "ABCD"}
+                  </span>
                   <span className=" text-[10px] lg:text-xs text-gray-400 w-full overflow-hidden whitespace-nowrap text-ellipsis">
                     {principal}
                   </span>
@@ -273,7 +278,6 @@ const { profile_picture, ...restUserData } = fetchedUserData[0];
                       Account
                     </button>
                     <ProfileCard
-                     
                       profileModalIsOpen={profileModalIsOpen}
                       setProfileModalIsOpen={setProfileModalIsOpen}
                     />
@@ -281,7 +285,8 @@ const { profile_picture, ...restUserData } = fetchedUserData[0];
 
                   <Link
                     to="/profile"
-                    className="block px-4 py-2 text-[18px] border-b " // Close dropdown on click
+                    onClick={() => handleSectionClick("profile")}
+                    className="block px-4 py-2 text-[18px] border-b " 
                   >
                     Profile
                   </Link>
@@ -356,7 +361,7 @@ const { profile_picture, ...restUserData } = fetchedUserData[0];
           ) : (
             <>
               {" "}
-            <button
+              <button
                 onClick={openProfileModal}
                 className=" mt-[80px] flex   bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5]
               relative w-[220px] h-[35px] p-[1.5px]
@@ -370,14 +375,15 @@ const { profile_picture, ...restUserData } = fetchedUserData[0];
                 profileModalIsOpen={profileModalIsOpen}
                 setProfileModalIsOpen={setProfileModalIsOpen}
               />
-
             </>
           )}
         </div>
       )}
 
-      <div className="flex items-center bg-[#222222] py-1 px-[4%] md:text-[8px] md1:text-[10px] lg:text-[12px] lg:gap-4 lg1:gap-6 dlg:text-[14px] 
-      dxl:text-[15px] xl:text-[16px] md:gap-6 dxl:gap-8 gap-7 whitespace-nowrap overflow-x-auto no-scrollbar">
+      <div
+        className="flex items-center bg-[#222222] py-1 px-[4%] md:text-[8px] md1:text-[10px] lg:text-[12px] lg:gap-4 lg1:gap-6 dlg:text-[14px] 
+      dxl:text-[15px] xl:text-[16px] md:gap-6 dxl:gap-8 gap-7 whitespace-nowrap overflow-x-auto no-scrollbar"
+      >
         <p className="lg:text-[12px] dxl:text-lg">TRENDING</p>
         <p>#1 TRUMPBB</p>
         <p>#2 SWIF</p>
