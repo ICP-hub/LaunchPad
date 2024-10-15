@@ -201,7 +201,7 @@ const TokenPage = () => {
         { tokenData && <UpdateToken ledgerId={tokenData.canister_id} tokenModalIsOpen={tokenModalIsOpen} setTokenModalIsOpen={setTokenModalIsOpen} /> }
 
           {isMobile && (
-            <div className="h-[314px] bg-[#181818] rounded-2xl py-5 flex flex-col">
+            <div className="h-[314px] relative bg-[#181818] rounded-2xl py-5 flex flex-col">
               <div className="relative">
                 <img
                   src={tokenImg || person1}
@@ -212,8 +212,12 @@ const TokenPage = () => {
               </div>
 
               <div className="mt-[70px] text-center font-posterama text-white space-y-2">
+                <div className=" ">
                 <div className="text-[24px] font-bold"> {tokenData ? tokenData.token_name : "PUPPO"} </div>
-                <div className="text-[16px] font-medium">
+                  <FiEdit3 onClick={handleTokenEdit}  className="cursor-pointer absolute right-5 top-4 "/>
+
+                </div>
+                <div className="righttext-[16px] font-medium">
                   FAir Launnch - Max buy 5 SOL
                 </div>
                 <div className="text-[#FFC145] text-[18px] font-semibold">
