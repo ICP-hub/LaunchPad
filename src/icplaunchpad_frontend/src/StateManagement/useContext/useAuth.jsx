@@ -3,10 +3,10 @@ import { AuthClient } from "@dfinity/auth-client";
 import { NFID } from "@nfid/embed";
 import { PlugMobileProvider } from "@funded-labs/plug-mobile-sdk";
 import { createActor } from "../../../../declarations/icplaunchpad_backend/index";
-import { HttpAgent } from "@dfinity/agent";
+import { HttpAgent,Actor } from "@dfinity/agent";
 import { useDispatch } from "react-redux";
 import { setActor } from "../Redux/Reducers/actorBindReducer";
-import { idlFactory as ledgerIDL } from "./ledger.did";
+import { idlFactory as ledgerIDL } from "./ledger.did.js";
 import {
   loginSuccess,
   logoutSuccess,
@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authClient, setAuthClient] = useState(null);
   const [actor, setActorState] = useState(null);
-  const [identity, setIdentity] = useState(null);
+  const [defaultidentity,setDefaultIdentity] = useState(null);
   const [principal, setPrincipal] = useState(null);
   const [greeting, setGreeting] = useState("");
   const [nfid, setNfid] = useState(null);
@@ -62,8 +62,11 @@ export const AuthProvider = ({ children }) => {
           setActorState(actor);
           setIsAuthenticated(true);
           const principal = authClient.getIdentity().getPrincipal().toText();
+          const identity= authClient.getIdentity();
+          console.log('first identity',identity)
+          setDefaultIdentity(identity);
           setPrincipal(principal);
-          dispatch(loginSuccess({ isAuthenticated: true, principal }));
+          dispatch(loginSuccess({ isAuthenticated: true, principal ,defaultidentity}));
           dispatch(setActor(actor));
         },
         onError: (error) => {
@@ -110,7 +113,7 @@ export const AuthProvider = ({ children }) => {
       );
       dispatch(setActor(actor));
       setPrincipal(principalText);
-
+setDefaultIdentity(identity);
       console.log("Authenticated with principal:", principalText);
     } catch (error) {
       // Enhanced error handling for debugging
@@ -155,12 +158,14 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated(true);
 
         const principalText = agent.getPrincipal().toText();
+        const identity =agent.getIdentity();
         console.log(
           "Authenticated with PlugMobileProvider, principal:",
           principalText
         );
 
         setPrincipal(principalText);
+        setDefaultIdentity(identity)
         dispatch(
           loginSuccess({ isAuthenticated: true, principal: principalText })
         );
@@ -182,6 +187,7 @@ export const AuthProvider = ({ children }) => {
         if (connected) {
           await window.ic.plug.createAgent();
           const principal = await window.ic.plug.agent.getPrincipal();
+          const identity = await window.ic.plug.agent.getIdentity();
 
           const backendActor = await window.ic.plug.createActor({
             canisterId: process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND,
@@ -195,6 +201,7 @@ export const AuthProvider = ({ children }) => {
 
           setActorState(backendActor);
           setPrincipal(principal.toText());
+          setDefaultIdentity(identity);
           setIsAuthenticated(true);
           dispatch(
             loginSuccess({
@@ -233,7 +240,7 @@ export const AuthProvider = ({ children }) => {
     setIsAuthenticated(isAuthenticated);
 
     const identity = client.getIdentity();
-    setIdentity(identity);
+    setDefaultIdentity(identity);
 
     const principal = identity.getPrincipal().toText();
     setPrincipal(principal);
@@ -314,9 +321,11 @@ export const AuthProvider = ({ children }) => {
   const host = "http://127.0.0.1:4943/";
   const createCustomActor = async (canisterId) => {
     try {
-      const agent = new HttpAgent(identity, host);
-
-      // Fetch the root key for local development (not required on mainnet)
+      console.log("Identity value before agent creation:", defaultidentity);
+      console.log("Creating actor for canister ID:", canisterId);
+  
+      const agent = new HttpAgent({ defaultidentity, host });
+  
       if (process.env.DFX_NETWORK !== "ic") {
         await agent.fetchRootKey().catch((err) => {
           console.warn(
@@ -325,18 +334,16 @@ export const AuthProvider = ({ children }) => {
           );
         });
       }
-
-      // Create the actor for the canister
-      const ledgerActor = createActor(ledgerIDL, {
-        agent,
-        canisterId,
-      });
-
+  
+      const ledgerActor = Actor.createActor(ledgerIDL, { agent, canisterId });
+      console.log("Created ledger actor:", ledgerActor);
       return ledgerActor;
     } catch (err) {
       console.error("Error creating ledger actor:", err);
     }
   };
+  
+  
 
   return (
     <AuthContext.Provider
