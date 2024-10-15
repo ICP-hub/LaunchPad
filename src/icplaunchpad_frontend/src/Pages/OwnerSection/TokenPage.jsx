@@ -57,14 +57,15 @@ const TokenPage = () => {
      const latestTokenData = tokensInfo[tokensInfo.length - 1];
      setTokenData(latestTokenData);
      console.log("Fetched token data:", latestTokenData);
+  console.log("Fetched token data canisterid:", latestTokenData?.canister_id);
+       if (latestTokenData?.canister_id) {
+         const ledgeractor = await createCustomActor(
+           latestTokenData?.canister_id
+         );
+         console.log("actor=>>", ledgeractor);
 
-      //  if(tokenData){
-    //   const ledgeractor = await createCustomActor(ledger_canister_id)
-    //   console.log("actor=",actor )
-
-    //   // from here we have to get functions from ledgeractor
-
-    // }
+         // from here we have to get functions from ledgeractor
+       }
 
      if (latestTokenData) {
        // Fetch token image using the token's canister_id
