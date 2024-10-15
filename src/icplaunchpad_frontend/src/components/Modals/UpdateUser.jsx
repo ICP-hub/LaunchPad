@@ -201,7 +201,7 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
                 </label>
               </div>
               <p className="text-[15px] text-[#cccccc]">
-                By creating an account, I agree to the terms and conditions.
+                By updating an account, I agree to the terms and conditions.
               </p>
             </div>
 
