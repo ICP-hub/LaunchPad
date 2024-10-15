@@ -23,16 +23,18 @@ import { useAuth } from "../../StateManagement/useContext/useAuth.jsx";
 import { Principal } from '@dfinity/principal';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useSelector } from "react-redux";
+import UpdateToken from "../../components/Modals/UpdateToken.jsx";
 
 const TokenPage = () => {
   const [activeTab, setActiveTab] = useState("About");
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 640);
   const [sellType, setSellType] = useState('public');
   const [modalIsOpen, setIsOpen] = useState(false);
+  const [tokenModalIsOpen, setTokenModalIsOpen] =useState(false)
   
   const { actor,createCustomActor, isAuthenticated, principal } = useAuth();
   const [tokenData, setTokenData] = useState(null);
-  const [profileImg, setProfileImg] = useState();
+  const [tokenImg, setTokenImg] = useState();
   const [isLoading, setIsLoading] = useState(true);
   const protocol = process.env.DFX_NETWORK === "ic" ? "https" : "http";
   const domain = process.env.DFX_NETWORK === "ic" ? "raw.icp0.io" : "localhost:4943";
@@ -44,36 +46,39 @@ const TokenPage = () => {
 
     const { ledger_canister_id } = location.state || {};
 
+    function handleTokenEdit(){
+      setTokenModalIsOpen(true)
+    }
+
   const fetchData = async () => {
     try {
-
      // getting token data
-     const tokenData= await actor.get_tokens_info();
-     setTokenData(tokenData[tokenData.length-1])
-     console.log("tokenData-",tokenData[tokenData.length-1]);
+     const tokensInfo = await actor.get_tokens_info();
+     const latestTokenData = tokensInfo[tokensInfo.length - 1];
+     setTokenData(latestTokenData);
+     console.log("Fetched token data:", latestTokenData);
 
-   
-     if(tokenData){
-      const ledgeractor = await createCustomActor(ledger_canister_id)
-      console.log("actor=",actor )
+      //  if(tokenData){
+    //   const ledgeractor = await createCustomActor(ledger_canister_id)
+    //   console.log("actor=",actor )
 
-      // from here we have to get functions from ledgeractor
+    //   // from here we have to get functions from ledgeractor
 
-    }
+    // }
+
+     if (latestTokenData) {
+       // Fetch token image using the token's canister_id
+       const ledgerPrincipal = Principal.fromText(latestTokenData.canister_id);
+
+       const tokenImgId = await actor.get_token_image_id(ledgerPrincipal);
+       console.log("Fetched token image ID:", tokenImgId);
        
-      // Getting profile image ID
-      const profile_ImgId = await actor.get_profile_image_id();
-      console.log("Image id", profile_ImgId[0]);
-      const imageUrl = `${protocol}://${canisterId}.${domain}/f/${profile_ImgId[0]}`;
-      setProfileImg(imageUrl);
-      console.log("userImg", imageUrl);
-
-      // Getting token image ID
-      // if (ledgerPrincipalId) {
-      //   const token_imageId = await actor.get_token_image_id(ledgerPrincipalId);
-      //   setImageIds(prev => ({ ...prev, tokenId: token_imageId }));
-      //   console.log("tokenImg", token_imageId);
-      // }
+       if (tokenImgId && tokenImgId.length > 0) {
+         const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId[tokenImgId.length - 1]}`;
+         setTokenImg(imageUrl);
+         console.log("Token Image URL:", imageUrl);
+       }
+     }
 
       if (ledger_canister_id) {
         const ledgerPrincipalId= Principal.fromUint8Array(ledger_canister_id)
@@ -161,7 +166,7 @@ const TokenPage = () => {
                 
                 
                  <img
-                  src={profileImg || person1} // Show person1 as a fallback if profileImg is not available yet
+                  src={tokenImg || person1} // Show person1 as a fallback if tokenImg is not available yet
                   className="absolute  top-0 left-[50%] transform -translate-x-1/2 -translate-y-[35%] rounded-full object-cover   h-[130px] w-[130px]"
                   alt="Profile Picture"
                   draggable="false"
@@ -182,21 +187,24 @@ const TokenPage = () => {
                     <FaDiscord className="size-6" />
                   </div>
                 </div>
-                <div   className="right flex flex-col gap-5">
-                  <FiEdit3 />
-
+                <div className="right flex flex-col gap-5"> 
+                  <FiEdit3 onClick={handleTokenEdit}  className="cursor-pointer"/>
+                
                 </div>
               </div>
 
               <div className="bg-[#FFFFFF66] h-[2px] w-[100%] mx-auto mt-4"></div>
             </div>
           )}
+       
+  
+        { tokenData && <UpdateToken ledgerId={tokenData.canister_id} tokenModalIsOpen={tokenModalIsOpen} setTokenModalIsOpen={setTokenModalIsOpen} /> }
 
           {isMobile && (
             <div className="h-[314px] bg-[#181818] rounded-2xl py-5 flex flex-col">
               <div className="relative">
                 <img
-                  src={profileImg || person1}
+                  src={tokenImg || person1}
                   className="absolute top-0 left-[50%] transform -translate-x-1/2 -translate-y-[50%] rounded-full h-[130px] w-[130px]"
                   alt=""
                   draggable="false"
