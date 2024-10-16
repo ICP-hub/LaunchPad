@@ -3,11 +3,11 @@ use ic_stable_structures::memory_manager::{MemoryId, MemoryManager, VirtualMemor
 use ic_stable_structures::DefaultMemoryImpl;
 use ic_stable_structures::StableBTreeMap;
 use ic_stable_structures::{storable::Bound, Storable};
-use candid::{CandidType, Decode, Encode, Principal};
-use serde::{Deserialize, Serialize};
+use candid::{Decode, Encode, Principal};
 use std::cell::RefCell;
 use std::borrow::Cow;
-use crate::UserAccount;
+
+use crate::{CanisterIdWrapper, ImageIdWrapper, IndexCanisterIdWrapper, SaleDetailsWrapper, State, UserAccountWrapper};
 
 pub type Memory = VirtualMemory<DefaultMemoryImpl>;
 pub type CanisterIdsMap = StableBTreeMap<String, CanisterIdWrapper, Memory>;
@@ -22,13 +22,7 @@ const IMAGE_IDS_MEMORY: MemoryId = MemoryId::new(2);
 const SALE_DETAILS_MEMORY: MemoryId = MemoryId::new(3);
 const USER_ACCOUNTS_MEMORY: MemoryId = MemoryId::new(4);
 
-pub struct State {
-    pub canister_ids: CanisterIdsMap,
-    pub index_canister_ids : IndexCanisterIdsMap,
-    pub image_ids: ImageIdsMap,
-    pub sale_details: SaleDetailsMap,
-    pub user_accounts: UserAccountsMap,
-}
+
 
 thread_local! {
     static MEMORY_MANAGER: RefCell<MemoryManager<DefaultMemoryImpl>> = RefCell::new(
@@ -124,56 +118,6 @@ pub fn init_sale_details() -> SaleDetailsMap {
 
 pub fn init_user_accounts() -> UserAccountsMap {
     UserAccountsMap::init(get_user_accounts_memory())
-}
-
-
-
-#[derive(CandidType, Deserialize, Debug)]
-pub struct CanisterIdWrapper {
-    pub canister_ids: Principal,
-    pub token_name: String,  
-    pub token_symbol: String,
-    pub image_id: Option<u32>,
-    pub ledger_id: Option<Principal>,
-}
-
-#[derive(CandidType, Deserialize, Debug)]
-pub struct IndexCanisterIdWrapper {
-    pub index_canister_ids : Principal,
-}
-
-#[derive(CandidType, Deserialize, Debug)]
-pub struct ImageIdWrapper {
-    pub image_id: u32, 
-}
-
-#[derive(CandidType, Deserialize, Debug, Clone)]
-pub struct SaleDetailsWrapper {
-    pub sale_details: SaleDetails,
-}
-#[derive(CandidType, Deserialize, Debug, Clone)]
-pub struct UserAccountWrapper {
-    pub user_account: UserAccount,
-}
-
-#[derive(CandidType, Deserialize, Serialize, Debug, Clone)]
-pub struct SaleDetails {
-    // pub seller_principal: Principal 
-    pub listing_rate: f64, // Price of 1 token in ICP
-    pub min_buy: u64,
-    pub max_buy: u64,
-    pub start_time_utc: u64,
-    pub end_time_utc: u64,
-    pub website: String,
-    pub facebook: String,
-    pub twitter: String,
-    pub github: String,
-    pub telegram: String,
-    pub instagram: String,
-    pub discord: String,
-    pub reddit: String,
-    pub youtube_video: String,
-    pub description: String,
 }
 
 

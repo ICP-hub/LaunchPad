@@ -1,7 +1,9 @@
-use crate::{Account, ArchiveOptions, FeatureFlags};
+
 use candid::{Nat, Principal};
 use lazy_static::lazy_static;
 use std::sync::Mutex;
+
+use crate::types::{Account, ArchiveOptions, FeatureFlags};
 
 lazy_static! {
     pub static ref MINTING_ACCOUNT: Mutex<Result<Account, String>> = Mutex::new(
