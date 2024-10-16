@@ -12,7 +12,6 @@ import { addUserData } from '../../Redux-Config/ReduxSlices/UserSlice';
 
 const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const { actor, principal } = useAuth();
   const { register, handleSubmit, formState: { errors }, reset } = useForm();
 
@@ -20,12 +19,12 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [fileName, setFileName] = useState('');
   const [profilePicture, setProfilePicture] = useState(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
+ const [isSubmitting, setIsSubmitting] = useState(false);
+  const dispatch = useDispatch();
   const fileInputRef = useRef(null);
 
   const onSubmit = async (data) => {
-    setIsSubmitting(true);
+     setIsSubmitting(true);
     setValidationError('');
 
     const { name, username, social, tag } = data;
@@ -46,7 +45,8 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
       const userData = {
         name,
         username,
-        profile_picture: profilePictureData.length > 0 ? [profilePictureData] : [],
+        profile_picture:
+          profilePictureData.length > 0 ? [profilePictureData] : [],
         links: [social],
         tag,
       };
@@ -62,10 +62,13 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
       // Upload profile picture if it exists
       if (userData.profile_picture.length > 0) {
         try {
-          const responseImg = await actor.upload_profile_image("br5f7-7uaaa-aaaaa-qaaca-cai", {
-            content: userData.profile_picture,
-          });
-          console.log('Profile picture uploaded:', responseImg);
+          const responseImg = await actor.upload_profile_image(
+            "br5f7-7uaaa-aaaaa-qaaca-cai",
+            {
+              content: userData.profile_picture,
+            }
+          );
+          console.log("Profile picture uploaded:", responseImg);
         } catch (imgErr) {
           console.error("Error uploading profile picture:", imgErr);
         }
@@ -82,7 +85,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
 
       // Close modal, reset form, and navigate to home
       setUserModalIsOpen(false);
-      navigate('/');
+      navigate("/");
       reset();
     } catch (err) {
       console.error("An error occurred:", err);
@@ -136,7 +139,9 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
             <button onClick={closeModal} className="absolute top-2 right-8 text-[30px] text-white">
               <TfiClose />
             </button>
-            <h2 className="text-[25px] font-semibold">Create User</h2>
+            <h2 className="text-[20px] font-medium md:text-[25px] md:font-semibold">
+              Create User
+            </h2>
           </div>
 
           {/* Form */}
@@ -146,10 +151,12 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               <label className="block mb-2 text-[16px]">Name</label>
               <input
                 type="text"
-                {...register('name', { required: 'Name is required' })}
-                className="w-full p-2 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
+                {...register("name", { required: "Name is required" })}
+                className="w-full p-1 pl-4 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
               />
-              {errors.name && <p className="text-red-500">{errors.name.message}</p>}
+              {errors.name && (
+                <p className="text-red-500">{errors.name.message}</p>
+              )}
             </div>
 
             {/* Username */}
@@ -157,10 +164,12 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               <label className="block mb-2 text-[16px]">Username</label>
               <input
                 type="text"
-                {...register('username', { required: 'Username is required' })}
-                className="w-full p-2 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
+                {...register("username", { required: "Username is required" })}
+                className="w-full p-1 pl-4 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
               />
-              {errors.username && <p className="text-red-500">{errors.username.message}</p>}
+              {errors.username && (
+                <p className="text-red-500">{errors.username.message}</p>
+              )}
             </div>
 
             {/* Profile Picture */}
@@ -170,7 +179,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
                 type="file"
                 ref={fileInputRef}
                 onChange={handleFileChange}
-                style={{ display: 'none' }}
+                style={{ display: "none" }}
               />
               <div
                 onClick={handleFileUploadClick}
@@ -186,10 +195,12 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               <label className="block mb-2 text-[16px]">Social</label>
               <input
                 type="text"
-                {...register('social', { required: 'Social link is required' })}
-                className="w-full p-2 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
+                {...register("social", { required: "Social link is required" })}
+                className="w-full p-1 pl-4 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
               />
-              {errors.social && <p className="text-red-500">{errors.social.message}</p>}
+              {errors.social && (
+                <p className="text-red-500">{errors.social.message}</p>
+              )}
             </div>
 
             {/* Tag */}
@@ -197,10 +208,12 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               <label className="block mb-2 text-[16px]">Tag</label>
               <input
                 type="text"
-                {...register('tag', { required: 'Tag is required' })}
-                className="w-full p-2 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
+                {...register("tag", { required: "Tag is required" })}
+                className="w-full p-1 pl-4 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
               />
-              {errors.tag && <p className="text-red-500">{errors.tag.message}</p>}
+              {errors.tag && (
+                <p className="text-red-500">{errors.tag.message}</p>
+              )}
             </div>
 
             {/* Terms and Conditions */}
@@ -214,9 +227,16 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               />
               <div
                 className={`w-4 h-4 border-2 flex items-center justify-center rounded-sm mr-2 cursor-pointer 
-                ${termsAccepted ? 'border-[#F3B3A7]' : 'border-white bg-transparent'}`}
+                ${
+                  termsAccepted
+                    ? "border-[#F3B3A7]"
+                    : "border-white bg-transparent"
+                }`}
               >
-                <label htmlFor="termsCheckbox" className="w-full h-full flex items-center justify-center">
+                <label
+                  htmlFor="termsCheckbox"
+                  className="cursor-pointer w-full h-full flex items-center justify-center"
+                >
                   {termsAccepted && <span className="text-[#F3B3A7]">✓</span>}
                 </label>
               </div>
@@ -226,11 +246,18 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
             </div>
 
             {/* Validation Error Message */}
-            {validationError && <p className="text-red-500 mb-4">{validationError}</p>}
+            {validationError && (
+              <p className="text-red-500 mb-4">{validationError}</p>
+            )}
 
             {/* Submit Button */}
             <div className="flex justify-center items-center">
-              <AnimationButton text="Submit" loading={isSubmitting} isDisabled={isSubmitting} />
+              <AnimationButton
+                text="Submit"
+                onClick={handleSubmit}
+                loading={isSubmitting}
+                isDisabled={isSubmitting}
+              />
             </div>
           </form>
         </div>
