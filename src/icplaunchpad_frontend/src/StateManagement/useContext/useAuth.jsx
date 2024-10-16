@@ -32,13 +32,15 @@ export const AuthProvider = ({ children }) => {
     const initializeAuth = async () => {
       try {
         const client = await AuthClient.create();
-        setAuthClient(client);
-
         const nfidInstance = await NFID.init({
           application: "test",
           logo: "https://dev.nfid.one/static/media/id.300eb72f3335b50f5653a7d6ad5467b3.svg",
         });
         setNfid(nfidInstance);
+        // setAuthClient(client);
+        if (await client.isAuthenticated()) {
+          reloadLogin(client);
+        }
       } catch (error) {
         console.error("Failed to initialize authentication:", error);
       }
@@ -46,6 +48,46 @@ export const AuthProvider = ({ children }) => {
     initializeAuth();
   }, []);
 
+
+
+
+  const reloadLogin = async (client) => {
+    try {
+
+      if (!client) {
+        console.error("Client is undefined or null. Aborting reload.");
+        return;
+      }
+
+      if (await client.isAuthenticated()) {
+        const identity = client.getIdentity();
+        const principal = identity.getPrincipal().toText();
+
+        setDefaultIdentity(identity);
+        setPrincipal(principal);
+        setIsAuthenticated(true);
+
+        const agent = new HttpAgent({ identity });
+        if (process.env.DFX_NETWORK !== "ic") {
+          await agent.fetchRootKey();
+        }
+
+        const actor = createActor(
+          process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND,
+          { agent }
+        );
+        setActorState(actor);
+
+        dispatch(loginSuccess({ isAuthenticated: true, principal }));
+        dispatch(setActor(actor));
+      } 
+    } catch (error) {
+      console.error("Failed to reload authentication session:", error);
+    }
+  };
+
+
+   
   const authenticateWithII = async () => {
     try {
       await authClient.login({
@@ -63,11 +105,20 @@ export const AuthProvider = ({ children }) => {
           setIsAuthenticated(true);
           const principal = authClient.getIdentity().getPrincipal().toText();
           const identity= authClient.getIdentity();
-          console.log('first identity',identity)
           setDefaultIdentity(identity);
           setPrincipal(principal);
-          dispatch(loginSuccess({ isAuthenticated: true, principal ,defaultidentity}));
+          dispatch(
+            loginSuccess({
+              
+              isAuthenticated: true,
+              principal,
+              defaultidentity: identity,
+              
+            })
+          );
           dispatch(setActor(actor));
+           updateClient(authClient);
+           
         },
         onError: (error) => {
           console.error("Internet Identity login failed:", error);
@@ -114,7 +165,11 @@ export const AuthProvider = ({ children }) => {
       dispatch(setActor(actor));
       setPrincipal(principalText);
 setDefaultIdentity(identity);
-      console.log("Authenticated with principal:", principalText);
+  if (authClient) {
+    updateClient(authClient);
+  } else {
+    console.error("authClient is not available for updating.");
+  }
     } catch (error) {
       // Enhanced error handling for debugging
       console.error("NFID login failed:", error);
@@ -132,7 +187,6 @@ setDefaultIdentity(identity);
     try {
       const isMobile = PlugMobileProvider.isMobileBrowser();
       if (isMobile) {
-        console.log("Detected mobile browser, using PlugMobileProvider.");
 
         const provider = new PlugMobileProvider({
           debug: true,
@@ -159,10 +213,6 @@ setDefaultIdentity(identity);
 
         const principalText = agent.getPrincipal().toText();
         const identity =agent.getIdentity();
-        console.log(
-          "Authenticated with PlugMobileProvider, principal:",
-          principalText
-        );
 
         setPrincipal(principalText);
         setDefaultIdentity(identity)
@@ -171,7 +221,6 @@ setDefaultIdentity(identity);
         );
         dispatch(setActor(actor));
       } else {
-        console.log("Detected desktop browser, using window.ic.plug.");
 
         // Check if Plug Wallet is available
         if (!window.ic || !window.ic.plug) {
@@ -194,10 +243,6 @@ setDefaultIdentity(identity);
             interfaceFactory: idlFactory,
           });
 
-          console.log(
-            "Authenticated with window.ic.plug, principal:",
-            principal.toText()
-          );
 
           setActorState(backendActor);
           setPrincipal(principal.toText());
@@ -219,60 +264,87 @@ setDefaultIdentity(identity);
     }
   };
 
-  const reloadLogin = () => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        if (
-          authClient.isAuthenticated() &&
-          !(await authClient.getIdentity().getPrincipal().isAnonymous())
-        ) {
-          updateClient(authClient);
-          resolve(authClient);
-        }
-      } catch (error) {
-        reject(error);
-      }
-    });
-  };
 
-  async function updateClient(client) {
-    const isAuthenticated = await client.isAuthenticated();
-    setIsAuthenticated(isAuthenticated);
 
-    const identity = client.getIdentity();
-    setDefaultIdentity(identity);
 
-    const principal = identity.getPrincipal().toText();
-    setPrincipal(principal);
+  // async function updateClient(client) {
+  //   const isAuthenticated = await client.isAuthenticated();
+  //   setIsAuthenticated(isAuthenticated);
 
-    setAuthClient(client);
-    const agent = new HttpAgent({
-      identity,
-      verifyQuerySignatures: process.env.DFX_NETWORK === "ic",
-    });
+  //   const identity = client.getIdentity();
+  //   setDefaultIdentity(identity);
 
-    if (process.env.DFX_NETWORK !== "ic") {
-      await agent.fetchRootKey().catch((err) => {
-        console.warn("Unable to fetch root key:", err);
-      });
-    }
+  //   const principal = identity.getPrincipal().toText();
+  //   setPrincipal(principal);
 
-    const actor = createActor(process.env.CANISTER_ID_ICPACCELERATOR_BACKEND, {
-      agent,
-    });
+  //   setAuthClient(client);
+  //   const agent = new HttpAgent({
+  //     identity,
+  //     verifyQuerySignatures: process.env.DFX_NETWORK === "ic",
+  //   });
 
-    if (isAuthenticated) {
-      dispatch(loginSuccess({ isAuthenticated, identity, principal }));
-      dispatch(setActor(actor));
-    }
-    setBackendActor(actor);
+  //   if (process.env.DFX_NETWORK !== "ic") {
+  //     await agent.fetchRootKey().catch((err) => {
+  //       console.warn("Unable to fetch root key:", err);
+  //     });
+  //   }
+
+  //   const actor = createActor(process.env.CANISTER_ID_ICPACCELERATOR_BACKEND, {
+  //     agent,
+  //   });
+
+  //   if (isAuthenticated) {
+  //     dispatch(loginSuccess({ isAuthenticated, identity, principal }));
+  //     dispatch(setActor(actor));
+  //   }
+  //   // setBackendActor(actor);
+  //    setActorState(actor);
+  // }
+async function updateClient(client) {
+  if (!client) {
+    console.error("AuthClient is not initialized. Aborting updateClient.");
+    return;
   }
+
+  const isAuthenticated = await client.isAuthenticated();
+  setIsAuthenticated(isAuthenticated);
+
+  const identity = client.getIdentity();
+  setDefaultIdentity(identity);
+
+  const principal = identity.getPrincipal().toText();
+  setPrincipal(principal);
+
+  setAuthClient(client);
+  const agent = new HttpAgent({
+    identity,
+    verifyQuerySignatures: process.env.DFX_NETWORK === "ic",
+  });
+
+  if (process.env.DFX_NETWORK !== "ic") {
+    await agent.fetchRootKey().catch((err) => {
+      console.warn("Unable to fetch root key:", err);
+    });
+  }
+
+  const actor = createActor(process.env.CANISTER_ID_ICPACCELERATOR_BACKEND, {
+    agent,
+  });
+
+  if (isAuthenticated) {
+    dispatch(loginSuccess({ isAuthenticated, identity, principal }));
+    dispatch(setActor(actor));
+  }
+  setActorState(actor);
+}
 
   const logout = async () => {
     try {
       if (authClient) {
         await authClient.logout();
+        
       }
+     
       setIsAuthenticated(false);
       setPrincipal(null);
       setActorState(null);
@@ -293,36 +365,10 @@ setDefaultIdentity(identity);
     }
   };
 
-  // Function to dynamically create an actor for any canister
-  // const createCustomActor = async (canisterId) => {
-  //   try {
-  //     const agent = new HttpAgent({ identity });
-
-  //     // Fetch the root key for local development (but not on IC mainnet)
-  //     if (process.env.DFX_NETWORK !== "ic") {
-  //       await agent.fetchRootKey().catch((err) => {
-  //         console.warn("Unable to fetch root key. Check your local replica.", err);
-  //       });
-  //     }
-
-  //     // Dynamically create the actor using the canisterId
-  //     const actor = createActor({
-  //       canisterId,
-  //       agent,
-  //     });
-  //     // const actor = createActor(canisterId, { agent });
-
-  //     return actor;
-  //   } catch (err) {
-  //     console.error("Error creating actor:", err);
-  //   }
-  // };
-
+  
   const host = "http://127.0.0.1:4943/";
   const createCustomActor = async (canisterId) => {
     try {
-      console.log("Identity value before agent creation:", defaultidentity);
-      console.log("Creating actor for canister ID:", canisterId);
   
       const agent = new HttpAgent({ defaultidentity, host });
   
@@ -336,7 +382,6 @@ setDefaultIdentity(identity);
       }
   
       const ledgerActor = Actor.createActor(ledgerIDL, { agent, canisterId });
-      console.log("Created ledger actor:", ledgerActor);
       return ledgerActor;
     } catch (err) {
       console.error("Error creating ledger actor:", err);
@@ -369,3 +414,4 @@ setDefaultIdentity(identity);
 
 // Custom Hook for easier access to the AuthContext
 export const useAuth = () => useContext(AuthContext);
+
