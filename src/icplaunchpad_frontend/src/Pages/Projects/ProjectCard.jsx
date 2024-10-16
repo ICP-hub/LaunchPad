@@ -100,7 +100,7 @@ const ProjectCard = ({projectData, index}) => {
                 <span className="text-sm text-gray-400">Lock Time</span>
                 <span className="text-lg font-semibold">{ "365 DAYS" }</span>
               </div>
-              <div className="flex flex-col">
+              <div className="flex flex-col"> 
                 <span className="text-sm text-gray-400">Sale Starts In</span>
                 <span className="text-lg font-semibold">{ "00:29:23:00" }</span>
               </div>

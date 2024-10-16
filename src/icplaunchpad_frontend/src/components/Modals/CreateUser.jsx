@@ -1,34 +1,38 @@
-
-
 import React, { useState, useRef } from 'react';
 import { TfiClose } from "react-icons/tfi";
 import Modal from 'react-modal';
-import AnimationButton from '../../common/AnimationButton';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { useAuth } from '../../StateManagement/useContext/useAuth';
 import { useDispatch } from 'react-redux';
-import { addUserData } from '../../Redux-Config/ReduxSlices/UserSlice';
 import { Principal } from '@dfinity/principal';
+
+import AnimationButton from '../../common/AnimationButton';
+import { useAuth } from '../../StateManagement/useContext/useAuth';
+import { addUserData } from '../../Redux-Config/ReduxSlices/UserSlice';
 
 const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { actor, principal } = useAuth();
   const { register, handleSubmit, formState: { errors }, reset } = useForm();
+
   const [validationError, setValidationError] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [fileName, setFileName] = useState('');
   const [profilePicture, setProfilePicture] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const dispatch = useDispatch();
   const fileInputRef = useRef(null);
 
   const onSubmit = async (data) => {
+    setIsSubmitting(true);
     setValidationError('');
+
     const { name, username, social, tag } = data;
 
     if (!termsAccepted) {
       setValidationError("Please accept the terms and conditions.");
+      setIsSubmitting(false);
       return;
     }
 
@@ -51,6 +55,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
       const response = await actor.create_user_account(userData);
       if (response?.Err) {
         setValidationError(response.Err);
+        setIsSubmitting(false);
         return;
       }
 
@@ -69,7 +74,6 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
       // Fetch and store user data
       const ownerPrincipal = Principal.fromText(principal);
       const fetchedUserData = await actor.get_user_account(ownerPrincipal);
-      console.log("Fetched user data:", fetchedUserData);
 
       if (fetchedUserData) {
         const { profile_picture, ...restUserData } = fetchedUserData[0];
@@ -83,6 +87,8 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
     } catch (err) {
       console.error("An error occurred:", err);
       setValidationError("An error occurred while creating the User.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -102,13 +108,9 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
     });
   };
 
-  const closeModal = () => {
-    setUserModalIsOpen(false);
-  };
+  const closeModal = () => setUserModalIsOpen(false);
 
-  const handleFileUploadClick = () => {
-    fileInputRef.current.click();
-  };
+  const handleFileUploadClick = () => fileInputRef.current.click();
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -119,7 +121,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   };
 
   return (
-    <div className='absolute'>
+    <div className="absolute">
       <Modal
         isOpen={userModalIsOpen}
         onRequestClose={closeModal}
@@ -128,15 +130,13 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
         overlayClassName="fixed z-[100] inset-0 bg-opacity-50"
         ariaHideApp={false}
       >
-        <div className="bg-[#222222] p-2 xxs1:p-6 rounded-2xl text-white mx-2 xxs1:mx-6 max-h-[100vh] overflow-y-auto no-scrollbar w-[786px] relative">
-          <div className="bg-[#FFFFFF4D] mx-[-7px] xxs1:mx-[-24px] mt-[-10px] xxs1:mt-[-25px] px-4 py-1 mb-4 rounded-2xl relative">
-            <button
-              onClick={closeModal}
-              className="absolute mt-1 right-8 text-[25px] md:text-[30px] text-white"
-            >
+        <div className="bg-[#222222] p-6 rounded-2xl text-white mx-6 max-h-[100vh] overflow-y-auto no-scrollbar w-[786px] relative">
+          {/* Modal Header */}
+          <div className="bg-[#FFFFFF4D] px-4 py-1 mb-4 rounded-2xl relative">
+            <button onClick={closeModal} className="absolute top-2 right-8 text-[30px] text-white">
               <TfiClose />
             </button>
-            <h2 className="text-[20px] font-medium md:text-[25px] md:font-semibold">Create User</h2>
+            <h2 className="text-[25px] font-semibold">Create User</h2>
           </div>
 
           {/* Form */}
@@ -147,7 +147,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               <input
                 type="text"
                 {...register('name', { required: 'Name is required' })}
-                className="w-full p-1 pl-4 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
+                className="w-full p-2 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
               />
               {errors.name && <p className="text-red-500">{errors.name.message}</p>}
             </div>
@@ -158,7 +158,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               <input
                 type="text"
                 {...register('username', { required: 'Username is required' })}
-                className="w-full p-1 pl-4 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
+                className="w-full p-2 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
               />
               {errors.username && <p className="text-red-500">{errors.username.message}</p>}
             </div>
@@ -174,10 +174,10 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               />
               <div
                 onClick={handleFileUploadClick}
-                className="cursor-pointer w-full flex items-center justify-start p-1.5 bg-[#333333] text-white rounded-md border-b-2"
+                className="cursor-pointer flex items-center p-2 bg-[#333333] text-white rounded-md border-b-2"
               >
                 <span className="text-xl font-bold mr-2">+</span>
-                <span>{fileName ? fileName : "Upload Image"}</span>
+                <span>{fileName || "Upload Image"}</span>
               </div>
             </div>
 
@@ -187,7 +187,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               <input
                 type="text"
                 {...register('social', { required: 'Social link is required' })}
-                className="w-full p-1 pl-4 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
+                className="w-full p-2 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
               />
               {errors.social && <p className="text-red-500">{errors.social.message}</p>}
             </div>
@@ -198,7 +198,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               <input
                 type="text"
                 {...register('tag', { required: 'Tag is required' })}
-                className="w-full p-1 pl-4 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
+                className="w-full p-2 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
               />
               {errors.tag && <p className="text-red-500">{errors.tag.message}</p>}
             </div>
@@ -216,10 +216,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
                 className={`w-4 h-4 border-2 flex items-center justify-center rounded-sm mr-2 cursor-pointer 
                 ${termsAccepted ? 'border-[#F3B3A7]' : 'border-white bg-transparent'}`}
               >
-                <label
-                  htmlFor="termsCheckbox"
-                  className="cursor-pointer w-full h-full flex items-center justify-center"
-                >
+                <label htmlFor="termsCheckbox" className="w-full h-full flex items-center justify-center">
                   {termsAccepted && <span className="text-[#F3B3A7]">✓</span>}
                 </label>
               </div>
@@ -233,7 +230,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
 
             {/* Submit Button */}
             <div className="flex justify-center items-center">
-              <AnimationButton text="Submit" />
+              <AnimationButton text="Submit" loading={isSubmitting} isDisabled={isSubmitting} />
             </div>
           </form>
         </div>

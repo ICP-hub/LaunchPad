@@ -12,14 +12,14 @@ const Launch = () => {
     <div className="flex pt-[25%] pb-[50%] md:pb-4  md:pt-[4%] relative">
 
       {/* Background Image for screens smaller than md */}
-      <div className="absolute top-0 left-0 w-full h-full md:hidden bg-cover bg-center filter blur-[10px] opacity-30">
-        <div
-          className="w-full h-full bg-no-repeat bg-center bg-cover"
-          style={{
-            backgroundImage: `url(${circleGif})`,
-          }}
-        />
-      </div>
+  <div className="absolute top-0 left-0 w-full h-full md:hidden bg-cover bg-center filter blur-[10px] opacity-30 pointer-events-none">
+    <div
+      className="w-full h-full bg-no-repeat bg-center bg-cover"
+      style={{
+        backgroundImage: `url(${circleGif})`,
+      }}
+    />
+  </div>
 
       {/* Left Section */}
       <div className="w-full  md:w-1/2 flex flex-col justify-center   md:items-start text-start md:text-left py-[5%]  pl-[6%] md:pr-0 pr-[4%] md:pl-[9%]">
