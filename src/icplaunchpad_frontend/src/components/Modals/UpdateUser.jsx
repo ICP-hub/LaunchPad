@@ -11,10 +11,13 @@ import { Principal } from '@dfinity/principal';
 const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const { actor, principal, isAuthenticated } = useAuth();
   const { register, handleSubmit, formState: { errors }, reset } = useForm();
+  const dispatch = useDispatch();
+
   const [validationError, setValidationError] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [userData, setUserData] = useState(null);
-  const dispatch = useDispatch();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const userPrincipal = Principal.fromText(principal);
 
   useEffect(() => {
@@ -29,7 +32,7 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
         name: userData[0]?.name || '',
         username: userData[0]?.username || '',
         links: userData[0]?.links ? userData[0].links.join(', ') : '',
-        tag: userData[0]?.tag || ''
+        tag: userData[0]?.tag || '',
       });
     }
   }, [userData, reset]);
@@ -45,10 +48,13 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   };
 
   const onSubmit = async (data) => {
+    setIsSubmitting(true);
     setValidationError('');
+
     const { name, username, profile, links, tag } = data;
 
     if (!termsAccepted) {
+      setIsSubmitting(false);
       setValidationError('Please accept the terms and conditions.');
       return;
     }
@@ -62,7 +68,6 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
         profilePicture = Array.from(new Uint8Array(arrayBuffer));
       }
 
-      // Split the links by commas and trim whitespace
       const linksArray = links.split(',').map(link => link.trim());
 
       const updatedUserData = {
@@ -75,6 +80,7 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
 
       const response = await actor.update_user_account(userPrincipal, updatedUserData);
       if (response?.Err) {
+        setIsSubmitting(false);
         setValidationError(response.Err);
         return;
       }
@@ -103,12 +109,12 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
     } catch (err) {
       console.error('Error updating user:', err);
       setValidationError('An error occurred while updating the user.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const closeModal = () => {
-    setUserModalIsOpen(false);
-  };
+  const closeModal = () => setUserModalIsOpen(false);
 
   return (
     <div className="absolute">
@@ -132,6 +138,7 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {/* Name */}
             <div>
               <label className="block mb-2 text-[16px]">Name</label>
               <input
@@ -142,6 +149,7 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               {errors.name && <p className="text-red-500">{errors.name.message}</p>}
             </div>
 
+            {/* Username */}
             <div>
               <label className="block mb-2 text-[16px]">Username</label>
               <input
@@ -152,6 +160,7 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               {errors.username && <p className="text-red-500">{errors.username.message}</p>}
             </div>
 
+            {/* Profile Picture */}
             <div>
               <label className="block mb-2 text-[16px]">Profile Picture</label>
               <input
@@ -161,6 +170,7 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               />
             </div>
 
+            {/* Social Links */}
             <div>
               <label className="block mb-2 text-[16px]">Social Links</label>
               <input
@@ -171,6 +181,7 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               {errors.links && <p className="text-red-500">{errors.links.message}</p>}
             </div>
 
+            {/* Tag */}
             <div>
               <label className="block mb-2 text-[16px]">Tag</label>
               <input
@@ -181,6 +192,7 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               {errors.tag && <p className="text-red-500">{errors.tag.message}</p>}
             </div>
 
+            {/* Terms and Conditions */}
             <div className="flex items-center mt-4">
               <input
                 type="checkbox"
@@ -205,10 +217,12 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               </p>
             </div>
 
+            {/* Validation Error */}
             {validationError && <p className="text-red-500 mb-4">{validationError}</p>}
 
+            {/* Submit Button */}
             <div className="flex justify-center items-center">
-              <AnimationButton text="Submit" />
+              <AnimationButton text="Submit" loading={isSubmitting} isDisabled={isSubmitting} />
             </div>
           </form>
         </div>

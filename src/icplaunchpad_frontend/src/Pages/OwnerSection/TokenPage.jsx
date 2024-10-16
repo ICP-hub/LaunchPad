@@ -35,70 +35,91 @@ const TokenPage = () => {
   const { actor,createCustomActor, isAuthenticated, principal } = useAuth();
   const [tokenData, setTokenData] = useState(null);
   const [tokenImg, setTokenImg] = useState();
-  const [isLoading, setIsLoading] = useState(true);
   const protocol = process.env.DFX_NETWORK === "ic" ? "https" : "http";
   const domain = process.env.DFX_NETWORK === "ic" ? "raw.icp0.io" : "localhost:4943";
   const canisterId = process.env.CANISTER_ID_IC_ASSET_HANDLER;
-  const [presaleData, sePresaleData]= useState(null);
+  const [presaleData, setPresaleData]= useState(null);
+  const [ledgerActor, setLedgerActor]=useState(null);
+  const [ledgerId, setLedgerId]=useState(null);
+
+
   const location = useLocation();
-
   const userData=useSelector((state)=>state.user);
-
     const { ledger_canister_id } = location.state || {};
 
     function handleTokenEdit(){
       setTokenModalIsOpen(true)
     }
 
-  const fetchData = async () => {
-    try {
-     // getting token data
-     const tokensInfo = await actor.get_tokens_info();
-     const latestTokenData = tokensInfo[tokensInfo.length - 1];
-     setTokenData(latestTokenData);
-     console.log("Fetched token data:", latestTokenData);
-  console.log("Fetched token data canisterid:", latestTokenData?.canister_id);
-       if (latestTokenData?.canister_id) {
-         const ledgeractor = await createCustomActor(
-           latestTokenData?.canister_id
-         );
-         console.log("ledger actor=>>", ledgeractor);
+    const fetchData = async () => {
+      try {
+        // Check if ledger_canister_id exists
+        if (ledger_canister_id) {
+          // Convert ledger_canister_id to a Principal ID
+          const ledgerid = Principal.fromUint8Array(ledger_canister_id).toText();
+          setLedgerId(ledgerid);
+    
+          // Create a custom actor for the ledger and set it in state
+          const ledgerActor = await createCustomActor(ledgerid);
+          setLedgerActor(ledgerActor);
+          console.log("Ledger Actor =", ledgerActor);
+          
+          //fetching token info with ledgerActor
+          const tokenName= await ledgerActor.icrc1_name();
+          setTokenData({canister_id:ledgerid, token_name:tokenName})
+        } else {
+          // Fetch tokens info and set the latest token data if ledger_canister_id is not available
+          const tokensInfo = await actor.get_tokens_info();
+          const latestTokenData = tokensInfo[tokensInfo.length - 1];
+          setTokenData(latestTokenData);
 
-         // from here we have to get functions from ledgeractor
-       }
-
-     if (latestTokenData) {
-       // Fetch token image using the token's canister_id
-       const ledgerPrincipal = Principal.fromText(latestTokenData.canister_id);
-
-       const tokenImgId = await actor.get_token_image_id(ledgerPrincipal);
-       console.log("Fetched token image ID:", tokenImgId);
-       
-       if (tokenImgId && tokenImgId.length > 0) {
-         const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId[tokenImgId.length - 1]}`;
-         setTokenImg(imageUrl);
-         console.log("Token Image URL:", imageUrl);
-       }
-     }
-
-      if (ledger_canister_id) {
-        const ledgerPrincipalId= Principal.fromUint8Array(ledger_canister_id)
-       const presaleData= await actor.get_sale_params(ledgerPrincipalId);
-       sePresaleData(presaleData.Ok);
-       console.log("presale data--",presaleData);
-       }
-
-
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-
-  useEffect(() => {
-    if (isAuthenticated && actor) {
-      fetchData();
-    }
-  }, [isAuthenticated, actor]);
+          console.log("Fetched token data canister_id:", latestTokenData?.canister_id);
+    
+          // Set ledgerId if canister_id is available in the latest token data
+          const canisterId = latestTokenData?.canister_id;
+          if (canisterId) {
+            setLedgerId(canisterId);
+    
+            // Create a custom actor for the ledger using the canister_id
+            const ledgerActor = await createCustomActor(canisterId);
+            setLedgerActor(ledgerActor);
+            console.log("Ledger Actor =>", ledgerActor);
+          }
+        }
+    
+        // Fetch token image if ledgerId is available
+        if (ledgerId) {
+          const ledgerPrincipal = Principal.fromText(ledgerId);
+          
+          // Fetch token image ID
+          const tokenImgId = await actor.get_token_image_id(ledgerPrincipal);
+          console.log("Fetched token image ID:", tokenImgId);
+    
+          if (tokenImgId && tokenImgId.length > 0) {
+            const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId[tokenImgId.length - 1]}`;
+            setTokenImg(imageUrl);
+            console.log("Token Image URL:", imageUrl);
+          }
+        }
+    
+        // Fetch presale data if ledgerId is available
+        if (ledgerId) {
+          const ledgerPrincipalId = Principal.fromText(ledgerId);
+          const presaleData = await actor.get_sale_params(ledgerPrincipalId);
+          setPresaleData(presaleData.Ok);
+          console.log("Presale data:", presaleData);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    
+    useEffect(() => {
+      if (isAuthenticated && actor) {
+        fetchData();
+      }
+    }, [isAuthenticated, actor, ledgerId]);
+    
 
 
   const openModal = () => {
@@ -110,7 +131,7 @@ const TokenPage = () => {
       case "About":
         return <ProjectTokenAbout />;
       case "Token":
-        return <Token />;
+        return <Token actor={ledgerActor}/>;
       case "Pool Info":
         return <Pooolinfo />;
       case "FAQs & Discussion":

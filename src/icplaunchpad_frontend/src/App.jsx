@@ -8,6 +8,7 @@ import "./main.css";
 function App() {
     const userFullData = useSelector((currState) => currState.userData);
     console.log("user full data in app.js",userFullData)
+   
   return (
     <Provider store={myStore}>
     <div id="root" className="text-white max-w-[1700px] mx-auto ">
