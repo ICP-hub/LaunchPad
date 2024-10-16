@@ -45,26 +45,36 @@ const Header = () => {
   }, [isAuthenticated]);
 
   async function userCheck() {
-    console.log("actor---", actor)
-    const response = await actor.is_account_created();
-    console.log("Account creation response:", response);
-
-    const resultResponse = response.slice(-16);
-    if (resultResponse === "already created.") {
+    try {
+      console.log("actor---", actor);
+      const response = await actor.is_account_created();
+      console.log("Account creation response:", response);
+  
+      const resultResponse = response.slice(-16);
+      if (resultResponse === "already created.") {
         setUserRegister(true);
-        
-        // Fetch user account data if the user is registered
-        const ownerPrincipal = Principal.fromText(principal);
-        const fetchedUserData = await actor.get_user_account(ownerPrincipal);
-        
-        if (fetchedUserData) {
-const { profile_picture, ...restUserData } = fetchedUserData[0];
-
-          dispatch(addUserData(restUserData));  
+  
+        // Ensure the principal is defined before using it
+        if (!principal) {
+          console.error("Principal is undefined.");
+          return;
         }
+  
+        const ownerPrincipal = Principal.fromText(principal); // Will throw an error if principal is undefined
+  
+        const fetchedUserData = await actor.get_user_account(ownerPrincipal);
+  
+        if (fetchedUserData) {
+          const { profile_picture, ...restUserData } = fetchedUserData[0];
+          dispatch(addUserData(restUserData));
+        }
+  
         console.log("Fetched user data:", fetchedUserData);
-    } else {
-      setUserRegister(false);
+      } else {
+        setUserRegister(false);
+      }
+    } catch (error) {
+      console.error("Error during user check:", error);
     }
   }
 

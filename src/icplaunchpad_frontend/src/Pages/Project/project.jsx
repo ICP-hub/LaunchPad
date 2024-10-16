@@ -31,7 +31,7 @@ const TokenPage = () => {
       case "About":
         return <ProjectTokenAbout />;
       case "Token":
-        return <Token />;
+        return <Token ledgerId={projectData?.canister_id }/>;
       case "Pool Info":
         return <Pooolinfo />;
       case "Affiliate Program":

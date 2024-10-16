@@ -33,6 +33,16 @@ const VerifyToken = () => {
   // Auth context for actor creation
   const { actor } = useAuth();
 
+  // Function to validate start and end times
+  const validateTimes = (startTime, endTime) => {
+    if (endTime < startTime) {
+      setError('Start time should be less than end time.');
+      return false;
+    }
+    setError('')
+    return true;
+  };
+
   // Function to handle presale submission
   const submitPresaleDetails = async () => {
     try {
@@ -64,9 +74,9 @@ const VerifyToken = () => {
 
       // Prepare presale data
       const presaleData = {
-        listing_rate: parseFloat(presaleRate) || parseFloat(0.4),  // f64
-        min_buy: parseInt(minimumBuy),          // u64
-        max_buy: parseInt(maximumBuy),          // u64
+        listing_rate: parseFloat(presaleRate) || 0.4, // f64
+        min_buy: parseInt(minimumBuy), // u64
+        max_buy: parseInt(maximumBuy), // u64
         start_time_utc,
         end_time_utc,
         website,
@@ -86,7 +96,9 @@ const VerifyToken = () => {
         ? Principal.fromUint8Array(ledger_canister_id)
         : null;
       if (!ledgerPrincipalId) throw new Error('Invalid ledger canister ID');
-      console.log('verify ledgerId--',ledgerPrincipalId, 'presaleData=', presaleData)
+
+      console.log('verify ledgerId:', ledgerPrincipalId, 'presaleData:', presaleData);
+
       // Create actor and submit presale data
       const response = await actor.store_sale_params(ledgerPrincipalId, presaleData);
 
@@ -101,9 +113,8 @@ const VerifyToken = () => {
       console.log('Presale data submitted:', response);
 
       // Navigate to token page on success
-       navigate('/token-page', { state: { ledger_canister_id } });
+      navigate('/token-page', { state: { ledger_canister_id } });
 
-  
     } catch (error) {
       console.error('Error submitting presale data:', error);
       setError('An error occurred while submitting the presale details. Please try again.');
@@ -113,12 +124,14 @@ const VerifyToken = () => {
   // Handle step navigation
   const handleNext = () => {
     if (currentStep < 4) {
+      if (currentStep === 2) {
+        if (!validateTimes(presaleDetails?.startTime, presaleDetails?.endTime)) return;
+      }
       setCurrentStep((prevStep) => prevStep + 1);
-      console.log(presaleDetails)
-      
-      if(currentStep == 1)
-          setPresaleDetails(prev => ({ ...prev, ...formData }))
+      console.log(presaleDetails);
 
+      // Save form data to presale details on the first step
+      if (currentStep === 1) setPresaleDetails((prev) => ({ ...prev, ...formData }));
     } else if (currentStep === 4) {
       submitPresaleDetails();
     }
@@ -136,13 +149,13 @@ const VerifyToken = () => {
       {/* Dynamic Step Content */}
       <div className="w-full max-w-[1070px] mt-8">
         {currentStep === 1 && (
-          <VerifyTokenTab tokenData={formData} setPresaleDetails={setPresaleDetails}  presaleDetails={presaleDetails} />
+          <VerifyTokenTab tokenData={formData} setPresaleDetails={setPresaleDetails} presaleDetails={presaleDetails} />
         )}
         {currentStep === 2 && (
           <LaunchpadInfoTab setPresaleDetails={setPresaleDetails} presaleDetails={presaleDetails} />
         )}
         {currentStep === 3 && (
-          <AdditionalInfoTab setPresaleDetails={setPresaleDetails} presaleDetails={presaleDetails}  />
+          <AdditionalInfoTab setPresaleDetails={setPresaleDetails} presaleDetails={presaleDetails} />
         )}
         {currentStep === 4 && (
           <ReviewInfoTab presaleDetails={presaleDetails} />
