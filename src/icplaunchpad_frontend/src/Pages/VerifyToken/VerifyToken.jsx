@@ -100,7 +100,7 @@ const VerifyToken = () => {
       console.log('verify ledgerId:', ledgerPrincipalId, 'presaleData:', presaleData);
 
       // Create actor and submit presale data
-      const response = await actor.store_sale_params(ledgerPrincipalId, presaleData);
+      const response = await actor.create_sale(ledgerPrincipalId, presaleData);
 
       // Upload token image if available
       if (!response.Err && TokenPicture) {
