@@ -3,7 +3,7 @@ import * as yup from 'yup'; // Import the Yup library for schema validation
 export const validationSchema = yup
   .object() // Define an object schema
   .shape({
-    name: yup
+    full_name: yup
       .string() // full_name must be a string
       .trim('Full name should not have leading or trailing spaces') // Ensures no leading or trailing spaces, with a custom error message
       .strict(true) // Enforces strict trimming: no leading/trailing spaces allowed, will cause validation errors if present
@@ -17,115 +17,7 @@ export const validationSchema = yup
       .max(50, 'Full name cannot be more than 50 characters long') // Maximum length is 50 characters
       .required('Full name is required'), // This field is mandatory
 
-    email: yup
-      .string() // email must be a string
-      .trim('Email should not have leading or trailing spaces') // Ensures no leading or trailing spaces for email
-      .required('Email is required') // Email is mandatory
-      .matches(
-        /^[a-zA-Z0-9]+(?:\.[a-zA-Z0-9]+)*@[a-zA-Z0-9]+\.[a-zA-Z]{2,}(?:\.[a-zA-Z]{2,})?$/,
-        'Invalid Email format' // Email regex pattern to ensure valid email format
-      )
-      .test(
-        'local-part-length',
-        'Email local part should be between 6 and 30 characters',
-        (value) => {
-          if (!value) return true; // Skip if no email provided
-          const [localPart] = value.split('@'); // Get the local part before '@'
-          return localPart.length >= 6 && localPart.length <= 30; // Ensure local part has valid length
-        }
-      )
-      .test(
-        'no-special-chars',
-        'Email should not contain special characters in the local part',
-        (value) => {
-          if (!value) return true;
-          const [localPart] = value.split('@'); // Validate characters in the local part
-          return /^[a-zA-Z0-9]+(?:\.[a-zA-Z0-9]+)*$/.test(localPart); // Only letters, numbers, and periods allowed
-        }
-      )
-      .test('single-at', "Email should contain only one '@'", (value) => {
-        if (!value) return true;
-        return (value.match(/@/g) || []).length === 1; // Ensure only one '@' in the email
-      })
-      .test(
-        'dots-in-domain',
-        'Email should contain 1 or 2 dots in the domain',
-        (value) => {
-          if (!value) return true;
-          const parts = value.split('@'); // Validate the domain part of the email
-          if (parts.length < 2) return false;
-          const domain = parts[1];
-          const dotCount = (domain.match(/\./g) || []).length; // Count dots in the domain
-          return dotCount >= 1 && dotCount <= 2; // Ensure 1 or 2 dots in domain
-        }
-      ),
-
-    links: yup
-      .array() // links must be an array
-      .of(
-        yup.object().shape({
-          link: yup
-            .string() // link must be a string
-            .test(
-              'no-leading-trailing-spaces',
-              'URL should not have leading or trailing spaces',
-              (value) => {
-                return value === value?.trim(); // Ensure no leading/trailing spaces
-              }
-            )
-            .test(
-              'no-invalid-extensions',
-              'URL should not end with .php, .js, or .txt',
-              (value) => {
-                const invalidExtensions = ['.php', '.js', '.txt']; // Restrict certain file types
-                return value
-                  ? !invalidExtensions.some((ext) => value.endsWith(ext))
-                  : true;
-              }
-            )
-            .test('is-website', 'Only website links are allowed', (value) => {
-              if (value) {
-                try {
-                  const url = new URL(value); // Parse the URL to ensure it is valid
-                  const hostname = url.hostname.toLowerCase();
-                  const validExtensions = [
-                    '.com',
-                    '.org',
-                    '.net',
-                    '.in',
-                    '.co',
-                    '.io',
-                    '.gov',
-                  ];
-                  const hasValidExtension = validExtensions.some((ext) =>
-                    hostname.endsWith(ext)
-                  ); // Ensure domain has valid extension
-                  return hasValidExtension;
-                } catch (err) {
-                  return false; // Invalid URL
-                }
-              }
-              return true; // Optional, so valid if not provided
-            })
-            .url('Invalid URL') // Ensures it's a valid URL format
-            .nullable(true) // Allows null value for optional URLs
-            .optional(), // Marks the field as optional
-        })
-      )
-      .max(10, 'You can only add up to 10 links') // Limit the number of links to 10
-      .optional(), // Links are optional
-
-    social_links: yup
-      .array()
-      .of(
-        yup.object().shape({
-          platform: yup.string().required('Platform is required'), // Ensures platform name is required
-          url: yup.string().url('Invalid URL').required('URL is required'), // Validates URL and ensures it's required
-        })
-      )
-      .required('Social links are required'),
-
-    username: yup
+      user_name: yup
       .string() // openchat_user_name must be a string
       .required('Username is required') // Username is mandatory
       .test(
@@ -140,28 +32,87 @@ export const validationSchema = yup
         }
       ),
 
-    image: yup
-      .mixed() // image must be a mixed type (allowing files)
-      .nullable(true) // Allows null value for optional image input
-      .test('fileSize', 'File size max 10MB allowed', (value) => {
-        return !value || (value && value.size <= 10 * 1024 * 1024); // Ensure file size is <= 10MB
-      })
-      .test('fileType', 'Only jpeg, jpg & png file format allowed', (value) => {
-        return (
-          !value ||
-          (value &&
-            ['image/jpeg', 'image/jpg', 'image/png'].includes(value.type)) // Only allow certain image formats
-        );
-      }),
+    // links: yup
+    //   .array() // links must be an array
+    //   .of(
+    //     yup.object().shape({
+    //       link: yup
+    //         .string() // link must be a string
+    //         .test(
+    //           'no-leading-trailing-spaces',
+    //           'URL should not have leading or trailing spaces',
+    //           (value) => {
+    //             return value === value?.trim(); // Ensure no leading/trailing spaces
+    //           }
+    //         )
+    //         .test(
+    //           'no-invalid-extensions',
+    //           'URL should not end with .php, .js, or .txt',
+    //           (value) => {
+    //             const invalidExtensions = ['.php', '.js', '.txt']; // Restrict certain file types
+    //             return value
+    //               ? !invalidExtensions.some((ext) => value.endsWith(ext))
+    //               : true;
+    //           }
+    //         )
+    //         .test('is-website', 'Only website links are allowed', (value) => {
+    //           if (value) {
+    //             try {
+    //               const url = new URL(value); // Parse the URL to ensure it is valid
+    //               const hostname = url.hostname.toLowerCase();
+    //               const validExtensions = [
+    //                 '.com',
+    //                 '.org',
+    //                 '.net',
+    //                 '.in',
+    //                 '.co',
+    //                 '.io',
+    //                 '.gov',
+    //               ];
+    //               const hasValidExtension = validExtensions.some((ext) =>
+    //                 hostname.endsWith(ext)
+    //               ); // Ensure domain has valid extension
+    //               return hasValidExtension;
+    //             } catch (err) {
+    //               return false; // Invalid URL
+    //             }
+    //           }
+    //           return true; // Optional, so valid if not provided
+    //         })
+    //         .url('Invalid URL') // Ensures it's a valid URL format
+    //         .nullable(true) // Allows null value for optional URLs
+    //         .optional(), // Marks the field as optional
+    //     })
+    //   )
+    //   .max(10, 'You can only add up to 10 links') // Limit the number of links to 10
+    //   .optional(), // Links are optional
 
-      tags: yup.array()
-      .of(
-        yup.string()
-          .min(1, 'Each tag must be at least 1 character long.')
-          .max(20, 'Each tag can be at most 20 characters long.')
-      )
-      .min(1, 'You must provide at least 1 tag.')
-      .max(5, 'You can provide up to 5 tags.')
-      .required('Tags are required.'),
+    // social_links: yup
+    //   .array()
+    //   .of(
+    //     yup.object().shape({
+    //       platform: yup.string().required('Platform is required'), // Ensures platform name is required
+    //       url: yup.string().url('Invalid URL').required('URL is required'), // Validates URL and ensures it's required
+    //     })
+    //   )
+    //   .required('Social links are required'),
+
+    // profile_picture: yup
+    //   .mixed() // image must be a mixed type (allowing files)
+    //   .nullable(true) // Allows null value for optional image input
+    //   .test('fileSize', 'File size max 10MB allowed', (value) => {
+    //     return !value || (value && value.size <= 10 * 1024 * 1024); // Ensure file size is <= 10MB
+    //   })
+    //   .test('fileType', 'Only jpeg, jpg & png file format allowed', (value) => {
+    //     return (
+    //       !value ||
+    //       (value &&
+    //         ['image/jpeg', 'image/jpg', 'image/png'].includes(value.type)) // Only allow certain image formats
+    //     );
+    //   }),
+
+    tag: yup
+      .string() // tag must be a string
+      .required('Tag is required'), // Tag is mandatory
   })
   .required(); // Ensures the entire schema is required

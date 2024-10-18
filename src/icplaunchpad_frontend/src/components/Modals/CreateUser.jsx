@@ -2,10 +2,13 @@ import React, { useState, useRef } from 'react';
 import { TfiClose } from "react-icons/tfi";
 import Modal from 'react-modal';
 import { useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';  
 import { useDispatch } from 'react-redux';
 import { Principal } from '@dfinity/principal';
+import { ThreeDots } from "react-loader-spinner";
 
+import { validationSchema } from '../../common/UserValidation';
 import AnimationButton from '../../common/AnimationButton';
 import { useAuth } from '../../StateManagement/useContext/useAuth';
 import { addUserData } from '../../Redux-Config/ReduxSlices/UserSlice';
@@ -13,21 +16,24 @@ import { addUserData } from '../../Redux-Config/ReduxSlices/UserSlice';
 const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const navigate = useNavigate();
   const { actor, principal } = useAuth();
-  const { register, handleSubmit, formState: { errors }, reset } = useForm();
+  
+  const { register, handleSubmit, formState: { errors }, control, reset } = useForm({
+    resolver: yupResolver(validationSchema),
+  });
 
   const [validationError, setValidationError] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [fileName, setFileName] = useState('');
-  const [profilePicture, setProfilePicture] = useState(null);
- const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const dispatch = useDispatch();
   const fileInputRef = useRef(null);
 
   const onSubmit = async (data) => {
-     setIsSubmitting(true);
+    console.log(errors);
+    setIsSubmitting(true);
     setValidationError('');
 
-    const { name, username, social, tag } = data;
+    const { full_name, user_name, links, profile_picture, tag } = data;
 
     if (!termsAccepted) {
       setValidationError("Please accept the terms and conditions.");
@@ -36,39 +42,36 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
     }
 
     try {
-      // Convert profile picture to Uint8Array if exists
+      // Prepare user data
+  
       let profilePictureData = [];
-      if (profilePicture) {
-        profilePictureData = await convertFileToUint8Array(profilePicture);
+      if (profile_picture) {
+        profilePictureData = await convertFileToUint8Array(profile_picture);
       }
 
       const userData = {
-        name,
-        username,
-        profile_picture:
-          profilePictureData.length > 0 ? [profilePictureData] : [],
-        links: [social],
+        name: full_name,
+        username: user_name,
+        profile_picture: profilePictureData.length > 0 ? [profilePictureData] : [],
+        links,
         tag,
       };
 
       // Create the user account
       const response = await actor.create_account(userData);
+      console.log(response)
       if (response?.Err) {
         setValidationError(response.Err);
         setIsSubmitting(false);
         return;
       }
 
-      // Upload profile picture if it exists
+      // Upload profile picture if exists
       if (userData.profile_picture.length > 0) {
         try {
-          const responseImg = await actor.upload_profile_image(
-            "br5f7-7uaaa-aaaaa-qaaca-cai",
-            {
-              content: userData.profile_picture,
-            }
-          );
-          console.log("Profile picture uploaded:", responseImg);
+          await actor.upload_profile_image("br5f7-7uaaa-aaaaa-qaaca-cai", {
+            content: userData.profile_picture,
+          });
         } catch (imgErr) {
           console.error("Error uploading profile picture:", imgErr);
         }
@@ -151,12 +154,10 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               <label className="block mb-2 text-[16px]">Name</label>
               <input
                 type="text"
-                {...register("name", { required: "Name is required" })}
+                {...register("full_name")}
                 className="w-full p-1 pl-4 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
               />
-              {errors.name && (
-                <p className="text-red-500">{errors.name.message}</p>
-              )}
+              {errors.full_name && <p className="text-red-500">{errors.full_name.message}</p>}
             </div>
 
             {/* Username */}
@@ -164,43 +165,57 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               <label className="block mb-2 text-[16px]">Username</label>
               <input
                 type="text"
-                {...register("username", { required: "Username is required" })}
+                {...register("user_name")}
                 className="w-full p-1 pl-4 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
               />
-              {errors.username && (
-                <p className="text-red-500">{errors.username.message}</p>
-              )}
+              {errors.user_name && <p className="text-red-500">{errors.user_name.message}</p>}
             </div>
 
             {/* Profile Picture */}
             <div>
               <label className="block mb-2 text-[16px]">Profile Picture</label>
+              <Controller
+              name='image'
+              control={control}
+              render={({ field }) => (
               <input
                 type="file"
+                name='profile_picture'
                 ref={fileInputRef}
-                onChange={handleFileChange}
+                onChange={(e) => {
+                  field.onChange(e.target.files[0]);
+                  imageCreationFunc(e.target.files[0]);
+                }}
                 style={{ display: "none" }}
               />
-              <div
-                onClick={handleFileUploadClick}
-                className="cursor-pointer flex items-center p-2 bg-[#333333] text-white rounded-md border-b-2"
-              >
+              )}
+              />
+              <div onClick={handleFileUploadClick} className="cursor-pointer flex items-center p-2 bg-[#333333] text-white rounded-md border-b-2">
                 <span className="text-xl font-bold mr-2">+</span>
                 <span>{fileName || "Upload Image"}</span>
               </div>
+
+          
+  
+
             </div>
 
-            {/* Social */}
+            {/* Social Links */}
             <div>
-              <label className="block mb-2 text-[16px]">Social</label>
-              <input
-                type="text"
-                {...register("social", { required: "Social link is required" })}
-                className="w-full p-1 pl-4 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
+              <label className="block mb-2 text-[16px]">Social Links</label>
+              <Controller
+                name="links"
+                control={control}
+                render={({ field }) => (
+                  <input
+                    type="text"
+                    {...field}
+                    onChange={(e) => field.onChange(e.target.value.split(',').map(link => link.trim()))}
+                    className="w-full p-1 pl-4 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
+                  />
+                )}
               />
-              {errors.social && (
-                <p className="text-red-500">{errors.social.message}</p>
-              )}
+              {errors.links && <p className="text-red-500">{errors.links.message}</p>}
             </div>
 
             {/* Tag */}
@@ -208,12 +223,10 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               <label className="block mb-2 text-[16px]">Tag</label>
               <input
                 type="text"
-                {...register("tag", { required: "Tag is required" })}
+                {...register("tag")}
                 className="w-full p-1 pl-4 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
               />
-              {errors.tag && (
-                <p className="text-red-500">{errors.tag.message}</p>
-              )}
+              {errors.tag && <p className="text-red-500">{errors.tag.message}</p>}
             </div>
 
             {/* Terms and Conditions */}
@@ -225,18 +238,10 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
                 onChange={() => setTermsAccepted(!termsAccepted)}
                 className="hidden peer"
               />
-              <div
-                className={`w-4 h-4 border-2 flex items-center justify-center rounded-sm mr-2 cursor-pointer 
-                ${
-                  termsAccepted
-                    ? "border-[#F3B3A7]"
-                    : "border-white bg-transparent"
-                }`}
-              >
-                <label
-                  htmlFor="termsCheckbox"
-                  className="cursor-pointer w-full h-full flex items-center justify-center"
-                >
+              <div className={`w-4 h-4 border-2 flex items-center justify-center rounded-sm mr-2 cursor-pointer ${
+                termsAccepted ? "border-[#F3B3A7]" : "border-white bg-transparent"
+              }`}>
+                <label htmlFor="termsCheckbox" className="cursor-pointer w-full h-full flex items-center justify-center">
                   {termsAccepted && <span className="text-[#F3B3A7]">✓</span>}
                 </label>
               </div>
@@ -245,16 +250,14 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               </p>
             </div>
 
-            {/* Validation Error Message */}
-            {validationError && (
-              <p className="text-red-500 mb-4">{validationError}</p>
-            )}
+            {/* Validation Error */}
+            {validationError && <p className="text-red-500 mb-4">{validationError}</p>}
 
             {/* Submit Button */}
             <div className="flex justify-center items-center">
               <AnimationButton
                 text="Submit"
-                onClick={handleSubmit}
+               
                 loading={isSubmitting}
                 isDisabled={isSubmitting}
               />
