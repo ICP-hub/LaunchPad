@@ -52,7 +52,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
       };
 
       // Create the user account
-      const response = await actor.create_user_account(userData);
+      const response = await actor.create_account(userData);
       if (response?.Err) {
         setValidationError(response.Err);
         setIsSubmitting(false);
@@ -133,13 +133,13 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
         overlayClassName="fixed z-[100] inset-0 bg-opacity-50"
         ariaHideApp={false}
       >
-        <div className="bg-[#222222] p-6 rounded-2xl text-white mx-6 max-h-[100vh] overflow-y-auto no-scrollbar w-[786px] relative">
+        <div className="bg-[#222222] p-6 rounded-2xl text-white mx-6 max-h-[90vh] overflow-y-auto no-scrollbar w-[786px] relative">
           {/* Modal Header */}
           <div className="bg-[#FFFFFF4D] px-4 py-1 mb-4 rounded-2xl relative">
-            <button onClick={closeModal} className="absolute top-2 right-8 text-[30px] text-white">
+            <button onClick={closeModal} className="absolute top-2 right-4 text-[20px] xxs1:text-[30px] text-white">
               <TfiClose />
             </button>
-            <h2 className="text-[20px] font-medium md:text-[25px] md:font-semibold">
+            <h2 className="xxs1:text-[20px] text-[17px] font-medium md:text-[25px] md:font-semibold">
               Create User
             </h2>
           </div>
