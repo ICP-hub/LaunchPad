@@ -1,9 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { TfiClose } from "react-icons/tfi";
 import Modal from 'react-modal';
 import { useNavigate } from 'react-router-dom';
 import { useForm, Controller } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';  
+import { yupResolver } from '@hookform/resolvers/yup';
 import { useDispatch } from 'react-redux';
 import { Principal } from '@dfinity/principal';
 import { ThreeDots } from "react-loader-spinner";
@@ -26,10 +26,8 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const [fileName, setFileName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const dispatch = useDispatch();
-  const fileInputRef = useRef(null);
 
   const onSubmit = async (data) => {
-    console.log(errors);
     setIsSubmitting(true);
     setValidationError('');
 
@@ -43,7 +41,6 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
 
     try {
       // Prepare user data
-  
       let profilePictureData = [];
       if (profile_picture) {
         profilePictureData = await convertFileToUint8Array(profile_picture);
@@ -59,7 +56,6 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
 
       // Create the user account
       const response = await actor.create_account(userData);
-      console.log(response)
       if (response?.Err) {
         setValidationError(response.Err);
         setIsSubmitting(false);
@@ -116,14 +112,8 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
 
   const closeModal = () => setUserModalIsOpen(false);
 
-  const handleFileUploadClick = () => fileInputRef.current.click();
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFileName(file.name);
-      setProfilePicture(file);
-    }
+  const handleFileUploadClick = () => {
+    document.getElementById('profile_picture').click();
   };
 
   return (
@@ -175,29 +165,25 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
             <div>
               <label className="block mb-2 text-[16px]">Profile Picture</label>
               <Controller
-              name='image'
-              control={control}
-              render={({ field }) => (
-              <input
-                type="file"
-                name='profile_picture'
-                ref={fileInputRef}
-                onChange={(e) => {
-                  field.onChange(e.target.files[0]);
-                  imageCreationFunc(e.target.files[0]);
-                }}
-                style={{ display: "none" }}
-              />
-              )}
+                name="profile_picture"
+                control={control}
+                render={({ field }) => (
+                  <input
+                    type="file"
+                    id="profile_picture"
+                    style={{ display: "none" }}
+                    onChange={(e) => {
+                      field.onChange(e.target.files[0]);
+                      setFileName(e.target.files[0]?.name || "");
+                    }}
+                  />
+                )}
               />
               <div onClick={handleFileUploadClick} className="cursor-pointer flex items-center p-2 bg-[#333333] text-white rounded-md border-b-2">
                 <span className="text-xl font-bold mr-2">+</span>
                 <span>{fileName || "Upload Image"}</span>
               </div>
-
-          
-  
-
+              {errors.profile_picture && <p className="text-red-500">{errors.profile_picture.message}</p>}
             </div>
 
             {/* Social Links */}

@@ -97,19 +97,19 @@ export const validationSchema = yup
     //   )
     //   .required('Social links are required'),
 
-    // profile_picture: yup
-    //   .mixed() // image must be a mixed type (allowing files)
-    //   .nullable(true) // Allows null value for optional image input
-    //   .test('fileSize', 'File size max 10MB allowed', (value) => {
-    //     return !value || (value && value.size <= 10 * 1024 * 1024); // Ensure file size is <= 10MB
-    //   })
-    //   .test('fileType', 'Only jpeg, jpg & png file format allowed', (value) => {
-    //     return (
-    //       !value ||
-    //       (value &&
-    //         ['image/jpeg', 'image/jpg', 'image/png'].includes(value.type)) // Only allow certain image formats
-    //     );
-    //   }),
+    profile_picture: yup
+      .mixed() // image must be a mixed type (allowing files)
+      .nullable(true) // Allows null value for optional image input
+      .test('fileSize', 'File size max 10MB allowed', (value) => {
+        return !value || (value && value.size <= 10 * 1024 * 1024); // Ensure file size is <= 10MB
+      })
+      .test('fileType', 'Only jpeg, jpg & png file format allowed', (value) => {
+        return (
+          !value ||
+          (value &&
+            ['image/jpeg', 'image/jpg', 'image/png'].includes(value.type)) // Only allow certain image formats
+        );
+      }),
 
     tag: yup
       .string() // tag must be a string
