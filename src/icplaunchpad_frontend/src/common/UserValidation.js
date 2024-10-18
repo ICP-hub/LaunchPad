@@ -162,6 +162,6 @@ export const validationSchema = yup
       )
       .min(1, 'You must provide at least 1 tag.')
       .max(5, 'You can provide up to 5 tags.')
-      .required('Tags are required.'),
+      .required('Tags are required'),
   })
   .required(); // Ensures the entire schema is required
