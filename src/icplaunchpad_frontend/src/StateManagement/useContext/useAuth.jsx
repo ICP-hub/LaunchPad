@@ -33,22 +33,23 @@ export const AuthProvider = ({ children }) => {
     const initializeAuth = async () => {
       try {
         const client = await AuthClient.create();
+
         console.log('initialize client',client)
+
         const nfidInstance = await NFID.init({
           application: "test",
           logo: "https://dev.nfid.one/static/media/id.300eb72f3335b50f5653a7d6ad5467b3.svg",
         });
         setNfid(nfidInstance);
+
         setAuthClient(client);
-        // if (await client.isAuthenticated()) {
-        //   reloadLogin(client);
-        // }
       } catch (error) {
         console.error("Failed to initialize authentication:", error);
       }
     };
     initializeAuth();
   }, []);
+
   useEffect(()=>{
     reloadLogin()
   },[authClient])
@@ -59,9 +60,6 @@ export const AuthProvider = ({ children }) => {
       navigator.userAgent.indexOf("Chrome") === -1
     );
   };
-
-
- 
   const authenticateWithII = async () => {
     try {
       await authClient.login({
@@ -79,6 +77,7 @@ export const AuthProvider = ({ children }) => {
           setIsAuthenticated(true);
   
           const principal = authClient.getIdentity().getPrincipal().toText();
+
           const identity = authClient.getIdentity();
           const isAuthenticated = authClient.isAuthenticated();
   
@@ -134,6 +133,7 @@ export const AuthProvider = ({ children }) => {
       // Call updateClient for NFID
       updateClient(delegationIdentity, "NFID");
       localStorage.setItem("walletType", "NFID");
+
     } catch (error) {
       console.error("NFID login failed:", error);
       if (error.message.includes("subnet")) {
@@ -187,7 +187,6 @@ export const AuthProvider = ({ children }) => {
         const principalText = agent.getPrincipal().toText();
         const isAuthenticated = await window.ic.plug.isConnected();
         const accountId = await window.ic.plug.accountId;
-  
         setPrincipal(principalText);
         setDefaultIdentity(accountId);
         dispatch(
@@ -199,7 +198,6 @@ export const AuthProvider = ({ children }) => {
         );
         dispatch(setActor(actor));
       } else {
-        // Desktop Plug Wallet login logic
         if (!window.ic || !window.ic.plug) {
           console.error("Plug Wallet is not available on window.ic.");
           return;
@@ -226,7 +224,6 @@ export const AuthProvider = ({ children }) => {
             updateClient(agent, "Plug");
             localStorage.setItem("walletType", "Plug");
           }
-  
           setActorState(backendActor);
           setPrincipal(principal.toText());
           setDefaultIdentity(accountId);
@@ -248,7 +245,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
   
-
   async function updateClient(clientOrAgent, walletType = "authClient") {
     console.log('update client', clientOrAgent);
   
@@ -363,11 +359,11 @@ export const AuthProvider = ({ children }) => {
   
   
 
+
   const logout = async () => {
     try {
       if (authClient) {
         await authClient.logout();
-        
       }
       setIsAuthenticated(false);
       setPrincipal(null);
@@ -379,10 +375,12 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  
+
   const host = "http://127.0.0.1:4943/";
   const createCustomActor = async (canisterId) => {
     try {
+      console.log("Identity value before agent creation:", defaultidentity);
+      console.log("Creating actor for canister ID:", canisterId);
   
       const agent = new HttpAgent({ defaultidentity, host });
   
@@ -396,6 +394,7 @@ export const AuthProvider = ({ children }) => {
       }
   
       const ledgerActor = Actor.createActor(ledgerIDL, { agent, canisterId });
+      console.log("Created ledger actor:", ledgerActor);
       return ledgerActor;
     } catch (err) {
       console.error("Error creating ledger actor:", err);
@@ -427,4 +426,3 @@ export const AuthProvider = ({ children }) => {
 
 // Custom Hook for easier access to the AuthContext
 export const useAuth = () => useContext(AuthContext);
-
