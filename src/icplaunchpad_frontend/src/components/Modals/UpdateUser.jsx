@@ -149,7 +149,7 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               <label className="block mb-2 text-[16px]">Name</label>
               <input
                 type="text"
-                {...register('full_name')} // Use 'full_name' from the validation schema
+                {...register('name')} // Use 'full_name' from the validation schema
                 className="w-full p-2 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
               />
               {errors.full_name && <p className="text-red-500">{errors.full_name.message}</p>} {/* Update error handling */}
@@ -185,7 +185,7 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
                 {...register('links')}
                 className="w-full p-2 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
               />
-              {errors.links && <p className="text-red-500">{errors.links.message}</p>}
+              {errors.social_links && <p className="text-red-500">{errors.social_links.message}</p>}
             </div>
 
             {/* Tag */}
@@ -196,7 +196,7 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
                 {...register('tag')}
                 className="w-full p-2 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
               />
-              {errors.tag && <p className="text-red-500">{errors.tag.message}</p>}
+              {errors.tags && <p className="text-red-500">{errors.tags.message}</p>}
             </div>
 
             {/* Terms and Conditions */}
