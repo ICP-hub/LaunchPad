@@ -3,7 +3,7 @@ import * as yup from 'yup'; // Import the Yup library for schema validation
 export const validationSchema = yup
   .object() // Define an object schema
   .shape({
-    full_name: yup
+    name: yup
       .string() // full_name must be a string
       .trim('Full name should not have leading or trailing spaces') // Ensures no leading or trailing spaces, with a custom error message
       .strict(true) // Enforces strict trimming: no leading/trailing spaces allowed, will cause validation errors if present
@@ -125,7 +125,7 @@ export const validationSchema = yup
       )
       .required('Social links are required'),
 
-    openchat_user_name: yup
+    username: yup
       .string() // openchat_user_name must be a string
       .required('Username is required') // Username is mandatory
       .test(
@@ -139,45 +139,6 @@ export const validationSchema = yup
           return isValidLength && isValidFormat && noSpaces;
         }
       ),
-
-    bio: yup
-      .string() // bio must be a string
-      .required('This field is required') // Bio is mandatory
-      .test(
-        'maxWords',
-        'Bio must not exceed 50 words',
-        (value) =>
-          !value || value.trim().split(/\s+/).filter(Boolean).length <= 50 // Limit words to 50
-      )
-      .test(
-        'no-leading-spaces',
-        'Bio should not have leading spaces',
-        (value) => !value || value.trimStart() === value // No leading spaces allowed
-      )
-      .test(
-        'maxChars',
-        'Bio must not exceed 500 characters',
-        (value) => !value || value.length <= 500 // Limit characters to 500
-      ),
-
-    country: yup
-      .string() // country must be a string
-      .required('You must select at least one option'), // Country is mandatory
-
-    domains_interested_in: yup
-      .string() // domains_interested_in must be a string
-      .required('Selecting an interest is required'), // Interest selection is mandatory
-
-    type_of_profile: yup
-      .string() // type_of_profile must be a string
-      .required('You must select at least one option'), // Profile type is mandatory
-
-    reasons_to_join_platform: yup
-      .string() // reasons_to_join_platform must be a string
-      .test('is-non-empty', 'Selecting a reason is required', (value) =>
-        /\S/.test(value) // Ensure the field is non-empty (even after trimming)
-      )
-      .required('Selecting a reason is required'), // Reason is mandatory
 
     image: yup
       .mixed() // image must be a mixed type (allowing files)
@@ -193,8 +154,14 @@ export const validationSchema = yup
         );
       }),
 
-    tag: yup
-      .string() // tag must be a string
-      .required('Tag is required'), // Tag is mandatory
+      tags: yup.array()
+      .of(
+        yup.string()
+          .min(1, 'Each tag must be at least 1 character long.')
+          .max(20, 'Each tag can be at most 20 characters long.')
+      )
+      .min(1, 'You must provide at least 1 tag.')
+      .max(5, 'You can provide up to 5 tags.')
+      .required('Tags are required.'),
   })
   .required(); // Ensures the entire schema is required
