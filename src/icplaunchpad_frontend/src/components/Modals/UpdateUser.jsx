@@ -149,7 +149,7 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               <label className="block mb-2 text-[16px]">Name</label>
               <input
                 type="text"
-                {...register('name')} // Use 'full_name' from the validation schema
+                {...register('full_name')} // Use 'full_name' from the validation schema
                 className="w-full p-2 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
               />
               {errors.full_name && <p className="text-red-500">{errors.full_name.message}</p>} {/* Update error handling */}
@@ -160,10 +160,10 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               <label className="block mb-2 text-[16px]">Username</label>
               <input
                 type="text"
-                {...register('username')}
+                {...register('user_name')}
                 className="w-full p-2 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
               />
-              {errors.username && <p className="text-red-500">{errors.username.message}</p>}
+              {errors.user_name && <p className="text-red-500">{errors.user_name.message}</p>}
             </div>
 
             {/* Profile Picture */}
@@ -182,7 +182,7 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               <label className="block mb-2 text-[16px]">Social Links</label>
               <input
                 type="text"
-                {...register('links')}
+                {...register('social_links')}
                 className="w-full p-2 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
               />
               {errors.social_links && <p className="text-red-500">{errors.social_links.message}</p>}
@@ -196,7 +196,7 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
                 {...register('tag')}
                 className="w-full p-2 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
               />
-              {errors.tags && <p className="text-red-500">{errors.tags.message}</p>}
+              {errors.tag && <p className="text-red-500">{errors.tag.message}</p>}
             </div>
 
             {/* Terms and Conditions */}
