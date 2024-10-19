@@ -2,15 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { TfiClose } from 'react-icons/tfi';
 import Modal from 'react-modal';
 import AnimationButton from '../../common/AnimationButton';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { useAuth } from '../../StateManagement/useContext/useAuth';
 import { useDispatch } from 'react-redux';
 import { addUserData } from '../../Redux-Config/ReduxSlices/UserSlice';
 import { Principal } from '@dfinity/principal';
+import { validationSchema } from '../../common/UserValidation'; // Adjust this import path
 
 const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const { actor, principal, isAuthenticated } = useAuth();
-  const { register, handleSubmit, formState: { errors }, reset } = useForm();
   const dispatch = useDispatch();
 
   const [validationError, setValidationError] = useState('');
@@ -19,6 +20,11 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const userPrincipal = Principal.fromText(principal);
+
+  // Integrate Yup validation schema
+  const { register, handleSubmit, formState: { errors }, reset } = useForm({
+    resolver: yupResolver(validationSchema), // Use the Yup validation schema
+  });
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -143,10 +149,10 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               <label className="block mb-2 text-[16px]">Name</label>
               <input
                 type="text"
-                {...register('name', { required: 'Name is required' })}
+                {...register('full_name')} // Use 'full_name' from the validation schema
                 className="w-full p-2 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
               />
-              {errors.name && <p className="text-red-500">{errors.name.message}</p>}
+              {errors.full_name && <p className="text-red-500">{errors.full_name.message}</p>} {/* Update error handling */}
             </div>
 
             {/* Username */}
@@ -154,10 +160,10 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               <label className="block mb-2 text-[16px]">Username</label>
               <input
                 type="text"
-                {...register('username', { required: 'Username is required' })}
+                {...register('user_name')}
                 className="w-full p-2 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
               />
-              {errors.username && <p className="text-red-500">{errors.username.message}</p>}
+              {errors.user_name && <p className="text-red-500">{errors.user_name.message}</p>}
             </div>
 
             {/* Profile Picture */}
@@ -165,9 +171,10 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               <label className="block mb-2 text-[16px]">Profile Picture</label>
               <input
                 type="file"
-                {...register('profile')}
+                {...register('image')} // Update to use 'image' from validation schema
                 className="w-full p-2 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
               />
+              {errors.image && <p className="text-red-500">{errors.image.message}</p>} {/* Add error handling for image */}
             </div>
 
             {/* Social Links */}
@@ -175,10 +182,10 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               <label className="block mb-2 text-[16px]">Social Links</label>
               <input
                 type="text"
-                {...register('links', { required: 'At least one social link is required' })}
+                {...register('social_links')}
                 className="w-full p-2 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
               />
-              {errors.links && <p className="text-red-500">{errors.links.message}</p>}
+              {errors.social_links && <p className="text-red-500">{errors.social_links.message}</p>}
             </div>
 
             {/* Tag */}
@@ -186,7 +193,7 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               <label className="block mb-2 text-[16px]">Tag</label>
               <input
                 type="text"
-                {...register('tag', { required: 'Tag is required' })}
+                {...register('tag')}
                 className="w-full p-2 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
               />
               {errors.tag && <p className="text-red-500">{errors.tag.message}</p>}
