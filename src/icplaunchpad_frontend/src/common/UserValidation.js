@@ -3,7 +3,7 @@ import * as yup from 'yup'; // Import the Yup library for schema validation
 export const validationSchema = yup
   .object() // Define an object schema
   .shape({
-    full_name: yup
+    name: yup
       .string() // full_name must be a string
       .trim('Full name should not have leading or trailing spaces') // Ensures no leading or trailing spaces, with a custom error message
       .strict(true) // Enforces strict trimming: no leading/trailing spaces allowed, will cause validation errors if present
@@ -17,7 +17,7 @@ export const validationSchema = yup
       .max(50, 'Full name cannot be more than 50 characters long') // Maximum length is 50 characters
       .required('Full name is required'), // This field is mandatory
 
-      user_name: yup
+      username: yup
       .string() // openchat_user_name must be a string
       .required('Username is required') // Username is mandatory
       .test(

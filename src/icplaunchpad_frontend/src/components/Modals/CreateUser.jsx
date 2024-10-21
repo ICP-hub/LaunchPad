@@ -147,7 +147,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
                 {...register("name")}
                 className="w-full p-1 pl-4 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
               />
-              {errors.full_name && <p className="text-red-500">{errors.full_name.message}</p>}
+              {errors.name && <p className="text-red-500">{errors.name.message}</p>}
             </div>
 
             {/* Username */}
@@ -158,7 +158,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
                 {...register("username")}
                 className="w-full p-1 pl-4 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
               />
-              {errors.user_name && <p className="text-red-500">{errors.user_name.message}</p>}
+              {errors.username && <p className="text-red-500">{errors.username.message}</p>}
             </div>
 
             {/* Profile Picture */}

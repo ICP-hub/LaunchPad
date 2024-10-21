@@ -152,7 +152,7 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
                 {...register('name')} // Use 'full_name' from the validation schema
                 className="w-full p-2 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
               />
-              {errors.full_name && <p className="text-red-500">{errors.full_name.message}</p>} {/* Update error handling */}
+              {errors.name && <p className="text-red-500">{errors.name.message}</p>} {/* Update error handling */}
             </div>
 
             {/* Username */}
@@ -163,7 +163,7 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
                 {...register('username')}
                 className="w-full p-2 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
               />
-              {errors.user_name && <p className="text-red-500">{errors.user_name.message}</p>}
+              {errors.username && <p className="text-red-500">{errors.username.message}</p>}
             </div>
 
             {/* Profile Picture */}
