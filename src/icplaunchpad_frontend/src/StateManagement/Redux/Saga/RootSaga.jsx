@@ -4,6 +4,8 @@ import { internetIdentitySaga } from './InternetIdentitySaga';
 import { actorSaga } from './actorBindSaga';
 
 import { fetchUserSaga } from './userSaga';
+import { fetchUpcomingSalesSaga } from './UpcomingSalesSaga';
+import { fetchTokensInfoSaga } from './TokensInfoSaga';
 
 export default function* rootSaga() {
   yield all([
@@ -11,5 +13,7 @@ export default function* rootSaga() {
     internetIdentitySaga(),
     actorSaga(),
     fetchUserSaga(),
+    fetchUpcomingSalesSaga,
+    fetchTokensInfoSaga
   ]);
 }
