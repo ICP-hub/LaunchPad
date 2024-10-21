@@ -87,15 +87,15 @@ export const validationSchema = yup
     //   .max(10, 'You can only add up to 10 links') // Limit the number of links to 10
     //   .optional(), // Links are optional
 
-    // social_links: yup
-    //   .array()
-    //   .of(
-    //     yup.object().shape({
-    //       platform: yup.string().required('Platform is required'), // Ensures platform name is required
-    //       url: yup.string().url('Invalid URL').required('URL is required'), // Validates URL and ensures it's required
-    //     })
-    //   )
-    //   .required('Social links are required'),
+    links: yup
+      .array()
+      .of(
+        yup.object().shape({
+          platform: yup.string().required('Platform is required'), // Ensures platform name is required
+          url: yup.string().url('Invalid URL').required('URL is required'), // Validates URL and ensures it's required
+        })
+      )
+      .required('Social links are required'),
 
     profile_picture: yup
       .mixed() // image must be a mixed type (allowing files)
@@ -111,8 +111,15 @@ export const validationSchema = yup
         );
       }),
 
-    tag: yup
-      .string() // tag must be a string
-      .required('Tag is required'), // Tag is mandatory
-  })
-  .required(); // Ensures the entire schema is required
+
+   tags: yup.array()
+    .of(
+      yup.string()
+        .min(1, 'Each tag must be at least 1 character long.')
+        .max(20, 'Each tag can be at most 20 characters long.')
+    )
+    .min(1, 'You must provide at least 1 tag.')
+    .max(5, 'You can provide up to 5 tags.')
+    .required('Tags are required.'),
+});
+

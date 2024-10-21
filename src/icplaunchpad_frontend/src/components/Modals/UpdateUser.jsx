@@ -57,7 +57,7 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
     setIsSubmitting(true);
     setValidationError('');
 
-    const { name, username, profile, links, tag } = data;
+    const { name, username, profile, links, tags } = data;
 
     if (!termsAccepted) {
       setIsSubmitting(false);
@@ -81,7 +81,7 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
         username,
         profile_picture: profilePicture?.length ? [profilePicture] : [],
         links: linksArray,
-        tag,
+        tag:tags,
       };
 
       const response = await actor.update_user_account(userPrincipal, updatedUserData);
@@ -193,10 +193,10 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               <label className="block mb-2 text-[16px]">Tag</label>
               <input
                 type="text"
-                {...register('tag')}
+                {...register('tags')}
                 className="w-full p-2 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
               />
-              {errors.tag && <p className="text-red-500">{errors.tag.message}</p>}
+              {errors.tags && <p className="text-red-500">{errors.tags.message}</p>}
             </div>
 
             {/* Terms and Conditions */}

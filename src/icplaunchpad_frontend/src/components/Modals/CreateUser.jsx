@@ -31,7 +31,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
     setIsSubmitting(true);
     setValidationError('');
 
-    const { name, username, links, profile_picture, tag } = data;
+    const { name, username, links, profile_picture, tags } = data;
 
     if (!termsAccepted) {
       setValidationError("Please accept the terms and conditions.");
@@ -51,7 +51,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
         username: username,
         profile_picture: profilePictureData.length > 0 ? [profilePictureData] : [],
         links,
-        tag,
+        tag:tags,
       };
 
       // Create the user account
@@ -209,7 +209,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               <label className="block mb-2 text-[16px]">Tag</label>
               <input
                 type="text"
-                {...register("tag")}
+                {...register("tags")}
                 className="w-full p-1 pl-4 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
               />
               {errors.tag && <p className="text-red-500">{errors.tag.message}</p>}
