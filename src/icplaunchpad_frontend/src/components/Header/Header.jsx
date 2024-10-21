@@ -24,6 +24,7 @@ const Header = () => {
   const [userUpdateIsOpen, setUserUpdateIsOpen] = useState(false);
 
   const [searchText, setSearchText] = useState("");
+  const [tokenData,setTokenData]=useState(null);
   const [menuOpen, setMenuOpen] = useState(false); // State to toggle hamburger menu
   const [isOpen, setIsOpen] = useState(false);
   const [profileModalIsOpen, setProfileModalIsOpen] = useState(false); // State for ProfileCard modal
@@ -33,45 +34,45 @@ const Header = () => {
   // const [userData, setUserData] = useState(null);
   const [images, setImages] = useState(null);
 
-  const { isAuthenticated, principal,actor } = useAuth();
-  const dispatch =useDispatch();
+  const { isAuthenticated, principal, actor } = useAuth();
+  const dispatch = useDispatch();
   const userData = useSelector((state) => state.user);
 
   useEffect(() => {
-    if(isAuthenticated)
-        userCheck();
+    if (isAuthenticated)
+      userCheck();
   }, [isAuthenticated]);
 
   async function userCheck() {
     try {
       console.log("actor---", actor);
-      
+
       // Ensure that actor is defined
       if (!actor) {
         console.error("Actor is undefined.");
         return;
       }
-  
+
       const response = await actor.is_account_created();
       console.log("Account creation response:", response);
-  
+
       const resultResponse = response.slice(-16);
-      
+
       if (resultResponse === "already created.") {
         setUserRegister(true);
-  
+
         // Ensure the principal is defined before using it
         if (!principal) {
           console.error("Principal is undefined. Cannot fetch user account.");
           return;
-        } else{
+        } else {
           console.error("pricipal is defined")
         }
-  
+
         try {
           const ownerPrincipal = Principal.fromText(principal); // Handle case where principal could be invalid or undefined
           const fetchedUserData = await actor.get_user_account(ownerPrincipal);
-  
+
           if (fetchedUserData) {
             const { profile_picture, ...restUserData } = fetchedUserData[0];
             dispatch(addUserData(restUserData));
@@ -82,7 +83,7 @@ const Header = () => {
         } catch (error) {
           console.error("Error converting principal:", error);
         }
-  
+
       } else {
         setUserRegister(false);
         console.log("User account not created yet.");
@@ -91,7 +92,16 @@ const Header = () => {
       console.error("Error during user check:", error);
     }
   }
-  
+
+// fetch token data by search field
+  const handleFetchToken = async () => {
+    // logic for fetching data
+    if(isAuthenticated && searchText.length > 0){
+    const data = await actor.search_by_token_name_or_symbol(searchText);
+    console.log("token searched data=",data);
+    setTokenData(data);
+    }
+  }
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -107,7 +117,7 @@ const Header = () => {
 
   const openUserModal = () => {
     setUserUpdateIsOpen(true);
-  };  
+  };
 
   const handleSearchClick = () => {
     setIsSearching(true);
@@ -153,273 +163,285 @@ const Header = () => {
           )}
         </div>
 
-    <div className="flex items-center">
-      <img
-        src={logo}
-        alt="Internet Identity"
-        className=" h-[20px]  ss2:h-[24px] md:h-[25px] lg:w-[150px] dlg:w-[170px] lg1:w-[160px] lgx:w-[220px] lgx:h-[30px] dxl:w-[190px] dxl:h-[30px]  "
-        draggable="false"
-      />
-    </div>
-
-    <div className="hidden  ml-2 md:flex lgx:px-10 lgx:mr-[28%]  md:mr-[20%] lg:text-[18px] md:text-[17px] lgx:text-[20px] md:gap-[20px] lg:gap-[25px] dxl:gap-[50px]">
-      <Link
-        to="/"
-        onClick={() => handleSectionClick("home")}
-        className={`relative inline-block decoration-pink-400 underline-offset-8 ${
-          activeSection === "home" && (
-            <span className="absolute left-0 bottom-0 w-full h-[1px] bg-gradient-to-r from-[#f09787]  to-[#CACCF5]"></span>
-          )
-        }`}
-      >
-        {activeSection === "home" ? (
-          <GradientText>Home</GradientText>
-        ) : (
-          "Home"
-        )}
-        {activeSection === "home" && (
-          <span className="absolute left-0 bottom-0 w-full h-[1px] bg-gradient-to-r from-[#f09787]  to-[#CACCF5]"></span>
-        )}
-      </Link>
-
-      <Link
-        to="/projects"
-        onClick={() => handleSectionClick("project")}
-        className={`relative inline-block   ${
-          activeSection === "project" && (
-            <span className="absolute left-0 bottom-0 w-full h-[1px] bg-gradient-to-r from-[#f09787]  to-[#CACCF5]"></span>
-          )
-        }`}
-      >
-        {activeSection === "project" ? (
-          <GradientText>Projects</GradientText>
-        ) : (
-          "Projects"
-        )}
-        {activeSection === "project" && (
-          <span className="absolute left-0 bottom-0 w-full h-[1px] bg-gradient-to-r from-[#f09787]  to-[#CACCF5]"></span>
-        )}
-      </Link>
-
-      <Link
-        to="/LaunchCoin"
-        onClick={() => handleSectionClick("coin")}
-        className={`relative inline-block whitespace-nowrap decoration-pink-400 underline-offset-8 ${
-          activeSection === "coin" && (
-            <span className="absolute left-0 bottom-0 w-full h-[1px] bg-gradient-to-r from-[#f09787]  to-[#CACCF5]"></span>
-          )
-        }`}
-      >
-        {activeSection === "coin" ? (
-          <GradientText>Launch a Coin</GradientText>
-        ) : (
-          "Launch a Coin"
-        )}
-        {activeSection === "coin" && (
-          <span className="absolute left-0 bottom-0 w-full h-[1px] bg-gradient-to-r from-[#f09787]  to-[#CACCF5]"></span>
-        )}
-      </Link>
-    </div>
-
-    <div className="relative flex items-center">
-      <IoSearch
-        onClick={handleSearchClick}
-        className={`cursor-pointer mr-2  ${
-          !isSearching ? "visible" : "invisible"
-        }`}
-        size={24}
-      />
-
-      {isSearching && (
-        <div className="flex items-center absolute h-[35px]  lg:mr-3 rounded-lg w-[80vw] right-0 md:w-[150px] lg:w-[245px] xl:w-[380px]  bg-[#222222] sm4:right-[23px] lg:right-[-25px] dlg:right-[5px] md:py-[2px]">
-          <input
-            type="text"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            placeholder="Search..."
-            className="bg-transparent pl-3 w-full focus:outline-none text-white"
-          />
-          <IoClose
-            onClick={handleClearSearch}
-            className="text-gray-500 mr-2 cursor-pointer"
-            size={24}
+        <div className="flex items-center">
+          <img
+            src={logo}
+            alt="Internet Identity"
+            className=" h-[20px]  ss2:h-[24px] md:h-[25px] lg:w-[150px] dlg:w-[170px] lg1:w-[160px] lgx:w-[220px] lgx:h-[30px] dxl:w-[190px] dxl:h-[30px]  "
+            draggable="false"
           />
         </div>
-      )}
-    </div>
 
-    {/* Connect Wallet Button for screens above 768px */}
+        <div className="hidden  ml-2 md:flex lgx:px-10 lgx:mr-[28%]  md:mr-[20%] lg:text-[18px] md:text-[17px] lgx:text-[20px] md:gap-[20px] lg:gap-[25px] dxl:gap-[50px]">
+          <Link
+            to="/"
+            onClick={() => handleSectionClick("home")}
+            className={`relative inline-block decoration-pink-400 underline-offset-8 ${activeSection === "home" && (
+                <span className="absolute left-0 bottom-0 w-full h-[1px] bg-gradient-to-r from-[#f09787]  to-[#CACCF5]"></span>
+              )
+              }`}
+          >
+            {activeSection === "home" ? (
+              <GradientText>Home</GradientText>
+            ) : (
+              "Home"
+            )}
+            {activeSection === "home" && (
+              <span className="absolute left-0 bottom-0 w-full h-[1px] bg-gradient-to-r from-[#f09787]  to-[#CACCF5]"></span>
+            )}
+          </Link>
 
-    {!isAuthenticated && (
-      <div className="hidden font-posterama md:block">
-        <button
-          onClick={openModal}
-          className="w-[120px] md:w-[150px] lg:w-[190px] h-[25px] lg:h-[32px] 
+          <Link
+            to="/projects"
+            onClick={() => handleSectionClick("project")}
+            className={`relative inline-block   ${activeSection === "project" && (
+                <span className="absolute left-0 bottom-0 w-full h-[1px] bg-gradient-to-r from-[#f09787]  to-[#CACCF5]"></span>
+              )
+              }`}
+          >
+            {activeSection === "project" ? (
+              <GradientText>Projects</GradientText>
+            ) : (
+              "Projects"
+            )}
+            {activeSection === "project" && (
+              <span className="absolute left-0 bottom-0 w-full h-[1px] bg-gradient-to-r from-[#f09787]  to-[#CACCF5]"></span>
+            )}
+          </Link>
+
+          <Link
+            to="/LaunchCoin"
+            onClick={() => handleSectionClick("coin")}
+            className={`relative inline-block whitespace-nowrap decoration-pink-400 underline-offset-8 ${activeSection === "coin" && (
+                <span className="absolute left-0 bottom-0 w-full h-[1px] bg-gradient-to-r from-[#f09787]  to-[#CACCF5]"></span>
+              )
+              }`}
+          >
+            {activeSection === "coin" ? (
+              <GradientText>Launch a Coin</GradientText>
+            ) : (
+              "Launch a Coin"
+            )}
+            {activeSection === "coin" && (
+              <span className="absolute left-0 bottom-0 w-full h-[1px] bg-gradient-to-r from-[#f09787]  to-[#CACCF5]"></span>
+            )}
+          </Link>
+        </div>
+
+        <div className="relative flex items-center">
+          <IoSearch
+            onClick={handleSearchClick}
+            className={`cursor-pointer mr-2  ${!isSearching ? "visible" : "invisible"
+              }`}
+            size={24}
+          />
+
+          {isSearching && (
+            <div className=" -mt-8">
+              <div className="flex items-center absolute h-[35px]  lg:mr-3 rounded-lg w-[80vw] right-0 md:w-[150px] lg:w-[245px] xl:w-[380px]  bg-[#222222] sm4:right-[23px] lg:right-[-25px] dlg:right-[5px] md:py-[2px]">
+                <input
+                  type="text"
+                  value={searchText}
+                  onChange={(e) => setSearchText(e.target.value)}
+                  placeholder="Search..."
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleFetchToken(); // Call the function when "Enter" is pressed
+                    }
+                  }}
+                  className="bg-transparent pl-3 w-full focus:outline-none text-white"
+                />
+
+                <IoClose
+                  onClick={handleClearSearch}
+                  className="text-gray-500 mr-2 cursor-pointer"
+                  size={24}
+                />
+              </div>
+
+              {tokenData && tokenData.length > 0 && <div className=" flex items-center justify-center   absolute min-h-[25px] border-2 border-pink-500 lg:mr-3 rounded-lg w-[80vw] top-10 right-0 md:w-[150px] lg:w-[245px] xl:w-[380px]  bg-[#222222] sm4:right-[23px] lg:right-[-25px] dlg:right-[5px] md:py-[2px] ">
+                <ul>
+                  {tokenData?.map((data, index) => <li key={index}> {data.token_name} </li>)}
+                </ul>
+              </div>
+              }
+            </div>
+          )}
+        </div>
+
+
+        {/* Connect Wallet Button for screens above 768px */}
+
+        {!isAuthenticated && (
+          <div className="hidden font-posterama md:block">
+            <button
+              onClick={openModal}
+              className="w-[120px] md:w-[150px] lg:w-[190px] h-[25px] lg:h-[32px] 
         dxl:h-[35px] text-[10px] md:text-[15px] dlg:text-[19px] font-[400] items-center justify-center  rounded-xl p-[1.5px] bg-gradient-to-r from-[#f09787]  to-[#CACCF5]"
-        >
-          <div className="bg-gray-950 w-full h-full  rounded-xl flex items-center justify-center ">
-            Connect Wallet
-          </div>
-        </button>
-        <ConnectWallets
-          modalIsOpen={modalIsOpen}
-          setModalIsOpen={setModalIsOpen}
-        />
-      </div>
-    )}
-
-    {/* User Info */}
-    {isAuthenticated && (
-      <div className=" hidden md:inline-block relative  rounded-2xl bg-gradient-to-r  from-[#f09787] to-[#CACCF5] text-left p-[1.5px]">
-        <button
-          onClick={toggleDropdown}
-          className="flex items-center text-white rounded-full"
-        >
-          <div className="bg-black h-full w-full rounded-2xl flex items-center p-1 px-3">
-            <FaUser className="mr-2" />
-            <div className="flex flex-col items-start w-24 h-8 lg:w-40 lg:h-full ">
-              <span className="text-sm">
-                {userData ? userData.username : "ABCD"}
-              </span>
-              <span className=" text-[10px] lg:text-xs text-gray-400 w-full overflow-hidden whitespace-nowrap text-ellipsis">
-                {principal}
-              </span>
-            </div>
-            <BsThreeDotsVertical className="ml-2" />
-          </div>
-        </button>
-
-        {/* Dropdown menu */}
-        {isOpen && (
-          <div className="absolute right-0 mt-2 font-posterama w-48 bg-[#222222] rounded-md z-50">
-            <div className="py-2 px-2">
-              <div className="hidden border-b md:block">
-                <button
-                  onClick={openProfileModal}
-                  className="block px-4 py-2 text-[18px] "
-                >
-                  Account
-                </button>
-                <ProfileCard
-                  profileModalIsOpen={profileModalIsOpen}
-                  setProfileModalIsOpen={setProfileModalIsOpen}
-                />
+            >
+              <div className="bg-gray-950 w-full h-full  rounded-xl flex items-center justify-center ">
+                Connect Wallet
               </div>
-
-              <Link
-                to="/profile"
-                onClick={() => handleSectionClick("profile")}
-                className="block px-4 py-2 text-[18px] border-b " 
-              >
-                Profile
-              </Link>
-
-              <div className="hidden border-b md:block">
-                <button
-                  onClick={openUserModal}
-                  className="block px-4 py-2 text-[18px] "
-                >
-                  Update User
-                </button>
-                <UpdateUser
-                  userModalIsOpen={userUpdateIsOpen}
-                  setUserModalIsOpen={setUserUpdateIsOpen}
-                />
-              </div>
-              
-            </div>
+            </button>
+            <ConnectWallets
+              modalIsOpen={modalIsOpen}
+              setModalIsOpen={setModalIsOpen}
+            />
           </div>
         )}
-      </div>
-    )}
-  </nav>
 
-  {/* Dropdown Menu for screens below 768px */}
-  {menuOpen && (
-    <div className="md:hidden flex flex-col font-posterama text-[17px] xxs1:text-[20px] justify-center items-center absolute z-20 bg-black w-full py-8 px-6 shadow-lg">
-      <Link
-        to="/"
-        onClick={() => handleSectionClick("home")}
-        className={`block py-4`}
-      >
-        Home
-      </Link>
-      <Link
-        to="/projects"
-        onClick={() => handleSectionClick("project")}
-        className={`block py-4 `}
-      >
-        Projects
-      </Link>
-      <Link
-        to="/LaunchCoin"
-        onClick={() => handleSectionClick("coin")}
-        className={`block py-4 `}
-      >
-        Launch a Coin
-      </Link>
+        {/* User Info */}
+        {isAuthenticated && (
+          <div className=" hidden md:inline-block relative  rounded-2xl bg-gradient-to-r  from-[#f09787] to-[#CACCF5] text-left p-[1.5px]">
+            <button
+              onClick={toggleDropdown}
+              className="flex items-center text-white rounded-full"
+            >
+              <div className="bg-black h-full w-full rounded-2xl flex items-center p-1 px-3">
+                <FaUser className="mr-2" />
+                <div className="flex flex-col items-start w-24 h-8 lg:w-40 lg:h-full ">
+                  <span className="text-sm">
+                    {userData ? userData.username : "ABCD"}
+                  </span>
+                  <span className=" text-[10px] lg:text-xs text-gray-400 w-full overflow-hidden whitespace-nowrap text-ellipsis">
+                    {principal}
+                  </span>
+                </div>
+                <BsThreeDotsVertical className="ml-2" />
+              </div>
+            </button>
 
-      {!isAuthenticated ? (
-        ""
-      ) : (
-        <>
+            {/* Dropdown menu */}
+            {isOpen && (
+              <div className="absolute right-0 mt-2 font-posterama w-48 bg-[#222222] rounded-md z-50">
+                <div className="py-2 px-2">
+                  <div className="hidden border-b md:block">
+                    <button
+                      onClick={openProfileModal}
+                      className="block px-4 py-2 text-[18px] "
+                    >
+                      Account
+                    </button>
+                    <ProfileCard
+                      profileModalIsOpen={profileModalIsOpen}
+                      setProfileModalIsOpen={setProfileModalIsOpen}
+                    />
+                  </div>
+
+                  <Link
+                    to="/profile"
+                    onClick={() => handleSectionClick("profile")}
+                    className="block px-4 py-2 text-[18px] border-b "
+                  >
+                    Profile
+                  </Link>
+
+                  <div className="hidden border-b md:block">
+                    <button
+                      onClick={openUserModal}
+                      className="block px-4 py-2 text-[18px] "
+                    >
+                      Update User
+                    </button>
+                    <UpdateUser
+                      userModalIsOpen={userUpdateIsOpen}
+                      setUserModalIsOpen={setUserUpdateIsOpen}
+                    />
+                  </div>
+
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </nav>
+
+      {/* Dropdown Menu for screens below 768px */}
+      {menuOpen && (
+        <div className="md:hidden flex flex-col font-posterama text-[17px] xxs1:text-[20px] justify-center items-center absolute z-20 bg-black w-full py-8 px-6 shadow-lg">
           <Link
-            to="/profile"
+            to="/"
+            onClick={() => handleSectionClick("home")}
+            className={`block py-4`}
+          >
+            Home
+          </Link>
+          <Link
+            to="/projects"
+            onClick={() => handleSectionClick("project")}
+            className={`block py-4 `}
+          >
+            Projects
+          </Link>
+          <Link
+            to="/LaunchCoin"
             onClick={() => handleSectionClick("coin")}
             className={`block py-4 `}
           >
-            Profile
+            Launch a Coin
           </Link>
-        </>
-      )}
-      {!isAuthenticated ? (
-        <button
-          onClick={openModal}
-          className=" mt-[80px]   bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5]
+
+          {!isAuthenticated ? (
+            ""
+          ) : (
+            <>
+              <Link
+                to="/profile"
+                onClick={() => handleSectionClick("coin")}
+                className={`block py-4 `}
+              >
+                Profile
+              </Link>
+            </>
+          )}
+          {!isAuthenticated ? (
+            <button
+              onClick={openModal}
+              className=" mt-[80px]   bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5]
          text-black  relative w-[220px] h-[35px] p-[1.5px]
             text-[16px] md:text-[18px] font-[600] rounded-3xl flex items-center justify-center "
-        >
-          Connect Wallet
-        </button>
-      ) : (
-        <>
-          {" "}
-          <button
-            onClick={openProfileModal}
-            className=" mt-[80px] flex   bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5]
+            >
+              Connect Wallet
+            </button>
+          ) : (
+            <>
+              {" "}
+              <button
+                onClick={openProfileModal}
+                className=" mt-[80px] flex   bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5]
           relative w-[220px] h-[35px] p-[1.5px]
             text-[16px] md:text-[18px] font-[600] rounded-3xl  "
-          >
-            <div className="bg-black w-full h-full  rounded-3xl flex items-center justify-center ">
-              Account
-            </div>
-          </button>
-          <ProfileCard
-            profileModalIsOpen={profileModalIsOpen}
-            setProfileModalIsOpen={setProfileModalIsOpen}
-          />
-        </>
+              >
+                <div className="bg-black w-full h-full  rounded-3xl flex items-center justify-center ">
+                  Account
+                </div>
+              </button>
+              <ProfileCard
+                profileModalIsOpen={profileModalIsOpen}
+                setProfileModalIsOpen={setProfileModalIsOpen}
+              />
+            </>
+          )}
+        </div>
       )}
-    </div>
-  )}
 
-  <div
-    className="flex items-center bg-[#222222] py-1 px-[4%] md:text-[8px] md1:text-[10px] lg:text-[12px] lg:gap-4 lg1:gap-6 dlg:text-[14px] 
+      <div
+        className="flex items-center bg-[#222222] py-1 px-[4%] md:text-[8px] md1:text-[10px] lg:text-[12px] lg:gap-4 lg1:gap-6 dlg:text-[14px] 
   dxl:text-[15px] xl:text-[16px] md:gap-6 dxl:gap-8 gap-7 whitespace-nowrap overflow-x-auto no-scrollbar"
-  >
-    <p className="lg:text-[12px] dxl:text-lg">TRENDING</p>
-    <p>#1 TRUMPBB</p>
-    <p>#2 SWIF</p>
-    <p>#3 MustPepe</p>
-    <p>#4 MXD</p>
-    <p>#5 BabyMAGA</p>
-    <p>#6 BUTTERFLY</p>
-    <p>#7 BAMBIT</p>
-    <p>#8 MAGATRUMP</p>
-    <p>#9 DOGA</p>
-    <p>#10 MBCGA</p>
-  </div>
-</div>
+      >
+        <p className="lg:text-[12px] dxl:text-lg">TRENDING</p>
+        <p>#1 TRUMPBB</p>
+        <p>#2 SWIF</p>
+        <p>#3 MustPepe</p>
+        <p>#4 MXD</p>
+        <p>#5 BabyMAGA</p>
+        <p>#6 BUTTERFLY</p>
+        <p>#7 BAMBIT</p>
+        <p>#8 MAGATRUMP</p>
+        <p>#9 DOGA</p>
+        <p>#10 MBCGA</p>
+      </div>
+    </div>
   );
 };
 export default Header;
