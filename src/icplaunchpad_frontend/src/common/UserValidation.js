@@ -87,15 +87,15 @@ export const validationSchema = yup
     //   .max(10, 'You can only add up to 10 links') // Limit the number of links to 10
     //   .optional(), // Links are optional
 
-    links: yup
-      .array()
-      .of(
-        yup.object().shape({
-          platform: yup.string().required('Platform is required'), // Ensures platform name is required
-          url: yup.string().url('Invalid URL').required('URL is required'), // Validates URL and ensures it's required
-        })
-      )
-      .required('Social links are required'),
+    // links: yup
+    //   .array()
+    //   .of(
+    //     yup.object().shape({
+    //       platform: yup.string().required('Platform is required'), // Ensures platform name is required
+    //       url: yup.string().url('Invalid URL').required('URL is required'), // Validates URL and ensures it's required
+    //     })
+    //   )
+    //   .required('Social links are required'),
 
     profile_picture: yup
       .mixed() // image must be a mixed type (allowing files)
