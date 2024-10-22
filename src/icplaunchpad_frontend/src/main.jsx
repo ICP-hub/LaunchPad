@@ -15,10 +15,10 @@ ReactDOM.createRoot(document.getElementById("root")).render(
   <Provider store={store}>
     <AuthProvider>
       <BrowserRouter>
-        {/* <PersistGate loading={null} persistor={persistor}> */}
+        <PersistGate loading={null} persistor={persistor}>
           <App />
-        {/* </PersistGate> */}
+        </PersistGate>
       </BrowserRouter>
     </AuthProvider>
-  // </Provider>
+ </Provider>
 );
