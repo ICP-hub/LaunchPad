@@ -39,57 +39,47 @@ const Header = () => {
   const userData = useSelector((state) => state.user);
 
   useEffect(() => {
-    if (isAuthenticated)
+    if (isAuthenticated) {
       userCheck();
+    }
   }, [isAuthenticated]);
-
+  
   async function userCheck() {
     try {
-      console.log("actor---", actor);
-
-      // Ensure that actor is defined
-      if (!actor) {
-        console.error("Actor is undefined.");
-        return;
-      }
-
+      // Check if actor is defined
+      if (actor) {
       const response = await actor.is_account_created();
       console.log("Account creation response:", response);
-
       const resultResponse = response.slice(-16);
-
       if (resultResponse === "already created.") {
         setUserRegister(true);
-
-        // Ensure the principal is defined before using it
-        if (!principal) {
-          console.error("Principal is undefined. Cannot fetch user account.");
-          return;
-        } else {
-          console.error("pricipal is defined")
-        }
-
+        // Ensure that principal is valid before proceeding
+        if (principal && principal !== undefined) {
         try {
-          const ownerPrincipal = Principal.fromText(principal); // Handle case where principal could be invalid or undefined
+          const ownerPrincipal = Principal.fromText(principal); // Converting string to Principal
           const fetchedUserData = await actor.get_user_account(ownerPrincipal);
-
-          if (fetchedUserData) {
+  
+          if (fetchedUserData && fetchedUserData.length > 0) {
             const { profile_picture, ...restUserData } = fetchedUserData[0];
-            dispatch(addUserData(restUserData));
+            dispatch(addUserData(restUserData)); // Store user data in global state
             console.log("Fetched user data:", fetchedUserData);
-          } else {
-            console.error("Failed to fetch user data.");
+          } else { 
+            console.error("Fetched user data is empty or undefined.");
           }
+        
         } catch (error) {
-          console.error("Error converting principal:", error);
+          console.error("Error fetching user data or converting principal:", error);
         }
-
+      }else{
+        console.error("Invalid or undefined principal value.");
+      }
       } else {
         setUserRegister(false);
-        console.log("User account not created yet.");
+        console.log("User account has not been created yet.");
       }
+    }
     } catch (error) {
-      console.error("Error during user check:", error);
+        console.error("Specific error occurred:", error.message); // Handle specific known errors
     }
   }
 
@@ -102,6 +92,7 @@ const Header = () => {
     setTokenData(data);
     }
   }
+  
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);

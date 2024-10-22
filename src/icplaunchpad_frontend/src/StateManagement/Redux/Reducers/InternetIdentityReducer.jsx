@@ -1,73 +1,70 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+// Initial state for the authentication slice
 const initialState = {
   isAuthenticated: false,
-  identity: null,
   principal: null,
+  identity: null,
+  walletType: null, // Tracks which wallet the user logged in with (authClient, NFID, Plug)
   loading: false,
   error: null,
-  // navi: null,
 };
 
+// Create the authentication slice
 const internetIdentitySlice = createSlice({
   name: 'internet',
   initialState,
   reducers: {
-    checkLoginOnStart: (state) => {
+    loginStart: (state, action) => {
       state.loading = true;
       state.error = null;
-    },
-    loginStart: (state) => {
-      state.loading = true;
-      state.error = null;
+      state.walletType = action.payload.walletType; // Set wallet type
     },
     loginSuccess: (state, action) => {
-      // console.log("loginSuccess run =>", action);
-      // const { isAuthenticated, identity, principal, navi } = action.payload;
-      const { isAuthenticated, identity, principal } = action.payload;
+      const { isAuthenticated, principal, identity } = action.payload;
       state.isAuthenticated = isAuthenticated;
-      state.identity = identity;
       state.principal = principal;
+      state.identity = identity;
       state.loading = false;
       state.error = null;
-      // state.navi = navi;
     },
     loginFailure: (state, action) => {
-      // console.log("loginFailure run =>", action);
       state.loading = false;
       state.error = action.payload;
     },
     logoutStart: (state) => {
-      // console.log("logoutStart run ");
       state.loading = true;
       state.error = null;
     },
     logoutSuccess: (state) => {
-      // console.log("logoutSuccess run ");
-
       state.isAuthenticated = false;
-      state.identity = null;
       state.principal = null;
+      state.identity = null;
+      state.walletType = null;
       state.loading = false;
       state.error = null;
     },
     logoutFailure: (state, action) => {
-      // console.log("logoutFailure run =>", action);
       state.loading = false;
       state.error = action.payload;
+    },
+    checkLoginOnStart: (state) => {
+      state.loading = true;
+      state.error = null;
     },
   },
 });
 
+// Export the actions to use in sagas or components
 export const {
-  // setAuthClient,
-  checkLoginOnStart,
   loginStart,
-  loginFailure,
   loginSuccess,
-  logoutFailure,
+  loginFailure,
   logoutStart,
   logoutSuccess,
+  logoutFailure,
+  checkLoginOnStart,
 } = internetIdentitySlice.actions;
 
+// Export the reducer to configure the store
 export default internetIdentitySlice.reducer;
