@@ -7,24 +7,25 @@ import { userRegisteredHandlerRequest } from "./StateManagement/Redux/Reducers/u
 function App() {
   const actor = useSelector((currState) => currState.actors.actor);
   const identity = useSelector((currState) => currState.internet.identity);
+  const principal = useSelector((currState) => currState.internet.principal);
+
   const isAuthenticated = useSelector(
     (currState) => currState.internet.isAuthenticated
   );
-  const state = useSelector((currState) => currState);
 
   console.log('actor in app.js', actor);
   console.log('identity in app.js', identity);
   console.log('isAuthenticated in app.js', isAuthenticated);
-  console.log('state in app.js', state);
+
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if ( actor) {
+    if ( isAuthenticated && principal && identity ) {
       // Dispatch the user registration request when the user is authenticated
       dispatch(userRegisteredHandlerRequest());
     }
-  }, [ actor, dispatch]); // Add dependencies
+  }, [ actor, dispatch,isAuthenticated,principal ,identity]); // Add dependencies
 
   return (
     <div id="root" className="text-white max-w-[1700px] mx-auto container">
