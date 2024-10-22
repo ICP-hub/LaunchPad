@@ -7,6 +7,7 @@ import {
 
 const selectActor = (currState) => currState.actors.actor;
 
+
 function uint8ArrayToBase64(uint8Arr) {
   if (!uint8Arr || uint8Arr.length === 0 || !uint8Arr[0]) {
     console.error("Invalid Uint8Array provided:", uint8Arr);
@@ -31,29 +32,30 @@ function* fetchUserHandler() {
   console.log("calling fetchUserHandler");
   try {
     const actor = yield select(selectActor);
-    let userData = yield call([actor, actor.get_user_account]);
+    console.log('actor in saga',actor)
+    let userData = yield call([actor, actor.get_user_account],);
 
     console.log("userData in saga", userData);
-    if (userData?.Ok) {
-      const {
-        profile_picture = [],
-        full_name = "Anonymous",
-        email = "Not provided",
-      } = userData.Ok;
+    // if (userData?.Ok) {
+    //   const {
+    //     profile_picture = [],
+    //     full_name = "Anonymous",
+    //     email = "Not provided",
+    //   } = userData.Ok;
 
-      if (profile_picture.length > 0) {
-        const updatedProfileData = uint8ArrayToBase64(profile_picture);
-        userData.Ok.profile_picture[0] = updatedProfileData;
-      }
+    //   if (profile_picture.length > 0) {
+    //     const updatedProfileData = uint8ArrayToBase64(profile_picture);
+    //     userData.Ok.profile_picture[0] = updatedProfileData;
+    //   }
 
-      // Proceed with dispatching the success action
-      yield put(userRegisteredHandlerSuccess(userData));
-    } else if (userData?.Err) {
-      // Handle backend error
-      throw new Error(userData.Err);
-    } else {
-      throw new Error("Invalid user data format");
-    }
+    //   // Proceed with dispatching the success action
+    //   yield put(userRegisteredHandlerSuccess(userData));
+    // } else if (userData?.Err) {
+    //   // Handle backend error
+    //   throw new Error(userData.Err);
+    // } else {
+    //   throw new Error("Invalid user data format");
+    // }
   } catch (error) {
     console.error("Error fetching user data:", error);
     yield put(

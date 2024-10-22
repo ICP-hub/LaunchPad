@@ -1,26 +1,43 @@
 
-import { Provider } from "react-redux";
-import AllRoutes from "./AllRoutes";
-import { myStore } from "./Redux-Config/ReduxStore";
-import { useSelector,useDispatch } from "react-redux";
 import "./main.css";
+import AllRoutes from './AllRoutes'
 import { useEffect } from "react";
-import { userRegisteredHandlerRequest } from "./StateManagement/Redux/Reducers/userRegisteredData";
 import { useAuth } from "./StateManagement/useContext/useAuth";
-function App() {
-    const userFullData = useSelector((currState) => currState.userData);
-    const {actor,reloadLogin,authClient } = useAuth();
-  const dispatch = useDispatch();
-    console.log("user full data in app.js",userFullData)
-   
 
+import { useDispatch ,useSelector} from "react-redux";
+function App() {
+  const actor = useSelector((currState) => currState.actors.actor);
+  const identity = useSelector((currState) => currState.internet.identity);
+  const isAuthenticated = useSelector(
+    (currState) => currState.internet.isAuthenticated
+  );
+  const state = useSelector((currState) => currState);
+
+  console.log('actor in app.js',actor)
+  console.log('identity in app.js',identity)
+  console.log('isAuthenticated in app.js',isAuthenticated)
+  console.log('state in app.js',state)
+
+
+
+  const dispatch =useDispatch();
+
+
+  // useEffect(() => {
+  //   if (isAuthenticated) {
+  //     dispatch(loginRequest({
+  //       authenticateWithII,
+  //       authenticateWithNFID,
+  //       authenticateWithPlug,
+  //       reloadLogin,
+  //     }));
+  //   }
+  // }, [isAuthenticated]);
   return (
-    <Provider store={myStore}>
-    <div id="root" className="text-white max-w-[1700px] mx-auto ">
+
+    <div id="root" className="text-white max-w-[1700px] mx-auto container">
       <AllRoutes />
-      
     </div>
-    </Provider>
   );
 }
 export default App;
