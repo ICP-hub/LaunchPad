@@ -39,4 +39,4 @@ export const getSocialLogo = (url) => {
   }
 };
 
-export default getSocialLogo;
+

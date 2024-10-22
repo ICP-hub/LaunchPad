@@ -130,8 +130,8 @@
 
 import React, { useRef, useState } from "react";
 import { FaTrash } from "react-icons/fa";
-import getSocialLogo from "../../../common/getSocialLogo";
 import CompressedImage from '../../../common/ImageCompressed/CompressedImage';
+import { getSocialLogo } from "../../../common/getSocialLogo";
 const AdditionalInfoTab = ({
   register,
   errors,
