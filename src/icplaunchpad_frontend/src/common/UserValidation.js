@@ -3,7 +3,7 @@ import * as yup from 'yup'; // Import the Yup library for schema validation
 export const validationSchema = yup
   .object() // Define an object schema
   .shape({
-    full_name: yup
+    name: yup
       .string() // full_name must be a string
       .trim('Full name should not have leading or trailing spaces') // Ensures no leading or trailing spaces, with a custom error message
       .strict(true) // Enforces strict trimming: no leading/trailing spaces allowed, will cause validation errors if present
@@ -17,7 +17,7 @@ export const validationSchema = yup
       .max(50, 'Full name cannot be more than 50 characters long') // Maximum length is 50 characters
       .required('Full name is required'), // This field is mandatory
 
-      user_name: yup
+      username: yup
       .string() // openchat_user_name must be a string
       .required('Username is required') // Username is mandatory
       .test(
@@ -87,7 +87,7 @@ export const validationSchema = yup
     //   .max(10, 'You can only add up to 10 links') // Limit the number of links to 10
     //   .optional(), // Links are optional
 
-    // social_links: yup
+    // links: yup
     //   .array()
     //   .of(
     //     yup.object().shape({
@@ -111,8 +111,16 @@ export const validationSchema = yup
         );
       }),
 
-    tag: yup
-      .string() // tag must be a string
-      .required('Tag is required'), // Tag is mandatory
-  })
-  .required(); // Ensures the entire schema is required
+
+      tags: yup.array()
+      .of(
+        yup.string()
+          .min(1, 'Each tag must be at least 1 character long.')
+          .max(20, 'Each tag can be at most 20 characters long.')
+      )
+      .min(1, 'You must provide at least 1 tag.')
+      .max(5, 'You can provide up to 5 tags.')
+      .required('Tags are required.'),
+    
+});
+
