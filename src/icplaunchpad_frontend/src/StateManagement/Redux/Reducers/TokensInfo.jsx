@@ -7,7 +7,7 @@ const initialTokensInfoState = {
 };
 
 const TokensInfoSlice = createSlice({
-  name: 'TokensInfoData',
+  name: 'TokensInfo',
   initialState: initialTokensInfoState,
   reducers: {
     TokensInfoHandlerRequest: (state) => {

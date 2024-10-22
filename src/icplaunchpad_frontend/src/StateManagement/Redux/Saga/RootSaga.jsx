@@ -9,6 +9,9 @@ import { fetchTokensInfoSaga } from './TokensInfoSaga';
 import { fetchSaleParamsSaga } from './SaleParams';
 import { fetchSuccessfulSalesSaga } from './SuccessfulSalesSaga';
 import { fetchActiveSalesSaga } from './ActiveSalesSaga';
+import { fetchProfileImageIDSaga } from './ProfileImageIDSaga';
+import { fetchTokenImageIDSaga } from './TokenImageIDSaga';
+import { fetchTokenImageIDsSaga } from './TokenImageIDsSaga';
 
 export default function* rootSaga() {
   yield all([
@@ -20,6 +23,9 @@ export default function* rootSaga() {
     fetchTokensInfoSaga,
     fetchSaleParamsSaga,
     fetchSuccessfulSalesSaga,
-    fetchActiveSalesSaga
+    fetchActiveSalesSaga,
+    fetchProfileImageIDSaga,
+    fetchTokenImageIDSaga,
+    fetchTokenImageIDsSaga
   ]);
 }

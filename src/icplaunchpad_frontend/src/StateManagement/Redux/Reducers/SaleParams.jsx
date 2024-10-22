@@ -7,7 +7,7 @@ const initialSaleParamsState = {
 };
 
 const SaleParamsSlice = createSlice({
-  name: 'TokensInfoData',
+  name: 'SaleParams',
   initialState: initialSaleParamsState,
   reducers: {
     SaleParamsHandlerRequest: (state) => {

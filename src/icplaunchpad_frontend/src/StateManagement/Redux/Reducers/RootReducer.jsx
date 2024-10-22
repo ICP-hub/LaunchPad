@@ -6,6 +6,9 @@ import TokensInfoReducer from './TokensInfo'
 import SaleParamsReducer from './SaleParams'
 import upcomingSalesReducer from './UpcomingSales'
 import SuccessfulSalesReducer from './SuccessfulSales'
+import ProfileImageIDReducer from './ProfileImageID'
+import TokenImageIDReducer from './TokenImageID'
+import TokenImageIDsReducer from './TokenImageIDs'
 
 const rootReducer = combineReducers({
   actors: actorReducer,
@@ -15,6 +18,9 @@ const rootReducer = combineReducers({
   SaleParams:SaleParamsReducer,
   upcomingSales:upcomingSalesReducer,
   SuccessfulSales:SuccessfulSalesReducer,
+  ProfileImageID:ProfileImageIDReducer,
+  TokenImageID:TokenImageIDReducer,
+  TokenImageIDs:TokenImageIDsReducer,
   
   
 });

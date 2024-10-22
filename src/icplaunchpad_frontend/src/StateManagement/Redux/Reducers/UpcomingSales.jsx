@@ -7,7 +7,7 @@ const initialSalesState = {
 };
 
 const SalesSlice = createSlice({
-  name: 'upcomingSalesData',
+  name: 'upcomingSales',
   initialState: initialSalesState,
   reducers: {
     upcomingSalesHandlerRequest: (state) => {

@@ -7,7 +7,7 @@ const initialSuccessfulSalesState = {
 };
 
 const SuccessfulSalesSlice = createSlice({
-  name: 'SuccessfulSalesData',
+  name: 'SuccessfulSales',
   initialState: initialSuccessfulSalesState,
   reducers: {
     SuccessfulSalesHandlerRequest: (state) => {
