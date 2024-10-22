@@ -23,7 +23,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const navigate = useNavigate();
   const { actor, principal } = useAuth();
 
-  const { register, handleSubmit, formState: { errors }, control, reset } = useForm({
+  const { register, handleSubmit, formState: { errors }, control, reset,setValue, clearErrors, setError  } = useForm({
     resolver: yupResolver(validationSchema),
   });
 
@@ -180,7 +180,7 @@ const [tagsSelectedOptions, setTagsSelectedOptions] = useState([]);
               <input
                 type="text"
                 {...register("name")}
-                className="w-full p-1 pl-4 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
+                className="w-full p-1 pl-4 bg-[#333333] text-white rounded-md border-b-2 outline-none"
               />
               {errors.name && <p className="text-red-500">{errors.name.message}</p>}
             </div>
@@ -191,7 +191,7 @@ const [tagsSelectedOptions, setTagsSelectedOptions] = useState([]);
               <input
                 type="text"
                 {...register("username")}
-                className="w-full p-1 pl-4 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
+                className="w-full p-1 pl-4 bg-[#333333] text-white rounded-md border-b-2 outline-none"
               />
               {errors.username && <p className="text-red-500">{errors.username.message}</p>}
             </div>
@@ -257,12 +257,12 @@ const [tagsSelectedOptions, setTagsSelectedOptions] = useState([]);
       menuPortalTarget={document.body}
       menuPosition={'fixed'}
       styles={getReactSelectStyles(
-        errors?.tags && isFormTouched.tags
+        errors?.tags 
       )}
       value={tagsSelectedOptions}
       options={tagsOptions}
       classNamePrefix='select'
-      className=' w-full p-2 bg-[#333333] text-white rounded-md border-b-2'
+      className=' w-full p-2  text-white rounded-md '
       placeholder='Select your tags'
       name='tags'
       onChange={(selectedOptions) => {

@@ -6,9 +6,9 @@ export const getReactSelectStyles = (error) => ({
     ...provided,
     paddingBlock: '2px',
     borderRadius: '8px',
-    borderColor: error ? '#ef4444' : state.isFocused ? '#737373' : '#D1D5DB',
-    border: error ? '2px solid #ef4444' : '2px solid #D1D5DA',
-    backgroundColor: 'rgb(249 250 251)',
+    borderColor: error ? 'white' : state.isFocused ? 'white' : 'white',
+    border: error ? '2px solid white' : '2px solid white',
+    backgroundColor: '#333333',
     '&::placeholder': {
       color: 'currentColor',
     },
@@ -24,6 +24,7 @@ export const getReactSelectStyles = (error) => ({
     overflow: 'scroll',
     maxHeight: '40px',
     scrollbarWidth: 'none',
+    backgroundColor: '#333333',
   }),
   placeholder: (provided, state) => ({
     ...provided,
@@ -36,13 +37,16 @@ export const getReactSelectStyles = (error) => ({
     ...provided,
     display: 'inline-flex',
     alignItems: 'center',
-    backgroundColor: 'white',
-    border: '2px solid #E3E3E3',
+    backgroundColor: 'grey',
+    border: '1px solid white',
+    borderRadius: '7px',
+    color: 'white', 
   }),
   multiValueRemove: (provided) => ({
     ...provided,
     display: 'inline-flex',
     alignItems: 'center',
+    color: 'white',
   }),
 });
 
