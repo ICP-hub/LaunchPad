@@ -3,7 +3,7 @@ import {
     TokenImageIDsHandlerRequest,
     TokenImageIDsHandlerSuccess,
     TokenImageIDsHandlerFailure,
-} from "../Reducers/TokenImageID";
+} from "../Reducers/TokenImageIDs";
 
 const selectActor = (currState) => currState.actors.actor;
 
