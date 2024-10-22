@@ -112,14 +112,15 @@ export const validationSchema = yup
       }),
 
 
-   tags: yup.array()
-    .of(
-      yup.string()
-        .min(1, 'Each tag must be at least 1 character long.')
-        .max(20, 'Each tag can be at most 20 characters long.')
-    )
-    .min(1, 'You must provide at least 1 tag.')
-    .max(5, 'You can provide up to 5 tags.')
-    .required('Tags are required.'),
+      tags: yup.array()
+      .of(
+        yup.string()
+          .min(1, 'Each tag must be at least 1 character long.')
+          .max(20, 'Each tag can be at most 20 characters long.')
+      )
+      .min(1, 'You must provide at least 1 tag.')
+      .max(5, 'You can provide up to 5 tags.')
+      .required('Tags are required.'),
+    
 });
 

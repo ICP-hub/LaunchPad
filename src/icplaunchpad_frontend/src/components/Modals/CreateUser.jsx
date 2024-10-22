@@ -151,6 +151,11 @@ const [tagsOptions] = useState([
 ]);
 const [tagsSelectedOptions, setTagsSelectedOptions] = useState([]);
 
+// Function to handle field touch
+const handleFieldTouch = (fieldName) => {
+  setError(fieldName, { type: 'touched' }); // Mark the field as touched
+};
+
   return (
     <div className="absolute">
       <Modal
@@ -180,7 +185,7 @@ const [tagsSelectedOptions, setTagsSelectedOptions] = useState([]);
               <input
                 type="text"
                 {...register("name")}
-                className="w-full p-1 pl-4 bg-[#333333] text-white rounded-md border-b-2 outline-none"
+                className="w-full p-1 pl-2 bg-[#333333] text-white rounded-md border-b-2 outline-none"
               />
               {errors.name && <p className="text-red-500">{errors.name.message}</p>}
             </div>
@@ -191,7 +196,7 @@ const [tagsSelectedOptions, setTagsSelectedOptions] = useState([]);
               <input
                 type="text"
                 {...register("username")}
-                className="w-full p-1 pl-4 bg-[#333333] text-white rounded-md border-b-2 outline-none"
+                className="w-full p-1 pl-2 bg-[#333333] text-white rounded-md border-b-2 outline-none"
               />
               {errors.username && <p className="text-red-500">{errors.username.message}</p>}
             </div>
@@ -249,46 +254,39 @@ const [tagsSelectedOptions, setTagsSelectedOptions] = useState([]);
               {errors.links && <p className="text-red-500">{errors.links.message}</p>}
             </div>
 
-            {/* Tags */}
-           <div>
-    <label className="block mb-2 text-[16px]">Tags</label>
-    <ReactSelect
-      isMulti
-      menuPortalTarget={document.body}
-      menuPosition={'fixed'}
-      styles={getReactSelectStyles(
-        errors?.tags 
-      )}
-      value={tagsSelectedOptions}
-      options={tagsOptions}
-      classNamePrefix='select'
-      className=' w-full p-2  text-white rounded-md '
-      placeholder='Select your tags'
-      name='tags'
-      onChange={(selectedOptions) => {
-        if (selectedOptions && selectedOptions.length > 0) {
-          setTagsSelectedOptions(selectedOptions);
-          clearErrors('tags');
-          setValue(
-            'tags',
-            selectedOptions.map((option) => option.value).join(', '),
-            { shouldValidate: true }
-          );
-        } else {
-          setTagsSelectedOptions([]);
-          setValue('tags', '', {
-            shouldValidate: true,
-          });
-          setError('tags', {
-            type: 'required',
-            message: 'Selecting at least one tag is required',
-          });
-        }
-        handleFieldTouch('tags');
-      }}
-    />
-    {errors.tags && <p className="text-red-500">{errors.tags.message}</p>}
-  </div>
+                      {/* Tags */}
+            <div>
+              <label className="block mb-2 text-[16px]">Tags</label>
+              <ReactSelect
+                isMulti
+                menuPortalTarget={document.body}
+                menuPosition={'fixed'}
+                styles={getReactSelectStyles(errors?.tags)}
+                value={tagsSelectedOptions}
+                options={tagsOptions}
+                classNamePrefix='select'
+                className=' w-full p-2 text-white rounded-md '
+                placeholder='Select your tags'
+                name='tags'
+                onChange={(selectedOptions) => {
+                  setTagsSelectedOptions(selectedOptions);
+                  if (selectedOptions && selectedOptions.length > 0) {
+                    clearErrors('tags');
+                    setValue('tags', selectedOptions.map(option => option.value), { shouldValidate: true });
+                  } else {
+                    setTagsSelectedOptions([]);
+                    setValue('tags', [], { shouldValidate: true });
+                    setError('tags', {
+                      type: 'required',
+                      message: 'Selecting at least one tag is required',
+                    });
+                  }
+                  handleFieldTouch('tags');
+                }}
+              />
+              {errors.tags && <p className="text-red-500">{errors.tags.message}</p>}
+            </div>
+
 
 
             {/* Terms and Conditions */}
