@@ -3,6 +3,7 @@ import person1 from "../../../assets/images/carousel/person1.png";
 import { useNavigate } from 'react-router-dom';
 import l3 from '../../../assets/images/carousel/l3.png'
 import { useSelector } from "react-redux";
+import ProjectCard from "../../Pages/Projects/ProjectCard";
 
   
 
