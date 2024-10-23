@@ -179,7 +179,8 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               <input
                 type="text"
                 {...register("username")}
-                className="w-full p-1 pl-2 bg-[#333333] text-white rounded-md border-b-2 outline-none"
+                className={`w-full p-1 pl-2 bg-[#333333] text-white rounded-md outline-none ${errors.user_name ? "border-red-500" : "border-white"
+                  } border-b-2`}
               />
               {errors.username && <p className="text-red-500">{errors.username.message}</p>}
             </div>

@@ -229,18 +229,21 @@ const AdditionalInfoTab = ({
         />
         <div
           onClick={handleFileUploadClick}
-          className="cursor-pointer w-full flex items-center justify-start p-1.5 bg-[#333333] text-white rounded-md border-b-2"
+          className={`cursor-pointer w-full flex items-center justify-start p-1.5 bg-[#333333] text-white rounded-md ${errors.logoURL ? "border-red-500" : "border-white"
+            }  border-b-2`}
         >
           <span className="text-xl font-bold mr-2">+</span>
           <span>{fileName ? fileName : "Upload Image"}</span>
         </div>
+        {errors.logoURL && <p className="text-red-500 mt-1">{errors.logoURL.message}</p>}
       </div>
       <div className="w-full mb-4">
         <label className="block text-[19px] mb-1">Website</label>
         <input
           type="text"
           {...register("website")}
-          className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
+          className={`w-full p-2 bg-[#333333] text-white rounded-md${errors.website ? "border-red-500" : "border-white"
+            }  border-b-2`}
         />
         {errors.website && (
           <p className="text-red-500">{errors.website.message}</p>
@@ -256,7 +259,8 @@ const AdditionalInfoTab = ({
 
             <input
               type="url"
-              className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2 "
+              className={`w-full p-2 bg-[#333333] text-white rounded-md${errors.website ? "border-red-500" : "border-white"
+                }  border-b-2`}
               placeholder="Enter URL"
               value={link.url}
               onChange={(e) => updateLink(index, "url", e.target.value)}
@@ -279,7 +283,8 @@ const AdditionalInfoTab = ({
         <label className="block text-[19px] mb-1">Description</label>
         <textarea
           {...register("description")}
-          className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2 h-32"
+          className={`w-full p-2 bg-[#333333] text-white rounded-md h-32 ${errors.description ? "border-red-500" : "border-white"
+            }  border-b-2`}
         ></textarea>
         {errors.description && (
           <p className="text-red-500">{errors.description.message}</p>
