@@ -29,8 +29,8 @@ const Clients = () => {
 
     <div className="flex md:flex-row flex-col flex-wrap w-[95%] items-center m-auto justify-around">
       
-      {salesData && salesData.map((sale, index) => (
-        (index < 3) && <ProjectCard projectData={sale} index={index}/> 
+      {salesData && salesData.map((sales, index) => (
+        (index < 3) && <ProjectCard projectData={sales} index={index}/> 
       ))}
       <button onClick={handleViewMoreClick} className="text-white font-posterama  xxs1:hidden underline text-[20px] mt-6 xxs1:text-xl">
           Load More
