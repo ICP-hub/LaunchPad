@@ -95,7 +95,7 @@ export const validationSchema = yup
           url: yup.string().url('Invalid URL').required('URL is required'), // Validates URL and ensures it's required
         })
       )
-      .required('Social links are required'),
+     ,
 
     profile_picture: yup
       .mixed() // image must be a mixed type (allowing files)
