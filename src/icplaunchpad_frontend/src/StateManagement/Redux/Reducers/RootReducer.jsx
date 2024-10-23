@@ -9,6 +9,7 @@ import SuccessfulSalesReducer from './SuccessfulSales'
 import ProfileImageIDReducer from './ProfileImageID'
 import TokenImageIDReducer from './TokenImageID'
 import TokenImageIDsReducer from './TokenImageIDs'
+import LedgerIdReducer from './LedgerId'
 
 const rootReducer = combineReducers({
   actors: actorReducer,
@@ -21,6 +22,8 @@ const rootReducer = combineReducers({
   ProfileImageID:ProfileImageIDReducer,
   TokenImageID:TokenImageIDReducer,
   TokenImageIDs:TokenImageIDsReducer,
+  LedgerId:LedgerIdReducer,
+  
   
   
 });

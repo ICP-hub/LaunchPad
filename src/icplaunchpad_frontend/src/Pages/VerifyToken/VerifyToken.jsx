@@ -129,7 +129,7 @@
 //   };
 
 //   const handleBack = () => {
-//     if (currentStep > 1) setCurrentStep((prevStep) => prevStep - 1);
+//     if (currentSt5ep > 1) setCurrentStep((prevStep) => prevStep - 1);
 //   };
 
 //   return (

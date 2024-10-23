@@ -4,161 +4,15 @@ import { TbFilterCheck } from "react-icons/tb";
 import { PiArrowsDownUpBold } from "react-icons/pi";
 import { useAuth } from "../../StateManagement/useContext/useAuth.jsx";
 import ProjectCard from "./ProjectCard.jsx";
+import { useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
 
-// const salesData = [
-//   {
-//     heading: 'PUPPO',
-//     subheading: 'FAIR LAUNNCH-MAX BUY 5 SOL',
-//     chartData: {
-//       datasets: [
-//         {
-//           data: [70, 30],
-//           backgroundColor: ['#FF6384', 'transparent'],
-//           borderWidth: 0,
-//         },
-//       ],
-//     },
-//     progress: 10.1,
-//     raised: 30,
-//     details: {
-//       type: 'SOFT',
-//       amount: '100 SOL',
-//       liquidity: '51%',
-//       lockTime: '365 DAYS',
-//       saleStartsIn: '00:29:23:00',
-//     },
-//   },
-//   {
-//     heading: 'SUNNY',
-//     subheading: 'FAIR LAUNNCH-MAX BUY 5 SOL',
-//     chartData: {
-//       datasets: [
-//         {
-//           data: [60, 40],
-//           backgroundColor: ['#FF9F40', 'transparent'],
-//           borderWidth: 0,
-//         },
-//       ],
-//     },
-//     progress: 10.1,
-//     raised: 30,
-//     details: {
-//       type: 'HARD',
-//       amount: '200 ETH',
-//       liquidity: '51%',
-//       lockTime: '365 DAYS',
-//       saleStartsIn: '00:29:23:00',
-//     },
-//   },
-//   {
-//     heading: 'STARLIGHT',
-//     subheading: 'FAIR LAUNNCH-MAX BUY 5 SOL',
-//     chartData: {
-//       datasets: [
-//         {
-//           data: [80, 20],
-//           backgroundColor: ['#9966FF', 'transparent'],
-//           borderWidth: 0,
-//         },
-//       ],
-//     },
-//     progress: 10.1,
-//     raised: 30,
-//     details: {
-//       type: 'FLEXIBLE',
-//       amount: '0.35 BTC',
-//       liquidity: '51%',
-//       lockTime: '365 DAYS',
-//       saleStartsIn: '00:29:23:00',
-//     },
-//   },
-//   {
-//     heading: 'PUPPO',
-//     subheading: 'FAIR LAUNNCH-MAX BUY 5 SOL',
-//     chartData: {
-//       datasets: [
-//         {
-//           data: [70, 30],
-//           backgroundColor: ['#FF6384', 'transparent'],
-//           borderWidth: 0,
-//         },
-//       ],
-//     },
-//     progress: 10.1,
-//     raised: 30,
-//     details: {
-//       type: 'SOFT',
-//       amount: '100 SOL',
-//       liquidity: '51%',
-//       lockTime: '365 DAYS',
-//       saleStartsIn: '00:29:23:00',
-//     },
-//   },
-//   {
-//     heading: 'SUNNY',
-//     subheading: 'FAIR LAUNNCH-MAX BUY 5 SOL',
-//     chartData: {
-//       datasets: [
-//         {
-//           data: [60, 40],
-//           backgroundColor: ['#FF9F40', 'transparent'],
-//           borderWidth: 0,
-//         },
-//       ],
-//     },
-//     progress: 10.1,
-//     raised: 30,
-//     details: {
-//       type: 'HARD',
-//       amount: '200 ETH',
-//       liquidity: '51%',
-//       lockTime: '365 DAYS',
-//       saleStartsIn: '00:29:23:00',
-//     },
-//   },
-//   {
-//     heading: 'STARLIGHT',
-//     subheading: 'FAIR LAUNNCH-MAX BUY 5 SOL',
-//     chartData: {
-//       datasets: [
-//         {
-//           data: [80, 20],
-//           backgroundColor: ['#9966FF', 'transparent'],
-//           borderWidth: 0,
-//         },
-//       ],
-//     },
-//     progress: 10.1,
-//     raised: 30,
-//     details: {
-//       type: 'FLEXIBLE',
-//       amount: '0.35 BTC',
-//       liquidity: '51%',
-//       lockTime: '365 DAYS',
-//       saleStartsIn: '00:29:23:00',
-//     },
-//   },
-  
-// ];
 
 const ProjectLists = () => {
   const [selectedTab, setSelectedTab] = useState("all");
-  const [projectsData,setProjectsData]=useState([]);
-  const { actor, isAuthenticated } = useAuth();
-
-  useEffect(()=>{
-    if(isAuthenticated)
-     fetchProjects();
-  },[isAuthenticated])
-
-  
-  const fetchProjects = async () => {
-   // getting token data
-   const tokenData = await actor.get_tokens_info();
-   setProjectsData(tokenData)
-   console.log("tokenData-",tokenData);
-  }
-
+  const location = useLocation();
+  const salesData = location.state?.salesData;
+  const projectsData= useSelector((state)=>state?.TokensInfo?.data)
  
 
   return (
@@ -218,10 +72,15 @@ const ProjectLists = () => {
 
     <div className="flex lg:flex-row flex-col flex-wrap items-center w-[95%] m-auto  justify-around">
       
-      {projectsData && projectsData.map((project, index) => (
-        <ProjectCard projectData={project} index={index}/>
-        
-      ))}
+      {salesData ? salesData.map((sale, index) => (
+        <ProjectCard projectData={sale} index={index}/> 
+      )) 
+      :
+      projectsData.map((project, index) => (
+        <ProjectCard projectData={project} index={index}/> 
+      )) 
+
+    }
     </div>
     </div>
   );

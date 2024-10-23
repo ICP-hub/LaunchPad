@@ -4,7 +4,7 @@ import { useAuth } from '../../../StateManagement/useContext/useAuth';
 const TokenTab = ({ ledgerId }) => {
   const {createCustomActor}=useAuth();
   const [tokenData, setTokenData] = useState(null);
-
+   console.log('ledgerId->', ledgerId)
   const fetchTokenData = async () => {
     try {
       const actor = await createCustomActor(ledgerId); // Assuming createCustomActor is defined elsewhere
@@ -49,15 +49,15 @@ const TokenTab = ({ ledgerId }) => {
           <>
             <div className="flex border-b-2 justify-between py-2">
               <span>Name</span>
-              <span>{tokenData.tokenName || 'N/A'}</span>
+              <span>{tokenData.tokenName}</span>
             </div>
             <div className="flex border-b-2 justify-between py-2">
               <span>Symbol</span>
-              <span>{tokenData.tokenSymbol || 'N/A'}</span>
+              <span>{tokenData.tokenSymbol}</span>
             </div>
             <div className="flex border-b-2 justify-between py-2">
               <span>Decimals</span>
-              <span>{tokenData.tokenDecimals || 'N/A'}</span>
+              <span>{tokenData.tokenDecimals}</span>
             </div>
             <div className="flex border-b-2 justify-between py-2">
               <span className="text-gray-400">Total Supply</span>

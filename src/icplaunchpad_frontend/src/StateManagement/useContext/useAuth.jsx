@@ -306,10 +306,10 @@ export const AuthProvider = ({ children }) => {
   const host = "http://127.0.0.1:4943/";
   const createCustomActor = async (canisterId) => {
     try {
-      console.log("Identity value before agent creation:", defaultidentity);
+      console.log("Identity value before agent creation:", defaultIdentity);
       console.log("Creating actor for canister ID:", canisterId);
   
-      const agent = new HttpAgent({ defaultidentity, host });
+      const agent = new HttpAgent({ defaultIdentity, host });
   
       if (process.env.DFX_NETWORK !== "ic") {
         await agent.fetchRootKey().catch((err) => {
