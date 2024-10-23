@@ -47,40 +47,40 @@ pub fn update_user_account(principal: Principal, updated_account: UserAccount) -
         state.borrow().user_accounts.get(&principal)
     });
 
-    if existing_user_account.is_none() {
-        return Err("User account not found".to_string());
-    }
+    if let Some(user_account_wrapper) = existing_user_account {
+        let mut user_account_wrapper = user_account_wrapper.clone();
 
-    let mut user_account_wrapper = existing_user_account.unwrap().clone();
+        // Ensure the username remains unique if it has changed
+        if user_account_wrapper.user_account.username != updated_account.username {
+            let is_unique = STATE.with(|state| {
+                state.borrow().user_accounts.iter().all(|(_, wrapper)| {
+                    wrapper.user_account.username != updated_account.username
+                })
+            });
 
-    // Ensure the username remains unique if it has changed
-    if user_account_wrapper.user_account.username != updated_account.username {
-        let is_unique = STATE.with(|state| {
-            state.borrow().user_accounts.iter().all(|(_, wrapper)| {
-                wrapper.user_account.username != updated_account.username
-            })
-        });
+            if !is_unique {
+                return Err("Username already exists".to_string());
+            }
 
-        if !is_unique {
-            return Err("Username already exists".to_string());
+            // Update the username since it has passed the uniqueness check
+            user_account_wrapper.user_account.username = updated_account.username.clone();
         }
 
-        // Update the username since it has passed the uniqueness check
-        user_account_wrapper.user_account.username = updated_account.username.clone();
+        // Update the user account fields
+        user_account_wrapper.user_account.name = updated_account.name;
+        user_account_wrapper.user_account.profile_picture = updated_account.profile_picture;
+        user_account_wrapper.user_account.links = updated_account.links;
+        user_account_wrapper.user_account.tag = updated_account.tag; // Now handling Vec<String>
+
+        // Reinsert the updated user account back into the map
+        mutate_state(|state| {
+            state.user_accounts.insert(principal, user_account_wrapper);
+        });
+
+        Ok(())
+    } else {
+        Err("User account not found".to_string())
     }
-
-    // Update the user account fields
-    user_account_wrapper.user_account.name = updated_account.name;
-    user_account_wrapper.user_account.profile_picture = updated_account.profile_picture;
-    user_account_wrapper.user_account.links = updated_account.links;
-    user_account_wrapper.user_account.tag = updated_account.tag;
-
-    // Reinsert the updated user account back into the map
-    mutate_state(|state| {
-        state.user_accounts.insert(principal, user_account_wrapper);
-    });
-
-    Ok(())
 }
 
 #[ic_cdk::update]
