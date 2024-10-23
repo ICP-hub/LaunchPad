@@ -38,7 +38,7 @@ type TokenCreationResult = record {
 };
 type TokenImageData = record { content : opt blob; ledger_id : principal };
 type UserAccount = record {
-  tag : text;
+  tag : vec text;
   username : text;
   profile_picture : opt blob;
   name : text;
