@@ -14,9 +14,7 @@ import bifinity from '../../../assets/images/icons/bifinity.png';
 // Component to connect wallet using various providers
 const ConnectWallet = ({ modalIsOpen, setModalIsOpen }) => {
    const {
-      authenticateWithII,
-  authenticateWithPlug,
-     authenticateWithNFID,
+    authenticateWithWallet,
      isAuthenticated,
      actor
   //    createCustomActor,
@@ -24,26 +22,27 @@ const ConnectWallet = ({ modalIsOpen, setModalIsOpen }) => {
 
    console.log('actor',actor)
    // Handle login for different wallet options
-     const handleLogin = async (loginOption) => {
-       try {
-         switch (loginOption) {
-           case "Icp":
-             await authenticateWithII("ii");
-             break;
-           case "Plug":
-             await authenticateWithPlug();
-             break;
-           case "Nfid":
-             await authenticateWithNFID();
-             break;
-           default:
-             console.log("Unknown login option");
-         }
-         setModalIsOpen(false);
-       } catch (e) {
-         console.error("Error while connecting:", e);
-       }
-     };
+   const handleLogin = async (loginOption) => {
+    try {
+      switch (loginOption) {
+        case "Icp":
+          await authenticateWithWallet("II"); // Internet Identity
+          break;
+        case "Plug":
+          await authenticateWithWallet("Plug"); // Plug Wallet
+          break;
+        case "Nfid":
+          await authenticateWithWallet("NFID"); // NFID
+          break;
+        default:
+          console.log("Unknown login option");
+      }
+      setModalIsOpen(false);
+    } catch (e) {
+      console.error("Error while connecting:", e);
+    }
+  };
+  
   // Close modal handler
   const closeModal = () => {
     setModalIsOpen(false);
@@ -73,7 +72,7 @@ const ConnectWallet = ({ modalIsOpen, setModalIsOpen }) => {
         onRequestClose={closeModal}
         contentLabel="Connect Wallet"
         className="fixed inset-0 flex items-center justify-center bg-transparent"
-        overlayClassName="fixed z-[100] inset-0  bg-opacity-50"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm z-50"
       >
         <div className="bg-[#222222] p-[15px] md:p-[20px] relative w-[80%] md:w-[440px] border border-[#696969] rounded-xl">
           

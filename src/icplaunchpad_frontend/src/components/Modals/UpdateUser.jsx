@@ -8,8 +8,11 @@ import { useAuth } from '../../StateManagement/useContext/useAuth';
 import { useDispatch } from 'react-redux';
 import { addUserData } from '../../Redux-Config/ReduxSlices/UserSlice';
 import { Principal } from '@dfinity/principal';
-import { validationSchema } from '../../common/UserValidation'; 
-
+import { validationSchema } from '../../common/UserValidation'; // Adjust this import path
+import ReactSelect from 'react-select';
+import getReactSelectStyles from '../../common/Reactselect';
+import { getSocialLogo } from '../../common/getSocialLogo';
+import { FaTrash } from "react-icons/fa";
 const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const { actor, principal, isAuthenticated } = useAuth();
   const dispatch = useDispatch();
@@ -63,7 +66,12 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
       console.error('Error fetching user data:', err);
     }
   };
-
+  const addLink = () => {
+        setPresaleDetails((prev) => ({
+          ...prev,
+          social_links: [...prev.social_links, { type: "", url: "" }],
+        }));
+      };
   const onSubmit = async (data) => {
     setIsSubmitting(true);
     setValidationError('');
@@ -140,7 +148,7 @@ try {
         onRequestClose={closeModal}
         contentLabel="Update User Modal"
         className="fixed inset-0 flex items-center justify-center bg-transparent"
-        overlayClassName="fixed z-[100] inset-0 bg-opacity-50"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm z-50"
         ariaHideApp={false}
       >
         <div className="bg-[#222222] p-6 rounded-2xl text-white max-h-[100vh] overflow-y-auto no-scrollbar w-[786px] relative">
