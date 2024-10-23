@@ -200,7 +200,7 @@ import ReviewInfoTab from "./Tabs/ReviewInfoTab";
 import StepProgressBar from "./StepProgressBar";
 import { useAuth } from "../../StateManagement/useContext/useAuth";
 import { Principal } from "@dfinity/principal";
-
+import { ThreeDots } from "react-loader-spinner"; 
 // Validation schema using Yup
 const getSchemaForStep = (step) => {
   switch (step) {
@@ -232,6 +232,73 @@ const getSchemaForStep = (step) => {
           .date()
           .required("End time is required")
           .min(yup.ref("startTime"), "End time should be after the start time"),
+        social_links: yup
+          .array()
+          .of(
+            yup.object().shape({
+              link: yup
+                .string()
+                .test(
+                  'no-leading-trailing-spaces',
+                  'URL should not have leading or trailing spaces',
+                  (value) => {
+                    return value === value?.trim();
+                  }
+                )
+                .test(
+                  'no-invalid-extensions',
+                  'URL should not end with .php, .js, or .txt',
+                  (value) => {
+                    const invalidExtensions = ['.php', '.js', '.txt'];
+                    return value
+                      ? !invalidExtensions.some((ext) => value.endsWith(ext))
+                      : true;
+                  }
+                )
+                .test('is-website', 'Only website links are allowed', (value) => {
+                  if (value) {
+                    try {
+                      const url = new URL(value);
+                      const hostname = url.hostname.toLowerCase();
+                      const validExtensions = [
+                        '.com',
+                        '.org',
+                        '.net',
+                        '.in',
+                        '.co',
+                        '.io',
+                        '.gov',
+                      ];
+                      const hasValidExtension = validExtensions.some((ext) =>
+                        hostname.endsWith(ext)
+                      );
+                      return hasValidExtension;
+                    } catch (err) {
+                      return false;
+                    }
+                  }
+                  return true;
+                })
+                .url('Invalid URL')
+                .nullable(true)
+                .optional(),
+            })
+          )
+          .max(10, 'You can only add up to 10 links') // Restrict the array to a maximum of 10 links
+          .optional(),
+        // Image Validation
+        logoURL: yup
+          .mixed()
+          .nullable(false) 
+          .test("fileSize", "File size max 10MB allowed", (value) => {
+            return !value || (value && value.size <= 10 * 1024 * 1024); 
+          })
+          .test("fileType", "Only jpeg, jpg & png file format allowed", (value) => {
+            return (
+              !value ||
+              (value && ["image/jpeg", "image/jpg", "image/png"].includes(value.type))
+            );
+          }),
       });
     case 3:
       return yup.object().shape({
@@ -266,7 +333,7 @@ const VerifyToken = () => {
   const location = useLocation();
   const { actor, principal } = useAuth();
   const { formData, ledger_canister_id } = location.state || {};
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
 const {
   register,
   handleSubmit,
@@ -290,6 +357,7 @@ console.log("Form validation errors:", errors);
   const submitPresaleDetails = async (data) => {
     console.log("Submitting presale details with data:", data);
     try {
+      setIsSubmitting(true);
       const {
         presaleRate,
         minimumBuy,
@@ -347,6 +415,8 @@ console.log("Form validation errors:", errors);
       setError(
         "An error occurred while submitting the presale details. Please try again."
       );
+    } finally {
+      setIsSubmitting(false); 
     }
   };
 
@@ -416,13 +486,27 @@ console.log("Form validation errors:", errors);
         )}
         {currentStep <= 4 && (
           <button
-            className="border-1 bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5] text-black w-[80px]  ss2:w-[115px] sm4:w-[210px] h-[35px] text-[17px] font-[600] rounded-2xl"
+            className="border-1 flex justify-center items-center bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5] text-black w-[80px] h-[35px] text-[17px] font-[600] rounded-2xl"
             onClick={() => {
-              console.log("Next button clicked"); 
               handleNext();
+              disabled = { isSubmitting }
             }}
           >
-            {currentStep === 4 ? "Submit" : "Next"}
+            {/* {currentStep === 4 ? "Submit" : "Next"} */}
+            {isSubmitting ? (
+              <ThreeDots
+                visible={true}
+                height="35"
+                width="35"
+                color="#FFFEFF"
+                radius="9"
+                ariaLabel="three-dots-loading"
+              />
+            ) : currentStep === 4 ? (
+              "Submit"
+            ) : (
+              "Next"
+            )}
           </button>
         )}
       </div>

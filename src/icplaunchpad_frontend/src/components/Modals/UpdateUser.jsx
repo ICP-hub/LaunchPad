@@ -11,8 +11,7 @@ import { Principal } from '@dfinity/principal';
 import { validationSchema } from '../../common/UserValidation'; // Adjust this import path
 import ReactSelect from 'react-select';
 import getReactSelectStyles from '../../common/Reactselect';
-import { getSocialLogo } from '../../common/getSocialLogo';
-import { FaTrash } from "react-icons/fa";
+
 const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const { actor, principal, isAuthenticated } = useAuth();
   const dispatch = useDispatch();
@@ -21,6 +20,9 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [userData, setUserData] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+ // State for managing social links
+ const [links, setLinks] = useState([{ url: '' }]);
 
   const userPrincipal = Principal.fromText(principal);
 
@@ -66,17 +68,12 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
       console.error('Error fetching user data:', err);
     }
   };
-  const addLink = () => {
-        setPresaleDetails((prev) => ({
-          ...prev,
-          social_links: [...prev.social_links, { type: "", url: "" }],
-        }));
-      };
+
   const onSubmit = async (data) => {
     setIsSubmitting(true);
     setValidationError('');
 
-const { name, username, profile, links, tag } = data;
+const { name, username, profile, links, tags } = data;
 
 if (!termsAccepted) {
   setIsSubmitting(false);
@@ -95,13 +92,13 @@ try {
 
   const linksArray = links.split(',').map(link => link.trim());
 
-  const updatedUserData = {
-    name,
-    username,
-    profile_picture: profilePicture?.length ? [profilePicture] : [],
-    links: linksArray,
-    tag,
-  };
+      const updatedUserData = {
+        name,
+        username,
+        profile_picture: profilePicture?.length ? [profilePicture] : [],
+        links: linksArray,
+        tag: tags,
+      };
 
   const response = await actor.update_user_account(userPrincipal, updatedUserData);
   if (response?.Err) {
@@ -141,6 +138,14 @@ try {
 
   const closeModal = () => setUserModalIsOpen(false);
 
+  // Add necessary states for the select options
+  const [tagsOptions] = useState([
+    { value: 'tag1', label: 'Tag 1' },
+    { value: 'tag2', label: 'Tag 2' },
+    // Add more options as needed
+  ]);
+  const [tagsSelectedOptions, setTagsSelectedOptions] = useState([]);
+
   return (
     <div className="absolute">
       <Modal
@@ -148,7 +153,7 @@ try {
         onRequestClose={closeModal}
         contentLabel="Update User Modal"
         className="fixed inset-0 flex items-center justify-center bg-transparent"
-        overlayClassName="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm z-50"
+        overlayClassName="fixed z-[100] inset-0 bg-opacity-50"
         ariaHideApp={false}
       >
         <div className="bg-[#222222] p-6 rounded-2xl text-white max-h-[100vh] overflow-y-auto no-scrollbar w-[786px] relative">
@@ -162,62 +167,111 @@ try {
             <h2 className="text-[25px] font-semibold">Update User</h2>
           </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        {/* Name */}
-        <div>
-          <label className="block mb-2 text-[16px]">Name</label>
-          <input
-            type="text"
-            {...register('name')} // Use 'full_name' from the validation schema
-            className="w-full p-2 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
-          />
-          {errors.full_name && <p className="text-red-500">{errors.full_name.message}</p>} {/* Update error handling */}
-        </div>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {/* Name */}
+            <div>
+              <label className="block mb-2 text-[16px]">Name</label>
+              <input
+                type="text"
+                {...register('name')} // Use 'full_name' from the validation schema
+                {...register('name')} // Use 'full_name' from the validation schema
+                className="w-full p-2 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
+              />
+              {errors.name && <p className="text-red-500">{errors.name.message}</p>} {/* Update error handling */}
+            </div>
 
-        {/* Username */}
-        <div>
-          <label className="block mb-2 text-[16px]">Username</label>
-          <input
-            type="text"
-            {...register('username')}
-            className="w-full p-2 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
-          />
-          {errors.user_name && <p className="text-red-500">{errors.user_name.message}</p>}
-        </div>
+            {/* Username */}
+            <div>
+              <label className="block mb-2 text-[16px]">Username</label>
+              <input
+                type="text"
+                {...register('username')}
+                {...register('username')}
+                className="w-full p-2 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
+              />
+              {errors.username && <p className="text-red-500">{errors.username.message}</p>}
+            </div>
 
-        {/* Profile Picture */}
-        <div>
-          <label className="block mb-2 text-[16px]">Profile Picture</label>
-          <input
-            type="file"
-            {...register('profile')}
-            
-        className="w-full p-2 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
-          />
-          {errors.image && <p className="text-red-500">{errors.image.message}</p>} {/* Add error handling for image */}
-        </div>
-
-        {/* Social Links */}
-        <div>
-          <label className="block mb-2 text-[16px]">Social Links</label>
-          <input
-            type="text"
-            {...register('links')}
+            {/* Profile Picture */}
+            <div>
+              <label className="block mb-2 text-[16px]">Profile Picture</label>
+              <input
+                type="file"
+                {...register('profile')}
+                
             className="w-full p-2 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
-          />
-          {errors.social_links && <p className="text-red-500">{errors.social_links.message}</p>}
-        </div>
+              />
+              {errors.image && <p className="text-red-500">{errors.image.message}</p>} {/* Add error handling for image */}
+            </div>
 
-        {/* Tag */}
-        <div>
-          <label className="block mb-2 text-[16px]">Tag</label>
-          <input
-            type="text"
-            {...register('tag')}
-            className="w-full p-2 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
-          />
-          {errors.tag && <p className="text-red-500">{errors.tag.message}</p>}
-        </div>
+            {/* Social Links */}
+            <div className="mb-4">
+              <h2 className="block text-[19px] mb-1">Social Links</h2>
+              {links.map((link, index) => (
+                <div key={index} className="flex gap-2 items-center mb-2">
+                  {getSocialLogo(link.url)}
+
+                  <input
+                    type="url"
+                    className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
+                    placeholder="Enter URL"
+                    value={link.url}
+                    onChange={(e) => updateLink(index, "url", e.target.value)}
+                  />
+                  <button
+                    onClick={() => removeLink(index)}
+                    className="ml-2 text-red-500"
+                  >
+                    <FaTrash />
+                  </button>
+                </div>
+              ))}
+              <button onClick={addLink} className="text-blue-400 mt-2">
+                + Add another link
+              </button>
+              {errors.links && <p className="text-red-500">{errors.links.message}</p>}
+            </div>
+
+            {/* Tags */}
+            <div>
+              <label className="block mb-2 text-[16px]">Tags</label>
+              <ReactSelect
+                isMulti
+                menuPortalTarget={document.body}
+                menuPosition={'fixed'}
+                styles={getReactSelectStyles(
+                  errors?.tags && isFormTouched.tags
+                )}
+                value={tagsSelectedOptions}
+                options={tagsOptions}
+                classNamePrefix='select'
+                className=' w-full p-2 bg-[#333333] text-white rounded-md border-b-2'
+                placeholder='Select your tags'
+                name='tags'
+                onChange={(selectedOptions) => {
+                  if (selectedOptions && selectedOptions.length > 0) {
+                    setTagsSelectedOptions(selectedOptions);
+                    clearErrors('tags');
+                    setValue(
+                      'tags',
+                      selectedOptions.map((option) => option.value).join(', '),
+                      { shouldValidate: true }
+                    );
+                  } else {
+                    setTagsSelectedOptions([]);
+                    setValue('tags', '', {
+                      shouldValidate: true,
+                    });
+                    setError('tags', {
+                      type: 'required',
+                      message: 'Selecting at least one tag is required',
+                    });
+                  }
+                  handleFieldTouch('tags');
+                }}
+              />
+              {errors.tags && <p className="text-red-500">{errors.tags.message}</p>}
+            </div>
 
         {/* Terms and Conditions */}
         <div className="flex items-center mt-4">

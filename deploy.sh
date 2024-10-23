@@ -39,6 +39,7 @@ dfx deploy token_deployer --argument '(
   }
 )'
 
+dfx identity use controller 
 
 dfx deploy index_canister --argument '(opt variant { Init = record { ledger_id = principal "aaaaa-aa"; retrieve_blocks_from_ledger_interval_seconds = opt 10 } })'
 
@@ -49,6 +50,7 @@ dfx identity new minter
   dfx identity use default
   export DEFAULT_ACCOUNT_ID=$(dfx ledger account-id)
 
+dfx identity use controller 
   dfx deploy --specified-id ryjl3-tyaaa-aaaaa-aaaba-cai icp_ledger_canister --argument "
     (variant {
       Init = record {
@@ -72,8 +74,10 @@ dfx identity new minter
     })
   "
 
+dfx identity use controller 
 dfx deploy ic_asset_handler
 
+dfx identity use controller 
 dfx deploy icplaunchpad_frontend
 
 
