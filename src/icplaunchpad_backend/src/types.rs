@@ -11,7 +11,7 @@ pub struct UserAccount {
     pub username: String,
     pub profile_picture: Option<ByteBuf>, // Placeholder for profile picture data
     pub links: Vec<String>,               // Social media links
-    pub tag: Vec<String>,                      // User's role like block explorer, investor, etc.
+    pub tag: String,                      // User's role like block explorer, investor, etc.
 }
 
 #[derive(CandidType, Serialize, Deserialize, Debug, Clone)]

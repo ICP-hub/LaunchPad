@@ -49,8 +49,6 @@ dfx identity new minter
   dfx identity use default
   export DEFAULT_ACCOUNT_ID=$(dfx ledger account-id)
 
-  dfx identity use controller
-
   dfx deploy --specified-id ryjl3-tyaaa-aaaaa-aaaba-cai icp_ledger_canister --argument "
     (variant {
       Init = record {
@@ -74,11 +72,7 @@ dfx identity new minter
     })
   "
 
-dfx identity use controller
-
 dfx deploy ic_asset_handler
-
-dfx identity use controller
 
 dfx deploy icplaunchpad_frontend
 

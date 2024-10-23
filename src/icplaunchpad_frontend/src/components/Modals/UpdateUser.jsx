@@ -11,8 +11,7 @@ import { Principal } from '@dfinity/principal';
 import { validationSchema } from '../../common/UserValidation'; // Adjust this import path
 import ReactSelect from 'react-select';
 import getReactSelectStyles from '../../common/Reactselect';
-import { getSocialLogo } from '../../common/getSocialLogo';
-import { FaTrash } from "react-icons/fa";
+
 const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const { actor, principal, isAuthenticated } = useAuth();
   const dispatch = useDispatch();
@@ -22,8 +21,8 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const [userData, setUserData] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
- // State for managing social links
- const [links, setLinks] = useState([{ url: '' }]);
+  // State for managing social links
+  const [links, setLinks] = useState([{ url: '' }]);
 
   const userPrincipal = Principal.fromText(principal);
 
@@ -69,12 +68,7 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
       console.error('Error fetching user data:', err);
     }
   };
-  const addLink = () => {
-        setPresaleDetails((prev) => ({
-          ...prev,
-          social_links: [...prev.social_links, { type: "", url: "" }],
-        }));
-      };
+
   const onSubmit = async (data) => {
     setIsSubmitting(true);
     setValidationError('');
@@ -103,7 +97,7 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
         username,
         profile_picture: profilePicture?.length ? [profilePicture] : [],
         links: linksArray,
-        tag:tags,
+        tag: tags,
       };
 
       const response = await actor.update_user_account(userPrincipal, updatedUserData);
@@ -145,12 +139,12 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const closeModal = () => setUserModalIsOpen(false);
 
   // Add necessary states for the select options
-const [tagsOptions] = useState([
-  { value: 'tag1', label: 'Tag 1' },
-  { value: 'tag2', label: 'Tag 2' },
-  // Add more options as needed
-]);
-const [tagsSelectedOptions, setTagsSelectedOptions] = useState([]);
+  const [tagsOptions] = useState([
+    { value: 'tag1', label: 'Tag 1' },
+    { value: 'tag2', label: 'Tag 2' },
+    // Add more options as needed
+  ]);
+  const [tagsSelectedOptions, setTagsSelectedOptions] = useState([]);
 
   return (
     <div className="absolute">
@@ -159,7 +153,7 @@ const [tagsSelectedOptions, setTagsSelectedOptions] = useState([]);
         onRequestClose={closeModal}
         contentLabel="Update User Modal"
         className="fixed inset-0 flex items-center justify-center bg-transparent"
-        overlayClassName="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm z-50"
+        overlayClassName="fixed z-[100] inset-0 bg-opacity-50"
         ariaHideApp={false}
       >
         <div className="bg-[#222222] p-6 rounded-2xl text-white max-h-[100vh] overflow-y-auto no-scrollbar w-[786px] relative">
@@ -210,8 +204,8 @@ const [tagsSelectedOptions, setTagsSelectedOptions] = useState([]);
               {errors.image && <p className="text-red-500">{errors.image.message}</p>} {/* Add error handling for image */}
             </div>
 
-             {/* Social Links */}
-             <div className="mb-4">
+            {/* Social Links */}
+            <div className="mb-4">
               <h2 className="block text-[19px] mb-1">Social Links</h2>
               {links.map((link, index) => (
                 <div key={index} className="flex gap-2 items-center mb-2">
@@ -238,46 +232,46 @@ const [tagsSelectedOptions, setTagsSelectedOptions] = useState([]);
               {errors.links && <p className="text-red-500">{errors.links.message}</p>}
             </div>
 
-              {/* Tags */}
-           <div>
-    <label className="block mb-2 text-[16px]">Tags</label>
-    <ReactSelect
-      isMulti
-      menuPortalTarget={document.body}
-      menuPosition={'fixed'}
-      styles={getReactSelectStyles(
-        errors?.tags && isFormTouched.tags
-      )}
-      value={tagsSelectedOptions}
-      options={tagsOptions}
-      classNamePrefix='select'
-      className=' w-full p-2 bg-[#333333] text-white rounded-md border-b-2'
-      placeholder='Select your tags'
-      name='tags'
-      onChange={(selectedOptions) => {
-        if (selectedOptions && selectedOptions.length > 0) {
-          setTagsSelectedOptions(selectedOptions);
-          clearErrors('tags');
-          setValue(
-            'tags',
-            selectedOptions.map((option) => option.value).join(', '),
-            { shouldValidate: true }
-          );
-        } else {
-          setTagsSelectedOptions([]);
-          setValue('tags', '', {
-            shouldValidate: true,
-          });
-          setError('tags', {
-            type: 'required',
-            message: 'Selecting at least one tag is required',
-          });
-        }
-        handleFieldTouch('tags');
-      }}
-    />
-    {errors.tags && <p className="text-red-500">{errors.tags.message}</p>}
-  </div>
+            {/* Tags */}
+            <div>
+              <label className="block mb-2 text-[16px]">Tags</label>
+              <ReactSelect
+                isMulti
+                menuPortalTarget={document.body}
+                menuPosition={'fixed'}
+                styles={getReactSelectStyles(
+                  errors?.tags && isFormTouched.tags
+                )}
+                value={tagsSelectedOptions}
+                options={tagsOptions}
+                classNamePrefix='select'
+                className=' w-full p-2 bg-[#333333] text-white rounded-md border-b-2'
+                placeholder='Select your tags'
+                name='tags'
+                onChange={(selectedOptions) => {
+                  if (selectedOptions && selectedOptions.length > 0) {
+                    setTagsSelectedOptions(selectedOptions);
+                    clearErrors('tags');
+                    setValue(
+                      'tags',
+                      selectedOptions.map((option) => option.value).join(', '),
+                      { shouldValidate: true }
+                    );
+                  } else {
+                    setTagsSelectedOptions([]);
+                    setValue('tags', '', {
+                      shouldValidate: true,
+                    });
+                    setError('tags', {
+                      type: 'required',
+                      message: 'Selecting at least one tag is required',
+                    });
+                  }
+                  handleFieldTouch('tags');
+                }}
+              />
+              {errors.tags && <p className="text-red-500">{errors.tags.message}</p>}
+            </div>
 
             {/* Terms and Conditions */}
             <div className="flex items-center mt-4">
