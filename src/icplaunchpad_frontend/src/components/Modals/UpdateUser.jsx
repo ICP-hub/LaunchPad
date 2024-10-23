@@ -38,17 +38,28 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
     }
   }, [isAuthenticated, userModalIsOpen]);
 
+  // useEffect(() => {
+  //   if (userData) {
+  //     reset({
+  //       name: userData[0]?.name || '',
+  //       username: userData[0]?.username || '',
+  //       links: userData[0]?.links ? userData[0].links.join(', ') : '',
+  //       tag: userData[0]?.tag || '',
+  //     });
+  //   }
+  // }, [userData, reset]);
   useEffect(() => {
-    if (userData) {
+    if (userData && userData.length > 0) {
+      const user = userData[0]; 
+      console.log("Resetting form with data:", user);
       reset({
-        name: userData[0]?.name || '',
-        username: userData[0]?.username || '',
-        links: userData[0]?.links ? userData[0].links.join(', ') : '',
-        tag: userData[0]?.tag || '',
+        name: user?.name || '',
+        username: user?.username || '',
+        links: user?.links ? user.links.join(', ') : '', 
+        tag: user?.tag || '',
       });
     }
   }, [userData, reset]);
-
   const getUser = async () => {
     try {
       const data = await actor.get_user_account(userPrincipal);
@@ -169,6 +180,7 @@ const [tagsSelectedOptions, setTagsSelectedOptions] = useState([]);
               <input
                 type="text"
                 {...register('name')} // Use 'full_name' from the validation schema
+                {...register('name')} // Use 'full_name' from the validation schema
                 className="w-full p-2 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
               />
               {errors.name && <p className="text-red-500">{errors.name.message}</p>} {/* Update error handling */}
@@ -180,6 +192,7 @@ const [tagsSelectedOptions, setTagsSelectedOptions] = useState([]);
               <input
                 type="text"
                 {...register('username')}
+                {...register('username')}
                 className="w-full p-2 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
               />
               {errors.username && <p className="text-red-500">{errors.username.message}</p>}
@@ -190,8 +203,9 @@ const [tagsSelectedOptions, setTagsSelectedOptions] = useState([]);
               <label className="block mb-2 text-[16px]">Profile Picture</label>
               <input
                 type="file"
-                {...register('image')} // Update to use 'image' from validation schema
-                className="w-full p-2 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
+                {...register('profile')}
+                
+            className="w-full p-2 bg-[#444444] text-white rounded-3xl border-b-2 outline-none"
               />
               {errors.image && <p className="text-red-500">{errors.image.message}</p>} {/* Add error handling for image */}
             </div>
