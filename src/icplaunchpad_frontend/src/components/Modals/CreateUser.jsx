@@ -11,12 +11,11 @@ import ReactSelect from 'react-select';
 
 import getReactSelectStyles from '../../common/Reactselect';
 import { FaTrash } from "react-icons/fa";
-
+import getSocialLogo from "../../common/getSocialLogo";
 import { validationSchema } from '../../common/UserValidation';
 import AnimationButton from '../../common/AnimationButton';
 import { useAuth } from '../../StateManagement/useContext/useAuth';
 import { addUserData } from '../../Redux-Config/ReduxSlices/UserSlice';
-import { getSocialLogo } from '../../common/getSocialLogo';
 
 const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const navigate = useNavigate();
@@ -179,8 +178,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               <input
                 type="text"
                 {...register("username")}
-                className={`w-full p-1 pl-2 bg-[#333333] text-white rounded-md outline-none ${errors.user_name ? "border-red-500" : "border-white"
-                  } border-b-2`}
+                className="w-full p-1 pl-2 bg-[#333333] text-white rounded-md border-b-2 outline-none"
               />
               {errors.username && <p className="text-red-500">{errors.username.message}</p>}
             </div>
@@ -210,8 +208,8 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               {errors.profile_picture && <p className="text-red-500">{errors.profile_picture.message}</p>}
             </div>
 
-                   {/* Social Links */}
-                   <div className="mb-4">
+            {/* Social Links */}
+            <div className="mb-4">
               <h2 className="block text-[19px] mb-1">Social Links</h2>
               {links.map((link, index) => (
                 <div key={link.id} className="flex gap-2 items-center mb-2">
@@ -284,8 +282,8 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               {errors.tags && <p className="text-red-500">{errors.tags.message}</p>}
             </div>
 
-          {/* Terms and Conditions */}
-          <div className="flex items-center mt-4 mb-6">
+            {/* Terms and Conditions */}
+            <div className="flex items-center mt-4 mb-6">
               <input
                 type="checkbox"
                 id="termsCheckbox"
@@ -293,9 +291,8 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
                 onChange={() => setTermsAccepted(!termsAccepted)}
                 className="hidden peer"
               />
-              <div className={`w-4 h-4 border-2 flex items-center justify-center rounded-sm mr-2 cursor-pointer ${
-                termsAccepted ? "border-[#F3B3A7]" : "border-white bg-transparent"
-              }`}>
+              <div className={`w-4 h-4 border-2 flex items-center justify-center rounded-sm mr-2 cursor-pointer ${termsAccepted ? "border-[#F3B3A7]" : "border-white bg-transparent"
+                }`}>
                 <label htmlFor="termsCheckbox" className="cursor-pointer w-full h-full flex items-center justify-center">
                   {termsAccepted && <span className="text-[#F3B3A7]">✓</span>}
                 </label>
@@ -312,7 +309,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
             <div className="flex justify-center items-center">
               <AnimationButton
                 text="Submit"
-               
+
                 loading={isSubmitting}
                 isDisabled={isSubmitting}
               />
