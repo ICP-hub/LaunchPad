@@ -11,7 +11,7 @@ import ReactSelect from 'react-select';
 
 import getReactSelectStyles from '../../common/Reactselect';
 import { FaTrash } from "react-icons/fa";
-import getSocialLogo from "../../common/getSocialLogo";
+import { getSocialLogo } from '../../common/getSocialLogo';
 import { validationSchema } from '../../common/UserValidation';
 import AnimationButton from '../../common/AnimationButton';
 import { useAuth } from '../../StateManagement/useContext/useAuth';
