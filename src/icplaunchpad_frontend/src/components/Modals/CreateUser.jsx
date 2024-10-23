@@ -84,6 +84,12 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
           console.error("Error uploading profile picture:", imgErr);
         }
       }
+      
+      if (!principal) {
+        setValidationError("User is not authenticated or principal is missing.");
+        setIsSubmitting(false);
+        return false;
+      } 
 
       // Fetch and store user data
       const ownerPrincipal = Principal.fromText(principal);
