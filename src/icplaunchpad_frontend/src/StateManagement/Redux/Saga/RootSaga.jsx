@@ -19,13 +19,13 @@ export default function* rootSaga() {
     internetIdentitySaga(),
     actorSaga(),
     fetchUserSaga(),
-    fetchUpcomingSalesSaga,
-    fetchTokensInfoSaga,
-    fetchSaleParamsSaga,
-    fetchSuccessfulSalesSaga,
-    fetchActiveSalesSaga,
-    fetchProfileImageIDSaga,
-    fetchTokenImageIDSaga,
-    fetchTokenImageIDsSaga
+    fetchUpcomingSalesSaga(),
+    fetchTokensInfoSaga(),
+    fetchSaleParamsSaga(),
+    fetchSuccessfulSalesSaga(),
+    fetchActiveSalesSaga(),
+    fetchProfileImageIDSaga(),
+    fetchTokenImageIDSaga(),
+    fetchTokenImageIDsSaga()
   ]);
 }
