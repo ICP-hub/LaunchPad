@@ -15,6 +15,7 @@ import { useAuth } from "../../StateManagement/useContext/useAuth";
 import { useDispatch, useSelector } from "react-redux";
 import { addUserData } from "../../Redux-Config/ReduxSlices/UserSlice";
 import UpdateUser from "../Modals/UpdateUser";
+import { userRegisteredHandlerRequest } from "../../StateManagement/Redux/Reducers/userRegisteredData";
 
 const Header = () => {
 
@@ -35,8 +36,8 @@ const Header = () => {
   const [images, setImages] = useState(null);
 
   const { isAuthenticated, principal, actor } = useAuth();
-  const dispatch = useDispatch();
-  const userData = useSelector((state) => state.user);
+  const userData = useSelector((state) => state?.userData?.data[0]);
+
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -53,26 +54,7 @@ const Header = () => {
       const resultResponse = response.slice(-16);
       if (resultResponse === "already created.") {
         setUserRegister(true);
-        // Ensure that principal is valid before proceeding
-        if (principal && principal !== undefined) {
-        try {
-          const ownerPrincipal = Principal.fromText(principal); // Converting string to Principal
-          const fetchedUserData = await actor.get_user_account(ownerPrincipal);
-  
-          if (fetchedUserData && fetchedUserData.length > 0) {
-            const { profile_picture, ...restUserData } = fetchedUserData[0];
-            dispatch(addUserData(restUserData)); // Store user data in global state
-            console.log("Fetched user data:", fetchedUserData);
-          } else { 
-            console.error("Fetched user data is empty or undefined.");
-          }
-        
-        } catch (error) {
-          console.error("Error fetching user data or converting principal:", error);
-        }
-      }else{
-        console.error("Invalid or undefined principal value.");
-      }
+      
       } else {
         setUserRegister(false);
         console.log("User account has not been created yet.");

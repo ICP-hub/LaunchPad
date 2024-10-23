@@ -253,13 +253,10 @@ import { useAuth } from "../../StateManagement/useContext/useAuth";
 import { useNavigate } from "react-router-dom";
 import { Principal } from "@dfinity/principal";
 import { useDispatch } from "react-redux";
-import {
-  addTokenIds,
-  addTokenData,
-} from "../../Redux-Config/ReduxSlices/TokenSlice";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { SetLedgerIdHandler } from "../../StateManagement/Redux/Reducers/LedgerId";
 
 // Define the validation schema using Yup
 const tokenSchema = yup.object().shape({
@@ -366,7 +363,7 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
       if (response.Ok) {
         const { ledger_canister_id, index_canister_id } = response.Ok;
         dispatch(
-          addTokenIds({
+          SetLedgerIdHandler({
             ledger_canister_id: ledger_canister_id.toText(),
             index_canister_id: index_canister_id.toText(),
           })

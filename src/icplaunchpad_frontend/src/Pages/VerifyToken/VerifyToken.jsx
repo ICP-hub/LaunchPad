@@ -129,7 +129,7 @@
 //   };
 
 //   const handleBack = () => {
-//     if (currentStep > 1) setCurrentStep((prevStep) => prevStep - 1);
+//     if (currentSt5ep > 1) setCurrentStep((prevStep) => prevStep - 1);
 //   };
 
 //   return (
@@ -473,10 +473,10 @@ console.log("Form validation errors:", errors);
         {currentStep === 4 && <ReviewInfoTab presaleDetails={presaleDetails} />}
       </div>
 
-      <div className="flex justify-between max-w-2xl mt-4">
+      <div className="flex justify-between max-w-2xl font-posterama mt-[-120px]  dxs:mt-[-190px] xxs1:mt-[-130px] sm2:mt-[-120px] md:mt-[-70px]">
         {currentStep > 1 && (
           <button
-            className="bg-transparent font-posterama border-2 w-[80px] h-[35px] mx-2 text-[17px] font-[400] rounded-2xl"
+            className="bg-transparent font-posterama border-2 w-[80px] ss2:w-[115px] sm4:w-[210px] h-[35px] mx-2 text-[17px] font-[400] rounded-2xl"
             onClick={handleBack}
           >
             <div className="w-full h-full rounded-xl bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5] text-transparent bg-clip-text">

@@ -21,8 +21,8 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const [userData, setUserData] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // State for managing social links
-  const [links, setLinks] = useState([{ url: '' }]);
+ // State for managing social links
+ const [links, setLinks] = useState([{ url: '' }]);
 
   const userPrincipal = Principal.fromText(principal);
 
@@ -73,24 +73,24 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
     setIsSubmitting(true);
     setValidationError('');
 
-    const { name, username, profile, links, tags } = data;
+const { name, username, profile, links, tags } = data;
 
-    if (!termsAccepted) {
-      setIsSubmitting(false);
-      setValidationError('Please accept the terms and conditions.');
-      return;
-    }
+if (!termsAccepted) {
+  setIsSubmitting(false);
+  setValidationError('Please accept the terms and conditions.');
+  return;
+}
 
-    try {
-      let profilePicture = null;
+try {
+  let profilePicture = null;
 
-      if (profile && profile.length > 0) {
-        const file = profile[0];
-        const arrayBuffer = await file.arrayBuffer();
-        profilePicture = Array.from(new Uint8Array(arrayBuffer));
-      }
+  if (profile && profile.length > 0) {
+    const file = profile[0];
+    const arrayBuffer = await file.arrayBuffer();
+    profilePicture = Array.from(new Uint8Array(arrayBuffer));
+  }
 
-      const linksArray = links.split(',').map(link => link.trim());
+  const linksArray = links.split(',').map(link => link.trim());
 
       const updatedUserData = {
         name,
@@ -100,40 +100,40 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
         tag: tags,
       };
 
-      const response = await actor.update_user_account(userPrincipal, updatedUserData);
-      if (response?.Err) {
-        setIsSubmitting(false);
-        setValidationError(response.Err);
-        return;
-      }
+  const response = await actor.update_user_account(userPrincipal, updatedUserData);
+  if (response?.Err) {
+    setIsSubmitting(false);
+    setValidationError(response.Err);
+    return;
+  }
 
-      console.log('User updated:', response);
+  console.log('User updated:', response);
 
-      if (profilePicture?.length > 0) {
-        try {
-          const imageUploadResponse = await actor.upload_profile_image('br5f7-7uaaa-aaaaa-qaaca-cai', {
-            content: [profilePicture],
-          });
-          console.log('Profile picture uploaded:', imageUploadResponse);
-        } catch (imgErr) {
-          console.error('Error uploading profile picture:', imgErr);
-        }
-      }
-
-      const updatedData = await actor.get_user_account(userPrincipal);
-      if (updatedData) {
-        const { profile_picture, ...restUserData } = updatedData[0];
-        dispatch(addUserData(restUserData));
-      }
-
-      setUserModalIsOpen(false);
-      reset();
-    } catch (err) {
-      console.error('Error updating user:', err);
-      setValidationError('An error occurred while updating the user.');
-    } finally {
-      setIsSubmitting(false);
+  if (profilePicture?.length > 0) {
+    try {
+      const imageUploadResponse = await actor.upload_profile_image('br5f7-7uaaa-aaaaa-qaaca-cai', {
+        content: [profilePicture],
+      });
+      console.log('Profile picture uploaded:', imageUploadResponse);
+    } catch (imgErr) {
+      console.error('Error uploading profile picture:', imgErr);
     }
+  }
+
+  const updatedData = await actor.get_user_account(userPrincipal);
+  if (updatedData) {
+    const { profile_picture, ...restUserData } = updatedData[0];
+    dispatch(addUserData(restUserData));
+  }
+
+  setUserModalIsOpen(false);
+  reset();
+} catch (err) {
+  console.error('Error updating user:', err);
+  setValidationError('An error occurred while updating the user.');
+} finally {
+  setIsSubmitting(false);
+}
   };
 
   const closeModal = () => setUserModalIsOpen(false);
@@ -273,42 +273,42 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               {errors.tags && <p className="text-red-500">{errors.tags.message}</p>}
             </div>
 
-            {/* Terms and Conditions */}
-            <div className="flex items-center mt-4">
-              <input
-                type="checkbox"
-                id="termsCheckbox"
-                checked={termsAccepted}
-                onChange={() => setTermsAccepted(!termsAccepted)}
-                className="hidden peer"
-              />
-              <div
-                className={`w-4 h-4 border-2 flex items-center justify-center rounded-sm mr-2 cursor-pointer 
-                ${termsAccepted ? 'border-[#F3B3A7]' : 'border-white bg-transparent'}`}
-              >
-                <label
-                  htmlFor="termsCheckbox"
-                  className="cursor-pointer w-full h-full flex items-center justify-center"
-                >
-                  {termsAccepted && <span className="text-[#F3B3A7]">✓</span>}
-                </label>
-              </div>
-              <p className="text-[15px] text-[#cccccc]">
-                By updating an account, I agree to the terms and conditions.
-              </p>
-            </div>
-
-            {/* Validation Error */}
-            {validationError && <p className="text-red-500 mb-4">{validationError}</p>}
-
-            {/* Submit Button */}
-            <div className="flex justify-center items-center">
-              <AnimationButton text="Submit" loading={isSubmitting} isDisabled={isSubmitting} />
-            </div>
-          </form>
+        {/* Terms and Conditions */}
+        <div className="flex items-center mt-4">
+          <input
+            type="checkbox"
+            id="termsCheckbox"
+            checked={termsAccepted}
+            onChange={() => setTermsAccepted(!termsAccepted)}
+            className="hidden peer"
+          />
+          <div
+            className={`w-4 h-4 border-2 flex items-center justify-center rounded-sm mr-2 cursor-pointer 
+            ${termsAccepted ? 'border-[#F3B3A7]' : 'border-white bg-transparent'}`}
+          >
+            <label
+              htmlFor="termsCheckbox"
+              className="cursor-pointer w-full h-full flex items-center justify-center"
+            >
+              {termsAccepted && <span className="text-[#F3B3A7]">✓</span>}
+            </label>
+          </div>
+          <p className="text-[15px] text-[#cccccc]">
+            By updating an account, I agree to the terms and conditions.
+          </p>
         </div>
-      </Modal>
+
+        {/* Validation Error */}
+        {validationError && <p className="text-red-500 mb-4">{validationError}</p>}
+
+        {/* Submit Button */}
+        <div className="flex justify-center items-center">
+          <AnimationButton text="Submit" loading={isSubmitting} isDisabled={isSubmitting} />
+        </div>
+      </form>
     </div>
+  </Modal>
+</div>
   );
 };
 

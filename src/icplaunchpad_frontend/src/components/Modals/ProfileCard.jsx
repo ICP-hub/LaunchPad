@@ -9,20 +9,19 @@ import { useSelector } from 'react-redux';
 
 
 const ProfileCard = ({ profileModalIsOpen, setProfileModalIsOpen }) => {
-  const { logout, isAuthenticated, principal, actor } = useAuth();
+  const { logout, principal } = useAuth();
   const protocol = process.env.DFX_NETWORK === "ic" ? "https" : "http";
 const domain = process.env.DFX_NETWORK === "ic" ? "raw.icp0.io" : "localhost:4943";
 const canisterId = process.env.CANISTER_ID_IC_ASSET_HANDLER;
   const[profileImg,setProfileImg]=useState();
-  const UserData =useSelector((state)=> state.user)
+  const UserData =useSelector((state)=> state?.userData?.data[0])
+  const profile_ImgId = useSelector((state)=> state?.ProfileImageID?.data)
 
   useEffect(()=>{
     getProfileIMG();
-  },[isAuthenticated])
+  },[])
 
 async function getProfileIMG(){
-  // const actor = createCustomActor(process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND);
-  const profile_ImgId = await actor.get_profile_image_id();
   const imageUrl = `${protocol}://${canisterId}.${domain}/f/${profile_ImgId[0]}`;
   setProfileImg(imageUrl);
   console.log("userImg-", imageUrl);

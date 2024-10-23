@@ -217,7 +217,7 @@ const AdditionalInfoTab = ({
   };
 
   return (
-    <div className="bg-[#222222] p-3 rounded-2xl mx-3 mb-6">
+    <div className="bg-[#222222] p-3 rounded-2xl mx-3 mb-6 mb-[80px] dxs:mb-[140px] xxs1:mb-[90px] sm2:mb-[70px]  md:mb-[30px] h-[550px]   ss2:h-[600px] md:h-[550px] ">
       {/* File Upload */}
       <div className="flex flex-col justify-between mb-4">
         <label className="block text-[19px] mb-1">Logo</label>

@@ -22,8 +22,9 @@ import AddToWhitelist from "../../components/Modals/AddToWhitelist.jsx";
 import { useAuth } from "../../StateManagement/useContext/useAuth.jsx";
 import { Principal } from '@dfinity/principal';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import UpdateToken from "../../components/Modals/UpdateToken.jsx";
+import { SaleParamsHandlerRequest } from "../../StateManagement/Redux/Reducers/SaleParams.jsx";
 
 const TokenPage = () => {
   const [activeTab, setActiveTab] = useState("About");
@@ -40,12 +41,13 @@ const TokenPage = () => {
   const canisterId = process.env.CANISTER_ID_IC_ASSET_HANDLER;
   const [presaleData, setPresaleData]= useState(null);
   const [ledgerActor, setLedgerActor]=useState(null);
-  const [ledgerId, setLedgerId]=useState(null);
 
+   const dispatch=useDispatch()
 
-  const location = useLocation();
-  const userData=useSelector((state)=>state.user);
-    const { ledger_canister_id } = location.state || {};
+  // const location = useLocation();
+  // const userData=useSelector((state)=>state.user);
+  const ledger_canister_id=useSelector((state)=> state?.LedgerId?.data?.ledger_canister_id )
+  console.log("ledgerCanister-",ledger_canister_id)
 
     function handleTokenEdit(){
       setTokenModalIsOpen(true)
@@ -55,41 +57,20 @@ const TokenPage = () => {
       try {
         // Check if ledger_canister_id exists
         if (ledger_canister_id) {
-          // Convert ledger_canister_id to a Principal ID
-          const ledgerid = Principal.fromUint8Array(ledger_canister_id).toText();
-          setLedgerId(ledgerid);
     
           // Create a custom actor for the ledger and set it in state
-          const ledgerActor = await createCustomActor(ledgerid);
+          const ledgerActor = await createCustomActor(ledger_canister_id);
           setLedgerActor(ledgerActor);
           console.log("Ledger Actor =", ledgerActor);
           
           //fetching token info with ledgerActor
           const tokenName= await ledgerActor.icrc1_name();
-          setTokenData({canister_id:ledgerid, token_name:tokenName})
-        } else {
-          // Fetch tokens info and set the latest token data if ledger_canister_id is not available
-          const tokensInfo = await actor.get_tokens_info();
-          const latestTokenData = tokensInfo[tokensInfo.length - 1];
-          setTokenData(latestTokenData);
-
-          console.log("Fetched token data canister_id:", latestTokenData?.canister_id);
-    
-          // Set ledgerId if canister_id is available in the latest token data
-          const canisterId = latestTokenData?.canister_id;
-          if (canisterId) {
-            setLedgerId(canisterId);
-    
-            // Create a custom actor for the ledger using the canister_id
-            const ledgerActor = await createCustomActor(canisterId);
-            setLedgerActor(ledgerActor);
-            console.log("Ledger Actor =>", ledgerActor);
-          }
+          setTokenData({canister_id:ledger_canister_id, token_name:tokenName})
         }
     
         // Fetch token image if ledgerId is available
-        if (ledgerId) {
-          const ledgerPrincipal = Principal.fromText(ledgerId);
+        if (ledger_canister_id) {
+          const ledgerPrincipal = Principal.fromText(ledger_canister_id);
           
           // Fetch token image ID
           const tokenImgId = await actor.get_token_image_id(ledgerPrincipal);
@@ -103,11 +84,8 @@ const TokenPage = () => {
         }
     
         // Fetch presale data if ledgerId is available
-        if (ledgerId) {
-          const ledgerPrincipalId = Principal.fromText(ledgerId);
-          const presaleData = await actor.get_sale_params(ledgerPrincipalId);
-          setPresaleData(presaleData.Ok);
-          console.log("Presale data:", presaleData);
+        if (ledger_canister_id) {
+          dispatch(SaleParamsHandlerRequest())
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -118,7 +96,7 @@ const TokenPage = () => {
       if (isAuthenticated && actor) {
         fetchData();
       }
-    }, [isAuthenticated, actor, ledgerId]);
+    }, [isAuthenticated, actor, ledger_canister_id]);
     
 
 
