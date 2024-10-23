@@ -43,6 +43,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
     setValidationError('');
 
     const { name, username, links, profile_picture, tags } = data;
+    console.log("links=",links)
 
     if (!termsAccepted) {
       setValidationError("Please accept the terms and conditions.");
@@ -62,7 +63,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
         username,
         profile_picture: profilePictureData.length > 0 ? [profilePictureData] : [],
         links,
-        tags,
+        tag:tags.join(','),
       };
 
       // Create the user account
@@ -214,12 +215,12 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               <h2 className="block text-[19px] mb-1">Social Links</h2>
               {links.map((link, index) => (
                 <div key={link.id} className="flex gap-2 items-center mb-2">
-                  {getSocialLogo(link.url)}
+                  {getSocialLogo(link)}
 
                   <Controller
-                    name={`links[${index}].url`}
+                    name={`links[${index}]`}
                     control={control}
-                    defaultValue={link.url}
+                    defaultValue={link}
                     render={({ field }) => (
                       <input
                         {...field}
@@ -238,7 +239,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
                   </button>
                 </div>
               ))}
-              <button type="button" onClick={() => append({ url: '' })} className="text-blue-400 mt-2">
+              <button type="button" onClick={() => append('')} className="text-blue-400 mt-2">
                 + Add another link
               </button>
               {errors.links && <p className="text-red-500">{errors.links.message}</p>}
