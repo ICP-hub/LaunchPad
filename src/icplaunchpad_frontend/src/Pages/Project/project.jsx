@@ -86,7 +86,7 @@ const TokenPage = () => {
                   alt=""
                 />
                 <img
-                  src={person1}
+                  src={projectData.TokenImg || person1}
                   className="absolute top-0 left-[50%] transform -translate-x-1/2 -translate-y-[35%] rounded-full h-[130px] md:min-h-[177px]"
                   alt=""
                 />
