@@ -369,11 +369,13 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
 
       if (response.Ok) {
         dispatch(TokensInfoHandlerRequest());
+
         const { ledger_canister_id, index_canister_id } = response.Ok;
+        console.log("ledger_canister_id---",ledger_canister_id)
         dispatch(
           SetLedgerIdHandler({
-            ledger_canister_id: ledger_canister_id.toText(),
-            index_canister_id: index_canister_id.toText(),
+            ledger_canister_id: ledger_canister_id,
+            index_canister_id: index_canister_id,
           })
         );
         navigate("/verify-token", {

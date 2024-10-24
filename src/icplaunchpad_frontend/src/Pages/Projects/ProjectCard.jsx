@@ -1,13 +1,19 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import person1 from "../../../assets/images/carousel/person1.png";
 import l3 from '../../../assets/images/carousel/l3.png'
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../StateManagement/useContext/useAuth';
-const ProjectCard = ({projectData, index}) => {
-     
-  const {createCustomActor}= useAuth();
-    const navigate = useNavigate();
+import { Principal } from '@dfinity/principal';
 
+const ProjectCard = ({projectData, index}) => {
+  const protocol = process.env.DFX_NETWORK === "ic" ? "https" : "http";
+  const domain = process.env.DFX_NETWORK === "ic" ? "raw.icp0.io" : "localhost:4943";
+  const canisterId = process.env.CANISTER_ID_IC_ASSET_HANDLER;
+     
+  const {createCustomActor, actor}= useAuth();
+  const [TokenImg,setTokenImg]=useState();
+    const navigate = useNavigate();
+  console.log("d",projectData)
     useEffect(()=>{
       if(projectData.ledger_canister_id)
         FetchProjectData();
@@ -18,6 +24,26 @@ const ProjectCard = ({projectData, index}) => {
       if(ledgerActor){
         console.log(ledgerActor)
       }
+    }
+
+   
+    useEffect(()=>{
+       if(projectData.canister_id){
+        fetchTokenIMG();
+       }
+    },[projectData.canister_id])
+
+    const fetchTokenIMG= async()=>{
+      const  ledgerPrincipal= Principal.fromText(projectData.canister_id)
+       // Fetch token image ID
+       const tokenImgId = await actor.get_token_image_id(ledgerPrincipal);
+       console.log("Fetched token image ID:", tokenImgId);
+ 
+       if (tokenImgId && tokenImgId.length > 0) {
+         const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId[tokenImgId.length - 1]}`;
+         setTokenImg(imageUrl);
+         console.log("Token Image URL:", imageUrl);
+       }
     }
 
     const handleViewMoreClick2 = () => {
@@ -35,7 +61,7 @@ const ProjectCard = ({projectData, index}) => {
           <div className="h-[280px]  rounded-lg py-5 flex flex-col">
             <div className="relative">
               <img
-                src={person1}
+                src={TokenImg ? TokenImg : person1}
                 className="absolute top-0 left-[50%] transform -translate-x-1/2 -translate-y-[50%] rounded-full h-[100px] md:min-h-[114px]"
                 alt={"logo"}
               />
