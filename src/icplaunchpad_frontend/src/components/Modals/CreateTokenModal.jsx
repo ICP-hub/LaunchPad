@@ -290,12 +290,15 @@ const tokenSchema = yup.object().shape({
       }
     ),
 
-  decimals: yup
+    decimals: yup
     .number()
     .typeError("Decimals must be a number")
     .required("Decimals are required")
     .positive("Decimals must be positive")
-    .integer("Decimals must be an integer"),
+    .integer("Decimals must be an integer")
+    .min(1, "Decimals must be greater than 0")
+    .max(255, "Decimals must be less than or equal to 255"),
+  
 
   total_supply: yup
     .number()
@@ -311,6 +314,7 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
  const [isSubmitting, setIsSubmitting] = useState(false);
+ const [validationError, setValidationError] = useState('');
   // React Hook Form setup
   const {
     register,
@@ -330,13 +334,15 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
 
   // Form submission handler
   const onSubmit = async (formData) => {
+    setValidationError('')
     setIsSubmitting(true);
+    try {
     if (!termsAccepted) {
-      alert("Please accept the terms and conditions.");
-      return;
+      setValidationError("Please accept the terms and conditions.");
+      throw("Please accept the terms and conditions")
     }
 
-    try {
+
       const { token_name, token_symbol, decimals, total_supply } = formData;
 
       const ownerPrincipal = Principal.fromText(principal);
@@ -496,7 +502,10 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
                 </p>
               </div>
 
-              {/* Validation Error Message */}
+                 {/* Validation Error Message */}
+               {validationError && (
+                <p className="text-red-500 mb-4">{validationError}</p>
+              )}
               {/* Create Token Button */}
               <div className="flex justify-center items-center">
                 <AnimationButton

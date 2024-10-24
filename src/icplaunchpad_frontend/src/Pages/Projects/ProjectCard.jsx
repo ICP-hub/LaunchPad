@@ -1,11 +1,24 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import person1 from "../../../assets/images/carousel/person1.png";
 import l3 from '../../../assets/images/carousel/l3.png'
 import { useNavigate } from 'react-router-dom';
-
+import { useAuth } from '../../StateManagement/useContext/useAuth';
 const ProjectCard = ({projectData, index}) => {
-
+     
+  const {createCustomActor}= useAuth();
     const navigate = useNavigate();
+
+    useEffect(()=>{
+      if(projectData.ledger_canister_id)
+        FetchProjectData();
+       },[projectData.ledger_canister_id])
+
+   const FetchProjectData=async()=>{
+      const ledgerActor = await createCustomActor(projectData.ledger_canister_id);
+      if(ledgerActor){
+        console.log(ledgerActor)
+      }
+    }
 
     const handleViewMoreClick2 = () => {
         navigate('/project', {state: {projectData} } );
