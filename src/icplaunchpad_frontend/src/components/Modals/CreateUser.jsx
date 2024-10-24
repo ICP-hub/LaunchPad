@@ -15,7 +15,8 @@ import { getSocialLogo } from '../../common/getSocialLogo';
 import { validationSchema } from '../../common/UserValidation';
 import AnimationButton from '../../common/AnimationButton';
 import { useAuth } from '../../StateManagement/useContext/useAuth';
-import { addUserData } from '../../Redux-Config/ReduxSlices/UserSlice';
+import { userRegisteredHandlerRequest } from '../../StateManagement/Redux/Reducers/userRegisteredData';
+
 
 const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const navigate = useNavigate();
@@ -67,11 +68,17 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
 
       // Create the user account
       const response = await actor.create_account(userData);
+      
       if (response?.Err) {
         setValidationError(response.Err);
         setIsSubmitting(false);
         return;
       }
+
+       if(response){
+        console.log("user created ", response)
+         dispatch(userRegisteredHandlerRequest());
+       }
 
       // Upload profile picture if exists
       if (userData.profile_picture.length > 0) {
@@ -89,15 +96,6 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
         setIsSubmitting(false);
         return false;
       } 
-
-      // Fetch and store user data
-      const ownerPrincipal = Principal.fromText(principal);
-      const fetchedUserData = await actor.get_user_account(ownerPrincipal);
-
-      if (fetchedUserData) {
-        const { profile_picture, ...restUserData } = fetchedUserData[0];
-        dispatch(addUserData(restUserData));
-      }
 
       // Close modal, reset form, and navigate to home
       setUserModalIsOpen(false);
