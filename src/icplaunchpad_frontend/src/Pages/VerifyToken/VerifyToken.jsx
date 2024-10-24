@@ -486,7 +486,7 @@ console.log("Form validation errors:", errors);
         )}
         {currentStep <= 4 && (
           <button
-            className="border-1 flex justify-center items-center bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5] text-black w-[80px] h-[35px] text-[17px] font-[600] rounded-2xl"
+            className="border-1 flex justify-center items-center bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5] text-black w-[80px] ss2:w-[115px] sm4:w-[210px]  h-[35px] text-[17px] font-[600] rounded-2xl"
             onClick={() => {
               handleNext();
               disabled = { isSubmitting }

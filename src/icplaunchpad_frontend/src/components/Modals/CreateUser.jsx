@@ -63,7 +63,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
         username,
         profile_picture: profilePictureData.length > 0 ? [profilePictureData] : [],
         links,
-        tag:tags.join(','),
+        tag:tags,
       };
 
       // Create the user account

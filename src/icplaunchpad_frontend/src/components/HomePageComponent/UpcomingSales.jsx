@@ -8,7 +8,7 @@ import ProjectCard from "../../Pages/Projects/ProjectCard";
 
 const UpcomingSales = () => {
   const navigate = useNavigate();
-  const salesData = useSelector((state)=>state?.upcomingSales?.data)
+  const salesData = useSelector((state)=>state.upcomingSales.data)
  
   // Handle navigation to the projects page
   const handleViewMoreClick = () => {
