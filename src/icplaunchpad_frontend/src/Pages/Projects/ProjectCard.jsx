@@ -59,14 +59,14 @@ const ProjectCard = ({projectData, index}) => {
           className="bg-[#FFFFFF1A] cursor-pointer text-white p-1 rounded-xl flex flex-col  ss2:w-[325px]  xxs1:w-[400px]  mt-14"
         >
           <div className="h-[280px]  rounded-lg py-5 flex flex-col">
-            <div className="relative">
+            <div className="relative ">
               <img
                 src={TokenImg ? TokenImg : person1}
-                className="absolute top-0 left-[50%] transform -translate-x-1/2 -translate-y-[50%] rounded-full h-[100px] md:min-h-[114px]"
+                className="absolute top-0 left-[50%] transform -translate-x-1/2 -translate-y-[50%] rounded-full object-cover  h-[100px] w-[100px] md:h-[114px] md:w-[114px] "
                 alt={"logo"}
               />
-               <div className="absolute top-[20px] right-[60px] ss2:right-[100px] xxs1:right-[130px] w-10 h-10  rounded-full border-1 border-gray-300">
-                <img src={l3} alt="small" className="object-cover w-full h-full" />
+               <div className="absolute top-[20px] right-[60px] ss2:right-[100px] xxs1:right-[130px] w-10 h-10  rounded-full  border-1 border-gray-300">
+                <img src={l3} alt="small" className="object-cover w-full h-full " />
               </div>
             </div>
 
