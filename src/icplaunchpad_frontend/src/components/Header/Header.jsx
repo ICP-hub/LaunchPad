@@ -4,7 +4,7 @@ import GradientText from "../../common/GradientText";
 import { IoSearch, IoClose, IoMenu, IoCloseSharp } from "react-icons/io5";
 
 import ConnectWallets from "../Modals/ConnectWallets";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import ProfileCard from "../Modals/ProfileCard";
 import { FaUser } from "react-icons/fa";
 import { BsThreeDotsVertical } from "react-icons/bs";
@@ -33,11 +33,13 @@ const Header = () => {
   const [activeSection, setActiveSection] = useState("home");
   const [isUserRegistered, setUserRegister] = useState(null);
   // const [userData, setUserData] = useState(null);
-  const [images, setImages] = useState(null);
+  const protocol = process.env.DFX_NETWORK === "ic" ? "https" : "http";
+  const domain = process.env.DFX_NETWORK === "ic" ? "raw.icp0.io" : "localhost:4943";
+  const canisterId = process.env.CANISTER_ID_IC_ASSET_HANDLER;
 
   const { isAuthenticated, principal, actor } = useAuth();
   const userData = useSelector((state) => state?.userData?.data[0]);
-
+ const navigate =useNavigate();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -69,10 +71,29 @@ const Header = () => {
   const handleFetchToken = async () => {
     // logic for fetching data
     if(isAuthenticated && searchText.length > 0){
-    const data = await actor.search_by_token_name_or_symbol(searchText);
+      const searchTextLower=searchText.toLowerCase();
+    const data = await actor.search_by_token_name_or_symbol(searchTextLower);
     console.log("token searched data=",data);
     setTokenData(data);
     }
+  }
+
+  const handleSearchedToken = async(data)=>{
+    
+        if (data.canister_id) {
+          const ledgerPrincipal = Principal.fromText(data.canister_id);
+ 
+          // Fetch token image ID
+          const tokenImgId = await actor.get_token_image_id(ledgerPrincipal);
+          console.log("Fetched token image ID:", tokenImgId);
+    
+          if (tokenImgId && tokenImgId.length > 0) {
+            const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId[tokenImgId.length - 1]}`;
+            console.log("Token Image URL:", imageUrl);
+
+            navigate('/project', { state: { projectData:{canister_id:data.canister_id, token_name:data.token_name, TokenImg:imageUrl} } });
+          }
+        }
   }
   
 
@@ -98,6 +119,7 @@ const Header = () => {
 
   const handleClearSearch = () => {
     setSearchText("");
+    setTokenData("")
     setIsSearching(false);
   };
 
@@ -232,10 +254,11 @@ const Header = () => {
                 />
               </div>
 
-              {tokenData && tokenData.length > 0 && <div className=" flex items-center justify-center   absolute min-h-[25px] border-2 border-pink-500 lg:mr-3 rounded-lg w-[80vw] top-10 right-0 md:w-[150px] lg:w-[245px] xl:w-[380px]  bg-[#222222] sm4:right-[23px] lg:right-[-25px] dlg:right-[5px] md:py-[2px] ">
-                <ul>
-                  {tokenData?.map((data, index) => <li key={index}> {data.token_name} </li>)}
+              {tokenData && tokenData.length > 0 && <div className=" py-1 flex items-center justify-center   absolute min-h-[25px] border-2 border-pink-500 lg:mr-3 rounded-lg w-[80vw] top-10 right-0 md:w-[150px] lg:w-[245px] xl:w-[380px]  bg-[#222222] sm4:right-[23px] lg:right-[-25px] dlg:right-[5px] md:py-[2px] ">
+                <ul className="">
+                  {tokenData?.map((data, index) => <li className="my-1 cursor-pointer" key={index} onClick={()=>handleSearchedToken(data)}> {data.token_name} </li>)}
                 </ul>
+                
               </div>
               }
             </div>

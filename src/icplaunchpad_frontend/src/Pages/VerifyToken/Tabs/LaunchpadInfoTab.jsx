@@ -164,7 +164,7 @@ const LaunchpadInfoTab = ({
     setPresaleDetails((prev) => ({ ...prev, whiteList: value }));
   };
   return (
-    <div className="bg-[#222222] p-4 xxs1:p-8 m-4 rounded-2xl mb-[80px] dxs:mb-[140px] xxs1:mb-[90px] sm2:mb-[70px]  md:mb-[30px]   ss2:h-[1250px] xxs1:h-[950px] sm2:h-[900px] md:h-[880px]  ">
+    <div className="bg-[#222222] p-4 xxs1:p-8 m-4 rounded-2xl mb-[80px] dxs:mb-[140px] xxs1:mb-[90px] sm2:mb-[70px]  md:mb-[15px]   ss2:h-[1230px] xxs1:h-[950px] sm2:h-[900px] md:h-[880px]  ">
       {/* Chain Text with Gray Background on mobile only */}
       <div className="flex xxs1:hidden mb-8 bg-[#444444] pl-6 p-2 mt-[-31px] mx-[-17px] xxs1:mx-[-31px]  rounded-2xl">
         <span className="text-white text-[22px]">Chain</span>
@@ -181,7 +181,7 @@ const LaunchpadInfoTab = ({
           aria-label="Presale Rate"
         />
         {errors.presaleRate && (
-          <p className="text-red-500">{errors.presaleRate.message}</p>
+          <p className="text-red-500 text-[14px]">{errors.presaleRate.message}</p>
         )}
       </div>
 
@@ -196,7 +196,7 @@ const LaunchpadInfoTab = ({
           aria-label="Hardcap Token"
         />
         {errors.hardcapToken && (
-          <p className="text-red-500">{errors.hardcapToken.message}</p>
+          <p className="text-red-500 text-[14px]">{errors.hardcapToken.message}</p>
         )}
       </div>
 
@@ -211,7 +211,7 @@ const LaunchpadInfoTab = ({
           aria-label="Softcap Token"
         />
         {errors.softcapToken && (
-          <p className="text-red-500">{errors.softcapToken.message}</p>
+          <p className="text-red-500 text-[14px]">{errors.softcapToken.message}</p>
         )}
       </div>
 
@@ -266,7 +266,7 @@ const LaunchpadInfoTab = ({
             aria-label="Minimum Buy"
           />
           {errors.minimumBuy && (
-            <p className="text-red-500">{errors.minimumBuy.message}</p>
+            <p className="text-red-500 text-[15px]">{errors.minimumBuy.message}</p>
           )}
         </div>
         <div className="xxs1:w-1/2 xxs1:pl-2 mb-6">
@@ -279,7 +279,7 @@ const LaunchpadInfoTab = ({
             aria-label="Maximum Buy"
           />
           {errors.maximumBuy && (
-            <p className="text-red-500">{errors.maximumBuy.message}</p>
+            <p className="text-red-500 text-[15px]">{errors.maximumBuy.message}</p>
           )}
         </div>
       </div>
@@ -296,7 +296,7 @@ const LaunchpadInfoTab = ({
             aria-label="Start Time"
           />
           {errors.startTime && (
-            <p className="text-red-500">{errors.startTime.message}</p>
+            <p className="text-red-500 text-[14px]">{errors.startTime.message}</p>
           )}
         </div>
         <div className="xxs1:w-1/2 xxs1:pl-2 mb-6">
@@ -309,7 +309,7 @@ const LaunchpadInfoTab = ({
             aria-label="End Time"
           />
           {errors.endTime && (
-            <p className="text-red-500">{errors.endTime.message}</p>
+            <p className="text-red-500 text-[14px]">{errors.endTime.message}</p>
           )}
         </div>
       </div>

@@ -591,7 +591,7 @@ const TokenPage = () => {
           )}
 
         </div>
-        {isMobile && <MobileViewTab />}
+        {isMobile && <MobileViewTab actor={ledgerActor} />}
       </div>
     </>
   );
