@@ -349,7 +349,7 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
 
       
       const tokenData = {
-        token_name,
+        token_name:token_name.toLowerCase(),
         token_symbol,
         decimals: [parseInt(decimals)],
         initial_balances: [

@@ -9,14 +9,14 @@ import Pooolinfo from "./pooolinfo/Pooolinfo";
 import Token from "./token/Token";
 import "./tokenpage.css";
 
-const MobileViewTab = () => {
+const MobileViewTab = ({actor}) => {
     const [activeTab, setActiveTab] = useState("About");
   const renderContent = () => {
     switch (activeTab) {
       case "ABOUT":
         return <ProjectTokenAbout />;
       case "TOKEN":
-        return <Token />;
+        return <Token actor={actor}/>;
       case "POOL INFO":
         return <Pooolinfo />;
       case "FAQs & DISCUSSION":

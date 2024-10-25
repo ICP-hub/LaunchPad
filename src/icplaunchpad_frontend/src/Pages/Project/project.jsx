@@ -118,8 +118,8 @@ const TokenPage = () => {
             <div className="h-[314px] bg-[#181818] rounded-lg py-5 flex flex-col">
              <div className="relative">
                 <img
-                  src={person1}
-                  className="absolute top-0 left-[50%] transform -translate-x-1/2 -translate-y-[50%] rounded-full h-[130px] md:min-h-[177px]"
+                  src={projectData.TokenImg || person1}
+                  className="absolute top-0 left-[50%] transform -translate-x-1/2 -translate-y-[50%] object-cover rounded-full h-[130px] w-[130px] md:min-h-[177px] md:min-w-[177px]"
                   alt=""
                 />
               </div>
@@ -259,7 +259,7 @@ const TokenPage = () => {
             <div className="text-2xl font-bold">00:29:23:00</div>
           </div>
         </div>
-        {isMobile && <MobileViewTab />}
+        {isMobile && <MobileViewTab ledgerId={projectData?.canister_id } />}
       </div>
     </>
   );
