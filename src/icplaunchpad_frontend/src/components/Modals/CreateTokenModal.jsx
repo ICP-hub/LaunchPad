@@ -371,15 +371,10 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
         dispatch(TokensInfoHandlerRequest());
 
         const { ledger_canister_id, index_canister_id } = response.Ok;
-        console.log("ledger_canister_id---",ledger_canister_id)
-        dispatch(
-          SetLedgerIdHandler({
-            ledger_canister_id: ledger_canister_id,
-            index_canister_id: index_canister_id,
-          })
-        );
+        console.log("ledger_canister_id---",ledger_canister_id,"  ", index_canister_id)
+   
         navigate("/verify-token", {
-          state: { formData, ledger_canister_id: ledger_canister_id._arr },
+          state: { formData,ledger_canister_id: ledger_canister_id._arr, index_canister_id },
         });
       }
     } catch (err) {

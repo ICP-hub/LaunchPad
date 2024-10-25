@@ -200,7 +200,9 @@ import ReviewInfoTab from "./Tabs/ReviewInfoTab";
 import StepProgressBar from "./StepProgressBar";
 import { useAuth } from "../../StateManagement/useContext/useAuth";
 import { Principal } from "@dfinity/principal";
-import { ThreeDots } from "react-loader-spinner"; 
+import { ThreeDots } from "react-loader-spinner";
+import { useDispatch } from "react-redux";
+import { SetLedgerIdHandler } from "../../StateManagement/Redux/Reducers/LedgerId";
 // Validation schema using Yup
 const getSchemaForStep = (step) => {
   switch (step) {
@@ -289,9 +291,9 @@ const getSchemaForStep = (step) => {
         // Image Validation
         logoURL: yup
           .mixed()
-          .nullable(false) 
+          .nullable(false)
           .test("fileSize", "File size max 10MB allowed", (value) => {
-            return !value || (value && value.size <= 10 * 1024 * 1024); 
+            return !value || (value && value.size <= 10 * 1024 * 1024);
           })
           .test("fileType", "Only jpeg, jpg & png file format allowed", (value) => {
             return (
@@ -318,13 +320,13 @@ const getSchemaForStep = (step) => {
 
 
 
- const convertFileToBytes = async (file) => {
-   if (file) {
-     const arrayBuffer = await file.arrayBuffer();
-     return Array.from(new Uint8Array(arrayBuffer));
-   }
-   return null;
- };
+const convertFileToBytes = async (file) => {
+  if (file) {
+    const arrayBuffer = await file.arrayBuffer();
+    return Array.from(new Uint8Array(arrayBuffer));
+  }
+  return null;
+};
 const VerifyToken = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [presaleDetails, setPresaleDetails] = useState({ social_links: [] });
@@ -332,27 +334,28 @@ const VerifyToken = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { actor, principal } = useAuth();
-  const { formData, ledger_canister_id } = location.state || {};
+  const { formData, ledger_canister_id, index_canister_id } = location.state || {};
   const [isSubmitting, setIsSubmitting] = useState(false);
-const {
-  register,
-  handleSubmit,
-  watch,
-  formState: { errors },
-} = useForm({
-  resolver: yupResolver(getSchemaForStep(currentStep)),
-  mode: "all",
-  defaultValues: {
-    presaleRate: presaleDetails.presaleRate || "",
-    minimumBuy: presaleDetails.minimumBuy || "",
-    maximumBuy: presaleDetails.maximumBuy || "",
-    startTime: presaleDetails.startTime || "",
-    endTime: presaleDetails.endTime || "",
-    description: presaleDetails.description || "",
-  },
-});
+  const dispatch=useDispatch();
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(getSchemaForStep(currentStep)),
+    mode: "all",
+    defaultValues: {
+      presaleRate: presaleDetails.presaleRate || "",
+      minimumBuy: presaleDetails.minimumBuy || "",
+      maximumBuy: presaleDetails.maximumBuy || "",
+      startTime: presaleDetails.startTime || "",
+      endTime: presaleDetails.endTime || "",
+      description: presaleDetails.description || "",
+    },
+  });
 
-console.log("Form validation errors:", errors);
+  console.log("Form validation errors:", errors);
   // Function to submit presale details
   const submitPresaleDetails = async (data) => {
     console.log("Submitting presale details with data:", data);
@@ -391,7 +394,7 @@ console.log("Form validation errors:", errors);
         social_links: socialLinksURLs,
         website,
       };
-
+  
       const ledgerPrincipalId = ledger_canister_id
         ? Principal.fromUint8Array(ledger_canister_id)
         : null;
@@ -408,15 +411,24 @@ console.log("Form validation errors:", errors);
         };
         await actor.upload_token_image("br5f7-7uaaa-aaaaa-qaaca-cai", imgUrl);
       }
- console.log("Submission successful");
+      console.log("Submission successful");
+
+      // adding ledger_canister_id and index_canister_id in redux store   
+      dispatch(
+        SetLedgerIdHandler({
+          ledger_canister_id:ledgerPrincipalId.toText(),
+          index_canister_id: index_canister_id,
+        })
+      );
+
       navigate("/token-page", { state: { ledger_canister_id } });
     } catch (error) {
-            console.error("Submission failed with error:", error); 
+      console.error("Submission failed with error:", error);
       setError(
         "An error occurred while submitting the presale details. Please try again."
       );
     } finally {
-      setIsSubmitting(false); 
+      setIsSubmitting(false);
     }
   };
 
@@ -428,7 +440,7 @@ console.log("Form validation errors:", errors);
       ...data,
       ...formData,
     }));
- console.log("Moving to the next step:", currentStep);
+    console.log("Moving to the next step:", currentStep);
     if (currentStep < 4) {
       setCurrentStep((prevStep) => prevStep + 1);
     } else {

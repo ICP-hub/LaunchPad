@@ -10,7 +10,7 @@ const LedgerIdSlice = createSlice({
   reducers: {
 
     SetLedgerIdHandler: (state, action) => {
-
+      console.log('ledger reducer called',action.payload)
       state.data = action.payload;
     }
   },
