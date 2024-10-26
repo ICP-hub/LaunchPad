@@ -176,7 +176,7 @@ const LaunchpadInfoTab = ({
         <input
           type="number"
           {...register("presaleRate")} // Register input field
-          className={`w-full p-2 bg-[#333333] text-white rounded-md${errors.presaleRate ? "border-red-500" : "border-white"
+          className={`w-full p-2 bg-[#333333] text-white rounded-md ${errors.presaleRate ? "border-red-500" : "border-white"
             }  border-b-2`}
           aria-label="Presale Rate"
         />
@@ -191,7 +191,7 @@ const LaunchpadInfoTab = ({
         <input
           type="number"
           {...register("hardcapToken")} // Register input field
-          className={`w-full p-2 bg-[#333333] text-white rounded-md${errors.hardcapToken ? "border-red-500" : "border-white"
+          className={`w-full p-2 bg-[#333333] text-white rounded-md ${errors.hardcapToken ? "border-red-500" : "border-white"
             }  border-b-2`}
           aria-label="Hardcap Token"
         />
@@ -206,7 +206,7 @@ const LaunchpadInfoTab = ({
         <input
           type="number"
           {...register("softcapToken")} // Register input field
-          className={`w-full p-2 bg-[#333333] text-white rounded-md${errors.softcapToken ? "border-red-500" : "border-white"
+          className={`w-full p-2 bg-[#333333] text-white rounded-md ${errors.softcapToken ? "border-red-500" : "border-white"
             }  border-b-2`}
           aria-label="Softcap Token"
         />
@@ -261,7 +261,7 @@ const LaunchpadInfoTab = ({
           <input
             type="number"
             {...register("minimumBuy")} // Register input field
-            className={`w-full p-2 bg-[#333333] text-white rounded-md${errors.minimumBuy ? "border-red-500" : "border-white"
+            className={`w-full p-2 bg-[#333333] text-white rounded-md ${errors.minimumBuy ? "border-red-500" : "border-white"
               }  border-b-2`}
             aria-label="Minimum Buy"
           />
@@ -274,7 +274,7 @@ const LaunchpadInfoTab = ({
           <input
             type="number"
             {...register("maximumBuy")} // Register input field
-            className={`w-full p-2 bg-[#333333] text-white rounded-md${errors.maximumBuy ? "border-red-500" : "border-white"
+            className={`w-full p-2 bg-[#333333] text-white rounded-md ${errors.maximumBuy ? "border-red-500" : "border-white"
               }  border-b-2`}
             aria-label="Maximum Buy"
           />
@@ -291,7 +291,7 @@ const LaunchpadInfoTab = ({
           <input
             type="datetime-local"
             {...register("startTime")} // Register input field
-            className={`w-full p-2 bg-[#333333] text-white rounded-md${errors.startTime ? "border-red-500" : "border-white"
+            className={`w-full p-2 bg-[#333333] text-white rounded-md ${errors.startTime ? "border-red-500" : "border-white"
               }  border-b-2`}
             aria-label="Start Time"
           />
@@ -304,7 +304,7 @@ const LaunchpadInfoTab = ({
           <input
             type="datetime-local"
             {...register("endTime")} // Register input field
-            className={`w-full p-2 bg-[#333333] text-white rounded-md${errors.endTime ? "border-red-500" : "border-white"
+            className={`w-full p-2 bg-[#333333] text-white rounded-md ${errors.endTime ? "border-red-500" : "border-white"
               }  border-b-2`}
             aria-label="End Time"
           />
