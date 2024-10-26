@@ -8,11 +8,13 @@ import ProjectCard from "./ProjectCard.jsx";
 const ProjectLists = () => {
   const [selectedTab, setSelectedTab] = useState("all");
   const [search, setSearch] = useState("");
+  const [TokensData, setTokensData] = useState(null);
   const [filteredTokensData, setFilteredTokensData] = useState([]);
   const location = useLocation();
+  
   const salesData = location.state?.salesData;
   const projectsData = useSelector((state) => state?.TokensInfo?.data);
-  const [TokensData, setTokensData] = useState(null);
+  
 
   // Effect to set initial token data
   useEffect(() => {

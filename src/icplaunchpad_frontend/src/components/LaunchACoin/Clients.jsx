@@ -14,7 +14,8 @@ const Clients = () => {
 
   // Handle navigation to the projects page
   const handleViewMoreClick = () => {
-    navigate('/projects', {state:{salesData}});
+    if(salesData.length > 0)
+       navigate('/projects', {state:{salesData}});
   };
 
 
@@ -29,9 +30,11 @@ const Clients = () => {
 
     <div className="flex md:flex-row flex-col flex-wrap w-[95%] items-center m-auto justify-around">
       
-      {salesData && salesData.map((sales, index) => (
+      { (salesData.length > 0 ) ? salesData.map((sales, index) => (
         (index < 3) && <ProjectCard projectData={sales} index={index}/> 
-      ))}
+      )) :
+      <h1 className="text-xl my-16"> Data Not Found... </h1>
+      }
       <button onClick={handleViewMoreClick} className="text-white font-posterama  xxs1:hidden underline text-[20px] mt-6 xxs1:text-xl">
           Load More
         </button>

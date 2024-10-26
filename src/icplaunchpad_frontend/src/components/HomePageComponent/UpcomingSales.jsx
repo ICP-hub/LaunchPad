@@ -1,23 +1,20 @@
 import React from "react";
-import person1 from "../../../assets/images/carousel/person1.png";
 import { useNavigate } from 'react-router-dom';
-import l3 from '../../../assets/images/carousel/l3.png'
 import { useSelector } from "react-redux";
 import ProjectCard from "../../Pages/Projects/ProjectCard";
 
-
-const UpcomingSales = () => {
+const UpcomingSales = React.forwardRef((props, ref) => {
   const navigate = useNavigate();
-  const salesData = useSelector((state)=>state.upcomingSales.data)
- 
+  const salesData = useSelector((state) => state.upcomingSales.data);
+
   // Handle navigation to the projects page
   const handleViewMoreClick = () => {
-    navigate('/projects', {state:{salesData}} );
+    if (salesData.length > 0)
+      navigate('/projects', { state: { salesData } });
   };
 
-
   return (
-    <div  className="upcoming-sales h-full mt-8   md:mb-[5%] lg:mb-0 sm4:mb-3 py-[5%]">
+    <div ref={ref} className="upcoming-sales h-full mt-8 md:mb-[5%] lg:mb-0 sm4:mb-3 py-[5%]">
       <div className="flex justify-between items-center px-[6%] mb-10">
         <h2 className="text-white font-bold font-posterama text-[24px] xxs1:text-3xl">UPCOMING SALES</h2>
         <button onClick={handleViewMoreClick} className="text-white hidden xxs1:block font-posterama underline text-[15px] xxs1:text-xl">
@@ -25,18 +22,20 @@ const UpcomingSales = () => {
         </button>
       </div>
 
-    <div className="flex lg:flex-row flex-col items-center flex-wrap w-[95%] m-auto justify-around">
-      
-      {salesData && salesData.map((sale, index) => (
-      
-       (index < 3) && <ProjectCard projectData={sale} index={index}/>
-      ))}
-      <button onClick={handleViewMoreClick} className="text-white mt-4  xxs1:hidden font-posterama underline text-[20px] xxs1:text-xl">
+      <div className="flex lg:flex-row flex-col items-center flex-wrap w-[95%] m-auto justify-around">
+        {salesData.length > 0 ? (
+          salesData.slice(0, 3).map((sale, index) => (
+            <ProjectCard key={index} projectData={sale} index={index} />
+          ))
+        ) : (
+          <h1 className="text-xl my-16"> Data Not Found... </h1>
+        )}
+        <button onClick={handleViewMoreClick} className="text-white mt-4 xxs1:hidden font-posterama underline text-[20px] xxs1:text-xl">
           LOAD MORE
         </button>
-    </div>
+      </div>
     </div>
   );
-};
+});
 
 export default UpcomingSales;
