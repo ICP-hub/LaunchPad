@@ -13,7 +13,7 @@ import ReactSelect from 'react-select';
 import getReactSelectStyles from '../../common/Reactselect';
 import { getSocialLogo } from '../../common/getSocialLogo';
 import { FaTrash } from 'react-icons/fa';
-
+import { convertFileToBase64 } from '../../utils/convertToBase64';
 const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const { actor, principal, isAuthenticated } = useAuth();
   const dispatch = useDispatch();
@@ -62,12 +62,14 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
 
       const linksArray = user?.links?.map(link => ({ url: link })) || [{ url: '' }];
       setLinks(linksArray);
-      // if (user.profile_picture && user.profile_picture.length > 0) {
-      //   const base64String = btoa(String.fromCharCode(...new Uint8Array(user.profile_picture[0])));
-      //   setProfileImagePreview(`data:image/jpeg;base64,${base64String}`);
-      // } else {
-      //   setProfileImagePreview(null);
-      // }
+      if (user.profile_picture && user.profile_picture.length > 0) {
+        convertFileToBase64(user.profile_picture[0]) 
+          .then((base64Image) => setProfileImagePreview(base64Image))
+          .catch((error) => console.error("Error converting image to Base64:", error));
+      } else {
+        setProfileImagePreview(null);
+      }
+
       reset({
         name: user?.name || '',
         username: user?.username || '',
@@ -79,6 +81,9 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
 
   }, [userData, reset]);
 
+
+ 
+
   const getUser = async () => {
     try {
       const data = await actor.get_user_account(userPrincipal);
@@ -89,30 +94,21 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
     }
   };
 
-  const convertFileToUint8Array = (file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const arrayBuffer = event.target.result;
-        const uint8Array = new Uint8Array(arrayBuffer);
-        resolve(uint8Array);
-      };
-      reader.onerror = (error) => {
-        reject(error);
-      };
-      reader.readAsArrayBuffer(file);
-    });
-  };
-
+  
   const handleProfilePictureChange = async (file) => {
     if (file) {
-      const uint8Array = await convertFileToUint8Array(file);
-      setProfilePictureData(uint8Array);
-      setFileName(file.name);
-      const base64String = btoa(String.fromCharCode(...uint8Array));
-      setProfileImagePreview(`data:image/jpeg;base64,${base64String}`);
+      try {
+        setProfilePictureData(new Uint8Array(await file.arrayBuffer()));  
+        const base64String = await convertFileToBase64(file); 
+        setFileName(file.name);
+        setProfileImagePreview(base64String);
+      } catch (error) {
+        console.error("Error converting file to base64:", error);
+      }
     }
   };
+
+
   const onSubmit = async (data) => {
     console.log("onSubmit called with data:", data);
     setIsSubmitting(true);
@@ -152,6 +148,18 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
 
       console.log('User updated:', response);
 
+      if (profile_picture.length > 0) {
+        try {
+          await actor.upload_profile_image("br5f7-7uaaa-aaaaa-qaaca-cai", {
+            content: [profile_picture[0]],
+          });
+          console.log("Profile picture uploaded successfully");
+        } catch (imgErr) {
+          console.error("Error uploading profile picture:", imgErr);
+        }
+      } else {
+        console.log("No profile picture to upload.");
+      }
 
       const updatedData = await actor.get_user_account(userPrincipal);
       if (updatedData) {
