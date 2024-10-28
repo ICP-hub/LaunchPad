@@ -124,39 +124,11 @@ pub fn get_sale_params(ledger_canister_id: Principal) -> Result<SaleDetails, Str
     Ok(sale_details)
 }
 
-#[ic_cdk::query]
-pub fn get_upcoming_sales() -> Vec<SaleDetailsWithID> {
-    let current_time = ic_cdk::api::time();
-    ic_cdk::println!("Current server time for upcoming sales check: {}", current_time); // Debugging current time
-
-    read_state(|state| {
-        let all_sales = state.sale_details.iter()
-            .map(|(key, wrapper)| {
-                ic_cdk::println!("Checking sale: {} at time {}, start_time_utc: {}", key, current_time, wrapper.sale_details.start_time_utc); // Debug each sale
-                (key.clone(), wrapper.clone())
-            })
-            .collect::<Vec<_>>(); // Collect all sales for debugging
-
-        all_sales.into_iter()
-            .filter_map(|(key, wrapper)| {
-                if wrapper.sale_details.start_time_utc > current_time {
-                    ic_cdk::println!("Adding upcoming sale: {} to results", key); // Debug when adding a sale
-                    Some(SaleDetailsWithID {
-                        ledger_canister_id: key,
-                        sale_details: wrapper.sale_details,
-                    })
-                } else {
-                    None
-                }
-            })
-            .collect()
-    })
-}
-
 
 #[ic_cdk::query]
 pub fn get_active_sales() -> Vec<SaleDetailsWithID> {
-    let current_time = ic_cdk::api::time();
+    let current_time_ns = ic_cdk::api::time(); // Current time in nanoseconds
+    let current_time = current_time_ns / 1_000_000_000; // Convert to seconds
 
     read_state(|state| {
         state.sale_details.iter()
@@ -174,9 +146,35 @@ pub fn get_active_sales() -> Vec<SaleDetailsWithID> {
     })
 }
 
+
+#[ic_cdk::query]
+pub fn get_upcoming_sales() -> Vec<SaleDetailsWithID> {
+    let current_time_ns = ic_cdk::api::time(); // Current time in nanoseconds
+    let current_time = current_time_ns / 1_000_000_000; // Convert to seconds
+    ic_cdk::println!("Current server time for upcoming sales check: {}", current_time);
+
+    read_state(|state| {
+        state.sale_details.iter()
+            .filter_map(|(key, wrapper)| {
+                ic_cdk::println!("Checking sale: {} at time {}, start_time_utc: {}, end_time_utc: {}", key, current_time, wrapper.sale_details.start_time_utc, wrapper.sale_details.end_time_utc);
+                if wrapper.sale_details.start_time_utc > current_time {
+                    ic_cdk::println!("Adding upcoming sale: {} to results", key);
+                    Some(SaleDetailsWithID {
+                        ledger_canister_id: key.clone(),
+                        sale_details: wrapper.sale_details.clone(),
+                    })
+                } else {
+                    None
+                }
+            })
+            .collect()
+    })
+}
+
 #[ic_cdk::query]
 pub fn get_successful_sales() -> Vec<SaleDetailsWithID> {
-    let current_time = ic_cdk::api::time();
+    let current_time_ns = ic_cdk::api::time();
+    let current_time = current_time_ns / 1_000_000_000; // Convert to seconds
 
     read_state(|state| {
         state.sale_details.iter()
@@ -193,6 +191,7 @@ pub fn get_successful_sales() -> Vec<SaleDetailsWithID> {
             .collect()
     })
 }
+
 
 
 

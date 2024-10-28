@@ -15,6 +15,7 @@ mod api_query;
 mod api_update;
 use state_handler::*;
 use types::*;
+use candid::Nat;
 
 
 // create canister
