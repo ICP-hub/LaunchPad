@@ -297,7 +297,7 @@ const Header = () => {
                 <FaUser className="mr-2" />
                 <div className="flex flex-col items-start w-24 h-8 lg:w-40 lg:h-full ">
                   <span className="text-sm">
-                    {userData ? userData.username : "ABCD"}
+                    {userData? userData?.name : "ABCD"}
                   </span>
                   <span className=" text-[10px] lg:text-xs text-gray-400 w-full overflow-hidden whitespace-nowrap text-ellipsis">
                     {principal}

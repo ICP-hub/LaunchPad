@@ -259,7 +259,7 @@ const AdditionalInfoTab = ({
 
             <input
               type="url"
-              className={`w-full p-2 bg-[#333333] text-white rounded-md${errors.website ? "border-red-500" : "border-white"
+              className={`w-full p-2 bg-[#333333] text-white rounded-md${errors.link ? "border-red-500" : "border-white"
                 }  border-b-2`}
               placeholder="Enter URL"
               value={link.url}
