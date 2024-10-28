@@ -69,12 +69,12 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
 
       const linksArray = user?.links?.map(link => ({ url: link })) || [{ url: '' }];
       setLinks(linksArray);
-      if (user.profile_picture && user.profile_picture.length > 0) {
-        const base64String = btoa(String.fromCharCode(...new Uint8Array(user.profile_picture[0])));
-        setProfileImagePreview(`data:image/jpeg;base64,${base64String}`);
-      } else {
-        setProfileImagePreview(null);
-      }
+      // if (user.profile_picture && user.profile_picture.length > 0) {
+      //   const base64String = btoa(String.fromCharCode(...new Uint8Array(user.profile_picture[0])));
+      //   setProfileImagePreview(`data:image/jpeg;base64,${base64String}`);
+      // } else {
+      //   setProfileImagePreview(null);
+      // }
       reset({
         name: user?.name || '',
         username: user?.username || '',
@@ -127,15 +127,15 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
     setIsSubmitting(true);
     setValidationError('');
     if (links.length <= 5) {
-      clearErrors("links"); 
+      clearErrors("links");
     }
     const { name, username, profile, tags } = data;
 
-if (!termsAccepted) {
-  setIsSubmitting(false);
-  setValidationError('Please accept the terms and conditions.');
-  return;
-}
+    if (!termsAccepted) {
+      setIsSubmitting(false);
+      setValidationError('Please accept the terms and conditions.');
+      return;
+    }
 
     try {
 
@@ -152,30 +152,30 @@ if (!termsAccepted) {
         tag: tags,
       };
 
-  const response = await actor.update_user_account(userPrincipal, updatedUserData);
-  if (response?.Err) {
-    setIsSubmitting(false);
-    setValidationError(response.Err);
-    return;
-  }
+      const response = await actor.update_user_account(userPrincipal, updatedUserData);
+      if (response?.Err) {
+        setIsSubmitting(false);
+        setValidationError(response.Err);
+        return;
+      }
 
-  console.log('User updated:', response);
+      console.log('User updated:', response);
 
 
-  const updatedData = await actor.get_user_account(userPrincipal);
-  if (updatedData) {
-    const { profile_picture, ...restUserData } = updatedData[0];
-    dispatch(addUserData(restUserData));
-  }
+      const updatedData = await actor.get_user_account(userPrincipal);
+      if (updatedData) {
+        const { profile_picture, ...restUserData } = updatedData[0];
+        dispatch(addUserData(restUserData));
+      }
 
-  setUserModalIsOpen(false);
-  reset();
-} catch (err) {
-  console.error('Error updating user:', err);
-  setValidationError('An error occurred while updating the user.');
-} finally {
-  setIsSubmitting(false);
-}
+      setUserModalIsOpen(false);
+      reset();
+    } catch (err) {
+      console.error('Error updating user:', err);
+      setValidationError('An error occurred while updating the user.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const closeModal = () => setUserModalIsOpen(false);
@@ -412,3 +412,4 @@ if (!termsAccepted) {
 };
 
 export default UpdateUser;
+
