@@ -16,6 +16,7 @@ import { validationSchema } from '../../common/UserValidation';
 import AnimationButton from '../../common/AnimationButton';
 import { useAuth } from '../../StateManagement/useContext/useAuth';
 import { userRegisteredHandlerRequest } from '../../StateManagement/Redux/Reducers/userRegisteredData';
+import { ProfileImageIDHandlerRequest } from '../../StateManagement/Redux/Reducers/ProfileImageID';
 
 
 const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
@@ -87,7 +88,8 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
         try {
           await actor.upload_profile_image("br5f7-7uaaa-aaaaa-qaaca-cai", {
             content: userData.profile_picture,
-          });
+          });      
+             dispatch(ProfileImageIDHandlerRequest());
         } catch (imgErr) {
           console.error("Error uploading profile picture:", imgErr);
         }
