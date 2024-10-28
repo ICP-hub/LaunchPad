@@ -203,6 +203,8 @@ import { Principal } from "@dfinity/principal";
 import { ThreeDots } from "react-loader-spinner";
 import { useDispatch } from "react-redux";
 import { SetLedgerIdHandler } from "../../StateManagement/Redux/Reducers/LedgerId";
+import { upcomingSalesHandlerRequest } from "../../StateManagement/Redux/Reducers/UpcomingSales";
+import { SuccessfulSalesHandlerRequest } from "../../StateManagement/Redux/Reducers/SuccessfulSales";
 // Validation schema using Yup
 const getSchemaForStep = (step) => {
   switch (step) {
@@ -420,6 +422,12 @@ const VerifyToken = () => {
           index_canister_id: index_canister_id,
         })
       );
+      
+      // for rerendering the tokens 
+      dispatch(upcomingSalesHandlerRequest());
+      dispatch(SuccessfulSalesHandlerRequest());
+
+
 
       navigate("/token-page", { state: { ledger_canister_id } });
     } catch (error) {

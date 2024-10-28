@@ -18,7 +18,7 @@ const ProjectLists = () => {
 
   // Effect to set initial token data
   useEffect(() => {
-    const allTokens = projectsData || salesData;
+    const allTokens = salesData ||  projectsData ;
     console.log("all tokens", allTokens);
     setTokensData(allTokens);
     setFilteredTokensData(allTokens);

@@ -64,7 +64,7 @@ export const updatevalidationSchema = yup
                 yup
                     .string()
                     .min(10, "Each link must be at least 1 character long.")
-                    .max(20, "Each tag can be at most 20 characters long.")
+                    .max(50, "Each tag can be at most 20 characters long.")
             )
             .min(1, "You must provide at least 1 link.")
             .max(10, "You can provide up to 5 link.")

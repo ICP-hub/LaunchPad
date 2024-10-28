@@ -24,7 +24,7 @@ const TokenPage = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 640);
   const location = useLocation();
   const {projectData} = location.state || {};
-  console.log(projectData)
+  
 
   const renderContent = () => {
     switch (activeTab) {
@@ -86,7 +86,7 @@ const TokenPage = () => {
                   alt=""
                 />
                 <img
-                  src={projectData.TokenImg || person1}
+                  src={projectData ? projectData.TokenImg : person1}
                   className="absolute top-0 left-[50%] transform -translate-x-1/2 -translate-y-[35%] rounded-full h-[130px] md:min-h-[177px] object-cover w-[130px]  md:w-[177px]"
                   alt="token pic"
                 />
@@ -118,7 +118,7 @@ const TokenPage = () => {
             <div className="h-[314px] bg-[#181818] rounded-lg py-5 flex flex-col">
              <div className="relative">
                 <img
-                  src={projectData.TokenImg || person1}
+                  src={projectData ? projectData.TokenImg : person1}
                   className="absolute top-0 left-[50%] transform -translate-x-1/2 -translate-y-[50%] object-cover rounded-full h-[130px] w-[130px] md:min-h-[177px] md:min-w-[177px]"
                   alt=""
                 />
@@ -137,7 +137,7 @@ const TokenPage = () => {
 
               <div className="bg-[#FFFFFF66] h-[2px] w-[100%] mx-auto mt-4"></div>
 
-              <div className="flex justify-evenly w-[90%] mt-4">
+              <div className="flex justify-center gap-4  dxs:gap-9 text-[23px] w-[100%] mt-4">
               <IoGlobeOutline/>
                    <FaTwitter />
                     <FaFacebook />
