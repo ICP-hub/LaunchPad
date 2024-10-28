@@ -242,7 +242,7 @@ const AdditionalInfoTab = ({
         <input
           type="text"
           {...register("website")}
-          className={`w-full p-2 bg-[#333333] text-white rounded-md${errors.website ? "border-red-500" : "border-white"
+          className={`w-full p-2 bg-[#333333] text-white rounded-md ${errors.website ? "border-red-500" : "border-white"
             }  border-b-2`}
         />
         {errors.website && (
