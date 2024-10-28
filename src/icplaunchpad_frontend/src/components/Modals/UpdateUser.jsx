@@ -8,7 +8,7 @@ import { useAuth } from '../../StateManagement/useContext/useAuth';
 import { useDispatch } from 'react-redux';
 import { addUserData } from '../../Redux-Config/ReduxSlices/UserSlice';
 import { Principal } from '@dfinity/principal';
-import { validationSchema } from '../../common/UserValidation';
+import { updatevalidationSchema } from '../../common/UpdateUserValidation';
 import ReactSelect from 'react-select';
 import getReactSelectStyles from '../../common/Reactselect';
 import { getSocialLogo } from '../../common/getSocialLogo';
@@ -41,7 +41,7 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
 
   // Integrate Yup validation schema
   const { register, handleSubmit, formState: { errors }, reset, control, setValue, clearErrors, setError } = useForm({
-    resolver: yupResolver(validationSchema),
+    resolver: yupResolver(updatevalidationSchema),
   });
   console.log("Form errors:", errors);
   useEffect(() => {
@@ -56,14 +56,7 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
 
 
       console.log("Resetting form with data:", user);
-      // const selectedTags = user.tag?.map(tag => ({
-      //   value: tag,
-      //   label: tag,
-      // })) || [];
-      // setTagSelectedOptions(selectedTags);
 
-      // const linksArray = user?.links?.map(link => ({ url: link })) || [{ url: '' }];
-      // setLinks(linksArray);
       const selectedTags = user.tag?.map(tag => ({ value: tag, label: tag })) || [];
       setTagSelectedOptions(selectedTags);
 
@@ -79,8 +72,6 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
         name: user?.name || '',
         username: user?.username || '',
         profile_picture: null,
-        // links: linksArray,
-        // tags: selectedTags, 
         links: linksArray.map(link => link.url),
         tags: selectedTags.map(tag => tag.value),
       });
@@ -271,31 +262,14 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
             {/* Social Links */}
             <div className="mb-4">
               <h2 className="block text-[19px] mb-1">Social Links</h2>
-              {/* {links.map((link, index) => (
-                <div key={index} className="flex gap-2 items-center mb-2">
-                  {getSocialLogo(link.url)}
-                  <input
-                    type="url"
-                    className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
-                    placeholder="Enter URL"
-                    value={link.url}
-                    onChange={(e) => updateLink(index, e.target.value)}
-                  />
-                  <button
-                    onClick={() => removeLink(index)}
-                    className="ml-2 text-red-500"
-                  >
-                    <FaTrash />
-                  </button>
-                </div>
-              ))} */}
+              
               {links.map((item, index) => (
                 <div key={index} className='flex flex-col'>
                   <div className='flex items-center mb-2 pb-1'>
                     <Controller
-                      name={`links.${index}`}  // Assigns each input field a unique path in react-hook-form
+                      name={`links.${index}`}  
                       control={control}
-                      defaultValue={item.url || ''} // Use item.url as the default value
+                      defaultValue={item.url || ''} 
                       render={({ field }) => (
                         <div className='flex items-center w-full'>
                           <div className='flex items-center space-x-2 w-full'>
@@ -308,8 +282,8 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
                               className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
                               {...field}
                               onChange={(e) => {
-                                field.onChange(e); // Updates react-hook-form
-                                updateLink(index, e.target.value); // Updates local state
+                                field.onChange(e); 
+                                updateLink(index, e.target.value); 
                               }}
                             />
                           </div>
