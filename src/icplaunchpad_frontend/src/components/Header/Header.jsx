@@ -254,7 +254,7 @@ const Header = () => {
                 />
               </div>
 
-              {tokenData && tokenData.length > 0 && <div className=" py-1 flex items-center justify-center   absolute min-h-[25px] border-2 border-pink-500 lg:mr-3 rounded-lg w-[80vw] top-10 right-0 md:w-[150px] lg:w-[245px] xl:w-[380px]  bg-[#222222] sm4:right-[23px] lg:right-[-25px] dlg:right-[5px] md:py-[2px] ">
+              {tokenData && tokenData.length > 0 && <div className=" py-1 flex items-center justify-center   absolute min-h-[25px] border-2 border-[#f3b3a7] lg:mr-3 rounded-lg w-[80vw] top-10 right-0 md:w-[150px] lg:w-[245px] xl:w-[380px]  bg-[#222222] sm4:right-[23px] lg:right-[-25px] dlg:right-[5px] md:py-[2px] ">
                 <ul className="">
                   {tokenData?.map((data, index) => <li className="my-1 cursor-pointer" key={index} onClick={()=>handleSearchedToken(data)}> {data.token_name} </li>)}
                 </ul>
