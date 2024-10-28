@@ -11,7 +11,7 @@ import ReactSelect from 'react-select';
 
 import getReactSelectStyles from '../../common/Reactselect';
 import { FaTrash } from "react-icons/fa";
-import { getSocialLogo } from '../../common/getSocialLogo';
+import { getSocialLogo } from "../../common/getSocialLogo";
 import { validationSchema } from '../../common/UserValidation';
 import AnimationButton from '../../common/AnimationButton';
 import { useAuth } from '../../StateManagement/useContext/useAuth';
@@ -57,13 +57,13 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
       if (profile_picture) {
         profilePictureData = await convertFileToUint8Array(profile_picture);
       }
-
+      const linksArray = links.map(link => link.url);
       const userData = {
         name,
         username,
         profile_picture: profilePictureData.length > 0 ? [profilePictureData] : [],
-        links,
-        tag:tags,
+        links: linksArray,
+        tag: tags.length > 0 ? tags : [],
       };
 
       // Create the user account
@@ -255,22 +255,21 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               <Controller
                 name="tags"
                 control={control}
-                defaultValue={[]}  // Ensure default value is an empty array
+                defaultValue={[]}  
                 render={({ field }) => (
                   <ReactSelect
                     isMulti
                     menuPortalTarget={document.body}
                     menuPosition={'fixed'}
                     styles={getReactSelectStyles(errors?.tags)}
-                    // Ensure that field.value is always an array before using includes
                     value={tagsOptions.filter(option => (field.value || []).includes(option.value))}
                     options={tagsOptions}
                     classNamePrefix='select'
                     className='w-full p-2 text-white rounded-md'
                     placeholder='Select your tags'
                     onChange={(selectedOptions) => {
-                      const selectedValues = selectedOptions.map(option => option.value);
-                      setValue('tags', selectedValues);
+                      const selectedValues = selectedOptions.map(option => option.value); 
+                      setValue('tags', selectedValues);  
                       if (selectedValues.length > 0) {
                         clearErrors('tags');
                       } else {
@@ -282,9 +281,9 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
                     }}
                     onBlur={() => handleFieldTouch('tags')}
                   />
-
                 )}
               />
+
               {errors.tags && <p className="text-red-500">{errors.tags.message}</p>}
             </div>
 
