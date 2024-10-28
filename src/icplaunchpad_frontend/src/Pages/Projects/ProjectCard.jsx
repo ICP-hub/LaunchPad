@@ -12,6 +12,7 @@ const ProjectCard = ({ projectData, index }) => {
 
   const { createCustomActor, actor } = useAuth();
   const [TokenImg, setTokenImg] = useState();
+  const [isFetchingIMG, setFetchingIMG] = useState(false);
   const [TokenData, setTokenData] = useState({});
   const navigate = useNavigate();
 
@@ -41,6 +42,7 @@ const ProjectCard = ({ projectData, index }) => {
           setTokenImg(imageUrl);
           console.log('Token Image URL:', imageUrl);
         }
+        setFetchingIMG(true);
       } catch (error) {
         console.error('Error fetching token image:', error);
       }
@@ -62,13 +64,14 @@ const ProjectCard = ({ projectData, index }) => {
         setTokenImg(imageUrl);
         console.log('Token Image URL:', imageUrl);
       }
+      setFetchingIMG(true);
     } catch (error) {
       console.error('Error fetching token image:', error);
     }
   };
 
   const handleViewMoreClick2 = () => {
-    if(TokenImg)
+    if(isFetchingIMG)
       if(projectData.ledger_canister_id && TokenData)
       navigate('/project', { state: { projectData:{canister_id:projectData.ledger_canister_id, token_name:TokenData.token_name, TokenImg} } });
       else  
