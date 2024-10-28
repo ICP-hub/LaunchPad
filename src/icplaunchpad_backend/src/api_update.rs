@@ -312,16 +312,15 @@ pub async fn upload_token_image(asset_canister_id: String, image_data: TokenImag
 pub async fn upload_profile_image(asset_canister_id: String, image_data: ProfileImageData) -> Result<String, String> {
     let principal = ic_cdk::api::caller();  // Get the caller's principal
 
-    // Ensure the mandatory fields for CreateFileInput
     let input = CreateFileInput {
-        name: "profile_image.png".to_string(),   // Example name for profile images
-        content_type: "image/png".to_string(),   // Default content type for images
-        size: None,                             // You can calculate or leave None
-        content: image_data.content.clone(),    // Pass the content received from the struct
-        status: Some(1),                        // Example status, can customize as needed
-        hash: None,                             // Optional, but can calculate SHA-256 if needed
-        ert: None,                              // Optional field
-        crc32: None,                            // Optional, can calculate checksum if needed
+        name: "profile_image.png".to_string(),
+        content_type: "image/png".to_string(),
+        size: None,
+        content: image_data.content.clone(),
+        status: Some(1),
+        hash: None,
+        ert: None,
+        crc32: None,
     };
 
     let response: CallResult<(ReturnResult,)> = ic_cdk::call(
@@ -330,37 +329,27 @@ pub async fn upload_profile_image(asset_canister_id: String, image_data: Profile
         (input,)
     ).await;
 
-    let res0: Result<(Result<u32, String>,), (RejectionCode, String)> = response;
-
-    let formatted_value = match res0 {
+    match response {
         Ok((Ok(image_id),)) => {
-            // Store image_id and principal in the state for the profile image
+            // Update the image ID in the state mapping after successful upload
             mutate_state(|state| {
-                state.image_ids.insert(
-                    principal.to_string(),
-                    ImageIdWrapper {
-                        image_id,
-                    }
-                );
+                state.image_ids.insert(principal.to_string(), ImageIdWrapper { image_id });
             });
 
-            Ok(format!("Profile image uploaded with ID: {}", image_id))
-        }
+            Ok(format!("Profile image uploaded and updated with ID: {}", image_id))
+        },
         Ok((Err(err),)) => Err(err),
-        Err((code, message)) => {
-            match code {
-                RejectionCode::NoError => Err("NoError".to_string()),
-                RejectionCode::SysFatal => Err("SysFatal".to_string()),
-                RejectionCode::SysTransient => Err("SysTransient".to_string()),
-                RejectionCode::DestinationInvalid => Err("DestinationInvalid".to_string()),
-                RejectionCode::CanisterReject => Err("CanisterReject".to_string()),
-                _ => Err(format!("Unknown rejection code: {:?}: {}", code, message)),
-            }
+        Err((code, message)) => match code {
+            RejectionCode::NoError => Err("NoError".to_string()),
+            RejectionCode::SysFatal => Err("SysFatal".to_string()),
+            RejectionCode::SysTransient => Err("SysTransient".to_string()),
+            RejectionCode::DestinationInvalid => Err("DestinationInvalid".to_string()),
+            RejectionCode::CanisterReject => Err("CanisterReject".to_string()),
+            _ => Err(format!("Unknown rejection code: {:?}: {}", code, message)),
         }
-    };
-
-    formatted_value
+    }
 }
+
 
 
 

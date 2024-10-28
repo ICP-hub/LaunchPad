@@ -106,12 +106,13 @@ pub fn get_token_image_id(ledger_id: Principal) -> Option<u32> {
 
 #[ic_cdk::query]
 pub fn get_profile_image_id() -> Option<u32> {
-    let principal = ic_cdk::api::caller();  // Get the caller's principal
+    let principal = ic_cdk::api::caller();
 
     read_state(|state| {
         state.image_ids.get(&principal.to_string()).map(|wrapper| wrapper.image_id)
     })
 }
+
 
 #[ic_cdk::query]
 pub fn get_sale_params(ledger_canister_id: Principal) -> Result<SaleDetails, String> {
