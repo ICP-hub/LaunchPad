@@ -65,7 +65,7 @@ dfx identity use controller
         };
         send_whitelist = vec {};
         transfer_fee = opt record {
-          e8s = 10_000 : nat64;
+          e8s = 0 : nat64;
         };
         token_symbol = opt \"LICP\";
         token_name = opt \"Local ICP\";

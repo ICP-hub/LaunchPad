@@ -1,6 +1,6 @@
 #!/bin/bash
 
-dfx identity use Mohit 
+dfx identity use controller
 
 dfx deploy token_deployer --ic --argument '(
   variant {
@@ -38,7 +38,7 @@ dfx deploy token_deployer --ic --argument '(
   }
 )'
 
-
+dfx identity use controller
 dfx deploy index_canister --ic --argument '(opt variant { Init = record { ledger_id = principal "aaaaa-aa"; retrieve_blocks_from_ledger_interval_seconds = opt 10 } })'
 
   dfx identity use minter
@@ -47,6 +47,7 @@ dfx deploy index_canister --ic --argument '(opt variant { Init = record { ledger
   dfx identity use default
   export DEFAULT_ACCOUNT_ID=$(dfx ledger account-id)
 
+dfx identity use controller
   dfx deploy --ic --specified-id ryjl3-tyaaa-aaaaa-aaaba-cai icp_ledger_canister --argument "
     (variant {
       Init = record {
@@ -70,8 +71,10 @@ dfx deploy index_canister --ic --argument '(opt variant { Init = record { ledger
     })
   "
 
+dfx identity use controller
 dfx deploy ic_asset_handler --ic
 
+dfx identity use controller
 dfx deploy icplaunchpad_frontend --ic
 
 
@@ -79,6 +82,7 @@ cargo build --release --target wasm32-unknown-unknown --package icplaunchpad_bac
 candid-extractor target/wasm32-unknown-unknown/release/icplaunchpad_backend.wasm > src/icplaunchpad_backend/icplaunchpad_backend.did
 
 # Deploy canister_creater_backend
+dfx identity use controller
 dfx deploy icplaunchpad_backend --ic
 
 echo "Deployment complete. Please use the Candid UI to call the 'create_token' function with your parameters."
