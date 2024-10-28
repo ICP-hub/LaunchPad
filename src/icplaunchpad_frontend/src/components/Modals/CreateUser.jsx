@@ -31,9 +31,9 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [fileName, setFileName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const [links, setLinks] = useState([{ url: '' }]);
   // Manage social links with react-hook-form's useFieldArray
-  const { fields: links, append, remove } = useFieldArray({
+  const {   append, remove } = useFieldArray({
     control,
     name: 'links',  // Corresponds to 'links' in validationSchema
   });
@@ -57,12 +57,14 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
       if (profile_picture) {
         profilePictureData = await convertFileToUint8Array(profile_picture);
       }
-      const linksArray = links.map(link => link.url);
+      // const linksArray = links.map(link => link.url);
+      // const linksArray = links.map(link => link.url.trim());
+      
       const userData = {
         name,
         username,
         profile_picture: profilePictureData.length > 0 ? [profilePictureData] : [],
-        links: linksArray,
+        links,
         tag: tags.length > 0 ? tags : [],
       };
 
@@ -131,18 +133,41 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
     document.getElementById('profile_picture').click();
   };
 
+
+  // const extractDomain = (url) => {
+  //   try {
+  //     return new URL(url).hostname.replace('www.', '');
+  //   } catch (error) {
+  //     console.error("Invalid URL:", url);
+  //     return null;
+  //   }
+  // };
   // Add necessary states for the select options
   const [tagsOptions] = useState([
     { value: 'tag1', label: 'Tag 1' },
     { value: 'tag2', label: 'Tag 2' },
-    // Add more options as needed
+    
   ]);
 
   // Function to handle field touch
   const handleFieldTouch = (fieldName) => {
-    setError(fieldName, { type: 'touched' }); // Mark the field as touched
+    setError(fieldName, { type: 'touched' }); 
+  };
+  const addLink = () => {
+    setLinks(prev => [...prev, { url: '' }]);
   };
 
+  const removeLink = (index) => {
+    setLinks(prev => prev.filter((_, i) => i !== index));
+    clearErrors(`links.${index}`);
+    clearErrors("links");
+  };
+  const updateLink = (index, value) => {
+    const updatedLinks = [...links];
+    updatedLinks[index].url = value;
+    setLinks(updatedLinks);
+    setValue(`links.${index}`, value);
+  };
   return (
     <div className="absolute">
       <Modal
@@ -217,7 +242,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
             {/* Social Links */}
             <div className="mb-4">
               <h2 className="block text-[19px] mb-1">Social Links</h2>
-              {links.map((link, index) => (
+              {/* {links.map((link, index) => (
                 <div key={link.id} className="flex gap-2 items-center mb-2">
                   {getSocialLogo(link)}
 
@@ -234,6 +259,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
                       />
                     )}
                   />
+                 
                   <button
                     type="button"
                     onClick={() => remove(index)}
@@ -242,8 +268,45 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
                     <FaTrash />
                   </button>
                 </div>
+              ))} */}
+              {links.map((item, index) => (
+                <div key={index} className='flex flex-col'>
+                  <div className='flex items-center mb-2 pb-1'>
+                    <Controller
+                      name={`links.${index}`}
+                      control={control}
+                      defaultValue={item.url || ''}
+                      render={({ field }) => (
+                        <div className='flex items-center w-full'>
+                          <div className='flex items-center space-x-2 w-full'>
+                            <div className='flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full'>
+                              {field.value && getSocialLogo(field.value)}
+                            </div>
+                            <input
+                              type='text'
+                              placeholder='Enter your social media URL'
+                              className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
+                              {...field}
+                              onChange={(e) => {
+                                field.onChange(e);
+                                updateLink(index, e.target.value);
+                              }}
+                            />
+                          </div>
+                        </div>
+                      )}
+                    />
+                    <button
+                      type='button'
+                      onClick={() => removeLink(index)}
+                      className='ml-2 text-red-500 hover:text-red-700'
+                    >
+                      <FaTrash />
+                    </button>
+                  </div>
+                </div>
               ))}
-              <button type="button" onClick={() => append('')} className="text-blue-400 mt-2">
+              <button onClick={addLink} className="text-blue-400 mt-2">
                 + Add another link
               </button>
               {errors.links && <p className="text-red-500">{errors.links.message}</p>}
