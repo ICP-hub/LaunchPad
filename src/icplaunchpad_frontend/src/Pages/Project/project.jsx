@@ -137,7 +137,7 @@ const TokenPage = () => {
 
               <div className="bg-[#FFFFFF66] h-[2px] w-[100%] mx-auto mt-4"></div>
 
-              <div className="flex justify-evenly w-[90%] mt-4">
+              <div className="flex justify-center gap-4  dxs:gap-9 text-[23px] w-[100%] mt-4">
               <IoGlobeOutline/>
                    <FaTwitter />
                     <FaFacebook />
