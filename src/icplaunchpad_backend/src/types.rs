@@ -260,7 +260,9 @@ pub struct SaleDetailsUpdate {
     pub website: Option<String>,
     pub social_links: Option<Vec<String>>,
     pub description: Option<String>,
+    pub project_video: Option<String>, // Optional field to update the project video
 }
+
 
 pub struct State {
     pub canister_ids: CanisterIdsMap,
@@ -268,18 +270,21 @@ pub struct State {
     pub image_ids: ImageIdsMap,
     pub sale_details: SaleDetailsMap,
     pub user_accounts: UserAccountsMap,
+    pub cover_image_ids: CoverImageIdsMap,
 }
 
-#[derive(CandidType, Deserialize, Debug)]
+#[derive(CandidType, Deserialize, Debug, Clone)]
 pub struct CanisterIdWrapper {
     pub canister_ids: Principal,
     pub token_name: String,
     pub token_symbol: String,
     pub image_id: Option<u32>,
-    pub ledger_id: Option<Principal>,
+    pub ledger_id: Option<Principal>,  
+    pub owner: Principal,  
 }
 
-#[derive(CandidType, Deserialize, Debug)]
+
+#[derive(CandidType, Deserialize, Debug, Clone)]
 pub struct IndexCanisterIdWrapper {
     pub index_canister_ids: Principal,
 }
@@ -298,6 +303,11 @@ pub struct UserAccountWrapper {
     pub user_account: UserAccount,
 }
 
+#[derive(CandidType, Deserialize, Debug, Clone)]
+pub struct CoverImageIdWrapper {
+    pub image_id: u32,
+}
+
 #[derive(CandidType, Deserialize, Serialize, Debug, Clone)]
 pub struct SaleDetails {
     pub creator: Principal, // Principal of the user who created the token and sale
@@ -309,7 +319,9 @@ pub struct SaleDetails {
     pub website: String,
     pub social_links: Vec<String>, // Vector of URLs for the social links
     pub description: String,
+    pub project_video: String, // URL or string identifier for the project video
 }
+
 
 #[derive(CandidType, Deserialize, Serialize, Debug, Clone)]
 pub struct SaleDetailsWithID {

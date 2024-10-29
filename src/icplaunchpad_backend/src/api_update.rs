@@ -1,7 +1,7 @@
 use candid::{encode_one, Principal};
 use ic_cdk::api::{call::{CallResult, RejectionCode}, management_canister::main::{CanisterInstallMode, WasmModule}};
 
-use crate::{create_canister, deposit_cycles, index_install_code, install_code, mutate_state, params, read_state, CanisterIdWrapper, CreateCanisterArgument, CreateFileInput, ImageIdWrapper, IndexArg, IndexCanisterIdWrapper, IndexInitArgs, IndexInstallCodeArgument, InitArgs, InstallCodeArgument, LedgerArg, ProfileImageData, ReturnResult, SaleDetails, SaleDetailsUpdate, SaleDetailsWrapper, TokenCreationResult, TokenImageData, UserAccount, UserAccountWrapper, UserInputParams, STATE};
+use crate::{create_canister, deposit_cycles, index_install_code, install_code, mutate_state, params, read_state, CanisterIdWrapper, CoverImageIdWrapper, CreateCanisterArgument, CreateFileInput, ImageIdWrapper, IndexArg, IndexCanisterIdWrapper, IndexInitArgs, IndexInstallCodeArgument, InitArgs, InstallCodeArgument, LedgerArg, ProfileImageData, ReturnResult, SaleDetails, SaleDetailsUpdate, SaleDetailsWrapper, TokenCreationResult, TokenImageData, UserAccount, UserAccountWrapper, UserInputParams, STATE};
 
 #[ic_cdk::update]
 pub fn create_account(user_input: UserAccount) -> Result<(), String> {
@@ -218,7 +218,8 @@ pub async fn create_token(user_params: UserInputParams) -> Result<TokenCreationR
                         token_name: user_params.token_name.clone(),  // Store token name
                         token_symbol: user_params.token_symbol.clone(),  // Store token symbol
                         image_id: None,  // Set image_id as None for now
-                        ledger_id: Some(canister_id_principal),  // Set ledger_id to the canister ID
+                        ledger_id: Some(canister_id_principal),  
+                        owner:caller,
                     }
                 );
             });
@@ -350,7 +351,56 @@ pub async fn upload_profile_image(asset_canister_id: String, image_data: Profile
     }
 }
 
+#[ic_cdk::update]
+pub async fn upload_cover_image(asset_canister_id: String, image_data: ProfileImageData) -> Result<String, String> {
+    let principal = ic_cdk::api::caller();  // Get the caller's principal
 
+    // Create input for the file upload
+    let input = CreateFileInput {
+        name: "cover_image.png".to_string(),
+        content_type: "image/png".to_string(),
+        size: None,
+        content: image_data.content.clone(),
+        status: Some(1),  // Status for fully filled
+        hash: None,
+        ert: None,
+        crc32: None,
+    };
+
+    // Make the call to the asset canister to create the file
+    let response: CallResult<(ReturnResult,)> = ic_cdk::call(
+        Principal::from_text(asset_canister_id.clone()).unwrap(),
+        "create_file",
+        (input,)
+    ).await;
+
+    // Handle the response and update the state accordingly
+    match response {
+        Ok((Ok(image_id),)) => {
+            // Store the cover image ID with the user's principal in the cover_image_ids map
+            mutate_state(|state| {
+                state.cover_image_ids.insert(principal.to_string(), CoverImageIdWrapper { image_id });
+            });
+
+            Ok(format!("Cover image uploaded and updated with ID: {}", image_id))
+        },
+        Ok((Err(err),)) => Err(err),
+        Err((code, message)) => match code {
+            RejectionCode::NoError => Err("NoError".to_string()),
+            RejectionCode::SysFatal => Err("SysFatal".to_string()),
+            RejectionCode::SysTransient => Err("SysTransient".to_string()),
+            RejectionCode::DestinationInvalid => Err("DestinationInvalid".to_string()),
+            RejectionCode::CanisterReject => Err("CanisterReject".to_string()),
+            _ => Err(format!("Unknown rejection code: {:?}: {}", code, message)),
+        }
+    }
+}
+
+
+
+fn is_valid_url(url: &str) -> bool {
+    url::Url::parse(url).is_ok()
+}
 
 
 #[ic_cdk::update]
@@ -361,6 +411,15 @@ pub fn create_sale(
     let caller = ic_cdk::api::caller(); // Get the caller's principal
 
     sale_details.creator = caller; // Set the creator as the current caller automatically
+
+    // Convert start and end times to microseconds format
+    sale_details.start_time_utc *= 1_000_000;
+    sale_details.end_time_utc *= 1_000_000;
+
+    // Validate the project_video URL
+    if !is_valid_url(&sale_details.project_video) {
+        return Err("Invalid URL for project video.".into());
+    }
 
     mutate_state(|state| {
         if state.sale_details.insert(
@@ -373,7 +432,6 @@ pub fn create_sale(
         }
     })
 }
-
 
 
 
@@ -392,7 +450,7 @@ pub fn update_sale_params(
 
             let mut sale_details = wrapper.sale_details.clone(); // Clone the sale details to update them
 
-            // Convert milliseconds to nanoseconds when updating
+            // Updating various fields if provided
             if let Some(start_time) = updated_details.start_time_utc {
                 sale_details.start_time_utc = start_time * 1_000_000;
             }
@@ -408,6 +466,9 @@ pub fn update_sale_params(
             if let Some(description) = updated_details.description {
                 sale_details.description = description;
             }
+            if let Some(project_video) = updated_details.project_video {
+                sale_details.project_video = project_video; // Update the project video URL
+            }
 
             // Reinsert the updated wrapper back into the stable map
             state.sale_details.insert(ledger_canister_id.to_string(), SaleDetailsWrapper { sale_details });
@@ -417,6 +478,7 @@ pub fn update_sale_params(
         }
     })
 }
+
 
 
 
