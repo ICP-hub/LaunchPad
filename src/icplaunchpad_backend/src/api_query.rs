@@ -1,6 +1,6 @@
 use candid::Principal;
 
-use crate::{read_state, CanisterIndexInfo, SaleDetails, SaleDetailsWithID, UserAccount};
+use crate::{read_state, CanisterIndexInfo, SaleDetails, SaleDetailsWithID,UserAccount};
 
 #[ic_cdk::query]
 pub fn get_user_account(principal: Principal) -> Option<UserAccount> {
@@ -48,6 +48,33 @@ pub fn get_tokens_info() -> Vec<CanisterIndexInfo> {
         }).collect()
     })
 }
+
+#[ic_cdk::query]
+pub fn get_user_tokens_info() -> Vec<CanisterIndexInfo> {
+    let caller = ic_cdk::caller();
+
+    read_state(|state| {
+        state.canister_ids.iter()
+            .zip(state.index_canister_ids.iter())
+            .filter_map(|((canister_key, canister_wrapper), (index_key, _index_wrapper))| {
+                // Only include entries where the owner matches the caller
+                if canister_wrapper.owner == caller {
+                    Some(CanisterIndexInfo {
+                        canister_id: canister_key.clone(),
+                        index_canister_id: index_key.clone(),
+                        token_name: canister_wrapper.token_name.clone(),
+                        token_symbol: canister_wrapper.token_symbol.clone(),
+                    })
+                } else {
+                    None
+                }
+            })
+            .collect()
+    })
+}
+
+
+
 
 #[ic_cdk::query]
 pub fn search_by_token_name_or_symbol(token_identifier: String) -> Option<CanisterIndexInfo> {
@@ -112,6 +139,16 @@ pub fn get_profile_image_id() -> Option<u32> {
         state.image_ids.get(&principal.to_string()).map(|wrapper| wrapper.image_id)
     })
 }
+
+#[ic_cdk::query]
+pub fn get_cover_image_id() -> Option<u32> {
+    let principal = ic_cdk::api::caller();
+
+    read_state(|state| {
+        state.cover_image_ids.get(&principal.to_string()).map(|wrapper| wrapper.image_id)
+    })
+}
+
 
 
 #[ic_cdk::query]
@@ -192,6 +229,10 @@ pub fn get_successful_sales() -> Vec<SaleDetailsWithID> {
             .collect()
     })
 }
+
+
+
+
 
 
 

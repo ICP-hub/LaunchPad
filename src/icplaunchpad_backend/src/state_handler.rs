@@ -7,7 +7,7 @@ use candid::{Decode, Encode, Principal};
 use std::cell::RefCell;
 use std::borrow::Cow;
 
-use crate::{CanisterIdWrapper, ImageIdWrapper, IndexCanisterIdWrapper, SaleDetailsWrapper, State, UserAccountWrapper};
+use crate::{CanisterIdWrapper, CoverImageIdWrapper, ImageIdWrapper, IndexCanisterIdWrapper, SaleDetailsWrapper, State, UserAccountWrapper};
 
 pub type Memory = VirtualMemory<DefaultMemoryImpl>;
 pub type CanisterIdsMap = StableBTreeMap<String, CanisterIdWrapper, Memory>;
@@ -15,12 +15,14 @@ pub type IndexCanisterIdsMap = StableBTreeMap<String, IndexCanisterIdWrapper, Me
 pub type ImageIdsMap = StableBTreeMap<String, ImageIdWrapper, Memory>;
 pub type SaleDetailsMap = StableBTreeMap<String, SaleDetailsWrapper, Memory>;
 pub type UserAccountsMap = StableBTreeMap<Principal, UserAccountWrapper, Memory>;
+pub type CoverImageIdsMap = StableBTreeMap<String, CoverImageIdWrapper, Memory>;
 
 const CANISTER_IDS_MEMORY: MemoryId = MemoryId::new(0);
 const INDEX_CANISTER_IDS_MEMORY: MemoryId = MemoryId::new(1);
 const IMAGE_IDS_MEMORY: MemoryId = MemoryId::new(2);
 const SALE_DETAILS_MEMORY: MemoryId = MemoryId::new(3);
 const USER_ACCOUNTS_MEMORY: MemoryId = MemoryId::new(4);
+const COVER_IMAGE_IDS_MEMORY: MemoryId = MemoryId::new(5);
 
 
 
@@ -36,6 +38,7 @@ thread_local! {
             image_ids: ImageIdsMap::init(mm.borrow().get(IMAGE_IDS_MEMORY)),
             sale_details: SaleDetailsMap::init(mm.borrow().get(SALE_DETAILS_MEMORY)),
             user_accounts: UserAccountsMap::init(mm.borrow().get(USER_ACCOUNTS_MEMORY)),
+            cover_image_ids: CoverImageIdsMap::init(mm.borrow().get(COVER_IMAGE_IDS_MEMORY)),
         })
     );
 }
@@ -69,6 +72,9 @@ pub fn get_user_accounts_memory() -> Memory {
     MEMORY_MANAGER.with(|m| m.borrow().get(USER_ACCOUNTS_MEMORY))
 }
 
+pub fn get_cover_image_ids_memory() -> Memory {
+    MEMORY_MANAGER.with(|m| m.borrow().get(COVER_IMAGE_IDS_MEMORY))
+}
 
 #[init]
 fn init() {
@@ -79,6 +85,7 @@ fn init() {
         state.image_ids = init_image_ids();
         state.sale_details = init_sale_details();
         state.user_accounts = init_user_accounts();
+        state.cover_image_ids = init_cover_image_ids();
     });
 }
 
@@ -90,6 +97,7 @@ impl State {
             image_ids: init_image_ids(),
             sale_details:init_sale_details(),
             user_accounts:init_user_accounts(),
+            cover_image_ids: init_cover_image_ids(),
         }
     }
 }
@@ -118,6 +126,10 @@ pub fn init_sale_details() -> SaleDetailsMap {
 
 pub fn init_user_accounts() -> UserAccountsMap {
     UserAccountsMap::init(get_user_accounts_memory())
+}
+
+pub fn init_cover_image_ids() -> CoverImageIdsMap {
+    CoverImageIdsMap::init(get_cover_image_ids_memory())
 }
 
 
@@ -170,6 +182,18 @@ impl Storable for SaleDetailsWrapper {
 }
 
 impl Storable for UserAccountWrapper {
+    fn to_bytes(&self) -> Cow<[u8]> {
+        Cow::Owned(Encode!(self).unwrap())
+    }
+
+    fn from_bytes(bytes: Cow<[u8]>) -> Self {
+        Decode!(bytes.as_ref(), Self).unwrap()
+    }
+
+    const BOUND: Bound = Bound::Unbounded;
+}
+
+impl Storable for CoverImageIdWrapper {
     fn to_bytes(&self) -> Cow<[u8]> {
         Cow::Owned(Encode!(self).unwrap())
     }

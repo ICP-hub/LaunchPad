@@ -18,6 +18,7 @@ type SaleDetails = record {
   description : text;
   website : text;
   end_time_utc : nat64;
+  project_video : text;
   start_time_utc : nat64;
   max_buy : nat64;
   social_links : vec text;
@@ -26,6 +27,7 @@ type SaleDetailsUpdate = record {
   description : opt text;
   website : opt text;
   end_time_utc : opt nat64;
+  project_video : opt text;
   start_time_utc : opt nat64;
   social_links : opt vec text;
 };
@@ -56,6 +58,7 @@ service : () -> {
   create_sale : (principal, SaleDetails) -> (Result);
   create_token : (UserInputParams) -> (Result_1);
   get_active_sales : () -> (vec SaleDetailsWithID) query;
+  get_cover_image_id : () -> (opt nat32) query;
   get_profile_image_id : () -> (opt nat32) query;
   get_sale_params : (principal) -> (Result_2) query;
   get_successful_sales : () -> (vec SaleDetailsWithID) query;
@@ -65,11 +68,13 @@ service : () -> {
   get_upcoming_sales : () -> (vec SaleDetailsWithID) query;
   get_user_account : (principal) -> (opt UserAccount) query;
   get_user_by_username : (text) -> (opt UserAccount) query;
+  get_user_tokens_info : () -> (vec CanisterIndexInfo) query;
   is_account_created : () -> (text) query;
   make_payment : (nat64, principal) -> (Result_3);
   search_by_token_name_or_symbol : (text) -> (opt CanisterIndexInfo) query;
   update_sale_params : (principal, SaleDetailsUpdate) -> (Result);
   update_user_account : (principal, UserAccount) -> (Result);
+  upload_cover_image : (text, ProfileImageData) -> (Result_4);
   upload_profile_image : (text, ProfileImageData) -> (Result_4);
   upload_token_image : (text, TokenImageData) -> (Result_4);
 }
