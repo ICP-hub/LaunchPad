@@ -57,7 +57,7 @@ const ConnectWallet = ({ modalIsOpen, setModalIsOpen }) => {
       >
         <span className="ml-3 absolute">{label}</span>
         <div className="flex items-center justify-center ml-[85%]  bg-white rounded-full">
-          <img src={icon} alt={label} className="w-8" />
+          <img src={icon} alt={label} className="w-8 h-8" />
         </div>
       </button>
     </div>
