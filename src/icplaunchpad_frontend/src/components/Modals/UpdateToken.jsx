@@ -7,6 +7,8 @@ import { Principal } from '@dfinity/principal';
 import { getSocialLogo } from '../../common/getSocialLogo';
 import { useForm, Controller } from 'react-hook-form';
 import { FaTrash } from 'react-icons/fa';
+import { formatDateForDateTimeLocal } from '../../utils/formatDateFromBigInt';
+// import { formatDateFromBigInt } from '../../utils/formatDateFromBigInt';
 const UpdateToken = ({ ledgerId, tokenModalIsOpen, setTokenModalIsOpen }) => {
     const { actor, isAuthenticated } = useAuth();
     const { register, handleSubmit, formState: { errors }, reset, control, setValue, clearErrors, setError } = useForm();
@@ -17,29 +19,39 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen, setTokenModalIsOpen }) => {
 
     const ledgerPrincipal = Principal.fromText(ledgerId);
     const [links, setLinks] = useState([{ url: '' }]);
-    console.log("Links array:", links);
+    console.log("Start time and end time :", tokenData);
     useEffect(() => {
         if (isAuthenticated && tokenModalIsOpen) {
             getTokenData();
         }
     }, [isAuthenticated, tokenModalIsOpen]);
+   
+    // useEffect(() => {
+    //     if (tokenData) {
+    //         const socialLinks = tokenData.social_links?.map((link) => ({ url: link })) || [{ url: '' }];
+    //         setLinks(socialLinks);
+    //         console.log("Updated social links:", socialLinks);
+    //         const startTime = formatDateForDateTimeLocal(tokenData.start_time_utc);
+    //         const endTime = formatDateForDateTimeLocal(tokenData.end_time_utc);
+          
+    //         setValue("description", tokenData.description || '');
+    //         setValue("website", tokenData.website || '');
+    //         setValue("start_time_utc", startTime);
+    //         setValue("end_time_utc", endTime);
 
+    //     }
+    // }, [tokenData, reset]);
     useEffect(() => {
         if (tokenData) {
             const socialLinks = tokenData.social_links?.map((link) => ({ url: link })) || [{ url: '' }];
             setLinks(socialLinks);
-            const startDateTime = tokenData.start_time_utc
-                ? new Date(Number(tokenData.start_time_utc / BigInt(1_000_000))).toISOString().slice(0, 16)
-                : '';
-            const endDateTime = tokenData.end_time_utc
-                ? new Date(Number(tokenData.end_time_utc / BigInt(1_000_000))).toISOString().slice(0, 16)
-                : '';
-            reset({
+
+            reset({  
                 description: tokenData.description || '',
                 website: tokenData.website || '',
-                start_time_utc: startDateTime,
-                end_time_utc: endDateTime,
-
+                start_time_utc: formatDateForDateTimeLocal(tokenData.start_time_utc),
+                end_time_utc: formatDateForDateTimeLocal(tokenData.end_time_utc),
+                links: socialLinks.map(link => link.url)
             });
         }
     }, [tokenData, reset]);
@@ -64,6 +76,7 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen, setTokenModalIsOpen }) => {
     };
 
     const onSubmit = async (data) => {
+        console.log("submit start,",data)
         setIsSubmitting(true);
         setValidationError('');
        
@@ -80,13 +93,11 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen, setTokenModalIsOpen }) => {
             return;
         }
 
-        const startTime = start_time_utc ? Math.floor(new Date(start_time_utc).getTime() / 1000) : null;
-        const endTime = end_time_utc ? Math.floor(new Date(end_time_utc).getTime() / 1000) : null;
-
-       
-        console.log("Start Time:", startTime, "End Time:", endTime);
-
-        if (startTime !== null && endTime !== null && !validateTimes(startTime, endTime)) return;
+        const startTime = Math.floor(new Date(start_time_utc).getTime() / 1000);
+        const endTime = Math.floor(new Date(end_time_utc).getTime() / 1000);
+        console.log("start time submit ,",startTime)
+        console.log("end time submit ,", endTime)
+        if (!validateTimes(startTime, endTime)) return;
 
 
         const socialLinksURLs = links.map(link => link.url);
@@ -94,13 +105,15 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen, setTokenModalIsOpen }) => {
         const updatedTokenData = {
             description: description ? [description] : [],
             website: website ? [website] : null,
-            start_time_utc: startTime >= 0 ? [startTime] : [],
-            end_time_utc: endTime >= 0 ? [endTime] : [],
+            end_time_utc: endTime ? [endTime] : [],
+            start_time_utc: startTime ? [startTime] : [],
+
             social_links: socialLinksURLs.length > 0 ? [socialLinksURLs] : [],
         };
-
+        console.log("update token data ,", updatedTokenData)
         try {
             const response = await actor.update_sale_params(ledgerPrincipal, updatedTokenData);
+            console.log('Token updated:', response);
             if (response?.Err) {
                 setValidationError(response.Err);
             } else {
@@ -196,10 +209,11 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen, setTokenModalIsOpen }) => {
                                             <div className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full">
                                                 {getSocialLogo(links[index].url)}
                                             </div>
+                                           
                                             <Controller
                                                 name={`links.${index}`}
                                                 control={control}
-                                                defaultValue={item.url || ''}
+                                                defaultValue={links[index]?.url || ''}  
                                                 render={({ field }) => (
                                                     <input
                                                         type="text"
@@ -208,11 +222,12 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen, setTokenModalIsOpen }) => {
                                                         {...field}
                                                         onChange={(e) => {
                                                             field.onChange(e);
-                                                            updateLink(index, e.target.value);
+                                                            updateLink(index, e.target.value); 
                                                         }}
                                                     />
                                                 )}
                                             />
+
                                             <button
                                                 type="button"
                                                 onClick={() => removeLink(index)}
