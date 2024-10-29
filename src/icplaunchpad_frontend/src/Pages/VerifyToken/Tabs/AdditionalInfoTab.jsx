@@ -217,7 +217,7 @@ const AdditionalInfoTab = ({
   };
 
   return (
-    <div className="bg-[#222222] p-3 rounded-2xl mx-3  mb-[80px] dxs:mb-[140px] xxs1:mb-[90px] sm2:mb-[70px]  md:mb-[10px] h-[550px]   ss2:h-[600px] md:h-[550px] ">
+    <div className="bg-[#222222] p-3 rounded-2xl mx-3  mb-[80px] dxs:mb-[140px] xxs1:mb-[90px] sm2:mb-[70px]  md:mb-[10px] min-h-[550px]   ss2:h-[600px] md:min-h-[550px] ">
       {/* File Upload */}
       <div className="flex flex-col justify-between mb-4">
         <label className="block text-[19px] mb-1">Logo</label>
@@ -237,6 +237,8 @@ const AdditionalInfoTab = ({
         </div>
         {errors.logoURL && <p className="text-red-500 mt-1">{errors.logoURL.message}</p>}
       </div>
+      
+
       <div className="w-full mb-4">
         <label className="block text-[19px] mb-1">Website</label>
         <input
@@ -249,6 +251,20 @@ const AdditionalInfoTab = ({
           <p className="text-red-500">{errors.website.message}</p>
         )}
       </div>
+
+      <div className="w-full mb-4">
+        <label className="block text-[19px] mb-1">Video URL</label>
+        <input
+          type="text"
+          {...register("project_video")}
+          className={`w-full p-2 bg-[#333333] text-white rounded-md ${errors.project_video ? "border-red-500" : "border-white"
+            }  border-b-2`}
+        />
+        {errors.project_video && (
+          <p className="text-red-500">{errors.project_video.message}</p>
+        )}
+      </div>
+      
 
       {/* Social Links */}
       <div className="mb-4">

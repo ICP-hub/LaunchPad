@@ -372,6 +372,7 @@ const VerifyToken = () => {
         logoURL,
         description,
         social_links,
+        project_video,
         website = "",
       } = presaleDetails;
 
@@ -395,6 +396,7 @@ const VerifyToken = () => {
         creator: creatorPrincipal,
         social_links: socialLinksURLs,
         website,
+        project_video
       };
   
       const ledgerPrincipalId = ledger_canister_id
