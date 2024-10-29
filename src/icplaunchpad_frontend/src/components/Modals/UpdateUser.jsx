@@ -5,8 +5,7 @@ import AnimationButton from '../../common/AnimationButton';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useAuth } from '../../StateManagement/useContext/useAuth';
-import { useDispatch } from 'react-redux';
-import { addUserData } from '../../Redux-Config/ReduxSlices/UserSlice';
+import { useDispatch, useSelector } from 'react-redux';
 import { Principal } from '@dfinity/principal';
 import { updatevalidationSchema } from '../../common/UpdateUserValidation';
 import ReactSelect from 'react-select';
@@ -14,18 +13,23 @@ import getReactSelectStyles from '../../common/Reactselect';
 import { getSocialLogo } from '../../common/getSocialLogo';
 import { FaTrash } from 'react-icons/fa';
 import { convertFileToBase64 } from '../../utils/convertToBase64';
+import { userRegisteredHandlerRequest } from '../../StateManagement/Redux/Reducers/userRegisteredData';
+import { ProfileImageIDHandlerRequest } from '../../StateManagement/Redux/Reducers/ProfileImageID';
+
 const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const { actor, principal, isAuthenticated } = useAuth();
   const dispatch = useDispatch();
+  const userData = useSelector((state) => state.userData.data);
 
   const [validationError, setValidationError] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
-  const [userData, setUserData] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tagSelectedOptions, setTagSelectedOptions] = useState([]);
   const [fileName, setFileName] = useState('');
   const [profileImagePreview, setProfileImagePreview] = useState(null);
   const [profilePictureData, setProfilePictureData] = useState(null);
+  const [links, setLinks] = useState([{ url: '' }]);
+
   const [tagsOptions] = useState([
     { value: 'tag1', label: 'Tag 1' },
     { value: 'tag2', label: 'Tag 2' },
@@ -34,36 +38,23 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
     { value: 'tag5', label: 'Tag 5' },
   ]);
 
-
-  // State for managing social links
-  const [links, setLinks] = useState([{ url: '' }]);
   const userPrincipal = Principal.fromText(principal);
 
-  // Integrate Yup validation schema
   const { register, handleSubmit, formState: { errors }, reset, control, setValue, clearErrors, setError } = useForm({
     resolver: yupResolver(updatevalidationSchema),
   });
-  console.log("Form errors:", errors);
-  useEffect(() => {
-    if (isAuthenticated) {
-      getUser();
-    }
-  }, [isAuthenticated, userModalIsOpen]);
 
   useEffect(() => {
     if (userData && userData.length > 0) {
       const user = userData[0];
-
-
-      console.log("Resetting form with data:", user);
-
       const selectedTags = user.tag?.map(tag => ({ value: tag, label: tag })) || [];
       setTagSelectedOptions(selectedTags);
 
       const linksArray = user?.links?.map(link => ({ url: link })) || [{ url: '' }];
       setLinks(linksArray);
+
       if (user.profile_picture && user.profile_picture.length > 0) {
-        convertFileToBase64(user.profile_picture[0]) 
+        convertFileToBase64(user.profile_picture[0])
           .then((base64Image) => setProfileImagePreview(base64Image))
           .catch((error) => console.error("Error converting image to Base64:", error));
       } else {
@@ -78,28 +69,13 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
         tags: selectedTags.map(tag => tag.value),
       });
     }
-
   }, [userData, reset]);
 
-
- 
-
-  const getUser = async () => {
-    try {
-      const data = await actor.get_user_account(userPrincipal);
-      setUserData(data);
-      console.log('Fetched user data:', data);
-    } catch (err) {
-      console.error('Error fetching user data:', err);
-    }
-  };
-
-  
   const handleProfilePictureChange = async (file) => {
     if (file) {
       try {
-        setProfilePictureData(new Uint8Array(await file.arrayBuffer()));  
-        const base64String = await convertFileToBase64(file); 
+        setProfilePictureData(new Uint8Array(await file.arrayBuffer()));
+        const base64String = await convertFileToBase64(file);
         setFileName(file.name);
         setProfileImagePreview(base64String);
       } catch (error) {
@@ -108,15 +84,10 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
     }
   };
 
-
   const onSubmit = async (data) => {
-    console.log("onSubmit called with data:", data);
     setIsSubmitting(true);
     setValidationError('');
-    if (links.length <= 5) {
-      clearErrors("links");
-    }
-    const { name, username, profile, tags } = data;
+    const { name, username, tags } = data;
 
     if (!termsAccepted) {
       setIsSubmitting(false);
@@ -124,49 +95,26 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
       return;
     }
 
+    const profile_picture = profilePictureData ? [profilePictureData] : [];
+    const linksArray = links.map(link => link.url.trim());
+
     try {
-
-      const profile_picture = profilePictureData ? [profilePictureData] : [];
-      const linksArray = links.map(link => link.url.trim());
-
-      console.log("Submitting data:", { name, username, profile_picture, tags, linksArray });
-
-      const updatedUserData = {
-        name,
-        username,
-        profile_picture,
-        links: linksArray,
-        tag: tags,
-      };
-
+      const updatedUserData = { name, username, profile_picture, links: linksArray, tag: tags };
       const response = await actor.update_user_account(userPrincipal, updatedUserData);
+
       if (response?.Err) {
         setIsSubmitting(false);
         setValidationError(response.Err);
         return;
       }
 
-      console.log('User updated:', response);
-
       if (profile_picture.length > 0) {
-        try {
-          await actor.upload_profile_image("br5f7-7uaaa-aaaaa-qaaca-cai", {
-            content: [profile_picture[0]],
-          });
-          console.log("Profile picture uploaded successfully");
-        } catch (imgErr) {
-          console.error("Error uploading profile picture:", imgErr);
-        }
-      } else {
-        console.log("No profile picture to upload.");
+        await actor.upload_profile_image("br5f7-7uaaa-aaaaa-qaaca-cai", { content: [profile_picture[0]] });
+        console.log("profile pic uploaded")
+        dispatch(ProfileImageIDHandlerRequest());
       }
 
-      const updatedData = await actor.get_user_account(userPrincipal);
-      if (updatedData) {
-        const { profile_picture, ...restUserData } = updatedData[0];
-        dispatch(addUserData(restUserData));
-      }
-
+      dispatch(userRegisteredHandlerRequest());
       setUserModalIsOpen(false);
       reset();
     } catch (err) {
@@ -179,9 +127,7 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
 
   const closeModal = () => setUserModalIsOpen(false);
 
-  const addLink = () => {
-    setLinks(prev => [...prev, { url: '' }]);
-  };
+  const addLink = () => setLinks(prev => [...prev, { url: '' }]);
 
   const removeLink = (index) => {
     setLinks(prev => prev.filter((_, i) => i !== index));
@@ -196,11 +142,7 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
     setValue(`links.${index}`, value);
   };
 
-
-  const handleFieldTouch = (fieldName) => {
-    setError(fieldName, { type: 'touched' });
-  };
-
+  const handleFieldTouch = (fieldName) => setError(fieldName, { type: 'touched' });
 
   return (
     <div className="absolute">
@@ -213,16 +155,10 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
         ariaHideApp={false}
       >
         <div className="bg-[#222222] p-6 rounded-2xl text-white max-h-[100vh] overflow-y-auto no-scrollbar w-[786px] relative">
-          <div className="bg-[#FFFFFF4D] px-4 py-1 mb-4 rounded-2xl relative">
-            <button
-              onClick={closeModal}
-              className="absolute top-0 mt-2 right-4 text-[30px] text-white"
-            >
-              <TfiClose />
-            </button>
-            <h2 className="text-[25px] font-semibold">Update User</h2>
-          </div>
-
+          <button onClick={closeModal} className="absolute top-2 right-4 text-[30px] text-white">
+            <TfiClose />
+          </button>
+          <h2 className="text-[25px] font-semibold">Update User</h2>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {/* Name */}
             <div>

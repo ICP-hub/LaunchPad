@@ -19,12 +19,15 @@ const canisterId = process.env.CANISTER_ID_IC_ASSET_HANDLER;
 
   useEffect(()=>{
     getProfileIMG();
-  },[])
+  },[profile_ImgId])
 
 async function getProfileIMG(){
+  if(profile_ImgId){
+  console.log('profile_iMGId',profile_ImgId)
   const imageUrl = `${protocol}://${canisterId}.${domain}/f/${profile_ImgId[0]}`;
   setProfileImg(imageUrl);
   console.log("userImg-", imageUrl);
+  }
 }
 
   // async function handleLogout(){

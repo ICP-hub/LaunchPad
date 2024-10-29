@@ -4,7 +4,7 @@ import {
   TokensInfoHandlerSuccess,
   TokensInfoHandlerFailure,
 } from "../Reducers/TokensInfo";
-import { SetLedgerIdHandler } from "../Reducers/LedgerId";
+
 
 const selectActorFromState = (currState) => currState.actors.actor;
 
@@ -22,12 +22,7 @@ function* fetchTokensInfo() {
 
       // Proceed with dispatching the success action
       yield put(TokensInfoHandlerSuccess(TokensData));
-      yield put(
-        SetLedgerIdHandler({
-          ledger_canister_id: lastTokenData.canister_id,
-          index_canister_id: lastTokenData.index_canister_id,
-        })
-      );
+      
     } else {
       throw new Error("Invalid or empty Tokens data");
     }

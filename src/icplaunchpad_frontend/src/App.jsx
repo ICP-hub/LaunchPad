@@ -7,6 +7,7 @@ import { ProfileImageIDHandlerRequest } from "./StateManagement/Redux/Reducers/P
 import { TokensInfoHandlerRequest } from "./StateManagement/Redux/Reducers/TokensInfo";
 import { upcomingSalesHandlerRequest } from "./StateManagement/Redux/Reducers/UpcomingSales";
 import { SuccessfulSalesHandlerRequest } from "./StateManagement/Redux/Reducers/SuccessfulSales";
+import { UserTokensInfoHandlerRequest } from "./StateManagement/Redux/Reducers/UserTokensInfo";
 
 function App() {
   const actor = useSelector((currState) => currState.actors.actor);
@@ -30,8 +31,10 @@ function App() {
       dispatch(userRegisteredHandlerRequest());
       dispatch(ProfileImageIDHandlerRequest());
       dispatch(TokensInfoHandlerRequest());
+      dispatch(UserTokensInfoHandlerRequest());
     }
     if(actor){
+      console.log("appjs actor-", actor)
     dispatch(upcomingSalesHandlerRequest());
     dispatch(SuccessfulSalesHandlerRequest());
     }
