@@ -412,9 +412,6 @@ pub fn create_sale(
 
     sale_details.creator = caller; // Set the creator as the current caller automatically
 
-    // Convert start and end times to microseconds format
-    sale_details.start_time_utc *= 1_000_000;
-    sale_details.end_time_utc *= 1_000_000;
 
     // Validate the project_video URL
     if !is_valid_url(&sale_details.project_video) {
