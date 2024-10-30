@@ -1,15 +1,10 @@
 import React, { useState, useEffect } from "react";
 import ProjectRectangleBg from "../../../assets/images/project-rectangle-bg.png";
-
-import { FaFacebook } from "react-icons/fa";
-import { FaTwitter } from "react-icons/fa";
+import { FaFacebook, FaTwitter, FaReddit, FaInstagram, FaDiscord } from "react-icons/fa";
 import { IoGlobeOutline } from "react-icons/io5";
-import { FaReddit } from "react-icons/fa";
 import { FaTelegram } from "react-icons/fa6";
-import { FaInstagram } from "react-icons/fa";
-import { FaDiscord } from "react-icons/fa";
 
-import person1 from "../../../assets/images/carousel/person1.png"
+import person1 from "../../../assets/images/carousel/person1.png";
 import ProjectTokenAbout from "./about/ProjectTokenAbout.jsx";
 import AffiliateProgram from "./AffiliateProgram/AffiliateProgram.jsx";
 import FAQsDiscussion from "./FAQsDiscussion/FAQsDiscussion.jsx";
@@ -18,22 +13,58 @@ import Token from "./token/Token.jsx";
 import Tokenomic from "./Tokenomic/Tokenomic.jsx";
 import MobileViewTab from "./MobileViewTab.jsx";
 import { useLocation } from "react-router-dom";
+import { useAuth } from "../../StateManagement/useContext/useAuth.jsx";
+import { Principal } from "@dfinity/principal";
+import SaleStart from "../OwnerSection/SaleStart.jsx";
 
 const TokenPage = () => {
   const [activeTab, setActiveTab] = useState("About");
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 640);
   const location = useLocation();
-  const {projectData} = location.state || {};
-  
+  const { projectData } = location.state || {};
+  const { actor, createCustomActor } = useAuth();
+  const [saleParams, setSaleParams] = useState(null);
+  const [tokenData, setTokenData] = useState(null);
+
+  useEffect(() => {
+    const fetchTokenData = async () => {
+      if (projectData?.canister_id) {
+        const ledgerPrincipal = Principal.fromText(projectData?.canister_id);
+        const ledgerActor = await createCustomActor(ledgerPrincipal);
+        const totalSupply = await ledgerActor.icrc1_total_supply();
+        setTokenData({ total_supply: totalSupply });
+      }
+    };
+
+    const fetchSaleParams = async () => {
+      if (actor && projectData?.canister_id) {
+        try {
+          const ledgerPrincipal = Principal.fromText(projectData.canister_id);
+          const sale = await actor.get_sale_params(ledgerPrincipal);
+
+          if (sale?.Ok) {
+            setSaleParams(sale.Ok);
+          } else {
+            console.warn("No sale data available or an error occurred.");
+          }
+        } catch (error) {
+          console.error("Error fetching sale parameters:", error);
+        }
+      }
+    };
+
+    fetchTokenData();
+    fetchSaleParams();
+  }, [actor, projectData?.canister_id, createCustomActor]);
 
   const renderContent = () => {
     switch (activeTab) {
       case "About":
         return <ProjectTokenAbout />;
       case "Token":
-        return <Token ledgerId={projectData?.canister_id }/>;
+        return <Token ledgerId={projectData?.canister_id} />;
       case "Pool Info":
-        return <Pooolinfo />;
+        return <Pooolinfo presaleData={saleParams} poolData={projectData ? { ...projectData, total_supply: tokenData?.total_supply } : {}} />;
       case "Affiliate Program":
         return <AffiliateProgram />;
       case "Tokenomic":
@@ -61,16 +92,9 @@ const TokenPage = () => {
   const saleType = "PUBLIC";
 
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 640);
-    };
-
-    handleResize();
+    const handleResize = () => setIsMobile(window.innerWidth <= 640);
     window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   return (
@@ -255,8 +279,7 @@ const TokenPage = () => {
           </div>
 
           <div className="lg:min-w-[406px] w-full h-[153px] bg-[#FFFFFF1A] rounded-[17.44px] flex flex-col justify-center items-center text-white">
-            <p className="text-lg mb-2">SALE STARTS IN</p>
-            <div className="text-2xl font-bold">00:29:23:00</div>
+            <SaleStart presaleData={saleParams}/>
           </div>
         </div>
         {isMobile && <MobileViewTab ledgerId={projectData?.canister_id } />}

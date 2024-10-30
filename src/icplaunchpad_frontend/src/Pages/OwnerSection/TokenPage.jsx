@@ -25,80 +25,79 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
 import UpdateToken from "../../components/Modals/UpdateToken.jsx";
 import { SaleParamsHandlerRequest } from "../../StateManagement/Redux/Reducers/SaleParams.jsx";
+import SaleStart from "./SaleStart.jsx";
 
 const TokenPage = () => {
   const [activeTab, setActiveTab] = useState("About");
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 640);
   const [sellType, setSellType] = useState('public');
   const [modalIsOpen, setIsOpen] = useState(false);
-  const [tokenModalIsOpen, setTokenModalIsOpen] =useState(false)
-  
-  const { actor,createCustomActor, isAuthenticated, principal } = useAuth();
+  const [tokenModalIsOpen, setTokenModalIsOpen] = useState(false)
+
+  const { actor, createCustomActor, isAuthenticated, principal } = useAuth();
   const [tokenData, setTokenData] = useState(null);
   const [tokenImg, setTokenImg] = useState();
   const protocol = process.env.DFX_NETWORK === "ic" ? "https" : "http";
   const domain = process.env.DFX_NETWORK === "ic" ? "raw.icp0.io" : "localhost:4943";
   const canisterId = process.env.CANISTER_ID_IC_ASSET_HANDLER;
-  const [presaleData, setPresaleData]= useState(null);
-  const [ledgerActor, setLedgerActor]=useState(null);
-
-   const dispatch=useDispatch()
+  // const [presaleData, setPresaleData]= useState(null);
+  const [ledgerActor, setLedgerActor] = useState(null);
+  const dispatch = useDispatch()
 
   // const location = useLocation();
-  // const userData=useSelector((state)=>state.user);
-  const ledger_canister_id=useSelector((state)=> state?.LedgerId?.data?.ledger_canister_id )
-  console.log("ledgerCanister-",ledger_canister_id)
+  const presaleData = useSelector((state) => state.SaleParams.data.Ok);
+  const ledger_canister_id = useSelector((state) => state?.LedgerId?.data?.ledger_canister_id)
+  console.log("ledgerCanister-", ledger_canister_id)
 
-    function handleTokenEdit(){
-      setTokenModalIsOpen(true)
+  function handleTokenEdit() {
+    setTokenModalIsOpen(true)
+  }
+
+  const fetchData = async () => {
+    try {
+      // Check if ledger_canister_id exists
+      if (ledger_canister_id) {
+
+        // Create a custom actor for the ledger and set it in state
+        const ledgerActor = await createCustomActor(ledger_canister_id);
+        setLedgerActor(ledgerActor);
+        console.log("Ledger Actor =", ledgerActor);
+
+        //fetching token info with ledgerActor
+        const tokenName = await ledgerActor.icrc1_name();
+        const totalSupply = await ledgerActor.icrc1_total_supply();
+        setTokenData({ canister_id: ledger_canister_id, token_name: tokenName, total_supply: totalSupply })
+      }
+
+      // Fetch token image if ledgerId is available
+      if (ledger_canister_id) {
+        const ledgerPrincipal = Principal.fromText(ledger_canister_id);
+
+        // Fetch token image ID
+        const tokenImgId = await actor.get_token_image_id(ledgerPrincipal);
+        console.log("Fetched token image ID:", tokenImgId);
+
+        if (tokenImgId && tokenImgId.length > 0) {
+          const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId[tokenImgId.length - 1]}`;
+          setTokenImg(imageUrl);
+          console.log("Token Image URL:", imageUrl);
+        }
+      }
+
+      // Fetch presale data if ledgerId is available
+      if (ledger_canister_id) {
+        dispatch(SaleParamsHandlerRequest())
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
     }
+  };
 
-    const fetchData = async () => {
-      try {
-        // Check if ledger_canister_id exists
-        if (ledger_canister_id) {
-    
-          // Create a custom actor for the ledger and set it in state
-          const ledgerActor = await createCustomActor(ledger_canister_id);
-          setLedgerActor(ledgerActor);
-          console.log("Ledger Actor =", ledgerActor);
-          
-          //fetching token info with ledgerActor
-          const tokenName= await ledgerActor.icrc1_name();
-          setTokenData({canister_id:ledger_canister_id, token_name:tokenName})
-        }
-    
-        // Fetch token image if ledgerId is available
-        if (ledger_canister_id) {
-          const ledgerPrincipal = Principal.fromText(ledger_canister_id);
-          
-          // Fetch token image ID
-          const tokenImgId = await actor.get_token_image_id(ledgerPrincipal);
-          console.log("Fetched token image ID:", tokenImgId);
-    
-          if (tokenImgId && tokenImgId.length > 0) {
-            const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId[tokenImgId.length - 1]}`;
-            setTokenImg(imageUrl);
-            console.log("Token Image URL:", imageUrl);
-          }
-        }
-    
-        // Fetch presale data if ledgerId is available
-        if (ledger_canister_id) {
-          dispatch(SaleParamsHandlerRequest())
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    
-    useEffect(() => {
-      if (isAuthenticated && actor) {
-        fetchData();
-      }
-    }, [isAuthenticated, actor, ledger_canister_id]);
-    
-
+  useEffect(() => {
+    if (isAuthenticated && actor) {
+      fetchData();
+    }
+  }, [isAuthenticated, actor, ledger_canister_id]);
 
   const openModal = () => {
     setIsOpen(true);
@@ -109,9 +108,9 @@ const TokenPage = () => {
       case "About":
         return <ProjectTokenAbout />;
       case "Token":
-        return <Token actor={ledgerActor}/>;
+        return <Token actor={ledgerActor} />;
       case "Pool Info":
-        return <Pooolinfo />;
+        return <Pooolinfo poolData={tokenData ? tokenData : ''} />;
       case "FAQs & Discussion":
         return <FAQsDiscussion />;
       case "Previous Sale":
@@ -148,7 +147,7 @@ const TokenPage = () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-  
+
   return (
     <>
       <div className="flex flex-col gap-5 max-w-[90%] mx-auto lg:flex-row">
@@ -156,16 +155,16 @@ const TokenPage = () => {
           {!isMobile && (
             <div className="h-[314px]">
               <div className="relative">
-                
+
                 <img
                   src={ProjectRectangleBg}
                   className="min-h-[147px] w-full rounded-lg"
                   alt=""
                   draggable="false"
                 />
-                
-                
-                 <img
+
+
+                <img
                   src={tokenImg || person1} // Show person1 as a fallback if tokenImg is not available yet
                   className="absolute  top-0 left-[50%] transform -translate-x-1/2 -translate-y-[35%] rounded-full object-cover   h-[130px] w-[130px]"
                   alt="Profile Picture"
@@ -175,7 +174,7 @@ const TokenPage = () => {
               </div>
               <div className="content-div flex font-posterama justify-between w-[90%] m-auto mt-7 ">
                 <div className="left flex flex-col gap-5">
-                  <div className="text-[25px]"> {tokenData ? tokenData.token_name: "PUPPO"}</div>
+                  <div className="text-[25px]"> {tokenData ? tokenData.token_name : "PUPPO"}</div>
                   <div className="font-extralight">FAir Launnch - Max buy 5 SOL</div>
                   <div className="logos flex  gap-11">
                     <IoGlobeOutline className="size-6" />
@@ -187,18 +186,18 @@ const TokenPage = () => {
                     <FaDiscord className="size-6" />
                   </div>
                 </div>
-                <div className="right flex flex-col gap-5"> 
-                  <FiEdit3 onClick={handleTokenEdit}  className="cursor-pointer"/>
-                
+                <div className="right flex flex-col gap-5">
+                  <FiEdit3 onClick={handleTokenEdit} className="cursor-pointer" />
+
                 </div>
               </div>
 
               <div className="bg-[#FFFFFF66] h-[2px] w-[100%] mx-auto mt-4"></div>
             </div>
           )}
-       
-  
-        { tokenData && <UpdateToken ledgerId={tokenData.canister_id} tokenModalIsOpen={tokenModalIsOpen} setTokenModalIsOpen={setTokenModalIsOpen} /> }
+
+
+          {tokenData && <UpdateToken ledgerId={tokenData.canister_id} tokenModalIsOpen={tokenModalIsOpen} setTokenModalIsOpen={setTokenModalIsOpen} />}
 
           {isMobile && (
             <div className="h-[314px] relative bg-[#181818] rounded-2xl py-5 flex flex-col">
@@ -213,8 +212,8 @@ const TokenPage = () => {
 
               <div className="mt-[70px] text-center font-posterama text-white space-y-2">
                 <div className=" ">
-                <div className="text-[24px] font-bold"> {tokenData ? tokenData.token_name : "PUPPO"} </div>
-                  <FiEdit3 onClick={handleTokenEdit}  className="cursor-pointer absolute right-5 top-4 "/>
+                  <div className="text-[24px] font-bold"> {tokenData ? tokenData.token_name : "PUPPO"} </div>
+                  <FiEdit3 onClick={handleTokenEdit} className="cursor-pointer absolute right-5 top-4 " />
 
                 </div>
                 <div className="righttext-[16px] font-medium">
@@ -326,8 +325,7 @@ const TokenPage = () => {
 
           {isMobile && (
             <div className="lg:min-w-[406px] w-full h-[153px] mt-8 bg-[#FFFFFF1A] rounded-[17.44px] flex flex-col justify-center items-center text-white">
-              <p className="text-lg mb-2">SALE STARTS IN</p>
-              <div className="text-2xl font-bold">00:29:23:00</div>
+              <div className="text-2xl font-bold"> <SaleStart presaleData={presaleData}/> </div>
             </div>
           )}
 
@@ -412,8 +410,8 @@ const TokenPage = () => {
                   <div
                     key={tab}
                     className={`cursor-pointer relative ${activeTab === tab
-                        ? "before:absolute before:left-0 before:right-0 before:top-7 before:h-[2px] before:bg-gradient-to-r before:from-[#F3B3A7] before:to-[#CACCF5] before:rounded"
-                        : ""
+                      ? "before:absolute before:left-0 before:right-0 before:top-7 before:h-[2px] before:bg-gradient-to-r before:from-[#F3B3A7] before:to-[#CACCF5] before:rounded"
+                      : ""
                       }`}
                     onClick={() => setActiveTab(tab)}
                   >
@@ -503,8 +501,8 @@ const TokenPage = () => {
 
           {!isMobile && (
             <div className="lg:min-w-[406px] w-full h-[153px] bg-[#FFFFFF1A] rounded-[17.44px] flex flex-col justify-center items-center text-white">
-              <p className="text-lg mb-2">SALE STARTS IN</p>
-              <div className="text-2xl font-bold">00:29:23:00</div>
+
+              <div className="text-2xl font-bold"> <SaleStart presaleData={presaleData}/> </div>
             </div>
           )}
 

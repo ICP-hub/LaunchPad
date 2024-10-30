@@ -1,6 +1,47 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 
-const AffiliateProgram = () => {
+const AffiliateProgram = ({poolData, presaleData}) => {
+
+  const [saleTime, setSaleTime] = useState({ start_time: "N/A", end_time: "N/A" });
+  console.log('poolData--', poolData);
+  useEffect(() => {
+    console.log('poolData--', poolData);
+    console.log('presale--', presaleData);
+
+    if (presaleData?.start_time_utc) {
+      const startTime = convertTimestampToUTC(presaleData?.start_time_utc);
+      setSaleTime((prev) => ({ ...prev, start_time: startTime }));
+    }
+    if (presaleData?.end_time_utc) {
+      const endTime = convertTimestampToUTC(presaleData?.end_time_utc);
+      setSaleTime((prev) => ({ ...prev, end_time: endTime }));
+    }
+  }, [presaleData]);
+
+  function convertTimestampToUTC(timestamp) {
+    if (!timestamp) return;
+
+    // Parse the timestamp as a BigInt
+    const timestampBigInt = BigInt(timestamp);
+
+    // Determine if timestamp is in seconds or nanoseconds
+    const secondsTimestamp = timestampBigInt > 1_000_000_000_000n 
+        ? timestampBigInt / 1_000_000_000n  // Nanoseconds to seconds
+        : timestampBigInt;                  // Already in seconds
+
+    const date = new Date(Number(secondsTimestamp) * 1000); // Convert to milliseconds
+
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    const hours = String(date.getUTCHours()).padStart(2, '0');
+    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+
+    return `${year}.${month}.${day} ${hours}:${minutes} (UTC)`;
+}
+
+
   return (
     <div className=" bg-[#FFFFFF1A]  sm:bg-transparent text-gray-300 p-2 xxs1:p-6 rounded-lg w-full max-w-full">
       {/* Pool Address */}
@@ -14,13 +55,13 @@ const AffiliateProgram = () => {
         {/* Tokens for Presale */}
         <div className="flex justify-between gap-12 text-[14px] xxs1:text-[17px] border-b py-2">
           <span>Tokens For Presale</span>
-          <span>3,000,000 CHAMBS</span>
+          <span> {`${poolData?.total_supply} ${poolData?.token_name}`}</span>
         </div>
 
         {/* Initial Market Cap */}
         <div className="flex  border-b gap-9 justify-between text-[14px] xxs1:text-[17px] py-2">
           <span>Initial Market Cap</span>
-          <span>1,453,500 CHAMBS</span>
+          <span> {`1,453,500 ${poolData?.token_name}`} </span>
         </div>
 
         {/* SoftCap */}
@@ -32,13 +73,13 @@ const AffiliateProgram = () => {
         {/* Start Time */}
         <div className="flex border-b gap-9 text-[14px] xxs1:text-[17px] justify-between py-2">
           <span>Start Time</span>
-          <span>2024.06.11 09:00 (UTC)</span>
+          <span> {saleTime.start_time} </span>
         </div>
 
         {/* End Time */}
         <div className="flex border-b gap-9 justify-between text-[14px] xxs1:text-[17px] py-2">
           <span>End Time</span>
-          <span>2024.06.13 23:59 (UTC)</span>
+          <span>{saleTime.end_time}</span>
         </div>
 
           <div className="flex  gap-9 border-b text-[14px] xxs1:text-[17px] justify-between py-2">

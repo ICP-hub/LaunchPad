@@ -17,7 +17,8 @@ const ProjectCard = ({ projectData, index }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (projectData.ledger_canister_id) FetchProjectData();
+    if (projectData.ledger_canister_id) 
+      FetchProjectData();
   }, [projectData.ledger_canister_id]);
 
   const FetchProjectData = async () => {
@@ -84,7 +85,7 @@ const ProjectCard = ({ projectData, index }) => {
       <div
         key={index}
         onClick={handleViewMoreClick2}
-        className="bg-[#FFFFFF1A] cursor-pointer text-white p-1 rounded-xl flex flex-col ss2:w-[325px] xxs1:w-[400px] mt-14"
+        className="bg-[#FFFFFF1A] cursor-pointer text-white p-1 rounded-xl flex flex-col ss2:w-[325px] xxs1:w-[400px] mt-14 mx-2"
       >
         <div className="h-[280px] rounded-lg py-5 flex flex-col">
           <div className="relative">
