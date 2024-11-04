@@ -164,7 +164,7 @@ const LaunchpadInfoTab = ({
     setPresaleDetails((prev) => ({ ...prev, whiteList: value }));
   };
   return (
-    <div className="bg-[#222222] p-4 xxs1:p-8 m-4 rounded-2xl mb-[80px] dxs:mb-[140px] xxs1:mb-[90px] sm2:mb-[70px]  md:mb-[15px]   ss2:h-[1230px] xxs1:h-[950px] sm2:h-[900px] md:h-[880px]  ">
+    <div className="bg-[#222222] p-4 xxs1:p-8 m-4 rounded-2xl mb-[80px] dxs:mb-[140px] xxs1:mb-[90px] sm2:mb-[70px]  md:mb-[15px]   ">
       {/* Chain Text with Gray Background on mobile only */}
       <div className="flex xxs1:hidden mb-8 bg-[#444444] pl-6 p-2 mt-[-31px] mx-[-17px] xxs1:mx-[-31px]  rounded-2xl">
         <span className="text-white text-[22px]">Chain</span>
@@ -285,7 +285,7 @@ const LaunchpadInfoTab = ({
       </div>
 
       {/* Start Time and End Time */}
-      <div className="flex flex-col xxs1:flex-row justify-between mb-[50px] xxs1:mb-8">
+      <div className="flex flex-col xxs1:flex-row justify-between mb-[50px] xxs1:mb-32">
         <div className="xxs1:w-1/2 pr-2 mb-6">
           <label className="block text-[19px] mb-1">Start Time</label>
           <input
