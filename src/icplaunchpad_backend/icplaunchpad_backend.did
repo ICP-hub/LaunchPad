@@ -9,8 +9,12 @@ type ProfileImageData = record { content : opt blob };
 type Result = variant { Ok; Err : text };
 type Result_1 = variant { Ok : TokenCreationResult; Err : text };
 type Result_2 = variant { Ok : SaleDetails; Err : text };
-type Result_3 = variant { Ok : nat; Err : text };
-type Result_4 = variant { Ok : text; Err : text };
+type Result_3 = variant {
+  Ok : vec record { CanisterIndexInfo; SaleDetails };
+  Err : text;
+};
+type Result_4 = variant { Ok : nat; Err : text };
+type Result_5 = variant { Ok : text; Err : text };
 type SaleDetails = record {
   listing_rate : float64;
   creator : principal;
@@ -68,13 +72,14 @@ service : () -> {
   get_upcoming_sales : () -> (vec SaleDetailsWithID) query;
   get_user_account : (principal) -> (opt UserAccount) query;
   get_user_by_username : (text) -> (opt UserAccount) query;
+  get_user_sale_params : () -> (Result_3) query;
   get_user_tokens_info : () -> (vec CanisterIndexInfo) query;
   is_account_created : () -> (text) query;
-  make_payment : (nat64, principal) -> (Result_3);
+  make_payment : (nat64, principal) -> (Result_4);
   search_by_token_name_or_symbol : (text) -> (opt CanisterIndexInfo) query;
   update_sale_params : (principal, SaleDetailsUpdate) -> (Result);
   update_user_account : (principal, UserAccount) -> (Result);
-  upload_cover_image : (text, ProfileImageData) -> (Result_4);
-  upload_profile_image : (text, ProfileImageData) -> (Result_4);
-  upload_token_image : (text, TokenImageData) -> (Result_4);
+  upload_cover_image : (text, ProfileImageData) -> (Result_5);
+  upload_profile_image : (text, ProfileImageData) -> (Result_5);
+  upload_token_image : (text, TokenImageData) -> (Result_5);
 }
