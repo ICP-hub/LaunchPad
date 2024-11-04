@@ -535,7 +535,7 @@ const VerifyToken = () => {
           </button>
         )}
       </div>
-      {error && <div className="text-red-500 mt-4 px-8">{error}</div>}
+      {error && <div className="text-red-500 mt-8 px-8">{error}</div>}
     </div>
   );
 };

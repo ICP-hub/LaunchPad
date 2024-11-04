@@ -140,7 +140,8 @@ const AdditionalInfoTab = ({
 }) => {
   const [fileName, setFileName] = useState("");
   const fileInputRef = useRef(null);
-
+  const [coverFileName, setCoverFileName] = useState(""); // New state for cover image file name
+  const coverFileInputRef = useRef(null); // New ref for cover image input
   // const handleFileUploadClick = () => {
   //   fileInputRef.current.click();
   // };
@@ -157,6 +158,11 @@ const AdditionalInfoTab = ({
   // };
   const handleFileUploadClick = () => {
     fileInputRef.current.click();
+  };
+
+
+  const handleCoverFileUploadClick = () => {
+    coverFileInputRef.current.click();
   };
 
   const handleFileChange = async (e) => {
@@ -193,6 +199,30 @@ const AdditionalInfoTab = ({
       }
     }
   };
+
+  const handleCoverFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setCoverFileName(file.name);
+      const originalFileSize = file.size / 1024;
+      console.log("Original Cover File Size:", originalFileSize, "KB");
+
+      try {
+        const compressedFile = await CompressedImage(file);
+        const compressedFileSize = compressedFile.size / 1024;
+        console.log("Compressed Cover File Size:", compressedFileSize, "KB");
+
+        setPresaleDetails((prevDetails) => ({
+          ...prevDetails,
+          coverImageURL: compressedFile,
+        }));
+      } catch (error) {
+        console.error('Cover image compression failed:', error);
+      }
+    }
+  };
+
+  
   const addLink = () => {
     setPresaleDetails((prev) => ({
       ...prev,
@@ -217,7 +247,7 @@ const AdditionalInfoTab = ({
   };
 
   return (
-    <div className="bg-[#222222] p-3 rounded-2xl mx-3  mb-[80px] dxs:mb-[140px] xxs1:mb-[90px] sm2:mb-[70px]  md:mb-[10px] min-h-[550px]   ss2:h-[600px] md:min-h-[550px] ">
+    <div className="bg-[#222222] p-3 rounded-2xl mx-3  mb-[80px] dxs:mb-[140px] xxs1:mb-[90px] sm2:mb-[70px] md:mb-[10px]">
       {/* File Upload */}
       <div className="flex flex-col justify-between mb-4">
         <label className="block text-[19px] mb-1">Logo</label>
@@ -236,6 +266,26 @@ const AdditionalInfoTab = ({
           <span>{fileName ? fileName : "Upload Image"}</span>
         </div>
         {errors.logoURL && <p className="text-red-500 mt-1">{errors.logoURL.message}</p>}
+      </div>
+
+      {/* Cover Image File Upload */}
+      <div className="flex flex-col justify-between mb-4">
+        <label className="block text-[19px] mb-1">Cover Image</label>
+        <input
+          type="file"
+          ref={coverFileInputRef}
+          onChange={handleCoverFileChange}
+          style={{ display: "none" }}
+        />
+        <div
+          onClick={handleCoverFileUploadClick}
+          className={`cursor-pointer w-full flex items-center justify-start p-1.5 bg-[#333333] text-white rounded-md ${errors.coverImageURL ? "border-red-500" : "border-white"
+            }  border-b-2`}
+        >
+          <span className="text-xl font-bold mr-2">+</span>
+          <span>{coverFileName ? coverFileName : "Upload Image"}</span>
+        </div>
+        {errors.coverImageURL && <p className="text-red-500 mt-1">{errors.coverImageURL.message}</p>}
       </div>
       
 
@@ -295,7 +345,7 @@ const AdditionalInfoTab = ({
       </div>
 
       {/* Description */}
-      <div className="flex flex-col mb-4">
+      <div className="flex flex-col mb-24">
         <label className="block text-[19px] mb-1">Description</label>
         <textarea
           {...register("description")}
