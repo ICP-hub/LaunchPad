@@ -1,6 +1,6 @@
 use candid::Principal;
 
-use crate::{read_state, CanisterIndexInfo, SaleDetails, SaleDetailsWithID,UserAccount};
+use crate::{read_state, CanisterIndexInfo, SaleDetails, SaleDetailsWithID, State, UserAccount};
 
 #[ic_cdk::query]
 pub fn get_user_account(principal: Principal) -> Option<UserAccount> {
@@ -161,6 +161,60 @@ pub fn get_sale_params(ledger_canister_id: Principal) -> Result<SaleDetails, Str
     // Return the sale details
     Ok(sale_details)
 }
+
+#[ic_cdk::query]
+pub fn get_user_sale_params() -> Result<Vec<(CanisterIndexInfo, SaleDetails)>, String> {
+    let caller = ic_cdk::caller();
+
+    // Retrieve all tokens created by the user
+    let tokens_info: Vec<CanisterIndexInfo> = read_state(|state: &State| {
+        state.canister_ids.iter()
+            .filter_map(|(canister_key, canister_wrapper)| {
+                if canister_wrapper.owner == caller {
+                    // Convert Principal to String for canister_id
+                    let canister_id = canister_wrapper.canister_ids.to_text();
+
+                    // Retrieve and convert Principal to String for index_canister_id
+                    // Use a reference to canister_key when accessing the index_canister_ids map
+                    let index_canister_id = state.index_canister_ids
+                        .get(&canister_key)  // <- Here, use & to borrow canister_key
+                        .map(|index_wrapper| index_wrapper.index_canister_ids.to_text())
+                        .unwrap_or_default();
+
+                    Some(CanisterIndexInfo {
+                        canister_id: canister_id,
+                        index_canister_id: index_canister_id,
+                        token_name: canister_wrapper.token_name.clone(),
+                        token_symbol: canister_wrapper.token_symbol.clone(),
+                    })
+                } else {
+                    None
+                }
+            })
+            .collect()
+    });
+
+    let mut sale_params = Vec::new();
+    for token_info in tokens_info {
+        // Convert String canister_id back to Principal if necessary
+        let canister_id_principal = Principal::from_text(&token_info.canister_id)
+            .map_err(|e| format!("Invalid canister ID: {}", e))?;
+
+        let sale_details: SaleDetails = read_state(|state: &State| {
+            state.sale_details.get(&canister_id_principal.to_string())
+                .map(|wrapper| wrapper.sale_details.clone())
+                .ok_or_else(|| "Sale details not found".to_string())
+        })?;
+
+        sale_params.push((token_info, sale_details));
+    }
+
+    Ok(sale_params)
+}
+
+
+
+
 
 
 #[ic_cdk::query]
