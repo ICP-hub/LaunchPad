@@ -10,7 +10,7 @@ import Token from "./token/Token";
 import Tokenomic from "./Tokenomic/Tokenomic";
 import "./projectpage.css";
 
-const MobileViewTab = ({ledgerId}) => {
+const MobileViewTab = ({ledgerId,poolData,presaleData}) => {
     const [activeTab, setActiveTab] = useState("About");
   const renderContent = () => {
     switch (activeTab) {
@@ -19,7 +19,7 @@ const MobileViewTab = ({ledgerId}) => {
       case "Token":
         return <Token ledgerId={ledgerId} />;
       case "Pool Info":
-        return <Pooolinfo />;
+        return <Pooolinfo presaleData={presaleData} poolData={poolData} />;
       case "Affiliate Program":
         return <AffiliateProgram />;
       case "Tokenomic":

@@ -279,10 +279,12 @@ const TokenPage = () => {
           </div>
 
           <div className="lg:min-w-[406px] w-full h-[153px] bg-[#FFFFFF1A] rounded-[17.44px] flex flex-col justify-center items-center text-white">
-            <SaleStart presaleData={saleParams}/>
+            <SaleStart  style={{text_heading:'text-lg', text_content:'text-2xl'}} presaleData={saleParams}/>
           </div>
         </div>
-        {isMobile && <MobileViewTab ledgerId={projectData?.canister_id } />}
+        {isMobile && <MobileViewTab ledgerId={projectData?.canister_id } 
+        presaleData={saleParams} poolData={projectData ? { ...projectData, total_supply: tokenData?.total_supply } : {}} 
+        />}
       </div>
     </>
   );
