@@ -93,7 +93,7 @@ const ProjectLists = () => {
       {/* Projects List */}
       <div className="flex lg:flex-row flex-col flex-wrap items-center w-[95%] m-auto  justify-around">
         {filteredTokensData && filteredTokensData.map((sale, index) => (
-          <ProjectCard projectData={sale} key={index} />
+         sale && <ProjectCard projectData={sale} key={index} />
         ))}
       </div>
     </div>

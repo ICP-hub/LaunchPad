@@ -13,7 +13,7 @@ const ReviewInfoTab = ({ presaleDetails }) => {
             ["Token symbol", presaleDetails?.token_symbol || "N/A"],
             ["Token decimals", presaleDetails?.decimals || "N/A"],
             ["Presale rate", presaleDetails?.presaleRate || "N/A"],
-            ["Listing rate", presaleDetails?.listingRate || "N/A"],
+          
             [
               "Sale method",
               presaleDetails?.currencyICP === true ? "ICP" : "N/A",

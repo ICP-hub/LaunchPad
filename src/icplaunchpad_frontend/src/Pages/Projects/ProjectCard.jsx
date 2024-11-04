@@ -4,110 +4,108 @@ import l3 from '../../../assets/images/carousel/l3.png';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../StateManagement/useContext/useAuth';
 import { Principal } from '@dfinity/principal';
+import SaleStart from '../OwnerSection/SaleStart';
 
 const ProjectCard = ({ projectData, index }) => {
   const protocol = process.env.DFX_NETWORK === 'ic' ? 'https' : 'http';
   const domain = process.env.DFX_NETWORK === 'ic' ? 'raw.icp0.io' : 'localhost:4943';
   const canisterId = process.env.CANISTER_ID_IC_ASSET_HANDLER;
-
   const { createCustomActor, actor } = useAuth();
-  const [TokenImg, setTokenImg] = useState();
+  const [tokenInfo, setTokenInfo] = useState({});
   const [isFetchingIMG, setFetchingIMG] = useState(false);
-  const [TokenData, setTokenData] = useState({});
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (projectData.ledger_canister_id) 
-      FetchProjectData();
-  }, [projectData.ledger_canister_id]);
-
-  const FetchProjectData = async () => {
-    const ledgerId = projectData.ledger_canister_id;
-    const ledgerActor = await createCustomActor(ledgerId);
-
-    if (ledgerActor) {
-      console.log('ledgerActor', ledgerActor);
-      const name = await ledgerActor.icrc1_name();
-      console.log('Token Name:', name);
-      setTokenData((prevData) => ({ ...prevData, token_name: name }));
+  useEffect(() => {  
+    if (projectData?.ledger_canister_id) {
+      fetchProjectData();
     }
+  }, [projectData?.ledger_canister_id]);
 
-    if (ledgerId && actor) {
-      try {
-        const ledgerPrincipal = Principal.fromText(ledgerId); // Corrected variable
+  const fetchProjectData = async () => {
+    try {
+      const ledgerId = projectData.ledger_canister_id;
+      const ledgerActor = await createCustomActor(ledgerId);
+      
+      if (ledgerActor) {
+        const name = await ledgerActor.icrc1_name();
+        if (name) {
+          setTokenInfo(prev => ({ ...prev, token_name: name }));
+        }
+      }
+
+      if (ledgerId && actor) {
+        const ledgerPrincipal = Principal.fromText(ledgerId);
         const tokenImgId = await actor.get_token_image_id(ledgerPrincipal);
-        console.log('Fetched token image ID:', tokenImgId);
 
         if (tokenImgId && tokenImgId.length > 0) {
           const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId[tokenImgId.length - 1]}`;
-          setTokenImg(imageUrl);
-          console.log('Token Image URL:', imageUrl);
+          setTokenInfo(prev => ({ ...prev, token_image: imageUrl }));
         }
         setFetchingIMG(true);
-      } catch (error) {
-        console.error('Error fetching token image:', error);
       }
+    } catch (error) {
+      console.error('Error fetching project data:', error);
     }
   };
 
   useEffect(() => {
-    if (projectData.canister_id) fetchTokenIMG();
-  }, [projectData.canister_id]);
+    if (projectData?.canister_id) {
+      fetchTokenInfo();
+    }
+  }, [projectData?.canister_id]);
 
-  const fetchTokenIMG = async () => {
-    try {
-      const ledgerPrincipal = Principal.fromText(projectData.canister_id); // Corrected variable
+  const fetchTokenInfo = async () => {
+    try {     
+      const ledgerPrincipal = Principal.fromText(projectData.canister_id);
+      const saleParams = await actor.get_sale_params(ledgerPrincipal);
+      setTokenInfo(prev => ({ ...prev, sale_Params: saleParams.Ok }));
+      
       const tokenImgId = await actor.get_token_image_id(ledgerPrincipal);
-      console.log('Fetched token image ID:', tokenImgId);
 
       if (tokenImgId && tokenImgId.length > 0) {
         const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId[tokenImgId.length - 1]}`;
-        setTokenImg(imageUrl);
-        console.log('Token Image URL:', imageUrl);
+        setTokenInfo(prev => ({ ...prev, token_image: imageUrl }));
       }
       setFetchingIMG(true);
     } catch (error) {
-      console.error('Error fetching token image:', error);
+      console.error('Error fetching token info:', error);
     }
   };
 
-  const handleViewMoreClick2 = () => {
+  const handleViewMoreClick = () => {
     if(isFetchingIMG)
-      if(projectData.ledger_canister_id && TokenData)
-      navigate('/project', { state: { projectData:{canister_id:projectData.ledger_canister_id, token_name:TokenData.token_name, TokenImg} } });
+      if(projectData.ledger_canister_id && tokenInfo)
+      navigate('/project', { state: { projectData:{canister_id:projectData.ledger_canister_id, token_name:tokenInfo.token_name, TokenImg:tokenInfo.token_image} } });
       else  
-       navigate('/project', { state: { projectData:{...projectData,TokenImg} } });
+       navigate('/project', { state: { projectData:{...projectData,TokenImg:tokenInfo.token_image} } });
 
   };
 
-  return (
-    <div>
+  return ( 
+    <div>  
       <div
         key={index}
-        onClick={handleViewMoreClick2}
+        onClick={handleViewMoreClick}
         className="bg-[#FFFFFF1A] cursor-pointer text-white p-1 rounded-xl flex flex-col ss2:w-[325px] xxs1:w-[400px] mt-14 mx-2"
       >
         <div className="h-[280px] rounded-lg py-5 flex flex-col">
           <div className="relative">
             <img
-              src={TokenImg ? TokenImg : person1}
-              className="absolute top-0 left-[50%] transform -translate-x-1/2 -translate-y-[50%] rounded-full object-cover  h-[100px] w-[100px] md:h-[114px] md:w-[114px]"
+              src={tokenInfo?.token_image || person1}
+              className="absolute top-0 left-[50%] transform -translate-x-1/2 -translate-y-[50%] rounded-full object-cover h-[100px] w-[100px] md:h-[114px] md:w-[114px]"
               alt="logo"
             />
             <div className="absolute top-[20px] right-[60px] ss2:right-[100px] xxs1:right-[130px] w-10 h-10 rounded-full border-1 border-gray-300">
               <img src={l3} alt="small" className="object-cover w-full h-full" />
             </div>
           </div>
-
           <div className="mt-[70px] text-center text-white space-y-5">
-            <div className="text-[24px] font-semibold">{projectData?.token_name || TokenData?.token_name}</div>
+            <div className="text-[24px] font-semibold">{projectData?.token_name || tokenInfo?.token_name}</div>
             <div className="text-[16px] text-[#FFFFFFA6] font-medium">FAIR LAUNCH - MAX BUY 5 SOL</div>
             <div className="text-[#FFC145] text-[18px] font-normal">UPCOMING</div>
           </div>
-
           <div className="bg-[#FFFFFF66] h-[2px] w-[92%] mx-auto mt-6"></div>
         </div>
-
         <div className="flex">
           <div className="relative flex items-center overflow-hidden w-[60%] h-72">
             <div className="absolute left-[-110%] ss2:left-[-62%] xxs1:left-[-30%] sm:left-[-20%] md:left-[-45%] top-0 w-72 h-72">
@@ -131,7 +129,7 @@ const ProjectCard = ({ projectData, index }) => {
                   fill="none"
                   stroke="url(#gradient)"
                   strokeWidth="3.8"
-                  strokeDasharray={`${10.1 * 4}, 100`} // progress bar
+                  strokeDasharray={`${10.1 * 4}, 100`}
                 />
               </svg>
               <div className="absolute ml-28 ss2:ml-10 inset-0 flex flex-col items-center justify-center">
@@ -141,13 +139,10 @@ const ProjectCard = ({ projectData, index }) => {
               </div>
             </div>
           </div>
-
           <div className="mt-6 w-[40%] flex flex-col justify-around">
             <div className="flex flex-col">
               <span className="text-sm text-gray-400">HARD</span>
-              <span className="text-lg font-semibold bg-gradient-to-r from-[#f09787] to-[#CACCF5] text-transparent bg-clip-text">
-                {"200 ETH"}
-              </span>
+              <span className="text-lg font-semibold bg-gradient-to-r from-[#f09787] to-[#CACCF5] text-transparent bg-clip-text">{"200 ETH"}</span>
             </div>
             <div className="flex flex-col">
               <span className="text-sm text-gray-400">Liquidity</span>
@@ -158,12 +153,10 @@ const ProjectCard = ({ projectData, index }) => {
               <span className="text-lg font-semibold">{"365 DAYS"}</span>
             </div>
             <div className="flex flex-col">
-              <span className="text-sm text-gray-400">Sale Starts In</span>
-              <span className="text-lg font-semibold">{"00:29:23:00"}</span>
+              
+              {tokenInfo && <SaleStart style={{text_heading:'text-sm', text_content:'text-lg'}} presaleData={projectData?.sale_details || tokenInfo?.sale_Params} />}
             </div>
-            <button onClick={handleViewMoreClick2} className="border-b-2 border-r-gray-600 w-20 cursor-pointer">
-              View More
-            </button>
+            <button onClick={handleViewMoreClick} className="border-b-2 border-r-gray-600 w-20 cursor-pointer">View More</button>
           </div>
         </div>
       </div>

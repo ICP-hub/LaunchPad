@@ -11,36 +11,39 @@ const PoolInfoTab = ({ poolData }) => {
     console.log('presale--', presaleData);
 
     if (presaleData?.Ok?.start_time_utc) {
-      const startTime = convertTimestampToUTC(presaleData.Ok.start_time_utc);
+      const startTime = convertTimestampToIST(presaleData.Ok.start_time_utc);
       setSaleTime((prev) => ({ ...prev, start_time: startTime }));
     }
     if (presaleData?.Ok?.end_time_utc) {
-      const endTime = convertTimestampToUTC(presaleData.Ok.end_time_utc);
+      const endTime = convertTimestampToIST(presaleData.Ok.end_time_utc);
       setSaleTime((prev) => ({ ...prev, end_time: endTime }));
     }
   }, [presaleData]);
+  
 
-  function convertTimestampToUTC(timestamp) {
+  function convertTimestampToIST(timestamp) {
     if (!timestamp) return;
-
+  
     // Parse the timestamp as a BigInt
     const timestampBigInt = BigInt(timestamp);
-
+  
     // Determine if timestamp is in seconds or nanoseconds
     const secondsTimestamp = timestampBigInt > 1_000_000_000_000n 
         ? timestampBigInt / 1_000_000_000n  // Nanoseconds to seconds
         : timestampBigInt;                  // Already in seconds
-
-    const date = new Date(Number(secondsTimestamp) * 1000); // Convert to milliseconds
-
+  
+    // Convert to milliseconds and add IST offset (5 hours and 30 minutes)
+    const date = new Date(Number(secondsTimestamp) * 1000 + (5 * 60 + 30) * 60 * 1000);
+  
     const year = date.getUTCFullYear();
     const month = String(date.getUTCMonth() + 1).padStart(2, '0');
     const day = String(date.getUTCDate()).padStart(2, '0');
     const hours = String(date.getUTCHours()).padStart(2, '0');
     const minutes = String(date.getUTCMinutes()).padStart(2, '0');
-
-    return `${year}.${month}.${day} ${hours}:${minutes} (UTC)`;
-}
+  
+    return `${year}.${month}.${day} ${hours}:${minutes} (IST)`;
+  }
+  
 
 
   return (

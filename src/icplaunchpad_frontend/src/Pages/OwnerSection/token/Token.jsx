@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 
-const TokenInfoTab = ({ actor }) => {
+const TokenInfoTab = ({ ledger_canister_id,actor }) => {
   const [tokenData, setTokenData] = useState(null);
 
   const fetchTokenData = async () => {
     try {
       if (actor) {
+      
         const tokenName = await actor.icrc1_name();
         const tokenSymbol = await actor.icrc1_symbol();
         const tokenDecimals = await actor.icrc1_decimals();
@@ -33,7 +34,7 @@ const TokenInfoTab = ({ actor }) => {
       <div className="flex justify-between mb-4">
         <span>Address</span>
         <span className="border-b-2 ml-2 text-right overflow-hidden text-ellipsis whitespace-nowrap">
-          0xd8319162260Db2Fa5027AACFfBf52E319b1E7C0
+         {ledger_canister_id}
         </span>
       </div>
       <p className="text-xs mb-6">Do not send BNB to the token address</p>

@@ -1,19 +1,26 @@
 import React, { useEffect, useState } from 'react';
 
-const SaleStart = ({ presaleData }) => {
-    const [timeRemaining, setTimeRemaining] = useState("Loading..."); // Initial state
+const SaleStart = ({ style,presaleData }) => {
+    const [timeRemaining, setTimeRemaining] = useState("Loading...");
 
     useEffect(() => {
-        if (!presaleData) return;
+        if (!presaleData || !presaleData.start_time_utc || !presaleData.end_time_utc) return;
 
         const convertTimestampToDate = (timestamp) => {
-            return (BigInt(timestamp) > 1_000_000_000_000n)
-                ? new Date(Number(timestamp / 1_000_000n)) // nanoseconds to milliseconds
-                : new Date(Number(timestamp) * 1000);      // seconds to milliseconds
+            try {
+                return BigInt(timestamp) > 1_000_000_000_000n
+                    ? new Date(Number(timestamp / 1_000_000n)) // nanoseconds to milliseconds
+                    : new Date(Number(timestamp) * 1000);      // seconds to milliseconds
+            } catch (e) {
+                console.error("Invalid timestamp:", timestamp);
+                return null;
+            }
         };
 
         const start = convertTimestampToDate(presaleData.start_time_utc);
         const end = convertTimestampToDate(presaleData.end_time_utc);
+
+        if (!start || !end) return;
 
         const updateCountdown = () => {
             const now = new Date();
@@ -41,15 +48,15 @@ const SaleStart = ({ presaleData }) => {
         };
 
         const intervalId = setInterval(updateCountdown, 1000);
-        updateCountdown(); // Call once to initialize immediately
+        updateCountdown(); // Initialize countdown
 
-        return () => clearInterval(intervalId);
+        return () => clearInterval(intervalId); // Cleanup interval on unmount
     }, [presaleData]);
 
     return (
         <>
-            <p className="text-lg mb-2">SALE STARTS IN</p>
-            <div className="text-2xl font-bold">{timeRemaining}</div>
+            <p className={`${style.text_heading} mb-2`}>{ (timeRemaining === "Sale Started!" || timeRemaining === "Sale Ended!") ? "" : "SALE STARTS IN"}</p>
+            <div className={`${style.text_content} font-bold`} >{timeRemaining}</div>
         </>
     );
 };

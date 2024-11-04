@@ -108,7 +108,7 @@ const TokenPage = () => {
       case "About":
         return <ProjectTokenAbout />;
       case "Token":
-        return <Token actor={ledgerActor} />;
+        return <Token  ledger_canister_id={ledger_canister_id} actor={ledgerActor} />;
       case "Pool Info":
         return <Pooolinfo poolData={tokenData ? tokenData : ''} />;
       case "FAQs & Discussion":
@@ -325,7 +325,7 @@ const TokenPage = () => {
 
           {isMobile && (
             <div className="lg:min-w-[406px] w-full h-[153px] mt-8 bg-[#FFFFFF1A] rounded-[17.44px] flex flex-col justify-center items-center text-white">
-              <div className="text-2xl font-bold"> <SaleStart presaleData={presaleData}/> </div>
+              <div className="text-2xl font-bold"> <SaleStart  style={{text_heading:'text-lg', text_content:'text-2xl'}} presaleData={presaleData}/> </div>
             </div>
           )}
 
@@ -502,7 +502,7 @@ const TokenPage = () => {
           {!isMobile && (
             <div className="lg:min-w-[406px] w-full h-[153px] bg-[#FFFFFF1A] rounded-[17.44px] flex flex-col justify-center items-center text-white">
 
-              <div className="text-2xl font-bold"> <SaleStart presaleData={presaleData}/> </div>
+              <div className="text-2xl font-bold"> <SaleStart  style={{text_heading:'text-lg', text_content:'text-2xl'}} presaleData={presaleData}/> </div>
             </div>
           )}
 
@@ -589,7 +589,7 @@ const TokenPage = () => {
           )}
 
         </div>
-        {isMobile && <MobileViewTab actor={ledgerActor} />}
+        {isMobile && <MobileViewTab  actor={ledgerActor} poolData={tokenData ? tokenData : ''}  />}
       </div>
     </>
   );
