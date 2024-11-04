@@ -358,6 +358,7 @@ const VerifyToken = () => {
   });
 
   console.log("Form validation errors:", errors);
+
   // Function to submit presale details
   const submitPresaleDetails = async (data) => {
     console.log("Submitting presale details with data:", data);
@@ -399,9 +400,10 @@ const VerifyToken = () => {
         project_video
       };
   
-      const ledgerPrincipalId = ledger_canister_id
-        ? Principal.fromUint8Array(ledger_canister_id)
-        : null;
+      const ledgerPrincipalId = typeof ledger_canister_id !== 'string' && ledger_canister_id
+      ? Principal.fromUint8Array(ledger_canister_id)
+      : Principal.fromText(ledger_canister_id)
+    
       if (!ledgerPrincipalId) throw new Error("Invalid ledger canister ID");
 
       const response = await actor.create_sale(ledgerPrincipalId, presaleData);
@@ -469,6 +471,7 @@ const VerifyToken = () => {
           <VerifyTokenTab
             register={register}
             tokenData={formData}
+            ledger_canister_id={ledger_canister_id && ledger_canister_id}
             setPresaleDetails={setPresaleDetails}
             presaleDetails={presaleDetails}
             errors={errors}

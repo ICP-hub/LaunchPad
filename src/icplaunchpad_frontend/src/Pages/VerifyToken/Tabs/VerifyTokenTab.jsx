@@ -148,16 +148,48 @@
 // export default VerifyTokenTab;
 
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FaRegCopy } from "react-icons/fa";
+import { useAuth } from "../../../StateManagement/useContext/useAuth";
 
-const VerifyTokenTab = ({ register, errors, tokenData, watch }) => {
+const VerifyTokenTab = ({ register, errors, tokenData, watch, ledger_canister_id }) => {
   const [copySuccess, setCopySuccess] = useState(false);
   const inputRef = useRef(null);
+  const [tokenInfo, setTokenInfo] = useState(null);
+  const { createCustomActor } = useAuth();
 
-  // Watch the form values for feeOption and currencyICP to handle changes
-  const feeOption = watch("feeOption");
-  const currencyICP = watch("currencyICP");
+  useEffect(() => {
+    
+    if (tokenData) 
+      setTokenInfo(tokenData);
+    if (ledger_canister_id)
+         getTokenData();
+  }, [tokenData, ledger_canister_id]);
+
+  const getTokenData = async () => {
+    try {
+
+      const actor = await createCustomActor(ledger_canister_id); // Fixed ledgerId to ledger_canister_id
+      if (actor) {
+        const tokenName = await actor.icrc1_name();
+        const tokenSymbol = await actor.icrc1_symbol();
+        const tokenDecimals = await actor.icrc1_decimals();
+        const tokenSupply = await actor.icrc1_total_supply();
+
+        setTokenInfo({
+          token_name: tokenName,
+          token_symbol: tokenSymbol,
+          decimals: tokenDecimals,
+          total_supply: tokenSupply,
+        });
+      }
+    } catch (err) {
+      console.error("Error fetching token data:", err);
+    }
+  };
+
+  const feeOption = watch("feeOption", false); // Add default value as false
+  const currencyICP = watch("currencyICP", false); // Add default value as false
 
   const copyToClipboard = () => {
     if (inputRef.current) {
@@ -174,7 +206,6 @@ const VerifyTokenTab = ({ register, errors, tokenData, watch }) => {
   return (
     <div className="flex justify-center items-center mb-[80px] dxs:mb-[145px] xxs1:mb-[80px] sm2:mb-[70px] md:mb-[30px] dlg:mb-0 m-4 bg-black text-white">
       <div className="bg-[#222222] w-full max-w-[1070px] h-[920px] xxs1:h-[850px] sm2:h-[780px] md:h-[730px] dlg:h-[780px] p-4 xxs1:p-8 rounded-2xl">
-        {/* Chain Text with Gray Background on mobile only */}
         <div className="flex xxs1:hidden mb-8 bg-[rgb(68,68,68)] pl-6 p-2 mt-[-31px] mx-[-17px] xxs1:mx-[-31px] rounded-2xl">
           <span className="text-white text-[22px]">Chain</span>
         </div>
@@ -206,19 +237,19 @@ const VerifyTokenTab = ({ register, errors, tokenData, watch }) => {
         <div className="mb-8 mt-8">
           <div className="flex justify-between border-b-2 py-1 border-[#FFFFFF80]">
             <p>Name</p>
-            <p>{tokenData?.token_name || "N/A"}</p>
+            <p>{tokenInfo?.token_name || "N/A"}</p>
           </div>
           <div className="flex justify-between border-b-2 py-1 border-[#FFFFFF80]">
             <p>Symbol</p>
-            <p>{tokenData?.token_symbol || "N/A"}</p>
+            <p>{tokenInfo?.token_symbol || "N/A"}</p>
           </div>
           <div className="flex justify-between border-b-2 py-1 border-[#FFFFFF80]">
             <p>Decimals</p>
-            <p>{tokenData?.decimals || "N/A"}</p>
+            <p>{tokenInfo?.decimals || "N/A"}</p>
           </div>
           <div className="flex justify-between border-b-2 py-1 border-[#FFFFFF80]">
             <p>Total Supply</p>
-            <p>{Number(tokenData?.total_supply) || 0}</p>
+            <p>{Number(tokenInfo?.total_supply) || 0}</p>
           </div>
         </div>
 

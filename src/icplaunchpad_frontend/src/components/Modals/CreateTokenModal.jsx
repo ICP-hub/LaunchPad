@@ -258,6 +258,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { SetLedgerIdHandler } from "../../StateManagement/Redux/Reducers/LedgerId";
 import { TokensInfoHandlerRequest } from "../../StateManagement/Redux/Reducers/TokensInfo";
+import { UserTokensInfoHandlerRequest } from "../../StateManagement/Redux/Reducers/UserTokensInfo";
 
 // Define the validation schema using Yup
 const tokenSchema = yup.object().shape({
@@ -369,6 +370,7 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
 
       if (response.Ok) {
         dispatch(TokensInfoHandlerRequest());
+        dispatch(UserTokensInfoHandlerRequest());
 
         const { ledger_canister_id, index_canister_id } = response.Ok;
         console.log("ledger_canister_id---",ledger_canister_id,"  ", index_canister_id)
