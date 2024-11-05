@@ -15,7 +15,7 @@ const CreatePreLaunch = () => {
   const userToken = useSelector((state) => state.UserTokensInfo.data);
 
   const handleVerifyToken = async () => {
-    if (userToken.length > 0) {
+    if ( userToken || userToken.length > 0) {
       const missingSaleParams = await Promise.all(
         userToken.map(async (token) => {
           try {

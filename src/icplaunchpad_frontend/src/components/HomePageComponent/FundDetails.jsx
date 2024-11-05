@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../StateManagement/useContext/useAuth';
 import { Principal } from '@dfinity/principal';
+import { convertTimestampToISTFormatted } from '../../utils/convertTimestampToIST';
 
 const FundDetails = ({ sale, index }) => {
     const [tokenDetails, setTokenDetails] = useState({});
@@ -40,31 +41,6 @@ const FundDetails = ({ sale, index }) => {
         }
     };
 
-    function convertTimestampToISTFormatted(timestamp) {
-        if (!timestamp) return "N/A";
-
-        const timestampBigInt = BigInt(timestamp);
-
-        const secondsTimestamp = timestampBigInt > 1_000_000_000_000n
-            ? timestampBigInt / 1_000_000_000n
-            : timestampBigInt;
-
-        const date = new Date(Number(secondsTimestamp) * 1000 + (5 * 60 + 30) * 60 * 1000);
-
-        const year = date.getUTCFullYear();
-        const monthNames = ["Jan", "Feb", "March", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"];
-        const month = monthNames[date.getUTCMonth()];
-        const day = date.getUTCDate();
-
-        const daySuffix = (day) => {
-            if (day % 10 === 1 && day !== 11) return `${day}st`;
-            if (day % 10 === 2 && day !== 12) return `${day}nd`;
-            if (day % 10 === 3 && day !== 13) return `${day}rd`;
-            return `${day}th`;
-        };
-
-        return `${month} ${daySuffix(day)} ${year}`;
-    }
 
     return (
         <tr key={index} className="text-base">

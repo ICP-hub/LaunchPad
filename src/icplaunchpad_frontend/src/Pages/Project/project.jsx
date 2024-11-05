@@ -24,15 +24,19 @@ const TokenPage = () => {
   const { projectData } = location.state || {};
   const { actor, createCustomActor } = useAuth();
   const [saleParams, setSaleParams] = useState(null);
+  const [ledgerActor, setLedgerActor]=useState(null);
   const [tokenData, setTokenData] = useState(null);
+  const [amount, setAmount] = useState();
 
   useEffect(() => {
     const fetchTokenData = async () => {
       if (projectData?.canister_id) {
         const ledgerPrincipal = Principal.fromText(projectData?.canister_id);
         const ledgerActor = await createCustomActor(ledgerPrincipal);
+        setLedgerActor(ledgerActor);
         const totalSupply = await ledgerActor.icrc1_total_supply();
-        setTokenData({ total_supply: totalSupply });
+        const tokenSymbol = await ledgerActor.icrc1_symbol();
+        setTokenData({ total_supply: totalSupply, token_symbol:tokenSymbol });
       }
     };
 
@@ -96,6 +100,24 @@ const TokenPage = () => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  const handleAmount= (e)=>{
+    if(saleParams)
+      {const val= e.target.value;
+        console.log('val',val)
+        console.log('listing_rate',saleParams.listing_rate)
+      setAmount(saleParams.listing_rate * val)    
+      }
+  }
+
+  const handleTransaction= async ()=>{
+    if(ledgerActor){
+    const res= await ledgerActor.icrc2_approve()
+   console.log(res);
+   }
+
+
+  }
 
   return (
     <>
@@ -199,10 +221,14 @@ const TokenPage = () => {
             <p className="text-lg mb-2">AMOUNT</p>
             <input
               type="text"
-              className="w-full p-2 rounded-md bg-[#333333] border-none text-white text-base mb-5"
+              className="w-full p-2 rounded-md bg-[#333333] border-none text-white text-base mb-5 "
               placeholder="Enter Amount"
+              onChange={handleAmount}
             />
-            <button className="w-[50%] p-2 rounded-2xl   font-semibold  bg-gradient-to-r from-[#f3b3a7] to-[#cac9f5] text-black text-base">
+            {/* token amount per icp */}
+            <h1 className="mb-5 text-green-500"> {(tokenData && amount) && ` ${ amount } ${tokenData.token_symbol}`} </h1>
+
+            <button onClick={handleTransaction} className="w-[50%] p-2 rounded-2xl   font-semibold  bg-gradient-to-r from-[#f3b3a7] to-[#cac9f5] text-black text-base">
               USE ICP
             </button>
           </div>
@@ -266,7 +292,7 @@ const TokenPage = () => {
               <div className="flex flex-col">
                 <span className="text-sm text-gray-400">UNSOLD TOKENS</span>
                 <span className="text-lg font-semibold">
-                  {unsoldTokens.toLocaleString()}
+                { tokenData ? tokenData.total_supply.toString() :''   }
                 </span>
               </div>
               <div className="flex flex-col">

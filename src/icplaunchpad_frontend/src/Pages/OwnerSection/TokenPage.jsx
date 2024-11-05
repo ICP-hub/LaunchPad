@@ -37,6 +37,7 @@ const TokenPage = () => {
   const { actor, createCustomActor, isAuthenticated, principal } = useAuth();
   const [tokenData, setTokenData] = useState(null);
   const [tokenImg, setTokenImg] = useState();
+  const [coverImg, setCoverImg] = useState();
   const protocol = process.env.DFX_NETWORK === "ic" ? "https" : "http";
   const domain = process.env.DFX_NETWORK === "ic" ? "raw.icp0.io" : "localhost:4943";
   const canisterId = process.env.CANISTER_ID_IC_ASSET_HANDLER;
@@ -76,12 +77,20 @@ const TokenPage = () => {
         // Fetch token image ID
         const tokenImgId = await actor.get_token_image_id(ledgerPrincipal);
         console.log("Fetched token image ID:", tokenImgId);
-
         if (tokenImgId && tokenImgId.length > 0) {
           const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId[tokenImgId.length - 1]}`;
           setTokenImg(imageUrl);
           console.log("Token Image URL:", imageUrl);
         }
+
+           // Fetch  cover image ID
+          //  const coverImgId = await actor.get_cover_image_id(ledgerPrincipal);
+          //  console.log("Fetched cover image ID:", coverImgId);
+          //  if (coverImgId && coverImgId.length > 0) {
+          //    const imageUrl = `${protocol}://${canisterId}.${domain}/f/${coverImg[coverImgId.length - 1]}`;
+          //    setCoverImg(imageUrl);
+          //    console.log("cover Image URL:", imageUrl);
+          //  }
       }
 
       // Fetch presale data if ledgerId is available
@@ -157,7 +166,7 @@ const TokenPage = () => {
               <div className="relative">
 
                 <img
-                  src={ProjectRectangleBg}
+                  src={ coverImg || ProjectRectangleBg}
                   className="min-h-[147px] w-full rounded-lg"
                   alt=""
                   draggable="false"
@@ -389,7 +398,7 @@ const TokenPage = () => {
                 <div className="flex flex-col">
                   <span className="text-sm text-gray-400">UNSOLD TOKENS</span>
                   <span className="text-lg font-semibold">
-                    {unsoldTokens.toLocaleString()}
+                  { tokenData ? tokenData.total_supply.toString() :''   }
                   </span>
                 </div>
                 <div className="flex flex-col">
@@ -485,7 +494,7 @@ const TokenPage = () => {
                 <div className="flex flex-col">
                   <span className="text-sm text-gray-400">UNSOLD TOKENS</span>
                   <span className="text-lg font-semibold">
-                    {unsoldTokens.toLocaleString()}
+                    { tokenData ? tokenData.total_supply.toString() :''   }
                   </span>
                 </div>
                 <div className="flex flex-col">

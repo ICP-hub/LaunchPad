@@ -374,12 +374,14 @@ const VerifyToken = () => {
         description,
         social_links,
         project_video,
+        coverImageURL,
         website = "",
       } = presaleDetails;
 
       const start_time_utc = Math.floor(new Date(startTime).getTime() / 1000);
       const end_time_utc = Math.floor(new Date(endTime).getTime() / 1000);
       const TokenPicture = await convertFileToBytes(logoURL);
+      const CoverPicture = await convertFileToBytes(coverImageURL);
       const creatorPrincipal =
         typeof principal === "string"
           ? Principal.fromText(principal)
@@ -397,7 +399,8 @@ const VerifyToken = () => {
         creator: creatorPrincipal,
         social_links: socialLinksURLs,
         website,
-        project_video
+        project_video,
+        
       };
   
       const ledgerPrincipalId = typeof ledger_canister_id !== 'string' && ledger_canister_id
@@ -417,6 +420,15 @@ const VerifyToken = () => {
         };
         await actor.upload_token_image("br5f7-7uaaa-aaaaa-qaaca-cai", imgUrl);
       }
+
+      if (CoverPicture) {
+        const imgUrl = {
+          content: [CoverPicture],
+          ledger_id: ledgerPrincipalId,
+        };
+        await actor.upload_cover_image("br5f7-7uaaa-aaaaa-qaaca-cai", imgUrl);
+      }
+      
       console.log("Submission successful");
 
       // adding ledger_canister_id and index_canister_id in redux store   
