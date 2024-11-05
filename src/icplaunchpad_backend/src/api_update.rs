@@ -1,7 +1,7 @@
 use candid::{encode_one, Principal};
 use ic_cdk::api::{call::{CallResult, RejectionCode}, management_canister::main::{CanisterInstallMode, WasmModule}};
 
-use crate::{create_canister, deposit_cycles, index_install_code, install_code, mutate_state, params, read_state, CanisterIdWrapper, CoverImageIdWrapper, CreateCanisterArgument, CreateFileInput, ImageIdWrapper, IndexArg, IndexCanisterIdWrapper, IndexInitArgs, IndexInstallCodeArgument, InitArgs, InstallCodeArgument, LedgerArg, ProfileImageData, ReturnResult, SaleDetails, SaleDetailsUpdate, SaleDetailsWrapper, TokenCreationResult, TokenImageData, UserAccount, UserAccountWrapper, UserInputParams, STATE};
+use crate::{create_canister, deposit_cycles, index_install_code, install_code, mutate_state, params, read_state, CanisterIdWrapper, CoverImageData, CoverImageIdWrapper, CreateCanisterArgument, CreateFileInput, ImageIdWrapper, IndexArg, IndexCanisterIdWrapper, IndexInitArgs, IndexInstallCodeArgument, InitArgs, InstallCodeArgument, LedgerArg, ProfileImageData, ReturnResult, SaleDetails, SaleDetailsUpdate, SaleDetailsWrapper, TokenCreationResult, TokenImageData, UserAccount, UserAccountWrapper, UserInputParams, STATE};
 
 #[ic_cdk::update]
 pub fn create_account(user_input: UserAccount) -> Result<(), String> {
@@ -352,8 +352,7 @@ pub async fn upload_profile_image(asset_canister_id: String, image_data: Profile
 }
 
 #[ic_cdk::update]
-pub async fn upload_cover_image(asset_canister_id: String, image_data: ProfileImageData) -> Result<String, String> {
-    let principal = ic_cdk::api::caller();  // Get the caller's principal
+pub async fn upload_cover_image(asset_canister_id: String, image_data: CoverImageData) -> Result<String, String> {
 
     // Create input for the file upload
     let input = CreateFileInput {
@@ -377,9 +376,15 @@ pub async fn upload_cover_image(asset_canister_id: String, image_data: ProfileIm
     // Handle the response and update the state accordingly
     match response {
         Ok((Ok(image_id),)) => {
-            // Store the cover image ID with the user's principal in the cover_image_ids map
+            // Store the cover image ID with the ledger_id in the cover_image_ids map
             mutate_state(|state| {
-                state.cover_image_ids.insert(principal.to_string(), CoverImageIdWrapper { image_id });
+                let ledger_id_str = image_data.ledger_id.to_string();
+
+                // Insert or update the cover image ID in the cover_image_ids map
+                state.cover_image_ids.insert(
+                    ledger_id_str,
+                    CoverImageIdWrapper { image_id },
+                );
             });
 
             Ok(format!("Cover image uploaded and updated with ID: {}", image_id))
@@ -395,6 +400,9 @@ pub async fn upload_cover_image(asset_canister_id: String, image_data: ProfileIm
         }
     }
 }
+
+
+
 
 
 

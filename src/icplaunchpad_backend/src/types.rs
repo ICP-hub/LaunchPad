@@ -238,6 +238,14 @@ pub struct ProfileImageData {
     // You can add more fields if necessary
 }
 
+#[derive(Clone, CandidType, Serialize, Deserialize)]
+pub struct CoverImageData {
+    pub content: Option<ByteBuf>,  // The image content for the cover image
+    pub ledger_id: Principal,      // Ledger ID associated with the cover image
+    // Additional parameters specific to cover images can be added here if needed
+}
+
+
 #[derive(CandidType, Clone, Debug, Default, Deserialize, Serialize)]
 pub struct CreateFileInput {
     // pub parent: u32,
@@ -327,4 +335,24 @@ pub struct SaleDetails {
 pub struct SaleDetailsWithID {
     pub ledger_canister_id: String,
     pub sale_details: SaleDetails,
+}
+
+#[derive(Debug, CandidType, Deserialize)]
+pub enum TransferFromError {
+    BadFee { expected_fee: Nat },
+    BadBurn { min_burn_amount: Nat },
+    InsufficientFunds { balance: Nat },
+    InsufficientAllowance { allowance: Nat },
+    TooOld,
+    CreatedInFuture { ledger_time: Nat },
+    Duplicate { duplicate_of: u64 },
+    TemporarilyUnavailable,
+    GenericError { error_code: u64, message: String },
+}
+
+// Result type for transfer operations
+#[derive(Debug, CandidType, Deserialize)]
+pub enum TransferFromResult {
+    Ok(u64),
+    Err(TransferFromError),
 }
