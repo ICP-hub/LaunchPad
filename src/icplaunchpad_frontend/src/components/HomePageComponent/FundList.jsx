@@ -21,7 +21,7 @@ const FundList = () => {
               <th className="py-3 px-6 text-left">Ended In</th>
             </tr>
           </thead>
-          <tbody className="text-white text-sm divide-y  divide-[#FFFFFF33]">
+          <tbody className="text-white text-sm divide-y   divide-[#FFFFFF33]">
             {SuccesFullSales && SuccesFullSales.length > 0 ? (
               SuccesFullSales.map((sale, index) => (
                 <FundDetails sale={sale} index={index}/>
