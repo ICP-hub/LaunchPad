@@ -21,6 +21,17 @@ pub struct Account {
     pub subaccount: Option<Vec<u8>>,
 }
 
+#[derive(CandidType, Deserialize, Debug)]
+pub struct TransferFromArgs {
+    pub spender_subaccount: Option<Vec<u8>>, // SubAccount is a blob
+    pub from: Account,
+    pub to: Account,
+    pub amount: Nat, // Icrc1Tokens is a nat
+    pub fee: Option<Nat>,
+    pub memo: Option<Vec<u8>>,
+    pub created_at_time: Option<u64>, // Icrc1Timestamp is a nat64
+}
+
 #[derive(CandidType, Serialize, Deserialize, Debug)]
 pub struct Metadata {
     pub key: String,
@@ -337,22 +348,22 @@ pub struct SaleDetailsWithID {
     pub sale_details: SaleDetails,
 }
 
-#[derive(Debug, CandidType, Deserialize)]
+#[derive(CandidType, Deserialize, Debug)]
 pub enum TransferFromError {
     BadFee { expected_fee: Nat },
     BadBurn { min_burn_amount: Nat },
     InsufficientFunds { balance: Nat },
     InsufficientAllowance { allowance: Nat },
     TooOld,
-    CreatedInFuture { ledger_time: Nat },
-    Duplicate { duplicate_of: u64 },
+    CreatedInFuture { ledger_time: u64 },
+    Duplicate { duplicate_of: Nat },
     TemporarilyUnavailable,
-    GenericError { error_code: u64, message: String },
+    GenericError { error_code: Nat, message: String },
 }
 
 // Result type for transfer operations
-#[derive(Debug, CandidType, Deserialize)]
+#[derive(CandidType, Deserialize, Debug)]
 pub enum TransferFromResult {
-    Ok(u64),
+    Ok(Nat), // Icrc1BlockIndex is a nat
     Err(TransferFromError),
 }
