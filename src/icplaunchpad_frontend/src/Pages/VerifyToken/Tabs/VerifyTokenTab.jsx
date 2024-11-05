@@ -151,6 +151,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FaRegCopy } from "react-icons/fa";
 import { useAuth } from "../../../StateManagement/useContext/useAuth";
+import { Principal } from "@dfinity/principal";
 
 const VerifyTokenTab = ({ register, errors, tokenData, watch, ledger_canister_id }) => {
   const [copySuccess, setCopySuccess] = useState(false);
@@ -209,7 +210,6 @@ const VerifyTokenTab = ({ register, errors, tokenData, watch, ledger_canister_id
         <div className="flex xxs1:hidden mb-8 bg-[rgb(68,68,68)] pl-6 p-2 mt-[-31px] mx-[-17px] xxs1:mx-[-31px] rounded-2xl">
           <span className="text-white text-[22px]">Chain</span>
         </div>
-
         {/* Token Address */}
         <h2 className="text-lg font-semibold mb-4">Token Address</h2>
         <div className="relative w-full">
@@ -217,7 +217,7 @@ const VerifyTokenTab = ({ register, errors, tokenData, watch, ledger_canister_id
             ref={inputRef}
             type="text"
             className="w-full py-2 pl-4 pr-10 mb-4 bg-[#333333] text-[9px] ss3:text-[10px] xxs1:text-[17px] relative rounded-md"
-            value="0xd8319f62626D0b2Fa5027A4ACFFbF52E319b1E7C0"
+            value={Principal.fromUint8Array(ledger_canister_id).toText()}
             readOnly
             onClick={copyToClipboard}
           />

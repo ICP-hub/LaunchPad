@@ -37,16 +37,24 @@ export function formatFullDateFromSimpleDate(val) {
 
 
 export const formatDateForDateTimeLocal = (bigIntTime) => {
-  const date = new Date(Number(bigIntTime) / 1000);
+  if (!bigIntTime) return;
+  
+  // Parse the timestamp as a BigInt
+  const timestampBigInt = BigInt(bigIntTime);
 
-  // Format year, month, and day
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
+  // Determine if timestamp is in seconds or nanoseconds
+  const secondsTimestamp = timestampBigInt > 1_000_000_000_000n 
+      ? timestampBigInt / 1_000_000_000n  // Nanoseconds to seconds
+      : timestampBigInt;                  // Already in seconds
 
-  // Format hours and minutes
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
+  // Convert to milliseconds and add IST offset (5 hours and 30 minutes)
+  const date = new Date(Number(secondsTimestamp) * 1000 + (5 * 60 + 30) * 60 * 1000);
+
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(date.getUTCDate()).padStart(2, '0');
+  const hours = String(date.getUTCHours()).padStart(2, '0');
+  const minutes = String(date.getUTCMinutes()).padStart(2, '0');
 
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 };
