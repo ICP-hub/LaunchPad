@@ -141,13 +141,13 @@ pub fn get_profile_image_id() -> Option<u32> {
 }
 
 #[ic_cdk::query]
-pub fn get_cover_image_id() -> Option<u32> {
-    let principal = ic_cdk::api::caller();
-
+pub fn get_cover_image_id(ledger_id: Principal) -> Option<u32> {
     read_state(|state| {
-        state.cover_image_ids.get(&principal.to_string()).map(|wrapper| wrapper.image_id)
+        // Search for the given ledger_id in the cover_image_ids map
+        state.cover_image_ids.get(&ledger_id.to_string()).map(|wrapper| wrapper.image_id)
     })
 }
+
 
 
 
