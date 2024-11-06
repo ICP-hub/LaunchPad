@@ -18,25 +18,46 @@ import { Principal } from "@dfinity/principal";
 import SaleStart from "../OwnerSection/SaleStart.jsx";
 
 const TokenPage = () => {
+  const [tokenPhase, setTokenPhase]=useState("UPCOMING");
   const [activeTab, setActiveTab] = useState("About");
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 640);
   const location = useLocation();
   const { projectData } = location.state || {};
   const { actor, createCustomActor } = useAuth();
   const [saleParams, setSaleParams] = useState(null);
-  const [ledgerActor, setLedgerActor]=useState(null);
+  const [ledgerActor, setLedgerActor] = useState(null);
   const [tokenData, setTokenData] = useState(null);
   const [amount, setAmount] = useState();
 
   useEffect(() => {
     const fetchTokenData = async () => {
       if (projectData?.canister_id) {
-        const ledgerPrincipal = Principal.fromText(projectData?.canister_id);
-        const ledgerActor = await createCustomActor(ledgerPrincipal);
-        setLedgerActor(ledgerActor);
-        const totalSupply = await ledgerActor.icrc1_total_supply();
-        const tokenSymbol = await ledgerActor.icrc1_symbol();
-        setTokenData({ total_supply: totalSupply, token_symbol:tokenSymbol });
+        try {
+          const ledgerPrincipal = Principal.fromText(projectData.canister_id);
+          const ledgerActor = await createCustomActor(ledgerPrincipal);
+          setLedgerActor(ledgerActor);
+
+          const totalSupply = await ledgerActor.icrc1_total_supply();
+          const tokenSymbol = await ledgerActor.icrc1_symbol();
+          setTokenData((prevData) => ({
+            ...prevData,
+            total_supply: totalSupply,
+            token_symbol: tokenSymbol,
+          }));
+
+          // Fetching the owner of the token
+          const owner = await ledgerActor.icrc1_minting_account();
+          if (owner) {
+            const ownerBalance = await ledgerActor.icrc1_balance_of(owner[0]);
+            setTokenData((prevData) => ({
+              ...prevData,
+              owner_bal: ownerBalance.toString(),
+              owner: owner[0].owner.toString(),
+            }));
+          }
+        } catch (error) {
+          console.error("Error fetching token data:", error);
+        }
       }
     };
 
@@ -47,6 +68,7 @@ const TokenPage = () => {
           const sale = await actor.get_sale_params(ledgerPrincipal);
 
           if (sale?.Ok) {
+            console.log(sale?.Ok)
             setSaleParams(sale.Ok);
           } else {
             console.warn("No sale data available or an error occurred.");
@@ -101,23 +123,19 @@ const TokenPage = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const handleAmount= (e)=>{
-    if(saleParams)
-      {const val= e.target.value;
-        console.log('val',val)
-        console.log('listing_rate',saleParams.listing_rate)
-      setAmount(saleParams.listing_rate * val)    
-      }
-  }
+  const handleAmount = (e) => {
+    if (saleParams) {
+      const val = e.target.value;
+      setAmount(saleParams.listing_rate * val);
+    }
+  };
 
-  const handleTransaction= async ()=>{
-    if(ledgerActor){
-    const res= await ledgerActor.icrc2_approve()
-   console.log(res);
-   }
-
-
-  }
+  const handleTransaction = async () => {
+    if (ledgerActor) {
+      const res = await ledgerActor.icrc2_approve();
+      console.log(res);
+    }
+  };
 
   return (
     <>
@@ -127,8 +145,8 @@ const TokenPage = () => {
             <div className="h-[314px]">
               <div className="relative">
                 <img
-                  src={ProjectRectangleBg}
-                  className="min-h-[147px] rounded-lg"
+                  src=  {projectData.coverImage ? projectData.coverImage : ProjectRectangleBg} 
+                  className=" max-h-[147px] w-[90vw] rounded-lg object-cover"
                   alt=""
                 />
                 <img
@@ -152,7 +170,7 @@ const TokenPage = () => {
                   </div>
                 </div>
                 <div className="right flex flex-col text-[17px] mr-8 lgx:mr-0 gap-4">
-                  <div className="text-[#FFC145]">Upcoming</div>
+                  <div className="text-[#FFC145]"> {tokenPhase} </div>
                   <div>Soft 100 SOL</div>
                 </div>
               </div>
@@ -220,7 +238,7 @@ const TokenPage = () => {
           <div className="lg:min-w-[406px] bg-[#FFFFFF1A] rounded-[17.44px] p-5 text-white relative h-[218px] lg:mt-24 w-full">
             <p className="text-lg mb-2">AMOUNT</p>
             <input
-              type="text"
+              type="number"
               className="w-full p-2 rounded-md bg-[#333333] border-none text-white text-base mb-5 "
               placeholder="Enter Amount"
               onChange={handleAmount}
@@ -292,20 +310,20 @@ const TokenPage = () => {
               <div className="flex flex-col">
                 <span className="text-sm text-gray-400">UNSOLD TOKENS</span>
                 <span className="text-lg font-semibold">
-                { tokenData ? tokenData.total_supply.toString() :''   }
+                { tokenData ?  ` ${tokenData.total_supply.toString()} ${tokenData.token_symbol}` :''   }
                 </span>
               </div>
               <div className="flex flex-col">
                 <span className="text-sm text-gray-400">CURRENT RAISED</span>
                 <span className="text-lg font-semibold">
-                  {currentRaised} ICP
+                  {tokenData ? tokenData.owner_bal : ''} ICP
                 </span>
               </div>
             </div>
           </div>
 
           <div className="lg:min-w-[406px] w-full h-[153px] bg-[#FFFFFF1A] rounded-[17.44px] flex flex-col justify-center items-center text-white">
-            <SaleStart  style={{text_heading:'text-lg', text_content:'text-2xl'}} presaleData={saleParams}/>
+            <SaleStart  style={{text_heading:'text-lg', text_content:'text-2xl'}} setTokenPhase={setTokenPhase} presaleData={saleParams}/>
           </div>
         </div>
         {isMobile && <MobileViewTab ledgerId={projectData?.canister_id } 

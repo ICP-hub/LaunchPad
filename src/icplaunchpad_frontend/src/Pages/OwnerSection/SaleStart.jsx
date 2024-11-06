@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { SuccessfulSalesHandlerRequest } from '../../StateManagement/Redux/Reducers/SuccessfulSales';
+import { upcomingSalesHandlerRequest } from '../../StateManagement/Redux/Reducers/UpcomingSales';
 
-const SaleStart = ({ style, presaleData }) => {
+const SaleStart = ({ style,setTokenPhase, presaleData }) => {
+    console.log('from saleStart',presaleData)
+   const dispatch= useDispatch()
     const [timeRemaining, setTimeRemaining] = useState("Loading...");
 
     useEffect(() => {
@@ -27,6 +32,8 @@ const SaleStart = ({ style, presaleData }) => {
 
             if (now >= end) { 
                 setTimeRemaining("Sale Ended!"); // Update state to show "Sale Ended!"
+                setTokenPhase("SUCCESSFULL")
+                // dispatch(SuccessfulSalesHandlerRequest())
                 return; // Stop here, no need for further calculations
             }
 
@@ -34,6 +41,8 @@ const SaleStart = ({ style, presaleData }) => {
 
             if (timeLeft <= 0) {
                 setTimeRemaining("Sale Started!");
+                setTokenPhase("RUNNING")
+                // dispatch(upcomingSalesHandlerRequest())
                 return;
             }
 
@@ -54,8 +63,8 @@ const SaleStart = ({ style, presaleData }) => {
 
     return (
         <>
-            <p className={`${style.text_heading} mb-2`}>{(timeRemaining === "Sale Started!" || timeRemaining === "Sale Ended!") ? "" : "SALE STARTS IN"}</p>
-            <div className={`${style.text_content} font-bold`} >{timeRemaining}</div>
+            <p className={`${style.text_heading} mb-2 `}>{(timeRemaining === "Sale Started!" || timeRemaining === "Sale Ended!") ? "" : "SALE STARTS IN"}</p>
+            <div className={ `${style.text_content} font-bold`} >{timeRemaining}</div>
         </>
     );
 };
