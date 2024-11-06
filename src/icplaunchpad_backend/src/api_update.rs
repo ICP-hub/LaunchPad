@@ -457,10 +457,10 @@ pub fn update_sale_params(
 
             // Updating various fields if provided
             if let Some(start_time) = updated_details.start_time_utc {
-                sale_details.start_time_utc = start_time * 1_000_000;
+                sale_details.start_time_utc = start_time;
             }
             if let Some(end_time) = updated_details.end_time_utc {
-                sale_details.end_time_utc = end_time * 1_000_000;
+                sale_details.end_time_utc = end_time;
             }
             if let Some(website) = updated_details.website {
                 sale_details.website = website;
