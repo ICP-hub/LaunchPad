@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-const SaleStart = ({ style,presaleData }) => {
+const SaleStart = ({ style, presaleData }) => {
     const [timeRemaining, setTimeRemaining] = useState("Loading...");
 
     useEffect(() => {
@@ -25,17 +25,15 @@ const SaleStart = ({ style,presaleData }) => {
         const updateCountdown = () => {
             const now = new Date();
 
-            if (now >= end) { // Check if sale ended first
-                setTimeRemaining("Sale Ended!");
-                clearInterval(intervalId);
-                return;
+            if (now >= end) { 
+                setTimeRemaining("Sale Ended!"); // Update state to show "Sale Ended!"
+                return; // Stop here, no need for further calculations
             }
 
             const timeLeft = start - now;
 
             if (timeLeft <= 0) {
                 setTimeRemaining("Sale Started!");
-                clearInterval(intervalId);
                 return;
             }
 
@@ -48,14 +46,15 @@ const SaleStart = ({ style,presaleData }) => {
         };
 
         const intervalId = setInterval(updateCountdown, 1000);
-        updateCountdown(); // Initialize countdown
+        updateCountdown();
 
-        return () => clearInterval(intervalId); // Cleanup interval on unmount
+        // Cleanup interval on unmount
+        return () => clearInterval(intervalId);
     }, [presaleData]);
 
     return (
         <>
-            <p className={`${style.text_heading} mb-2`}>{ (timeRemaining === "Sale Started!" || timeRemaining === "Sale Ended!") ? "" : "SALE STARTS IN"}</p>
+            <p className={`${style.text_heading} mb-2`}>{(timeRemaining === "Sale Started!" || timeRemaining === "Sale Ended!") ? "" : "SALE STARTS IN"}</p>
             <div className={`${style.text_content} font-bold`} >{timeRemaining}</div>
         </>
     );

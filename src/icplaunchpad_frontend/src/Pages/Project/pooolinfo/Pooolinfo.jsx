@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { convertTimestampToIST } from '../../../utils/convertTimestampToIST';
 
 const AffiliateProgram = ({ poolData, presaleData }) => {
   const [saleTime, setSaleTime] = useState({ start_time: "N/A", end_time: "N/A" });
@@ -14,24 +15,6 @@ const AffiliateProgram = ({ poolData, presaleData }) => {
     }
   }, [presaleData]);
 
-  function convertTimestampToIST(timestamp) {
-    if (!timestamp) return;
-
-    const timestampBigInt = BigInt(timestamp);
-    const secondsTimestamp = timestampBigInt > 1_000_000_000_000n
-      ? timestampBigInt / 1_000_000_000n
-      : timestampBigInt;
-
-    const date = new Date(Number(secondsTimestamp) * 1000 + (5 * 60 + 30) * 60 * 1000);
-
-    const year = date.getUTCFullYear();
-    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-    const day = String(date.getUTCDate()).padStart(2, '0');
-    const hours = String(date.getUTCHours()).padStart(2, '0');
-    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
-
-    return `${year}.${month}.${day} ${hours}:${minutes} (IST)`;
-  }
 
   return (
     <div className="bg-[#FFFFFF1A] sm:bg-transparent text-gray-300 p-2 xxs1:p-6 rounded-lg w-full max-w-full">

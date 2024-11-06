@@ -9,7 +9,7 @@ const FundList = () => {
   return (
     <div className="px-[8%] py-[5%] md:py-[6%] lg:py-[3%] bg-black">
       <h2 className="text-[30px] font-bold text-white font-posterama mb-4">SUCCESSFUL PROJECTS RAISE FUNDING</h2>
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto max-h-[400px] overflow-y-auto no-scrollbar">
         <table className="min-w-full bg-black border-b border-[#FFFFFF33]">
           <thead>
             <tr className="bg-[#1919194D] text-white font-posterama uppercase text-sm leading-normal">
@@ -21,7 +21,7 @@ const FundList = () => {
               <th className="py-3 px-6 text-left">Ended In</th>
             </tr>
           </thead>
-          <tbody className="text-white text-sm divide-y  divide-[#FFFFFF33]">
+          <tbody className="text-white text-sm divide-y    divide-[#FFFFFF33]">
             {SuccesFullSales && SuccesFullSales.length > 0 ? (
               SuccesFullSales.map((sale, index) => (
                 <FundDetails sale={sale} index={index}/>
