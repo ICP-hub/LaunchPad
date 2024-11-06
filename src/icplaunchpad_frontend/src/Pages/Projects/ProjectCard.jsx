@@ -6,16 +6,19 @@ import { useAuth } from '../../StateManagement/useContext/useAuth';
 import { Principal } from '@dfinity/principal';
 import SaleStart from '../OwnerSection/SaleStart';
 
-const ProjectCard = ({ projectData, index }) => {
+
+const ProjectCard = ({ isUserToken,projectData, index }) => {
   const protocol = process.env.DFX_NETWORK === 'ic' ? 'https' : 'http';
   const domain = process.env.DFX_NETWORK === 'ic' ? 'raw.icp0.io' : 'localhost:4943';
   const canisterId = process.env.CANISTER_ID_IC_ASSET_HANDLER;
   const { createCustomActor, actor } = useAuth();
   const [tokenInfo, setTokenInfo] = useState({});
   const [isFetchingIMG, setFetchingIMG] = useState(false);
+  const [tokenPhase, setTokenPhase] = useState("UPCOMING");
+
   const navigate = useNavigate();
 
-  useEffect(() => {  
+  useEffect(() => {
     if (projectData?.ledger_canister_id) {
       fetchProjectData();
     }
@@ -25,7 +28,7 @@ const ProjectCard = ({ projectData, index }) => {
     try {
       const ledgerId = projectData.ledger_canister_id;
       const ledgerActor = await createCustomActor(ledgerId);
-      
+
       if (ledgerActor) {
         const name = await ledgerActor.icrc1_name();
         if (name) {
@@ -41,6 +44,15 @@ const ProjectCard = ({ projectData, index }) => {
           const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId[tokenImgId.length - 1]}`;
           setTokenInfo(prev => ({ ...prev, token_image: imageUrl }));
         }
+
+        // Fetch  cover image ID
+        const coverImgId = await actor.get_cover_image_id(ledgerPrincipal);
+        console.log("Fetched cover image ID:", coverImgId);
+        if (coverImgId && coverImgId.length > 0) {
+          const imageUrl = `${protocol}://${canisterId}.${domain}/f/${coverImgId[coverImgId.length - 1]}`;
+          setTokenInfo(prev => ({ ...prev, cover_image: imageUrl }));
+          console.log("cover Image URL:", imageUrl);
+        }
         setFetchingIMG(true);
       }
     } catch (error) {
@@ -55,17 +67,26 @@ const ProjectCard = ({ projectData, index }) => {
   }, [projectData?.canister_id]);
 
   const fetchTokenInfo = async () => {
-    try {     
+    try {
       const ledgerPrincipal = Principal.fromText(projectData.canister_id);
       const saleParams = await actor.get_sale_params(ledgerPrincipal);
       setTokenInfo(prev => ({ ...prev, sale_Params: saleParams.Ok }));
-      
-      const tokenImgId = await actor.get_token_image_id(ledgerPrincipal);
 
+      const tokenImgId = await actor.get_token_image_id(ledgerPrincipal);
       if (tokenImgId && tokenImgId.length > 0) {
         const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId[tokenImgId.length - 1]}`;
         setTokenInfo(prev => ({ ...prev, token_image: imageUrl }));
       }
+
+      // Fetch  cover image ID
+      const coverImgId = await actor.get_cover_image_id(ledgerPrincipal);
+      console.log("Fetched cover image ID:", coverImgId);
+      if (coverImgId && coverImgId.length > 0) {
+        const imageUrl = `${protocol}://${canisterId}.${domain}/f/${coverImgId[coverImgId.length - 1]}`;
+        setTokenInfo(prev => ({ ...prev, cover_image: imageUrl }));
+        console.log("cover Image URL:", imageUrl);
+      }
+
       setFetchingIMG(true);
     } catch (error) {
       console.error('Error fetching token info:', error);
@@ -73,16 +94,22 @@ const ProjectCard = ({ projectData, index }) => {
   };
 
   const handleViewMoreClick = () => {
-    if(isFetchingIMG)
-      if(projectData.ledger_canister_id && tokenInfo)
-      navigate('/project', { state: { projectData:{canister_id:projectData.ledger_canister_id, token_name:tokenInfo.token_name, TokenImg:tokenInfo.token_image} } });
-      else  
-       navigate('/project', { state: { projectData:{...projectData,TokenImg:tokenInfo.token_image} } });
-
+    if (isFetchingIMG){
+      if (projectData.ledger_canister_id && tokenInfo)
+        navigate('/project', { state: { projectData: { canister_id: projectData.ledger_canister_id, token_name: tokenInfo.token_name, TokenImg: tokenInfo.token_image, coverImage:tokenInfo.cover_image } } });
+      else
+        navigate('/project', { state: { projectData: { ...projectData, TokenImg: tokenInfo.token_image, coverImage:tokenInfo.cover_image } } });
+}
+    if(isUserToken && isFetchingIMG){
+      if (projectData.ledger_canister_id && tokenInfo)
+        navigate('/token-page', { state: { projectData: { canister_id: projectData.ledger_canister_id, token_name: tokenInfo.token_name, TokenImg: tokenInfo.token_image, coverImage:tokenInfo.cover_image } } });
+      else
+        navigate('/token-page', { state: { projectData: { ...projectData, TokenImg: tokenInfo.token_image, coverImage:tokenInfo.cover_image } } });
+    }
   };
 
-  return ( 
-    <div>  
+  return (
+    <div>
       <div
         key={index}
         onClick={handleViewMoreClick}
@@ -102,7 +129,8 @@ const ProjectCard = ({ projectData, index }) => {
           <div className="mt-[70px] text-center text-white space-y-5">
             <div className="text-[24px] font-semibold">{projectData?.token_name || tokenInfo?.token_name}</div>
             <div className="text-[16px] text-[#FFFFFFA6] font-medium">FAIR LAUNCH - MAX BUY 5 SOL</div>
-            <div className="text-[#FFC145] text-[18px] font-normal">UPCOMING</div>
+
+            <div className="text-[#FFC145] text-[18px] font-normal"> {tokenPhase} </div>
           </div>
           <div className="bg-[#FFFFFF66] h-[2px] w-[92%] mx-auto mt-6"></div>
         </div>
@@ -153,8 +181,8 @@ const ProjectCard = ({ projectData, index }) => {
               <span className="text-lg font-semibold">{"365 DAYS"}</span>
             </div>
             <div className="flex flex-col">
-              
-              {tokenInfo && <SaleStart style={{text_heading:'text-sm', text_content:'text-lg'}} presaleData={projectData?.sale_details || tokenInfo?.sale_Params} />}
+
+              {tokenInfo && <SaleStart style={{ text_heading: 'text-sm', text_content: 'text-lg' }} setTokenPhase={setTokenPhase} presaleData={projectData?.sale_details || tokenInfo?.sale_Params} />}
             </div>
             <button onClick={handleViewMoreClick} className="border-b-2 border-r-gray-600 w-20 cursor-pointer">View More</button>
           </div>
