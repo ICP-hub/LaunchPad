@@ -19,12 +19,12 @@ import MobileViewTab from "./MobileViewTab";
 import { FiEdit3 } from "react-icons/fi";
 
 import AddToWhitelist from "../../components/Modals/AddToWhitelist.jsx";
-import { useAuth } from "../../StateManagement/useContext/useAuth.jsx";
 import { Principal } from '@dfinity/principal';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
 import UpdateToken from "../../components/Modals/UpdateToken.jsx";
 import { SaleParamsHandlerRequest } from "../../StateManagement/Redux/Reducers/SaleParams.jsx";
+import { useAuth } from "../../StateManagement/useContext/useClient.jsx";
 
 const TokenPage = () => {
   const [activeTab, setActiveTab] = useState("About");
@@ -41,13 +41,15 @@ const TokenPage = () => {
   const canisterId = process.env.CANISTER_ID_IC_ASSET_HANDLER;
   const [presaleData, setPresaleData]= useState(null);
   const [ledgerActor, setLedgerActor]=useState(null);
-
-   const dispatch=useDispatch()
+  const location = useLocation();
+  const { projectData } = location.state || {};
+  const ledger_canister_id = projectData?.canister_id;
+ 
 
   // const location = useLocation();
   // const userData=useSelector((state)=>state.user);
-  const ledger_canister_id=useSelector((state)=> state?.LedgerId?.data?.ledger_canister_id )
-  console.log("ledgerCanister-",ledger_canister_id)
+  // const ledger_canister_id=useSelector((state)=> state?.LedgerId?.data?.ledger_canister_id )
+  console.log("ledgerCanister-new",ledger_canister_id)
 
     function handleTokenEdit(){
       setTokenModalIsOpen(true)
@@ -84,9 +86,9 @@ const TokenPage = () => {
         }
     
         // Fetch presale data if ledgerId is available
-        if (ledger_canister_id) {
-          dispatch(SaleParamsHandlerRequest())
-        }
+        // if (ledger_canister_id) {
+        //   dispatch(SaleParamsHandlerRequest())
+        // }
       } catch (error) {
         console.error("Error fetching data:", error);
       }

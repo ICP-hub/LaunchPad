@@ -21,6 +21,16 @@ const FaqDiscussionTab = () => {
       answer:
         'This is the explanation for what BlockseBlock is. It can be a detailed answer or a simple description.',
     },
+    {
+      question: 'What is BlockseBlock?',
+      answer:
+        'This is the explanation for what BlockseBlock is. It can be a detailed answer or a simple description.',
+    },
+    {
+      question: 'What is BlockseBlock?',
+      answer:
+        'This is the explanation for what BlockseBlock is. It can be a detailed answer or a simple description.',
+    },
   ];
 
   const toggleFaq = (index) => {
@@ -63,7 +73,7 @@ const FaqDiscussionTab = () => {
       </div>
 
       {/* Discussion Section */}
-      <div className="mt-6">
+      {/* <div className="mt-6">
         <h2 className="text-xl text-white mb-4">Discussion</h2>
         <p className="text-gray-400">{comments.length} Comments</p>
         
@@ -103,7 +113,7 @@ const FaqDiscussionTab = () => {
             ))}
           </div>
         )}
-      </div>
+      </div> */}
     </div>
   );
 };

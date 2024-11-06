@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import AnimationButton from '../common/AnimationButton';
 import { Link } from 'react-router-dom';
 import CreateTokenModal from '../components/Modals/CreateTokenModal';
-import { useAuth } from '../StateManagement/useContext/useAuth';
 import ConnectFirst from './ConnectFirst';
+import { useAuth } from '../StateManagement/useContext/useClient';
 
 const CreatePreLaunch = () => {
-  const {isAuthenticated}=useAuth()
+  const { isAuthenticated }=useAuth()
   const [modalIsOpen, setIsOpen] = useState(false);
 
 

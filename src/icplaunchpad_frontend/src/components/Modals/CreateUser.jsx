@@ -14,9 +14,9 @@ import { FaTrash } from "react-icons/fa";
 import { getSocialLogo } from "../../common/getSocialLogo";
 import { validationSchema } from '../../common/UserValidation';
 import AnimationButton from '../../common/AnimationButton';
-import { useAuth } from '../../StateManagement/useContext/useAuth';
 import { userRegisteredHandlerRequest } from '../../StateManagement/Redux/Reducers/userRegisteredData';
 import { ProfileImageIDHandlerRequest } from '../../StateManagement/Redux/Reducers/ProfileImageID';
+import { useAuth } from '../../StateManagement/useContext/useClient';
 
 
 const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {

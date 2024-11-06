@@ -4,7 +4,6 @@ import Modal from 'react-modal';
 import AnimationButton from '../../common/AnimationButton';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useAuth } from '../../StateManagement/useContext/useAuth';
 import { useDispatch, useSelector } from 'react-redux';
 import { Principal } from '@dfinity/principal';
 import { updatevalidationSchema } from '../../common/UpdateUserValidation';
@@ -15,6 +14,7 @@ import { FaTrash } from 'react-icons/fa';
 import { convertFileToBase64 } from '../../utils/convertToBase64';
 import { userRegisteredHandlerRequest } from '../../StateManagement/Redux/Reducers/userRegisteredData';
 import { ProfileImageIDHandlerRequest } from '../../StateManagement/Redux/Reducers/ProfileImageID';
+import { useAuth } from '../../StateManagement/useContext/useClient';
 
 const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const { actor, principal, isAuthenticated } = useAuth();
