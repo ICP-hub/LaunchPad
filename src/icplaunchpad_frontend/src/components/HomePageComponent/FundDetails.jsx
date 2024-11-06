@@ -18,22 +18,36 @@ const FundDetails = ({ sale, index }) => {
 
     const fetchTokenData = async (ledgerId) => {
         try {
-            const customActor = await createCustomActor(ledgerId);
-            if (customActor) {
-                const tokenName = await customActor.icrc1_name();
-                setTokenDetails((prev) => ({ ...prev, token_name: tokenName }));
-            }
+            if (ledgerId) {
+              const customActor = await createCustomActor(ledgerId);
 
-            // Fetching token image
-            if (actor) {
-                const ledgerPrincipal = Principal.fromText(ledgerId);
-                const tokenImgId = await actor.get_token_image_id(ledgerPrincipal);
-                console.log('Fetched token image ID:', tokenImgId);
+                if (customActor) {
+                    const tokenName = await customActor.icrc1_name();
+                    setTokenDetails((prev) => ({ ...prev, token_name: tokenName }));
+                }
 
-                if (tokenImgId && tokenImgId.length > 0) {
-                    const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId[tokenImgId.length - 1]}`;
-                    console.log('Token Image URL:', imageUrl);
-                    setTokenDetails((prev) => ({ ...prev, token_image: imageUrl }));
+                // Fetching the owner of the token
+                const owner = await customActor.icrc1_minting_account();
+                if (owner) {
+                    const ownerBalance = await customActor.icrc1_balance_of(owner[0]);
+                    setTokenDetails((prevData) => ({
+                        ...prevData,
+                        owner_bal: ownerBalance.toString(),
+                        owner: owner[0].owner.toString(),
+                    }));
+                }
+
+                // Fetching token image
+                if (actor) {
+                    const ledgerPrincipal = Principal.fromText(ledgerId);
+                    const tokenImgId = await actor.get_token_image_id(ledgerPrincipal);
+                    console.log('Fetched token image ID:', tokenImgId);
+
+                    if (tokenImgId && tokenImgId.length > 0) {
+                        const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId[tokenImgId.length - 1]}`;
+                        console.log('Token Image URL:', imageUrl);
+                        setTokenDetails((prev) => ({ ...prev, token_image: imageUrl }));
+                    }
                 }
             }
         } catch (err) {
@@ -49,7 +63,7 @@ const FundDetails = ({ sale, index }) => {
                 <img src={tokenDetails.token_image || ""} alt="Logo" className="object-cover rounded-full h-full w-full mr-2" />
                 {tokenDetails.token_name || "N/A"}
             </td>
-            <td className="py-3 px-6">400,000 ICP</td>
+            <td className="py-3 px-6"> {tokenDetails ? tokenDetails.owner_bal : 0 } ICP</td>
             <td className="py-3 px-6">{` ${sale.sale_details.listing_rate} ICP `}</td>
             <td className="py-3 px-6">Token Sale</td>
             <td className="py-3 px-6">{convertTimestampToISTFormatted(sale.sale_details.end_time_utc)}</td>

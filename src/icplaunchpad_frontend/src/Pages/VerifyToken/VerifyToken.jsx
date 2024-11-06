@@ -188,7 +188,7 @@
 
 
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -331,6 +331,7 @@ const convertFileToBytes = async (file) => {
 };
 const VerifyToken = () => {
   const [currentStep, setCurrentStep] = useState(1);
+  const [tokenData, setTokenData] = useState({});
   const [presaleDetails, setPresaleDetails] = useState({ social_links: [] });
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -339,6 +340,12 @@ const VerifyToken = () => {
   const { formData, ledger_canister_id, index_canister_id } = location.state || {};
   const [isSubmitting, setIsSubmitting] = useState(false);
   const dispatch=useDispatch();
+
+  useEffect(()=>{
+    if(formData)
+     setTokenData(formData)
+  },[formData])
+
   const {
     register,
     handleSubmit,
@@ -365,6 +372,7 @@ const VerifyToken = () => {
     try {
       setIsSubmitting(true);
       const {
+        token_name=tokenData?.token_name,
         presaleRate,
         minimumBuy,
         maximumBuy,
@@ -443,8 +451,6 @@ const VerifyToken = () => {
       dispatch(upcomingSalesHandlerRequest());
       dispatch(SuccessfulSalesHandlerRequest());
 
-
-
       navigate("/token-page", { state: { ledger_canister_id } });
     } catch (error) {
       console.error("Submission failed with error:", error);
@@ -462,7 +468,7 @@ const VerifyToken = () => {
     setPresaleDetails((prev) => ({
       ...prev,
       ...data,
-      ...formData,
+      ...tokenData,
     }));
     console.log("Moving to the next step:", currentStep);
     if (currentStep < 4) {
@@ -482,7 +488,8 @@ const VerifyToken = () => {
         {currentStep === 1 && (
           <VerifyTokenTab
             register={register}
-            tokenData={formData}
+            tokenData={tokenData}
+            setTokenData={setTokenData}
             ledger_canister_id={ledger_canister_id && ledger_canister_id}
             setPresaleDetails={setPresaleDetails}
             presaleDetails={presaleDetails}
