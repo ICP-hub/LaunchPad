@@ -68,7 +68,7 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen, setTokenModalIsOpen }) => {
     };
 
     const validateTimes = (startTime, endTime) => {
-        if (endTime < startTime) {
+        if (endTime <= startTime) {
             setValidationError('Start time should be less than end time.');
             setIsSubmitting(false);
             return false;
