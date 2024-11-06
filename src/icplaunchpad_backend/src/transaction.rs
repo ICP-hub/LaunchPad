@@ -1,8 +1,10 @@
 use candid::{Nat, Principal};
 use ic_cdk::api;
+use ic_cdk::api::call::CallResult;
 use ic_cdk_macros::update;
 use icrc_ledger_types::icrc1::account::Account;
 use icrc_ledger_types::icrc2::transfer_from::TransferFromArgs;
+
 use crate::TransferFromResult;
 
 pub fn prevent_anonymous() -> Result<(), String> {
@@ -12,14 +14,34 @@ pub fn prevent_anonymous() -> Result<(), String> {
     Ok(())
 }
 
-async fn transfer(tokens: Nat, user_principal: Principal) -> Result<Nat, String> {
-    let canister_id: Principal = ic_cdk::api::id();
-    ic_cdk::println!("Canister id: {}", canister_id);
+async fn get_seller_principal(icrc1_ledger_canister_id: Principal) -> Result<Principal, String> {
+    // Call `icrc1_minting_account` on the ICRC1 token ledger canister
+    let response: CallResult<(Option<Account>,)> = ic_cdk::call(
+        icrc1_ledger_canister_id,
+        "icrc1_minting_account",
+        (),
+    )
+    .await;
 
+    match response {
+        Ok((Some(account),)) => Ok(account.owner), // Return the owner (seller's principal)
+        Ok((None,)) => Err("Minting account not found.".to_string()),
+        Err((code, message)) => Err(format!("Failed to fetch minting account: {:?} - {}", code, message)),
+    }
+}
+
+
+async fn transfer(tokens: u64, user_principal: Principal, icrc1_ledger_canister_id: Principal) -> Result<Nat, String> {
+    let icp_ledger_canister_id = Principal::from_text("ryjl3-tyaaa-aaaaa-aaaba-cai").unwrap(); // ICP Ledger Canister ID
+
+    // Fetch the seller's principal from the ICRC1 token ledger
+    let seller_principal = get_seller_principal(icrc1_ledger_canister_id).await?;
+
+    // Define the transfer arguments for the ICP Ledger canister
     let transfer_args = TransferFromArgs {
-        amount: tokens.clone(),
+        amount: Nat::from(tokens),
         to: Account {
-            owner: canister_id,
+            owner: seller_principal, // Send ICP to the seller's account
             subaccount: None,
         },
         fee: None,
@@ -32,23 +54,64 @@ async fn transfer(tokens: Nat, user_principal: Principal) -> Result<Nat, String>
         },
     };
 
-    let result: Result<(TransferFromResult,), _> =
-        ic_cdk::call::<(TransferFromArgs,), (TransferFromResult,)>(
-            Principal::from_text("ryjl3-tyaaa-aaaaa-aaaba-cai")
-                .expect("Could not decode the principal for ICP ledger."),
-            "icrc2_transfer_from",
-            (transfer_args,),
-        )
-        .await;
+    // Call the ICP ledger to transfer ICP to the seller
+    let response: CallResult<(TransferFromResult,)> = ic_cdk::call(
+        icp_ledger_canister_id,
+        "icrc2_transfer_from",
+        (transfer_args,),
+    )
+    .await;
 
-    match result {
-        Ok((TransferFromResult::Ok(block_index),)) => Ok(block_index.into()),
-        Ok((TransferFromResult::Err(transfer_error),)) => Err(format!("Ledger transfer error: {:?}", transfer_error)),
-        Err(call_error) => Err(format!("Failed to call ledger: {:?}", call_error)),
+    match response {
+        Ok((TransferFromResult::Ok(block_index),)) => Ok(block_index),
+        Ok((TransferFromResult::Err(error),)) => Err(format!("Ledger transfer error: {:?}", error)),
+        Err((code, message)) => Err(format!("Failed to call ledger: {:?} - {}", code, message)),
     }
 }
 
-#[update(guard = "prevent_anonymous")]
-pub async fn make_payment(tokens: Nat, user: Principal) -> Result<Nat, String> {
-    transfer(tokens, user).await
+
+
+
+// async fn transfer(tokens: u64, user_principal: Principal) -> Result<Nat, String> {
+//     let canister_id: Principal = ic_cdk::api::id();
+//     let ledger_canister_id = Principal::from_text("ryjl3-tyaaa-aaaaa-aaaba-cai").unwrap(); // Specify the ledger canister ID
+
+//     let transfer_args = TransferFromArgs {
+//         amount: Nat::from(tokens),
+//         to: Account {
+//             owner: canister_id,
+//             subaccount: None,
+//         },
+//         fee: None,
+//         memo: None,
+//         created_at_time: None,
+//         spender_subaccount: None,
+//         from: Account {
+//             owner: user_principal,
+//             subaccount: None,
+//         },
+//     };
+
+//     let response: CallResult<(TransferFromResult,)> = ic_cdk::call(
+//         ledger_canister_id,
+//         "icrc2_transfer_from",
+//         (transfer_args,),
+//     )
+//     .await;
+
+//     match response {
+//         Ok((TransferFromResult::Ok(block_index),)) => Ok(block_index),
+//         Ok((TransferFromResult::Err(error),)) => Err(format!("Ledger transfer error: {:?}", error)),
+//         Err((code, message)) => Err(format!("Failed to call ledger: {:?} - {}", code, message)),
+//     }
+// } working function
+
+
+
+#[update(guard = prevent_anonymous)]
+async fn buy_tokens(tokens: u64, user: Principal, icrc1_ledger_canister_id: Principal) -> Result<Nat, String> {
+    transfer(tokens, user, icrc1_ledger_canister_id).await
 }
+
+
+

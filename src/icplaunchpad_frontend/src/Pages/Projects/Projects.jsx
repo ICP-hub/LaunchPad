@@ -91,12 +91,10 @@ const ProjectLists = () => {
       </div>
 
       {/* Projects List */}
-      <div className="flex lg:flex-row flex-col flex-wrap items-center w-[95%] m-auto  justify-around">
-        {filteredTokensData.length > 0 ? filteredTokensData.map((sale, index) => (
+      <div className="flex lg:flex-row flex-col flex-wrap items-center w-[95%] m-auto gap-24  justify-start">
+        {filteredTokensData && filteredTokensData.map((sale, index) => (
          sale && <ProjectCard projectData={sale} key={index} />
-        )):
-        <h1 className="mt-10 md:mt-20 md:text-xl "> Data Not Found...</h1>
-      }
+        ))}
       </div>
     </div>
   );
