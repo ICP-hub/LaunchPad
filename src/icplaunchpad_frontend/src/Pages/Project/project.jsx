@@ -316,7 +316,7 @@ const TokenPage = () => {
               <div className="flex flex-col">
                 <span className="text-sm text-gray-400">CURRENT RAISED</span>
                 <span className="text-lg font-semibold">
-                  {tokenData ? tokenData.owner_bal : ''} ICP
+                  {tokenData ? tokenData.owner_bal : 0 } ICP
                 </span>
               </div>
             </div>

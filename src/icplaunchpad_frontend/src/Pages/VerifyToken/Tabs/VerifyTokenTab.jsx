@@ -153,30 +153,38 @@ import { FaRegCopy } from "react-icons/fa";
 import { useAuth } from "../../../StateManagement/useContext/useAuth";
 import { Principal } from "@dfinity/principal";
 
-const VerifyTokenTab = ({ register, errors, tokenData, watch, ledger_canister_id }) => {
+const VerifyTokenTab = ({ register, errors, setTokenData, watch, ledger_canister_id }) => {
   const [copySuccess, setCopySuccess] = useState(false);
   const inputRef = useRef(null);
   const [tokenInfo, setTokenInfo] = useState(null);
   const { createCustomActor } = useAuth();
 
   useEffect(() => {
-    
-    if (tokenData) 
-      setTokenInfo(tokenData);
-    if (ledger_canister_id)
-         getTokenData();
-  }, [tokenData, ledger_canister_id]);
+    console.log('ledgerhjkl',ledger_canister_id)
+    if (ledger_canister_id) {
+      if(typeof ledger_canister_id != 'string'){
+        const ledgerId= Principal.fromUint8Array(ledger_canister_id)
+        getTokenData(ledgerId);
+      }else{
+        const ledgerId= Principal.fromText(ledger_canister_id)
+        getTokenData(ledgerId);
+      }
+     
 
-  const getTokenData = async () => {
+    }
+  }, [ledger_canister_id]);
+
+  const getTokenData = async (ledger_canister_id) => {
     try {
 
-      const actor = await createCustomActor(ledger_canister_id); // Fixed ledgerId to ledger_canister_id
+      const actor = await createCustomActor(ledger_canister_id);
       if (actor) {
         const tokenName = await actor.icrc1_name();
         const tokenSymbol = await actor.icrc1_symbol();
         const tokenDecimals = await actor.icrc1_decimals();
         const tokenSupply = await actor.icrc1_total_supply();
 
+        setTokenData((prev) => ({ ...prev, token_name: tokenName,token_symbol:tokenSymbol, decimals:tokenDecimals, total_supply:tokenSupply}));
         setTokenInfo({
           token_name: tokenName,
           token_symbol: tokenSymbol,
@@ -189,8 +197,8 @@ const VerifyTokenTab = ({ register, errors, tokenData, watch, ledger_canister_id
     }
   };
 
-  const feeOption = watch("feeOption", false); // Add default value as false
-  const currencyICP = watch("currencyICP", false); // Add default value as false
+  const feeOption = watch("feeOption", false);
+  const currencyICP = watch("currencyICP", false);
 
   const copyToClipboard = () => {
     if (inputRef.current) {
@@ -200,7 +208,7 @@ const VerifyTokenTab = ({ register, errors, tokenData, watch, ledger_canister_id
           setCopySuccess(true);
           setTimeout(() => setCopySuccess(false), 1000);
         })
-        .catch((err) => console.log("Failed to copy!", err));
+        .catch((err) => console.error("Failed to copy!", err));
     }
   };
 
@@ -210,14 +218,18 @@ const VerifyTokenTab = ({ register, errors, tokenData, watch, ledger_canister_id
         <div className="flex xxs1:hidden mb-8 bg-[rgb(68,68,68)] pl-6 p-2 mt-[-31px] mx-[-17px] xxs1:mx-[-31px] rounded-2xl">
           <span className="text-white text-[22px]">Chain</span>
         </div>
-        {/* Token Address */}
+
         <h2 className="text-lg font-semibold mb-4">Token Address</h2>
         <div className="relative w-full">
           <input
             ref={inputRef}
             type="text"
             className="w-full py-2 pl-4 pr-10 mb-4 bg-[#333333] text-[9px] ss3:text-[10px] xxs1:text-[17px] relative rounded-md"
-            value={Principal.fromUint8Array(ledger_canister_id).toText()}
+            value={
+              typeof ledger_canister_id === "string"
+                ? ledger_canister_id
+                : Principal.fromUint8Array(ledger_canister_id).toText()
+            }
             readOnly
             onClick={copyToClipboard}
           />
@@ -229,11 +241,8 @@ const VerifyTokenTab = ({ register, errors, tokenData, watch, ledger_canister_id
             <FaRegCopy />
           </button>
         </div>
-        {copySuccess && (
-          <p className="text-green-400 text-sm mt-2">Copy successful</p>
-        )}
+        {copySuccess && <p className="text-green-400 text-sm mt-2">Copy successful</p>}
 
-        {/* Token Data Details */}
         <div className="mb-8 mt-8">
           <div className="flex justify-between border-b-2 py-1 border-[#FFFFFF80]">
             <p>Name</p>
@@ -253,14 +262,14 @@ const VerifyTokenTab = ({ register, errors, tokenData, watch, ledger_canister_id
           </div>
         </div>
 
-        {/* Currency Selection */}
         <div className="mb-4">
           <p className="mb-2">Currency</p>
-          <label className="flex items-center ">
+          <label className="flex items-center">
             <input
               type="checkbox"
-              {...register("currencyICP")} // Register checkbox with react-hook-form
+              {...register("currencyICP")}
               checked={currencyICP}
+              onChange={(e) => setTokenData({ ...tokenData, currencyICP: e.target.checked })}
               className="hidden peer"
             />
             <div className="w-4 h-4 bg-transparent border-2 border-white rounded-full peer-checked:bg-gradient-to-r from-[#f09787] to-[#CACCF5] flex items-center justify-center mr-2">
@@ -268,19 +277,17 @@ const VerifyTokenTab = ({ register, errors, tokenData, watch, ledger_canister_id
             </div>
             ICP
           </label>
-          <p className="text-gray-400 text-sm">
-            (User will pay with ICP for your token)
-          </p>
+          <p className="text-gray-400 text-sm">(User will pay with ICP for your token)</p>
         </div>
 
-        {/* Fee Options */}
         <div className="mb-11">
           <p className="mb-2">Fee Options</p>
           <label className="flex items-center">
             <input
               type="checkbox"
-              {...register("feeOption")} // Register checkbox with react-hook-form
+              {...register("feeOption")}
               checked={feeOption}
+              onChange={(e) => setTokenData({ ...tokenData, feeOption: e.target.checked })}
               className="hidden peer"
             />
             <div className="w-4 h-4 bg-transparent border-2 border-white rounded-full peer-checked:bg-gradient-to-r from-[#f09787] to-[#CACCF5] flex items-center justify-center mr-2">
@@ -290,18 +297,10 @@ const VerifyTokenTab = ({ register, errors, tokenData, watch, ledger_canister_id
           </label>
         </div>
 
-        {/* Disclaimer Section */}
         <div className="bg-[#F5F5F51A] text-white p-3 rounded-md dlg:mb-8">
           <ul className="text-[12px] dxs:text-[15px] px-2 ss2:px-7 ss2:py-4 list-disc">
-            <li>
-              Lorem ipsum dolor sit amet consectetur. Egestas faucibus
-              suspendisse turpis cras sed bibendum massa arcu.
-            </li>
-            <li>
-              Quisque enim amet ipsum ipsum faucibus leo adipiscing molestie.
-              Tincidunt enim dis lobortis ac gravida. Non mollis lacus convallis
-              non sit ac sit.
-            </li>
+            <li>Lorem ipsum dolor sit amet consectetur. Egestas faucibus suspendisse turpis cras sed bibendum massa arcu.</li>
+            <li>Quisque enim amet ipsum ipsum faucibus leo adipiscing molestie. Tincidunt enim dis lobortis ac gravida. Non mollis lacus convallis non sit ac sit.</li>
           </ul>
         </div>
       </div>
