@@ -34,20 +34,47 @@ pub fn is_account_created() -> String {
     })
 }
 
+// #[ic_cdk::query]
+// pub fn get_tokens_info() -> Vec<CanisterIndexInfo> {
+//     read_state(|state| {
+
+//         state.canister_ids.iter().zip(state.index_canister_ids.iter()).map(|((canister_key, canister_wrapper), (index_key, _))| {
+//             CanisterIndexInfo {
+//                 canister_id: canister_key.clone(),
+//                 index_canister_id: index_key.clone(),
+//                 token_name: canister_wrapper.token_name.clone(),   // Include token name
+//                 token_symbol: canister_wrapper.token_symbol.clone(), // Include token symbol
+//             }
+//         }).collect()
+//     })
+// }
+
 #[ic_cdk::query]
 pub fn get_tokens_info() -> Vec<CanisterIndexInfo> {
     read_state(|state| {
+        state.canister_ids.iter().filter_map(|(canister_key, canister_wrapper)| {
+            // Ensure canister_key is of type String when looking it up
+            let index_canister_key = canister_key.to_string();
 
-        state.canister_ids.iter().zip(state.index_canister_ids.iter()).map(|((canister_key, canister_wrapper), (index_key, _))| {
-            CanisterIndexInfo {
-                canister_id: canister_key.clone(),
-                index_canister_id: index_key.clone(),
-                token_name: canister_wrapper.token_name.clone(),   // Include token name
-                token_symbol: canister_wrapper.token_symbol.clone(), // Include token symbol
+            // Check if the token has associated index canister details
+            if let Some(wrapper) = state.index_canister_ids.get(&index_canister_key) {
+                Some(CanisterIndexInfo {
+                    canister_id: canister_key.clone(),
+                    index_canister_id: wrapper.index_canister_ids.to_string(), // Convert Principal to String
+                    token_name: canister_wrapper.token_name.clone(),
+                    token_symbol: canister_wrapper.token_symbol.clone(),
+                })
+            } else {
+                // Skip tokens without index canister details
+                None
             }
         }).collect()
     })
 }
+
+
+
+
 
 #[ic_cdk::query]
 pub fn get_user_tokens_info() -> Vec<CanisterIndexInfo> {
