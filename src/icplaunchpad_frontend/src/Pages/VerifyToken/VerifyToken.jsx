@@ -441,7 +441,8 @@ const VerifyToken = () => {
           content: [TokenPicture],
           ledger_id: ledgerPrincipalId,
         };
-        await actor.upload_token_image("br5f7-7uaaa-aaaaa-qaaca-cai", imgUrl);
+       const res= await actor.upload_token_image("br5f7-7uaaa-aaaaa-qaaca-cai", imgUrl);
+       console.log("uploaded img response ",res)
       }
 
       if (CoverPicture) {
@@ -449,7 +450,8 @@ const VerifyToken = () => {
           content: [CoverPicture],
           ledger_id: ledgerPrincipalId,
         };
-        await actor.upload_cover_image("br5f7-7uaaa-aaaaa-qaaca-cai", imgUrl);
+        const res=await actor.upload_cover_image("br5f7-7uaaa-aaaaa-qaaca-cai", imgUrl);
+        console.log("uploaded cover img response ",res)
       }
       
       console.log("Submission successful");

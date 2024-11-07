@@ -86,7 +86,7 @@ const TokenPage = () => {
   const renderContent = () => {
     switch (activeTab) {
       case "About":
-        return <ProjectTokenAbout />;
+        return <ProjectTokenAbout presaleData={saleParams} />;
       case "Token":
         return <Token ledgerId={projectData?.canister_id} />;
       case "Pool Info":

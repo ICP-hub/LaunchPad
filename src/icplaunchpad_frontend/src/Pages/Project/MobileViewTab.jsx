@@ -15,7 +15,7 @@ const MobileViewTab = ({ledgerId,poolData,presaleData}) => {
   const renderContent = () => {
     switch (activeTab) {
       case "About":
-        return <ProjectTokenAbout />;
+        return <ProjectTokenAbout presaleData={presaleData} />;
       case "Token":
         return <Token ledgerId={ledgerId} />;
       case "Pool Info":
