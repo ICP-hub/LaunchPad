@@ -49,30 +49,28 @@ pub fn is_account_created() -> String {
 //     })
 // }
 
-#[ic_cdk::query]
-pub fn get_tokens_info() -> Vec<CanisterIndexInfo> {
-    read_state(|state| {
-        state.canister_ids.iter().filter_map(|(canister_key, canister_wrapper)| {
-            // Ensure canister_key is of type String when looking it up
-            let index_canister_key = canister_key.to_string();
+// #[ic_cdk::query]
+// pub fn get_tokens_info() -> Vec<CanisterIndexInfo> {
+//     read_state(|state| {
+//         state.canister_ids.iter().filter_map(|(canister_key, canister_wrapper)| {
+//             // Ensure canister_key is of type String when looking it up
+//             let index_canister_key = canister_key.to_string();
 
-            // Check if the token has associated index canister details
-            if let Some(wrapper) = state.index_canister_ids.get(&index_canister_key) {
-                Some(CanisterIndexInfo {
-                    canister_id: canister_key.clone(),
-                    index_canister_id: wrapper.index_canister_ids.to_string(), // Convert Principal to String
-                    token_name: canister_wrapper.token_name.clone(),
-                    token_symbol: canister_wrapper.token_symbol.clone(),
-                })
-            } else {
-                // Skip tokens without index canister details
-                None
-            }
-        }).collect()
-    })
-}
-
-
+//             // Check if the token has associated index canister details
+//             if let Some(wrapper) = state.index_canister_ids.get(&index_canister_key) {
+//                 Some(CanisterIndexInfo {
+//                     canister_id: canister_key.clone(),
+//                     index_canister_id: wrapper.index_canister_ids.to_string(), // Convert Principal to String
+//                     token_name: canister_wrapper.token_name.clone(),
+//                     token_symbol: canister_wrapper.token_symbol.clone(),
+//                 })
+//             } else {
+//                 // Skip tokens without index canister details
+//                 None
+//             }
+//         }).collect()
+//     })
+// }
 
 
 
@@ -309,6 +307,36 @@ pub fn get_successful_sales() -> Vec<SaleDetailsWithID> {
             })
             .collect()
     })
+}
+
+#[ic_cdk::query]
+pub fn get_all_sales() -> Vec<(SaleDetailsWithID, String)> {
+    let current_time_ns = ic_cdk::api::time();
+    let current_time = current_time_ns / 1_000_000_000; // Convert nanoseconds to seconds
+
+    let mut all_sales = Vec::new();
+
+    read_state(|state| {
+        for (key, wrapper) in state.sale_details.iter() {
+            let sale_status = if wrapper.sale_details.start_time_utc <= current_time && wrapper.sale_details.end_time_utc > current_time {
+                "active"
+            } else if wrapper.sale_details.start_time_utc > current_time {
+                "upcoming"
+            } else {
+                "successful"
+            };
+
+            all_sales.push((
+                SaleDetailsWithID {
+                    ledger_canister_id: key.clone(),
+                    sale_details: wrapper.sale_details.clone(),
+                },
+                sale_status.to_string()
+            ));
+        }
+    });
+
+    all_sales
 }
 
 
