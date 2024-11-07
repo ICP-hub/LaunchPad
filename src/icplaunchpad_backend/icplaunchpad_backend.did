@@ -4,6 +4,7 @@ type CanisterIndexInfo = record {
   canister_id : text;
   index_canister_id : text;
   token_name : text;
+  total_supply : nat;
 };
 type CoverImageData = record { content : opt blob; ledger_id : principal };
 type ProfileImageData = record { content : opt blob };
