@@ -244,7 +244,7 @@ const TokenPage = () => {
               onChange={handleAmount}
             />
             {/* token amount per icp */}
-            <h1 className="mb-5 text-green-500"> {(tokenData && amount) && ` ${ amount } ${tokenData.token_symbol}`} </h1>
+            <h1 className="mb-5 text-green-500"> {amount  && ` ${ amount } ICP `} </h1>
 
             <button onClick={handleTransaction} className="w-[50%] p-2 rounded-2xl   font-semibold  bg-gradient-to-r from-[#f3b3a7] to-[#cac9f5] text-black text-base">
               USE ICP

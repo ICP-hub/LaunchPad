@@ -205,6 +205,7 @@ import { useDispatch } from "react-redux";
 import { SetLedgerIdHandler } from "../../StateManagement/Redux/Reducers/LedgerId";
 import { upcomingSalesHandlerRequest } from "../../StateManagement/Redux/Reducers/UpcomingSales";
 import { SuccessfulSalesHandlerRequest } from "../../StateManagement/Redux/Reducers/SuccessfulSales";
+import { SaleParamsHandlerRequest } from "../../StateManagement/Redux/Reducers/SaleParams";
 // Validation schema using Yup
 const getSchemaForStep = (step) => {
   switch (step) {
@@ -228,14 +229,28 @@ const getSchemaForStep = (step) => {
             yup.ref("minimumBuy"),
             "Maximum buy must be greater than minimum buy"
           ),
-        startTime: yup
+          startTime: yup
           .date()
           .required("Start time is required")
           .min(new Date(), "Start time must be in the future"),
         endTime: yup
           .date()
           .required("End time is required")
-          .min(yup.ref("startTime"), "End time should be after the start time"),
+          .min(
+            yup.ref("startTime"), 
+            "End time should be after the start time"
+          )
+          .test(
+            "is-at-least-one-minute-later",
+            "End time should be at least one minute after the start time",
+            function (value) {
+              const { startTime } = this.parent;
+              if (startTime && value) {
+                return value.getTime() >= new Date(startTime).getTime() + 60000;
+              }
+              return true;
+            }
+          ),
         social_links: yup
           .array()
           .of(
@@ -446,8 +461,9 @@ const VerifyToken = () => {
           index_canister_id: index_canister_id,
         })
       );
-      
+        
       // for rerendering the tokens 
+      // SaleParamsHandlerRequest()
       dispatch(upcomingSalesHandlerRequest());
       dispatch(SuccessfulSalesHandlerRequest());
 

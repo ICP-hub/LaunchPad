@@ -47,7 +47,7 @@ const TokenPage = () => {
   const [ledgerActor, setLedgerActor] = useState(null);
   const [presaleData, setPresaleData] = useState(null);
 
-  const presale = useSelector((state) => state.SaleParams.data.Ok);
+  // const presale = useSelector((state) => state.SaleParams.data.Ok);
   const dispatch = useDispatch()
 
   console.log('project data', projectData)
@@ -70,14 +70,15 @@ const TokenPage = () => {
         const presale = await actor.get_sale_params(ledgerId)
         console.log('presale', presale)
         setPresaleData(presale.Ok)
+      }else{
+        const ledgerId = Principal.fromText(ledger_canister_id)
+        const presale = await actor.get_sale_params(ledgerId)
+        console.log('presale', presale)
+        setPresaleData(presale.Ok)
       }
-      else {
-        setPresaleData(presale)
-      }
-
     }
     getSaleParms()
-  }, [projectData, presale])
+  }, [projectData, ledger_canister_id])
 
   const fetchData = async () => {
     try {
@@ -370,7 +371,7 @@ return (
 
 
         {isMobile && (
-          <div className="lg:min-w-[406px] w-full h-[153px] mt-8 bg-[#FFFFFF1A] rounded-[17.44px] flex flex-col justify-center items-center text-white">
+          <div className="lg:min-w-[406px] w-full h-[153px] mt-8 bg-[#FFFFFF1A] rounded-[17.44px] flex flex-col justify-center items-center text-white">{console.log('presaleDatapresaleData=',presaleData)}
             <div className="text-2xl font-bold"> <SaleStart style={{ text_heading: 'text-lg', text_content: 'text-2xl' }} setTokenPhase={setTokenPhase} presaleData={presaleData && presaleData} /> </div>
           </div>
         )}

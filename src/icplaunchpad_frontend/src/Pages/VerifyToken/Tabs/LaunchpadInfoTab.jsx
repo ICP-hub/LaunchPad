@@ -176,7 +176,7 @@ const LaunchpadInfoTab = ({
         <label className="block text-[19px] mb-2">Presale Rate</label>
         <input
           type="number"
-          placeholder={`Price of 1 ${presaleDetails.token_name}  in ICP`}
+          placeholder={`Price of 1 ${presaleDetails.token_name} in ICP`}
           {...register("presaleRate")} // Register input field
           className={`w-full p-2 bg-[#333333] text-white rounded-md ${errors.presaleRate ? "border-red-500" : "border-white"
             }  border-b-2`}
