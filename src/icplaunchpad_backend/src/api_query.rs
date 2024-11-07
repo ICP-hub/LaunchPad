@@ -34,20 +34,32 @@ pub fn is_account_created() -> String {
     })
 }
 
-// #[ic_cdk::query]
-// pub fn get_tokens_info() -> Vec<CanisterIndexInfo> {
-//     read_state(|state| {
+#[ic_cdk::query]
+pub fn get_tokens_info() -> Vec<CanisterIndexInfo> {
+    let current_time_ns = ic_cdk::api::time(); // Current time in nanoseconds
+    let current_time = current_time_ns / 1_000_000_000; // Convert to seconds
 
-//         state.canister_ids.iter().zip(state.index_canister_ids.iter()).map(|((canister_key, canister_wrapper), (index_key, _))| {
-//             CanisterIndexInfo {
-//                 canister_id: canister_key.clone(),
-//                 index_canister_id: index_key.clone(),
-//                 token_name: canister_wrapper.token_name.clone(),   // Include token name
-//                 token_symbol: canister_wrapper.token_symbol.clone(), // Include token symbol
-//             }
-//         }).collect()
-//     })
-// }
+    read_state(|state| {
+        state.canister_ids.iter().zip(state.index_canister_ids.iter()).filter_map(|((canister_key, canister_wrapper), (index_key, _))| {
+            // Check if sale details exist and are active for this token
+            if let Some(sale_wrapper) = state.sale_details.get(&canister_key) { 
+                let sale_details = &sale_wrapper.sale_details;
+
+                // Only include tokens with ongoing/active sales
+                if sale_details.start_time_utc <= current_time && sale_details.end_time_utc > current_time {
+                    return Some(CanisterIndexInfo {
+                        canister_id: canister_key.clone(),
+                        index_canister_id: index_key.clone(),
+                        token_name: canister_wrapper.token_name.clone(),
+                        token_symbol: canister_wrapper.token_symbol.clone(),
+                    });
+                }
+            }
+            None // Exclude tokens without sale details or inactive sales
+        }).collect()
+    })
+}
+
 
 // #[ic_cdk::query]
 // pub fn get_tokens_info() -> Vec<CanisterIndexInfo> {
