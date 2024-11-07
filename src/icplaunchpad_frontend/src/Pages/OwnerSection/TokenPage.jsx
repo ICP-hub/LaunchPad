@@ -46,6 +46,7 @@ const TokenPage = () => {
   const canisterId = process.env.CANISTER_ID_IC_ASSET_HANDLER;
   const [ledgerActor, setLedgerActor] = useState(null);
   const [presaleData, setPresaleData] = useState(null);
+  const [renderComponent, setRenderComponent] = useState(false);
 
   // const presale = useSelector((state) => state.SaleParams.data.Ok);
   const dispatch = useDispatch()
@@ -65,12 +66,15 @@ const TokenPage = () => {
 
   useEffect(() => {
     async function getSaleParms() {
+    
       if (projectData) {
+        console.log('projectData.canister_id=>', projectData.canister_id)
         const ledgerId = Principal.fromText(projectData.canister_id)
         const presale = await actor.get_sale_params(ledgerId)
         console.log('presale', presale)
         setPresaleData(presale.Ok)
       }else{
+        console.log('ledger_canister_id=>', ledger_canister_id)
         const ledgerId = Principal.fromText(ledger_canister_id)
         const presale = await actor.get_sale_params(ledgerId)
         console.log('presale', presale)
@@ -78,7 +82,7 @@ const TokenPage = () => {
       }
     }
     getSaleParms()
-  }, [projectData, ledger_canister_id])
+  }, [projectData, ledger_canister_id,actor,renderComponent])
 
   const fetchData = async () => {
     try {
@@ -92,8 +96,9 @@ const TokenPage = () => {
 
         //fetching token info with ledgerActor
         const tokenName = await ledgerActor.icrc1_name();
+        const tokenSymbol = await ledgerActor.icrc1_symbol();
         const totalSupply = await ledgerActor.icrc1_total_supply();
-        setTokenData({ canister_id: ledger_canister_id, token_name: tokenName, total_supply: totalSupply })
+        setTokenData({ canister_id: ledger_canister_id, token_name: tokenName,token_symbol:tokenSymbol, total_supply: totalSupply })
 
         // Fetching the owner of the token
         const owner = await ledgerActor.icrc1_minting_account();
@@ -108,28 +113,39 @@ const TokenPage = () => {
     
     }
 
-      // Fetch token image if ledgerId is available
-      if (ledger_canister_id) {
-      const ledgerPrincipal = Principal.fromText(ledger_canister_id);
+// Fetch token image if ledgerId is available
+if (ledger_canister_id) {
+  try {
+    const ledgerPrincipal = Principal.fromText(ledger_canister_id);
 
-      // Fetch token image ID
-      const tokenImgId = await actor.get_token_image_id(ledgerPrincipal);
-      console.log("Fetched token image ID:", tokenImgId);
-      if (tokenImgId && tokenImgId.length > 0) {
-        const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId[tokenImgId.length - 1]}`;
-        setTokenImg(imageUrl);
-        console.log("Token Image URL:", imageUrl);
-      }
-
-      // Fetch  cover image ID
-      const coverImgId = await actor.get_cover_image_id(ledgerPrincipal);
-      console.log("Fetched cover image ID:", coverImgId);
-      if (coverImgId && coverImgId.length > 0) {
-        const imageUrl = `${protocol}://${canisterId}.${domain}/f/${coverImgId[coverImgId.length - 1]}`;
-        setCoverImg(imageUrl);
-        console.log("cover Image URL:", imageUrl);
-      }
+    // Fetch token image ID
+    const tokenImgId = await actor.get_token_image_id(ledgerPrincipal);
+    console.log("Fetched token image ID:", tokenImgId);
+    
+    if (Array.isArray(tokenImgId) && tokenImgId.length > 0) {
+      const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId[tokenImgId.length - 1]}`;
+      setTokenImg(imageUrl);
+      console.log("Token Image URL:", imageUrl);
+    } else {
+      console.warn("No valid token image ID found.");
     }
+
+    // Fetch cover image ID
+    const coverImgId = await actor.get_cover_image_id(ledgerPrincipal);
+    console.log("Fetched cover image ID:", coverImgId);
+    
+    if (Array.isArray(coverImgId) && coverImgId.length > 0) {
+      const imageUrl = `${protocol}://${canisterId}.${domain}/f/${coverImgId[coverImgId.length - 1]}`;
+      setCoverImg(imageUrl);
+      console.log("Cover Image URL:", imageUrl);
+    } else {
+      console.warn("No valid cover image ID found.");
+    }
+  } catch (error) {
+    console.error("Error fetching images:", error);
+  }
+}
+
 
     // Fetch presale data if ledgerId is available
     if (ledger_canister_id && !projectData) {
@@ -144,7 +160,7 @@ useEffect(() => {
   if (isAuthenticated && actor) {
     fetchData();
   }
-}, [isAuthenticated, actor, ledger_canister_id]);
+}, [isAuthenticated, actor, ledger_canister_id,renderComponent]);
 
 const openModal = () => {
   setIsOpen(true);
@@ -153,7 +169,7 @@ const openModal = () => {
 const renderContent = () => {
   switch (activeTab) {
     case "About":
-      return <ProjectTokenAbout />;
+      return <ProjectTokenAbout  presaleData={presaleData} />;
     case "Token":
       return <Token ledger_canister_id={ledger_canister_id} actor={ledgerActor} />;
     case "Pool Info":
@@ -163,7 +179,7 @@ const renderContent = () => {
     case "Previous Sale":
       return <PreviousSale />;
     default:
-      return <ProjectTokenAbout />;
+      return <ProjectTokenAbout presaleData={presaleData} />;
   }
 };
 
@@ -244,7 +260,7 @@ return (
         )}
 
 
-        {tokenData && <UpdateToken ledgerId={tokenData.canister_id} tokenModalIsOpen={tokenModalIsOpen} setTokenModalIsOpen={setTokenModalIsOpen} />}
+        {tokenData && <UpdateToken ledgerId={tokenData.canister_id} setRenderComponent={setRenderComponent} tokenModalIsOpen={tokenModalIsOpen} setTokenModalIsOpen={setTokenModalIsOpen} />}
 
         {isMobile && (
           <div className="h-[314px] relative bg-[#181818] rounded-2xl py-5 flex flex-col">
@@ -436,13 +452,13 @@ return (
               <div className="flex flex-col">
                 <span className="text-sm text-gray-400">UNSOLD TOKENS</span>
                 <span className="text-lg font-semibold">
-                  {tokenData ? `${tokenData.total_supply.toString()} ${tokenData.token_name}` : ''}
+                  {tokenData ? `${tokenData.total_supply.toString()} ${tokenData.token_symbol}` : ''}
                 </span>
               </div>
               <div className="flex flex-col">
                 <span className="text-sm text-gray-400">CURRENT RAISED</span>
                 <span className="text-lg font-semibold">
-                  {tokenData.owner_bal ? tokenData.owner_bal : 0  } ICP
+                  {tokenData ? tokenData.owner_bal : 0  } ICP
                 </span>
               </div>
             </div>
@@ -532,7 +548,7 @@ return (
               <div className="flex flex-col">
                 <span className="text-sm text-gray-400">UNSOLD TOKENS</span>
                 <span className="text-lg font-semibold">
-                  {tokenData ? `${tokenData.total_supply.toString()} ${tokenData.token_name}` : ''}
+                  {tokenData ? `${tokenData.total_supply.toString()} ${tokenData.token_symbol}` : '0'}
                 </span>
               </div>
               <div className="flex flex-col">
@@ -636,7 +652,7 @@ return (
         )}
 
       </div>
-      {isMobile && <MobileViewTab actor={ledgerActor} poolData={tokenData ? tokenData : ''} />}
+      {isMobile && <MobileViewTab actor={ledgerActor} poolData={tokenData ? tokenData : ''} presaleData={presaleData} />}
     </div>
   </>
 );

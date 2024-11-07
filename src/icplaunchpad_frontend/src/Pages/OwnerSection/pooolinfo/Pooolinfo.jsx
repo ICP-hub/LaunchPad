@@ -46,11 +46,12 @@ const PoolInfoTab = ({ presaleData, poolData }) => {
       <div className="border-t pt-4">
         <div className="flex justify-between border-b py-2">
           <span className="text-gray-400">Tokens For Presale</span>
-          <span className="text-white">{`${poolData?.total_supply || "N/A"} ${poolData?.token_name || ""}`}</span>
+          <span className="text-white">{`${poolData?.total_supply || "N/A"} ${poolData?.token_symbol || ""}`}</span>
         </div>
         <div className="flex border-b justify-between py-2">
           <span className="text-gray-400">Initial Market Cap</span>
-          <span className="text-white">{`1,453,500 ${poolData?.token_name || ""}`}</span>
+          {console.log('poolData',poolData)}
+          <span className="text-white">{`1,453,500 ${poolData?.token_symbol || ""}`}</span>
         </div>
         <div className="flex border-b justify-between py-2">
           <span className="text-gray-400">SoftCap</span>
