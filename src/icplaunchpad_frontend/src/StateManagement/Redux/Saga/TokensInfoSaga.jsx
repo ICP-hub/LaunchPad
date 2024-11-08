@@ -24,7 +24,9 @@ function* fetchTokensInfo() {
       yield put(TokensInfoHandlerSuccess(TokensData));
       
     } else {
+      yield put(TokensInfoHandlerSuccess([]));
       throw new Error("Invalid or empty Tokens data");
+      
     }
   } catch (error) {
     console.error("Error fetching Tokens data:", error);

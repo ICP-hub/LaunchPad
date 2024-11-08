@@ -40,7 +40,7 @@ const SaleStart = ({ style, setTokenPhase, presaleData }) => {
 
             if (now >= start && now < end && phase !== "running") {
                 setTimeRemaining("Sale Started!");
-                setTokenPhase("RUNNING");
+                setTokenPhase("ONGOING");
                 dispatch(upcomingSalesHandlerRequest());
                 setPhase("running");
                 return;

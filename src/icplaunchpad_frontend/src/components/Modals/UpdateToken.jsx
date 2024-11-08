@@ -8,6 +8,9 @@ import { getSocialLogo } from '../../common/getSocialLogo';
 import { useForm, Controller } from 'react-hook-form';
 import { FaTrash } from 'react-icons/fa';
 import { formatDateForDateTimeLocal } from '../../utils/formatDateFromBigInt';
+import { upcomingSalesHandlerRequest } from '../../StateManagement/Redux/Reducers/UpcomingSales';
+import { useDispatch } from 'react-redux';
+import { SuccessfulSalesHandlerRequest } from '../../StateManagement/Redux/Reducers/SuccessfulSales';
 // import { formatDateFromBigInt } from '../../utils/formatDateFromBigInt';
 
 const UpdateToken = ({ ledgerId, tokenModalIsOpen,setRenderComponent, setTokenModalIsOpen }) => {
@@ -17,7 +20,8 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen,setRenderComponent, setTokenMo
     const [termsAccepted, setTermsAccepted] = useState(false);
     const [tokenData, setTokenData] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
-
+    
+    const dispatch= useDispatch();
     const ledgerPrincipal = Principal.fromText(ledgerId);
     const [links, setLinks] = useState([{ url: '' }]);
     console.log("Start time and end time :", tokenData);
@@ -118,8 +122,13 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen,setRenderComponent, setTokenMo
         try {
             const response = await actor.update_sale_params(ledgerPrincipal, updatedTokenData);
             console.log('Token updated:', response);
-            if(response)
-             setRenderComponent((prev)=>!prev);
+              
+            if(response){
+            setRenderComponent((prev)=>!prev);    
+            dispatch(upcomingSalesHandlerRequest());
+            dispatch(SuccessfulSalesHandlerRequest())
+            
+            }
 
             if (response?.Err) {
                 setValidationError(response.Err);
