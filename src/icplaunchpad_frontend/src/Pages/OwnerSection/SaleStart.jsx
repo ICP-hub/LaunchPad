@@ -8,9 +8,14 @@ const SaleStart = ({ style, setTokenPhase, presaleData }) => {
     const [timeRemaining, setTimeRemaining] = useState("Loading...");
     const [phase, setPhase] = useState("upcoming"); // Track the sale phase internally
 
-    useEffect(() => {
-        if (!presaleData || !presaleData.start_time_utc || !presaleData.end_time_utc) return;
+    useEffect(()=>{
+        setPhase('upcoming')
+    },[presaleData])
 
+    useEffect(() => {
+
+        if (!presaleData || !presaleData.start_time_utc || !presaleData.end_time_utc) return;
+    
         const convertTimestampToDate = (timestamp) => {
             try {
                 return BigInt(timestamp) > 1_000_000_000_000n
@@ -38,11 +43,11 @@ const SaleStart = ({ style, setTokenPhase, presaleData }) => {
                 return;
             }
 
-            if (now >= start && now < end && phase !== "running") {
+            if (now >= start && now < end && phase !== "ongoing") {
                 setTimeRemaining("Sale Started!");
                 setTokenPhase("ONGOING");
                 dispatch(upcomingSalesHandlerRequest());
-                setPhase("running");
+                setPhase("ongoing");
                 return;
             }
 
@@ -57,6 +62,7 @@ const SaleStart = ({ style, setTokenPhase, presaleData }) => {
         };
 
         const intervalId = setInterval(updateCountdown, 1000);
+       
         updateCountdown();
 
         // Cleanup interval on unmount
