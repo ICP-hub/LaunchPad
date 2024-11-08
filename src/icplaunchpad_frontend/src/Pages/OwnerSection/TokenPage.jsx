@@ -26,6 +26,7 @@ import { useDispatch, useSelector } from "react-redux";
 import UpdateToken from "../../components/Modals/UpdateToken.jsx";
 import { SaleParamsHandlerRequest } from "../../StateManagement/Redux/Reducers/SaleParams.jsx";
 import SaleStart from "./SaleStart.jsx";
+import { getSocialLogo } from "../../common/getSocialLogo.jsx";
 
 const TokenPage = () => {
   const [activeTab, setActiveTab] = useState("About");
@@ -46,6 +47,7 @@ const TokenPage = () => {
   const canisterId = process.env.CANISTER_ID_IC_ASSET_HANDLER;
   const [ledgerActor, setLedgerActor] = useState(null);
   const [presaleData, setPresaleData] = useState(null);
+  const [renderComponent, setRenderComponent] = useState(false);
 
   // const presale = useSelector((state) => state.SaleParams.data.Ok);
   const dispatch = useDispatch()
@@ -65,12 +67,15 @@ const TokenPage = () => {
 
   useEffect(() => {
     async function getSaleParms() {
+    
       if (projectData) {
+        console.log('projectData.canister_id=>', projectData.canister_id)
         const ledgerId = Principal.fromText(projectData.canister_id)
         const presale = await actor.get_sale_params(ledgerId)
         console.log('presale', presale)
         setPresaleData(presale.Ok)
       }else{
+        console.log('ledger_canister_id=>', ledger_canister_id)
         const ledgerId = Principal.fromText(ledger_canister_id)
         const presale = await actor.get_sale_params(ledgerId)
         console.log('presale', presale)
@@ -78,7 +83,7 @@ const TokenPage = () => {
       }
     }
     getSaleParms()
-  }, [projectData, ledger_canister_id])
+  }, [projectData, ledger_canister_id, actor, renderComponent])
 
   const fetchData = async () => {
     try {
@@ -92,8 +97,9 @@ const TokenPage = () => {
 
         //fetching token info with ledgerActor
         const tokenName = await ledgerActor.icrc1_name();
+        const tokenSymbol = await ledgerActor.icrc1_symbol();
         const totalSupply = await ledgerActor.icrc1_total_supply();
-        setTokenData({ canister_id: ledger_canister_id, token_name: tokenName, total_supply: totalSupply })
+        setTokenData({ canister_id: ledger_canister_id, token_name: tokenName,token_symbol:tokenSymbol, total_supply: totalSupply })
 
         // Fetching the owner of the token
         const owner = await ledgerActor.icrc1_minting_account();
@@ -108,28 +114,39 @@ const TokenPage = () => {
     
     }
 
-      // Fetch token image if ledgerId is available
-      if (ledger_canister_id) {
-      const ledgerPrincipal = Principal.fromText(ledger_canister_id);
+// Fetch token image if ledgerId is available
+if (ledger_canister_id) {
+  try {
+    const ledgerPrincipal = Principal.fromText(ledger_canister_id);
 
-      // Fetch token image ID
-      const tokenImgId = await actor.get_token_image_id(ledgerPrincipal);
-      console.log("Fetched token image ID:", tokenImgId);
-      if (tokenImgId && tokenImgId.length > 0) {
-        const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId[tokenImgId.length - 1]}`;
-        setTokenImg(imageUrl);
-        console.log("Token Image URL:", imageUrl);
-      }
-
-      // Fetch  cover image ID
-      const coverImgId = await actor.get_cover_image_id(ledgerPrincipal);
-      console.log("Fetched cover image ID:", coverImgId);
-      if (coverImgId && coverImgId.length > 0) {
-        const imageUrl = `${protocol}://${canisterId}.${domain}/f/${coverImgId[coverImgId.length - 1]}`;
-        setCoverImg(imageUrl);
-        console.log("cover Image URL:", imageUrl);
-      }
+    // Fetch token image ID
+    const tokenImgId = await actor.get_token_image_id(ledgerPrincipal);
+    console.log("Fetched token image ID:", tokenImgId);
+    
+    if (Array.isArray(tokenImgId) && tokenImgId.length > 0) {
+      const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId[tokenImgId.length - 1]}`;
+      setTokenImg(imageUrl);
+      console.log("Token Image URL:", imageUrl);
+    } else {
+      console.warn("No valid token image ID found.");
     }
+
+    // Fetch cover image ID
+    const coverImgId = await actor.get_cover_image_id(ledgerPrincipal);
+    console.log("Fetched cover image ID:", coverImgId);
+    
+    if (Array.isArray(coverImgId) && coverImgId.length > 0) {
+      const imageUrl = `${protocol}://${canisterId}.${domain}/f/${coverImgId[coverImgId.length - 1]}`;
+      setCoverImg(imageUrl);
+      console.log("Cover Image URL:", imageUrl);
+    } else {
+      console.warn("No valid cover image ID found.");
+    }
+  } catch (error) {
+    console.error("Error fetching images:", error);
+  }
+}
+
 
     // Fetch presale data if ledgerId is available
     if (ledger_canister_id && !projectData) {
@@ -144,7 +161,7 @@ useEffect(() => {
   if (isAuthenticated && actor) {
     fetchData();
   }
-}, [isAuthenticated, actor, ledger_canister_id]);
+}, [isAuthenticated, actor, ledger_canister_id,renderComponent]);
 
 const openModal = () => {
   setIsOpen(true);
@@ -153,7 +170,7 @@ const openModal = () => {
 const renderContent = () => {
   switch (activeTab) {
     case "About":
-      return <ProjectTokenAbout />;
+      return <ProjectTokenAbout  presaleData={presaleData} />;
     case "Token":
       return <Token ledger_canister_id={ledger_canister_id} actor={ledgerActor} />;
     case "Pool Info":
@@ -163,7 +180,7 @@ const renderContent = () => {
     case "Previous Sale":
       return <PreviousSale />;
     default:
-      return <ProjectTokenAbout />;
+      return <ProjectTokenAbout presaleData={presaleData} />;
   }
 };
 
@@ -197,7 +214,7 @@ useEffect(() => {
 
 return (
   <>
-    <div className="flex flex-col gap-5 max-w-[90%] mx-auto lg:flex-row">
+    <div className="flex flex-col gap-5 max-w-[95%] mx-auto lg:flex-row">
       <div className={` rounded-2xl  sm:bg-[#181818] mt-24 pb-5`}>
         {!isMobile && (
           <div className="h-[314px]">
@@ -205,7 +222,7 @@ return (
 
               <img
                 src={coverImg || ProjectRectangleBg}
-                className="max-h-[147px] object-cover w-[90vw] rounded-lg"
+                className="max-h-[147px] object-cover w-[100vw] rounded-lg"
                 alt=""
                 draggable="false"
               />
@@ -224,13 +241,23 @@ return (
                 <div className="text-[25px]"> {tokenData ? tokenData.token_name : "PUPPO"}</div>
                 <div className="font-extralight">FAir Launnch - Max buy 5 SOL</div>
                 <div className="logos flex  gap-11">
-                  <IoGlobeOutline className="size-6" />
+                 {
+                  (presaleData && presaleData.social_links.length > 0 ) ? 
+                  presaleData.social_links.map((link, index)=>{
+                    console.log('link=',link)
+                     return <a href={link} key={index}> {getSocialLogo(link)} </a>
+                  })
+                 :
+                 <>
+                 <IoGlobeOutline className="size-6" />
                   <FaTwitter className="size-6" />
                   <FaFacebook className="size-6" />
                   <FaReddit className="size-6" />
                   <FaTelegram className="size-6" />
                   < FaInstagram className="size-6" />
                   <FaDiscord className="size-6" />
+                  </>
+                 }
                 </div>
               </div>
               <div className="right flex flex-col gap-5">
@@ -244,7 +271,7 @@ return (
         )}
 
 
-        {tokenData && <UpdateToken ledgerId={tokenData.canister_id} tokenModalIsOpen={tokenModalIsOpen} setTokenModalIsOpen={setTokenModalIsOpen} />}
+        {tokenData && <UpdateToken ledgerId={tokenData.canister_id} setRenderComponent={setRenderComponent} tokenModalIsOpen={tokenModalIsOpen} setTokenModalIsOpen={setTokenModalIsOpen} />}
 
         {isMobile && (
           <div className="h-[314px] relative bg-[#181818] rounded-2xl py-5 flex flex-col">
@@ -277,13 +304,23 @@ return (
             <div className="bg-[#FFFFFF66] h-[2px] w-[100%] mx-auto mt-4 "></div>
 
             <div className="flex justify-center   gap-4  dxs:gap-9  ss2:text-[23px] w-[100%] mt-4">
-              <IoGlobeOutline />
-              <FaTwitter />
-              <FaFacebook />
-              <FaReddit />
-              <FaTelegram />
-              < FaInstagram />
-              <FaDiscord />
+            {
+                  (presaleData && presaleData.social_links.length > 0 ) ? 
+                  presaleData.social_links.map((link, index)=>{
+                    console.log('link=',link)
+                     return <a href={link} key={index}> {getSocialLogo(link)} </a>
+                  })
+                 :
+                 <>
+                 <IoGlobeOutline className="size-6" />
+                  <FaTwitter className="size-6" />
+                  <FaFacebook className="size-6" />
+                  <FaReddit className="size-6" />
+                  <FaTelegram className="size-6" />
+                  < FaInstagram className="size-6" />
+                  <FaDiscord className="size-6" />
+                  </>
+                 }
             </div>
           </div>
         )}
@@ -436,13 +473,13 @@ return (
               <div className="flex flex-col">
                 <span className="text-sm text-gray-400">UNSOLD TOKENS</span>
                 <span className="text-lg font-semibold">
-                  {tokenData ? `${tokenData.total_supply.toString()} ${tokenData.token_name}` : ''}
+                  {tokenData ? `${tokenData.total_supply.toString()} ${tokenData.token_symbol}` : ''}
                 </span>
               </div>
               <div className="flex flex-col">
                 <span className="text-sm text-gray-400">CURRENT RAISED</span>
                 <span className="text-lg font-semibold">
-                  {tokenData.owner_bal ? tokenData.owner_bal : 0  } ICP
+                  {tokenData ? tokenData.owner_bal : 0  } ICP
                 </span>
               </div>
             </div>
@@ -508,17 +545,18 @@ return (
                     fill="none"
                     stroke="url(#gradient)"
                     strokeWidth="3.8"
-                    strokeDasharray={`${progress}, 100`}
+                    strokeDasharray={`${tokenData && (100-(1000/Number(tokenData.total_supply))*100)}, 100`}
+                      strokeDashoffset="0"
                   />
                 </svg>
                 <div className="absolute ml-10 inset-0 flex flex-col items-center justify-center">
                   <span>Progress</span>
                   <span className="text-lg font-semibold text-white">
                     {" "}
-                    ({progress}%)
+                    ({`${tokenData && (100-(2000/Number(tokenData.total_supply))*100).toFixed(2)}`}%)
                   </span>
                   <span className="text-sm text-gray-400 mt-1">
-                    {raised} SOL RAISED
+                  {tokenData ? tokenData.owner_bal : 0  } ICP RAISED
                   </span>
                 </div>
               </div>
@@ -532,7 +570,7 @@ return (
               <div className="flex flex-col">
                 <span className="text-sm text-gray-400">UNSOLD TOKENS</span>
                 <span className="text-lg font-semibold">
-                  {tokenData ? `${tokenData.total_supply.toString()} ${tokenData.token_name}` : ''}
+                  {tokenData ? `${tokenData.total_supply.toString()} ${tokenData.token_symbol}` : '0'}
                 </span>
               </div>
               <div className="flex flex-col">
@@ -636,7 +674,7 @@ return (
         )}
 
       </div>
-      {isMobile && <MobileViewTab actor={ledgerActor} poolData={tokenData ? tokenData : ''} />}
+      {isMobile && <MobileViewTab actor={ledgerActor} poolData={tokenData ? tokenData : ''} presaleData={presaleData} />}
     </div>
   </>
 );

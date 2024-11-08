@@ -8,15 +8,20 @@ import { getSocialLogo } from '../../common/getSocialLogo';
 import { useForm, Controller } from 'react-hook-form';
 import { FaTrash } from 'react-icons/fa';
 import { formatDateForDateTimeLocal } from '../../utils/formatDateFromBigInt';
+import { upcomingSalesHandlerRequest } from '../../StateManagement/Redux/Reducers/UpcomingSales';
+import { useDispatch } from 'react-redux';
+import { SuccessfulSalesHandlerRequest } from '../../StateManagement/Redux/Reducers/SuccessfulSales';
 // import { formatDateFromBigInt } from '../../utils/formatDateFromBigInt';
-const UpdateToken = ({ ledgerId, tokenModalIsOpen, setTokenModalIsOpen }) => {
+
+const UpdateToken = ({ ledgerId, tokenModalIsOpen,setRenderComponent, setTokenModalIsOpen }) => {
     const { actor, isAuthenticated } = useAuth();
     const { register, handleSubmit, formState: { errors }, reset, control, setValue, clearErrors, setError } = useForm();
     const [validationError, setValidationError] = useState('');
     const [termsAccepted, setTermsAccepted] = useState(false);
     const [tokenData, setTokenData] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
-
+    
+    const dispatch= useDispatch();
     const ledgerPrincipal = Principal.fromText(ledgerId);
     const [links, setLinks] = useState([{ url: '' }]);
     console.log("Start time and end time :", tokenData);
@@ -117,6 +122,14 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen, setTokenModalIsOpen }) => {
         try {
             const response = await actor.update_sale_params(ledgerPrincipal, updatedTokenData);
             console.log('Token updated:', response);
+              
+            if(response){
+            setRenderComponent((prev)=>!prev);    
+            dispatch(upcomingSalesHandlerRequest());
+            dispatch(SuccessfulSalesHandlerRequest())
+            
+            }
+
             if (response?.Err) {
                 setValidationError(response.Err);
             } else {
@@ -176,7 +189,7 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen, setTokenModalIsOpen }) => {
                 overlayClassName="fixed z-[100] inset-0 bg-opacity-50"
                 ariaHideApp={false}
             >
-                <div className="bg-[#222222] p-6 rounded-2xl text-white max-h-[100vh] overflow-y-auto no-scrollbar w-[786px] relative">
+                <div className="bg-[#222222] p-6 rounded-2xl text-white max-h-[90vh] overflow-y-auto no-scrollbar w-[786px] relative">
                     <div className="bg-[#FFFFFF4D] px-4 py-1 mb-4 rounded-2xl relative">
                         <button
                             onClick={closeModal}

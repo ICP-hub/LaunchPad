@@ -33,7 +33,7 @@ export const getSocialLogo = (url) => {
       "whatsapp.com": <FaWhatsapp className={`text-green-600 ${size}`} />,
       "medium.com": <FaMedium className={`text-black ${size}`} />,
     };
-    return icons[domain] || <GrLanguage />;
+    return icons[domain] || <h1 className="text-2xl"> <GrLanguage /></h1>;
   } catch (error) {
     return <GrLanguage />;
   }
