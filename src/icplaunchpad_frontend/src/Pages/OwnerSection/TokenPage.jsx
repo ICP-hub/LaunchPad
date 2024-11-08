@@ -214,7 +214,7 @@ useEffect(() => {
 
 return (
   <>
-    <div className="flex flex-col gap-5 max-w-[90%] mx-auto lg:flex-row">
+    <div className="flex flex-col gap-5 max-w-[95%] mx-auto lg:flex-row">
       <div className={` rounded-2xl  sm:bg-[#181818] mt-24 pb-5`}>
         {!isMobile && (
           <div className="h-[314px]">
@@ -222,7 +222,7 @@ return (
 
               <img
                 src={coverImg || ProjectRectangleBg}
-                className="max-h-[147px] object-cover w-[90vw] rounded-lg"
+                className="max-h-[147px] object-cover w-[100vw] rounded-lg"
                 alt=""
                 draggable="false"
               />
