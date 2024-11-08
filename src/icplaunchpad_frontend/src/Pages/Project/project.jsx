@@ -16,6 +16,7 @@ import { useLocation } from "react-router-dom";
 import { useAuth } from "../../StateManagement/useContext/useAuth.jsx";
 import { Principal } from "@dfinity/principal";
 import SaleStart from "../OwnerSection/SaleStart.jsx";
+import { getSocialLogo } from "../../common/getSocialLogo.jsx";
 
 const TokenPage = () => {
   const [tokenPhase, setTokenPhase]=useState("UPCOMING");
@@ -160,13 +161,23 @@ const TokenPage = () => {
                   <div> { projectData && projectData?.token_name } </div>
                   <div>FAir Launnch - Max buy 5 SOL</div>
                   <div className="logos flex  gap-11">
-                   <IoGlobeOutline  className="size-6"/>
-                   <FaTwitter className="size-6" />
-                    <FaFacebook  className="size-6"/>
-                    <FaReddit className="size-6"/>
-                    <FaTelegram className="size-6" />
-                    < FaInstagram className="size-6"/>
-                    <FaDiscord className="size-6"/>
+                  {
+                  (saleParams && saleParams.social_links.length > 0 ) ? 
+                  saleParams.social_links.map((link, index)=>{
+                    console.log('link=',link)
+                     return <a href={link} key={index}> {getSocialLogo(link)} </a>
+                  })
+                 :
+                 <>
+                 <IoGlobeOutline className="size-6" />
+                  <FaTwitter className="size-6" />
+                  <FaFacebook className="size-6" />
+                  <FaReddit className="size-6" />
+                  <FaTelegram className="size-6" />
+                  < FaInstagram className="size-6" />
+                  <FaDiscord className="size-6" />
+                  </>
+                 }
                   </div>
                 </div>
                 <div className="right flex flex-col text-[17px] mr-8 lgx:mr-0 gap-4">
@@ -202,13 +213,23 @@ const TokenPage = () => {
               <div className="bg-[#FFFFFF66] h-[2px] w-[100%] mx-auto mt-4"></div>
 
               <div className="flex justify-center gap-4  dxs:gap-9 text-[23px] w-[100%] mt-4">
-              <IoGlobeOutline/>
-                   <FaTwitter />
-                    <FaFacebook />
-                    <FaReddit/>
-                    <FaTelegram />
-                    < FaInstagram/>
-                    <FaDiscord/>
+              {
+                  (saleParams && saleParams.social_links.length > 0 ) ? 
+                  saleParams.social_links.map((link, index)=>{
+                    console.log('link=',link)
+                     return <a href={link} key={index}> {getSocialLogo(link)} </a>
+                  })
+                 :
+                 <>
+                 <IoGlobeOutline className="size-6" />
+                  <FaTwitter className="size-6" />
+                  <FaFacebook className="size-6" />
+                  <FaReddit className="size-6" />
+                  <FaTelegram className="size-6" />
+                  < FaInstagram className="size-6" />
+                  <FaDiscord className="size-6" />
+                  </>
+                 }
               </div>
             </div>
           )}

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { TbFilterCheck } from "react-icons/tb";
 import { PiArrowsDownUpBold } from "react-icons/pi";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import ProjectCard from "./ProjectCard.jsx";
+import { TokensInfoHandlerRequest } from "../../StateManagement/Redux/Reducers/TokensInfo.jsx";
 
 const ProjectLists = () => {
   const [selectedTab, setSelectedTab] = useState("all");
@@ -11,10 +12,13 @@ const ProjectLists = () => {
   const [TokensData, setTokensData] = useState(null);
   const [filteredTokensData, setFilteredTokensData] = useState([]);
   const location = useLocation();
+  const dispatch= useDispatch();
   
   const salesData = location.state?.salesData;
   const projectsData = useSelector((state) => state?.TokensInfo?.data);
-  
+  useEffect(()=>{
+    dispatch( TokensInfoHandlerRequest() );
+  },[])
 
   // Effect to set initial token data
   useEffect(() => {

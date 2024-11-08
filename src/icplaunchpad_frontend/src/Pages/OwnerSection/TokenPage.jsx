@@ -26,6 +26,7 @@ import { useDispatch, useSelector } from "react-redux";
 import UpdateToken from "../../components/Modals/UpdateToken.jsx";
 import { SaleParamsHandlerRequest } from "../../StateManagement/Redux/Reducers/SaleParams.jsx";
 import SaleStart from "./SaleStart.jsx";
+import { getSocialLogo } from "../../common/getSocialLogo.jsx";
 
 const TokenPage = () => {
   const [activeTab, setActiveTab] = useState("About");
@@ -82,7 +83,7 @@ const TokenPage = () => {
       }
     }
     getSaleParms()
-  }, [projectData, ledger_canister_id,actor,renderComponent])
+  }, [projectData, ledger_canister_id, actor, renderComponent])
 
   const fetchData = async () => {
     try {
@@ -240,13 +241,23 @@ return (
                 <div className="text-[25px]"> {tokenData ? tokenData.token_name : "PUPPO"}</div>
                 <div className="font-extralight">FAir Launnch - Max buy 5 SOL</div>
                 <div className="logos flex  gap-11">
-                  <IoGlobeOutline className="size-6" />
+                 {
+                  (presaleData && presaleData.social_links.length > 0 ) ? 
+                  presaleData.social_links.map((link, index)=>{
+                    console.log('link=',link)
+                     return <a href={link} key={index}> {getSocialLogo(link)} </a>
+                  })
+                 :
+                 <>
+                 <IoGlobeOutline className="size-6" />
                   <FaTwitter className="size-6" />
                   <FaFacebook className="size-6" />
                   <FaReddit className="size-6" />
                   <FaTelegram className="size-6" />
                   < FaInstagram className="size-6" />
                   <FaDiscord className="size-6" />
+                  </>
+                 }
                 </div>
               </div>
               <div className="right flex flex-col gap-5">
@@ -293,13 +304,23 @@ return (
             <div className="bg-[#FFFFFF66] h-[2px] w-[100%] mx-auto mt-4 "></div>
 
             <div className="flex justify-center   gap-4  dxs:gap-9  ss2:text-[23px] w-[100%] mt-4">
-              <IoGlobeOutline />
-              <FaTwitter />
-              <FaFacebook />
-              <FaReddit />
-              <FaTelegram />
-              < FaInstagram />
-              <FaDiscord />
+            {
+                  (presaleData && presaleData.social_links.length > 0 ) ? 
+                  presaleData.social_links.map((link, index)=>{
+                    console.log('link=',link)
+                     return <a href={link} key={index}> {getSocialLogo(link)} </a>
+                  })
+                 :
+                 <>
+                 <IoGlobeOutline className="size-6" />
+                  <FaTwitter className="size-6" />
+                  <FaFacebook className="size-6" />
+                  <FaReddit className="size-6" />
+                  <FaTelegram className="size-6" />
+                  < FaInstagram className="size-6" />
+                  <FaDiscord className="size-6" />
+                  </>
+                 }
             </div>
           </div>
         )}
@@ -524,17 +545,18 @@ return (
                     fill="none"
                     stroke="url(#gradient)"
                     strokeWidth="3.8"
-                    strokeDasharray={`${progress}, 100`}
+                    strokeDasharray={`${tokenData && (100-(1000/Number(tokenData.total_supply))*100)}, 100`}
+                      strokeDashoffset="0"
                   />
                 </svg>
                 <div className="absolute ml-10 inset-0 flex flex-col items-center justify-center">
                   <span>Progress</span>
                   <span className="text-lg font-semibold text-white">
                     {" "}
-                    ({progress}%)
+                    ({`${tokenData && (100-(2000/Number(tokenData.total_supply))*100).toFixed(2)}`}%)
                   </span>
                   <span className="text-sm text-gray-400 mt-1">
-                    {raised} SOL RAISED
+                  {tokenData ? tokenData.owner_bal : 0  } ICP RAISED
                   </span>
                 </div>
               </div>
