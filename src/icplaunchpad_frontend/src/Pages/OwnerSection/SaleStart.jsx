@@ -38,7 +38,6 @@ const SaleStart = ({ style, setTokenPhase, presaleData }) => {
             if (now >= end && phase !== "ended") {
                 setTimeRemaining("Sale Ended!");
                 setTokenPhase("SUCCESSFULL");
-                dispatch(SuccessfulSalesHandlerRequest());
                 setPhase("ended");
                 return;
             }

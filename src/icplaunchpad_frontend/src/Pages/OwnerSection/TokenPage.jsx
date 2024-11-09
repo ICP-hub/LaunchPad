@@ -48,6 +48,7 @@ const TokenPage = () => {
   const [ledgerActor, setLedgerActor] = useState(null);
   const [presaleData, setPresaleData] = useState(null);
   const [renderComponent, setRenderComponent] = useState(false);
+  const [saleProgress, setSaleProgress]=useState(0);
 
   // const presale = useSelector((state) => state.SaleParams.data.Ok);
   const dispatch = useDispatch()
@@ -55,6 +56,18 @@ const TokenPage = () => {
   console.log('project data', projectData)
   // const location = useLocation();
 
+  useEffect(() => {
+    if (tokenPhase=="UPCOMING") 
+      setSaleProgress(0)
+
+    else if(tokenPhase=="SUCCESSFULL")
+      setSaleProgress(100)
+
+    else{ 
+      const progress = tokenData && projectData ? (100 - ( Number(tokenData.total_supply) / Number(projectData.total_supply)) * 100 )  : 0;
+      setSaleProgress(progress.toFixed(2))
+    }
+  }, [tokenPhase,tokenData]);
 
 
   const ledger_canister_id = projectData ? projectData.canister_id
@@ -449,17 +462,17 @@ return (
                     fill="none"
                     stroke="url(#gradient)"
                     strokeWidth="3.8"
-                    strokeDasharray={`${progress}, 100`}
+                    strokeDasharray={`${saleProgress}, 100`}
                   />
                 </svg>
                 <div className="absolute ml-28 ss2:ml-10 inset-0 flex flex-col items-center justify-center">
                   <span>Progress</span>
                   <span className="text-lg font-semibold text-white">
                     {" "}
-                    ({progress}%)
+                    ({saleProgress}%)
                   </span>
                   <span className="text-sm text-gray-400 mt-1">
-                    {raised} SOL RAISED
+                  {tokenData ? tokenData.owner_bal : 0  } ICP RAISED
                   </span>
                 </div>
               </div>
@@ -513,7 +526,7 @@ return (
           <div className="bg-[#FFFFFF1A] text-white p-1 rounded-lg flex w-full h-[350px] lg:min-w-[406px]">
             <div className="relative flex items-center  overflow-hidden w-[60%] h-72">
               <div className="absolute lg:left-[-45%] left-[-70%] dxs:left-[-47%] xxs1:left-[-30%] sm:left-[-20%] md:left-[-15%]  top-0 w-72 h-72">
-                <svg className="transform rotate-90" viewBox="0 0 36 36">
+              <svg style={{ transform: 'rotate(-90deg)' }} viewBox="0 0 36 36">
                   <defs>
                     <linearGradient
                       id="gradient"
@@ -545,7 +558,7 @@ return (
                     fill="none"
                     stroke="url(#gradient)"
                     strokeWidth="3.8"
-                    strokeDasharray={`${tokenData && (100-(1000/Number(tokenData.total_supply))*100)}, 100`}
+                    strokeDasharray={`${saleProgress}, 100`}
                       strokeDashoffset="0"
                   />
                 </svg>
@@ -553,7 +566,7 @@ return (
                   <span>Progress</span>
                   <span className="text-lg font-semibold text-white">
                     {" "}
-                    ({`${tokenData && (100-(2000/Number(tokenData.total_supply))*100).toFixed(2)}`}%)
+                    ({saleProgress}%)
                   </span>
                   <span className="text-sm text-gray-400 mt-1">
                   {tokenData ? tokenData.owner_bal : 0  } ICP RAISED
