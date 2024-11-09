@@ -52,7 +52,7 @@ pub fn get_tokens_info() -> Vec<CanisterIndexInfo> {
                         index_canister_id: index_key.clone(),
                         token_name: canister_wrapper.token_name.clone(),
                         token_symbol: canister_wrapper.token_symbol.clone(),
-                        total_supply: canister_wrapper.total_supply.clone(), // Include total supply
+                        total_supply: canister_wrapper.total_supply.clone(), 
                     });
                 }
             }
