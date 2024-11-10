@@ -1,13 +1,19 @@
-import React from "react";
+import React, { useEffect } from "react";
 import person1 from "../../../assets/images/carousel/person1.png";
 import { useNavigate } from 'react-router-dom';
 import l3 from '../../../assets/images/carousel/l3.png'
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import ProjectCard from "../../Pages/Projects/ProjectCard";
+import { SuccessfulSalesHandlerRequest } from "../../StateManagement/Redux/Reducers/SuccessfulSales";
 
   
 
 const Clients = () => {
+  const dispatch =useDispatch();
+
+  useEffect(()=>{
+    dispatch(SuccessfulSalesHandlerRequest());
+  },[])
   
   const salesData = useSelector((state)=> state?.SuccessfulSales?.data)
   const navigate = useNavigate();
@@ -15,7 +21,7 @@ const Clients = () => {
   // Handle navigation to the projects page
   const handleViewMoreClick = () => {
     if(salesData.length > 0)
-       navigate('/projects', {state:{salesData}});
+       navigate('/projects', {state:{salesData, saleType:"successfull"} });
   };
 
 
@@ -31,7 +37,7 @@ const Clients = () => {
     <div className="flex md:flex-row flex-col flex-wrap w-[95%] items-center m-auto justify-around">
       
       { (salesData.length > 0 ) ? salesData.map((sales, index) => (
-        (index < 3) && <ProjectCard projectData={sales} index={index}/> 
+        (index < 3) && <ProjectCard projectData={sales} saleType="successfull" index={index}/> 
       )) :
       <h1 className="text-xl my-16"> Data Not Found... </h1>
       }
