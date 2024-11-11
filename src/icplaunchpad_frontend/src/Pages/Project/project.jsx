@@ -186,7 +186,7 @@ const TokenPage = () => {
             <div className="h-[314px] bg-[#181818] rounded-lg py-5 flex flex-col">
               <div className="relative">
                 <img
-                  src={projectData ? projectData.TokenImg : person1}
+                  src={projectData ? projectData.token_image : person1}
                   className="absolute top-0 left-[50%] transform -translate-x-1/2 -translate-y-[50%] object-cover rounded-full h-[130px] w-[130px] md:min-h-[177px] md:min-w-[177px]"
                   alt=""
                 />
