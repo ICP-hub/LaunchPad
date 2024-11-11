@@ -101,15 +101,15 @@ const Header = () => {
     setIsOpen(!isOpen);
   };
 
-  const openModal = () => {
+  const openModal = () => { //used for connect wallet
     setModalIsOpen(true);
   };
 
-  const openProfileModal = () => {
+  const openProfileModal = () => { //for profile card
     setProfileModalIsOpen(true);
   };
 
-  const openUserModal = () => {
+  const openUserModal = () => {  //for update modal
     setUserUpdateIsOpen(true);
   };
 
