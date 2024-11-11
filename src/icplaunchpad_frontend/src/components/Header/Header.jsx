@@ -79,6 +79,7 @@ const Header = () => {
   }
 
   const handleSearchedToken = async(data)=>{
+    console.log('searched data', data)
     
         if (data.canister_id) {
           const ledgerPrincipal = Principal.fromText(data.canister_id);
@@ -91,7 +92,7 @@ const Header = () => {
             const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId[tokenImgId.length - 1]}`;
             console.log("Token Image URL:", imageUrl);
 
-            navigate('/project', { state: { projectData:{canister_id:data.canister_id, token_name:data.token_name, TokenImg:imageUrl} } });
+            navigate('/project', { state: { projectData:{...data, token_image:imageUrl} } });
           }
         }
   }

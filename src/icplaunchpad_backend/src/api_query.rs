@@ -52,6 +52,7 @@ pub fn get_tokens_info() -> Vec<CanisterIndexInfo> {
                         index_canister_id: index_key.clone(),
                         token_name: canister_wrapper.token_name.clone(),
                         token_symbol: canister_wrapper.token_symbol.clone(),
+                        total_supply: canister_wrapper.total_supply.clone(), 
                     });
                 }
             }
@@ -59,6 +60,7 @@ pub fn get_tokens_info() -> Vec<CanisterIndexInfo> {
         }).collect()
     })
 }
+
 
 
 // #[ic_cdk::query]
@@ -101,6 +103,7 @@ pub fn get_user_tokens_info() -> Vec<CanisterIndexInfo> {
                         index_canister_id: index_key.clone(),
                         token_name: canister_wrapper.token_name.clone(),
                         token_symbol: canister_wrapper.token_symbol.clone(),
+                        total_supply: canister_wrapper.total_supply.clone(),
                     })
                 } else {
                     None
@@ -131,6 +134,7 @@ pub fn search_by_token_name_or_symbol(token_identifier: String) -> Option<Canist
                     index_canister_id,
                     token_name: canister_wrapper.token_name.clone(),
                     token_symbol: canister_wrapper.token_symbol.clone(),
+                    total_supply: canister_wrapper.total_supply.clone(),
                 });
             }
         }
@@ -223,6 +227,7 @@ pub fn get_user_sale_params() -> Result<Vec<(CanisterIndexInfo, SaleDetails)>, S
                         index_canister_id: index_canister_id,
                         token_name: canister_wrapper.token_name.clone(),
                         token_symbol: canister_wrapper.token_symbol.clone(),
+                        total_supply: canister_wrapper.total_supply.clone(),
                     })
                 } else {
                     None

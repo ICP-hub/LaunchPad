@@ -218,6 +218,7 @@ pub struct CanisterIndexInfo {
     pub index_canister_id: String,
     pub token_name: String,
     pub token_symbol: String,
+    pub total_supply: Nat,
 }
 #[derive(CandidType, Deserialize, Debug)]
 pub struct Icrc28TrustedOriginsResponse {
@@ -300,6 +301,7 @@ pub struct CanisterIdWrapper {
     pub image_id: Option<u32>,
     pub ledger_id: Option<Principal>,  
     pub owner: Principal,  
+    pub total_supply: Nat,
 }
 
 

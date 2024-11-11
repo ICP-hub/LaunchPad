@@ -1,4 +1,4 @@
-use candid::{encode_one, Principal};
+use candid::{encode_one, Nat, Principal};
 use ic_cdk::api::{call::{CallResult, RejectionCode}, management_canister::main::{CanisterInstallMode, WasmModule}};
 
 use crate::{create_canister, deposit_cycles, index_install_code, install_code, mutate_state, params, read_state, CanisterIdWrapper, CoverImageData, CoverImageIdWrapper, CreateCanisterArgument, CreateFileInput, ImageIdWrapper, IndexArg, IndexCanisterIdWrapper, IndexInitArgs, IndexInstallCodeArgument, InitArgs, InstallCodeArgument, LedgerArg, ProfileImageData, ReturnResult, SaleDetails, SaleDetailsUpdate, SaleDetailsWrapper, TokenCreationResult, TokenImageData, UserAccount, UserAccountWrapper, UserInputParams, STATE};
@@ -85,13 +85,10 @@ pub fn update_user_account(principal: Principal, updated_account: UserAccount) -
 
 #[ic_cdk::update]
 pub async fn create_token(user_params: UserInputParams) -> Result<TokenCreationResult, String> {
-
     let caller = ic_cdk::api::caller();
 
     // Check if the user account already exists
-    let account_exists = read_state(|state| {
-        state.user_accounts.contains_key(&caller)
-    });
+    let account_exists = read_state(|state| state.user_accounts.contains_key(&caller));
 
     if !account_exists {
         return Err("Please create an account before creating a token.".into());
@@ -132,6 +129,14 @@ pub async fn create_token(user_params: UserInputParams) -> Result<TokenCreationR
     let canister_id_principal = canister_id.canister_id;
     let index_canister_id_principal = index_canister_id.canister_id;
 
+    // Calculate total supply from initial balances
+    let total_supply: Nat = user_params
+        .initial_balances
+        .iter()
+        .fold(Nat::from(0u64), |acc, (_, balance)| acc + balance.clone());
+
+    // Clone initial_balances to use in LedgerArg::Init without moving it
+    let cloned_initial_balances = user_params.initial_balances.clone();
 
     let minting_account = params::MINTING_ACCOUNT
         .lock()
@@ -155,19 +160,19 @@ pub async fn create_token(user_params: UserInputParams) -> Result<TokenCreationR
 
     // Ledger Init Args
     let init_args = LedgerArg::Init(InitArgs {
-        minting_account,                          // Hardcoded value from params.rs
+        minting_account,                           // Hardcoded value from params.rs
         fee_collector_account: Some(fee_collector_account), // Hardcoded value from params.rs
-        transfer_fee: params::TRANSFER_FEE.clone(),       // Hardcoded value
-        decimals: user_params.decimals,           // User-supplied value
-        max_memo_length: Some(params::MAX_MEMO_LENGTH),   // Hardcoded value
-        token_symbol: user_params.token_symbol.clone(),   // User-supplied value
-        token_name: user_params.token_name.clone(),       // User-supplied value
-        metadata: vec![],                          // Empty or pre-defined metadata if needed
-        initial_balances: user_params.initial_balances,   // User-supplied value
-        feature_flags: Some(params::FEATURE_FLAGS),       // Hardcoded value
+        transfer_fee: params::TRANSFER_FEE.clone(), // Hardcoded value
+        decimals: user_params.decimals,             // User-supplied value
+        max_memo_length: Some(params::MAX_MEMO_LENGTH), // Hardcoded value
+        token_symbol: user_params.token_symbol.clone(), // User-supplied value
+        token_name: user_params.token_name.clone(),     // User-supplied value
+        metadata: vec![],                             // Empty or pre-defined metadata if needed
+        initial_balances: cloned_initial_balances,     // Clone of the user-supplied value
+        feature_flags: Some(params::FEATURE_FLAGS),    // Hardcoded value
         maximum_number_of_accounts: Some(params::MAXIMUM_NUMBER_OF_ACCOUNTS), // Hardcoded value
         accounts_overflow_trim_quantity: Some(params::ACCOUNTS_OVERFLOW_TRIM_QUANTITY), // Hardcoded value
-        archive_options,                          // Hardcoded value from params.rs
+        archive_options,                               // Hardcoded value from params.rs
     });
 
     let init_arg: Vec<u8> = encode_one(init_args).map_err(|e| e.to_string())?;
@@ -184,8 +189,8 @@ pub async fn create_token(user_params: UserInputParams) -> Result<TokenCreationR
 
     // Index Init Args
     let index_init_args = IndexInitArgs {
-        ledger_id: canister_id_principal,               // Ledger canister ID
-        retrieve_blocks_from_ledger_interval_seconds: Some(10),  // 10 seconds
+        ledger_id: canister_id_principal, // Ledger canister ID
+        retrieve_blocks_from_ledger_interval_seconds: Some(10), // 10 seconds
     };
 
     // Wrap the IndexInitArgs in a variant { Init }
@@ -204,7 +209,7 @@ pub async fn create_token(user_params: UserInputParams) -> Result<TokenCreationR
         mode: CanisterInstallMode::Install,
         canister_id: index_canister_id_principal,
         wasm_module: WasmModule::from(index_wasm_module.clone()),
-        arg: index_init_arg,  // Pass the encoded init argument
+        arg: index_init_arg, // Pass the encoded init argument
     };
 
     // Install code for the ledger canister
@@ -212,15 +217,16 @@ pub async fn create_token(user_params: UserInputParams) -> Result<TokenCreationR
         Ok(_) => {
             mutate_state(|state| {
                 state.canister_ids.insert(
-                    canister_id_principal.to_string(), 
+                    canister_id_principal.to_string(),
                     CanisterIdWrapper {
                         canister_ids: canister_id_principal,
-                        token_name: user_params.token_name.clone(),  // Store token name
-                        token_symbol: user_params.token_symbol.clone(),  // Store token symbol
-                        image_id: None,  // Set image_id as None for now
-                        ledger_id: Some(canister_id_principal),  
-                        owner:caller,
-                    }
+                        token_name: user_params.token_name.clone(), // Store token name
+                        token_symbol: user_params.token_symbol.clone(), // Store token symbol
+                        image_id: None, // Set image_id as None for now
+                        ledger_id: Some(canister_id_principal),
+                        owner: caller,
+                        total_supply, // Store the calculated total supply
+                    },
                 );
             });
         }
@@ -253,6 +259,7 @@ pub async fn create_token(user_params: UserInputParams) -> Result<TokenCreationR
         }
     }
 }
+
 
 #[ic_cdk::update]
 pub async fn upload_token_image(asset_canister_id: String, image_data: TokenImageData) -> Result<String, String> {
@@ -400,9 +407,6 @@ pub async fn upload_cover_image(asset_canister_id: String, image_data: CoverImag
         }
     }
 }
-
-
-
 
 
 

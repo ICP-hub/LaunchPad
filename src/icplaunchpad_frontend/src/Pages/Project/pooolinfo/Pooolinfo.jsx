@@ -29,13 +29,13 @@ const AffiliateProgram = ({ poolData, presaleData }) => {
         {/* Tokens for Presale */}
         <div className="flex justify-between text-[14px] xxs1:text-[17px] border-b py-2">
           <span>Tokens For Presale</span>
-          <span>{`${poolData?.total_supply || 'N/A'} ${poolData?.token_name || ''}`}</span>
+          <span>{`${poolData?.total_supply || 'N/A'} ${poolData?.token_symbol || ''}`}</span>
         </div>
 
         {/* Initial Market Cap */}
         <div className="flex justify-between text-[14px] xxs1:text-[17px] border-b py-2">
           <span>Initial Market Cap</span>
-          <span>{`1,453,500 ${poolData?.token_name || ''}`}</span>
+          <span>{`1,453,500 ${poolData?.token_symbol || ''}`}</span>
         </div>
 
         {/* SoftCap */}

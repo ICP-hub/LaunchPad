@@ -19,7 +19,7 @@ import SaleStart from "../OwnerSection/SaleStart.jsx";
 import { getSocialLogo } from "../../common/getSocialLogo.jsx";
 
 const TokenPage = () => {
-  const [tokenPhase, setTokenPhase]=useState("UPCOMING");
+  const [tokenPhase, setTokenPhase] = useState("UPCOMING");
   const [activeTab, setActiveTab] = useState("About");
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 640);
   const location = useLocation();
@@ -27,34 +27,27 @@ const TokenPage = () => {
   const { actor, createCustomActor } = useAuth();
   const [saleParams, setSaleParams] = useState(null);
   const [ledgerActor, setLedgerActor] = useState(null);
-  const [tokenData, setTokenData] = useState(null);
+  const [tokenOwnerInfo, setTokenOwnerInfo] = useState(null);
   const [amount, setAmount] = useState();
 
   useEffect(() => {
+    
     const fetchTokenData = async () => {
       if (projectData?.canister_id) {
+        console.log("projectData=>",projectData)
         try {
           const ledgerPrincipal = Principal.fromText(projectData.canister_id);
           const ledgerActor = await createCustomActor(ledgerPrincipal);
           setLedgerActor(ledgerActor);
 
-          const totalSupply = await ledgerActor.icrc1_total_supply();
-          const tokenSymbol = await ledgerActor.icrc1_symbol();
-          setTokenData((prevData) => ({
-            ...prevData,
-            total_supply: totalSupply,
-            token_symbol: tokenSymbol,
-          }));
-
           // Fetching the owner of the token
           const owner = await ledgerActor.icrc1_minting_account();
           if (owner) {
             const ownerBalance = await ledgerActor.icrc1_balance_of(owner[0]);
-            setTokenData((prevData) => ({
-              ...prevData,
+            setTokenOwnerInfo({
               owner_bal: ownerBalance.toString(),
               owner: owner[0].owner.toString(),
-            }));
+            });
           }
         } catch (error) {
           console.error("Error fetching token data:", error);
@@ -91,7 +84,7 @@ const TokenPage = () => {
       case "Token":
         return <Token ledgerId={projectData?.canister_id} />;
       case "Pool Info":
-        return <Pooolinfo presaleData={saleParams} poolData={projectData ? { ...projectData, total_supply: tokenData?.total_supply } : {}} />;
+        return <Pooolinfo presaleData={saleParams} poolData={projectData ? { ...projectData, total_supply: projectData?.total_supply } : {}} />;
       case "Affiliate Program":
         return <AffiliateProgram />;
       case "Tokenomic":
@@ -146,38 +139,38 @@ const TokenPage = () => {
             <div className="h-[314px]">
               <div className="relative">
                 <img
-                  src=  {projectData.coverImage ? projectData.coverImage : ProjectRectangleBg} 
+                  src={projectData.cover_image ? projectData.cover_image : ProjectRectangleBg}
                   className=" max-h-[147px] w-[90vw] rounded-lg object-cover"
                   alt=""
                 />
                 <img
-                  src={projectData ? projectData.TokenImg : person1}
+                  src={projectData ? projectData.token_image : person1}
                   className="absolute top-0 left-[50%] transform -translate-x-1/2 -translate-y-[35%] rounded-full h-[130px] md:min-h-[177px] object-cover w-[130px]  md:w-[177px]"
                   alt="token pic"
                 />
               </div>
               <div className="content-div font-posterama flex justify-between w-[90%] m-auto mt-7 ">
                 <div className="left flex flex-col gap-5">
-                  <div> { projectData && projectData?.token_name } </div>
+                  <div> {projectData && projectData?.token_name} </div>
                   <div>FAir Launnch - Max buy 5 SOL</div>
                   <div className="logos flex  gap-11">
-                  {
-                  (saleParams && saleParams.social_links.length > 0 ) ? 
-                  saleParams.social_links.map((link, index)=>{
-                    console.log('link=',link)
-                     return <a href={link} key={index}> {getSocialLogo(link)} </a>
-                  })
-                 :
-                 <>
-                 <IoGlobeOutline className="size-6" />
-                  <FaTwitter className="size-6" />
-                  <FaFacebook className="size-6" />
-                  <FaReddit className="size-6" />
-                  <FaTelegram className="size-6" />
-                  < FaInstagram className="size-6" />
-                  <FaDiscord className="size-6" />
-                  </>
-                 }
+                    {
+                      (saleParams && saleParams.social_links.length > 0) ?
+                        saleParams.social_links.map((link, index) => {
+                          console.log('link=', link)
+                          return <a href={link} key={index}> {getSocialLogo(link)} </a>
+                        })
+                        :
+                        <>
+                          <IoGlobeOutline className="size-6" />
+                          <FaTwitter className="size-6" />
+                          <FaFacebook className="size-6" />
+                          <FaReddit className="size-6" />
+                          <FaTelegram className="size-6" />
+                          < FaInstagram className="size-6" />
+                          <FaDiscord className="size-6" />
+                        </>
+                    }
                   </div>
                 </div>
                 <div className="right flex flex-col text-[17px] mr-8 lgx:mr-0 gap-4">
@@ -191,16 +184,16 @@ const TokenPage = () => {
 
           {isMobile && (
             <div className="h-[314px] bg-[#181818] rounded-lg py-5 flex flex-col">
-             <div className="relative">
+              <div className="relative">
                 <img
-                  src={projectData ? projectData.TokenImg : person1}
+                  src={projectData ? projectData.token_image : person1}
                   className="absolute top-0 left-[50%] transform -translate-x-1/2 -translate-y-[50%] object-cover rounded-full h-[130px] w-[130px] md:min-h-[177px] md:min-w-[177px]"
                   alt=""
                 />
               </div>
 
               <div className="mt-[70px] font-posterama text-center text-white space-y-2">
-                <div className=" text-[24px] font-bold"> { projectData && projectData?.token_name }</div>
+                <div className=" text-[24px] font-bold"> {projectData && projectData?.token_name}</div>
                 <div className=" text-[16px] font-medium">
                   FAir Launnch - Max buy 5 SOL
                 </div>
@@ -213,23 +206,23 @@ const TokenPage = () => {
               <div className="bg-[#FFFFFF66] h-[2px] w-[100%] mx-auto mt-4"></div>
 
               <div className="flex justify-center gap-4  dxs:gap-9 text-[23px] w-[100%] mt-4">
-              {
-                  (saleParams && saleParams.social_links.length > 0 ) ? 
-                  saleParams.social_links.map((link, index)=>{
-                    console.log('link=',link)
-                     return <a href={link} key={index}> {getSocialLogo(link)} </a>
-                  })
-                 :
-                 <>
-                 <IoGlobeOutline className="size-6" />
-                  <FaTwitter className="size-6" />
-                  <FaFacebook className="size-6" />
-                  <FaReddit className="size-6" />
-                  <FaTelegram className="size-6" />
-                  < FaInstagram className="size-6" />
-                  <FaDiscord className="size-6" />
-                  </>
-                 }
+                {
+                  (saleParams && saleParams.social_links.length > 0) ?
+                    saleParams.social_links.map((link, index) => {
+                      console.log('link=', link)
+                      return <a href={link} key={index}> {getSocialLogo(link)} </a>
+                    })
+                    :
+                    <>
+                      <IoGlobeOutline className="size-6" />
+                      <FaTwitter className="size-6" />
+                      <FaFacebook className="size-6" />
+                      <FaReddit className="size-6" />
+                      <FaTelegram className="size-6" />
+                      < FaInstagram className="size-6" />
+                      <FaDiscord className="size-6" />
+                    </>
+                }
               </div>
             </div>
           )}
@@ -240,11 +233,10 @@ const TokenPage = () => {
                 {tabNames.map((tab) => (
                   <div
                     key={tab}
-                    className={`cursor-pointer relative ${
-                      activeTab === tab
+                    className={`cursor-pointer relative ${activeTab === tab
                         ? "before:absolute before:left-0 before:right-0 before:top-5 before:h-[2px] before:bg-gradient-to-r before:from-[#F3B3A7] before:to-[#CACCF5] before:rounded"
                         : ""
-                    }`}
+                      }`}
                     onClick={() => setActiveTab(tab)}
                   >
                     {tab}
@@ -265,7 +257,7 @@ const TokenPage = () => {
               onChange={handleAmount}
             />
             {/* token amount per icp */}
-            <h1 className="mb-5 text-green-500"> {amount  && ` ${ amount } ICP `} </h1>
+            <h1 className="mb-5 text-green-500"> {amount && ` ${amount} ICP `} </h1>
 
             <button onClick={handleTransaction} className="w-[50%] p-2 rounded-2xl   font-semibold  bg-gradient-to-r from-[#f3b3a7] to-[#cac9f5] text-black text-base">
               USE ICP
@@ -274,24 +266,12 @@ const TokenPage = () => {
 
           <div className="bg-[#FFFFFF1A] text-white p-1 rounded-lg flex flex-col ss2:flex-row    w-full lg:min-w-[406px]">
             <div className="relative flex  items-center  overflow-hidden w-full ss2:w-[60%] h-72">
-              <div className="absolute left-[-33%] lg:left-[-45%] ss2:left-[-70%] dxs:left-[-47%] xxs1:left-[-30%] sm:left-[-20%] md:left-[-15%]  top-0 w-72 h-72">
-                <svg className="transform rotate-90" viewBox="0 0 36 36">
+              <div className="absolute left-[-33%] lg:left-[-45%] ss2:left-[-70%] dxs:left-[-47%] xxs1:left-[-30%] sm:left-[-20%] md:left-[-15%] top-0 w-72 h-72">
+                <svg style={{ transform: 'rotate(-90deg)' }} viewBox="0 0 36 36">
                   <defs>
-                    <linearGradient
-                      id="gradient"
-                      x1="0%"
-                      y1="0%"
-                      x2="100%"
-                      y2="0%"
-                    >
-                      <stop
-                        offset="0%"
-                        style={{ stopColor: "#f3b3a7", stopOpacity: 1 }}
-                      />
-                      <stop
-                        offset="100%"
-                        style={{ stopColor: "#cac9f5", stopOpacity: 1 }}
-                      />
+                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" style={{ stopColor: "#f3b3a7", stopOpacity: 1 }} />
+                      <stop offset="100%" style={{ stopColor: "#cac9f5", stopOpacity: 1 }} />
                     </linearGradient>
                   </defs>
                   <path
@@ -307,20 +287,20 @@ const TokenPage = () => {
                     fill="none"
                     stroke="url(#gradient)"
                     strokeWidth="3.8"
-                    strokeDasharray={`${progress}, 100`}
+                    strokeDasharray={`${projectData.saleProgress ? projectData.saleProgress  : 0}, 100`}
                   />
                 </svg>
                 <div className="absolute ml-12 ss2:ml-28 dxs:ml-10 inset-0 flex flex-col items-center justify-center">
                   <span>Progress</span>
                   <span className="text-lg font-semibold text-white">
-                    {" "}
-                    ({progress}%)
+                    ({projectData.saleProgress ? projectData.saleProgress  : 0 }%)
                   </span>
                   <span className="text-[11px] ss2:text-sm text-gray-400 mt-1">
-                    {raised} SOL RAISED
+                  {tokenOwnerInfo ? tokenOwnerInfo.owner_bal : 0} ICP RAISED
                   </span>
                 </div>
               </div>
+
             </div>
 
             <div className="mt-6 w-[40%] gap-4 sxs3:gap-8 px-2 relative  flex ss2:flex-col  justify-around ">
@@ -331,24 +311,24 @@ const TokenPage = () => {
               <div className="flex flex-col">
                 <span className="text-sm text-gray-400">UNSOLD TOKENS</span>
                 <span className="text-lg font-semibold">
-                { tokenData ?  ` ${tokenData.total_supply.toString()} ${tokenData.token_symbol}` :''   }
+                  {projectData ? ` ${projectData.total_supply.toString()} ${projectData.token_symbol}` : ''}
                 </span>
               </div>
               <div className="flex flex-col">
                 <span className="text-sm text-gray-400">CURRENT RAISED</span>
                 <span className="text-lg font-semibold">
-                  {tokenData ? tokenData.owner_bal : 0 } ICP
+                  {tokenOwnerInfo ? tokenOwnerInfo.owner_bal : 0} ICP
                 </span>
               </div>
             </div>
           </div>
 
           <div className="lg:min-w-[406px] w-full h-[153px] bg-[#FFFFFF1A] rounded-[17.44px] flex flex-col justify-center items-center text-white">
-            <SaleStart  style={{text_heading:'text-lg', text_content:'text-2xl'}} setTokenPhase={setTokenPhase} presaleData={saleParams}/>
+            <SaleStart style={{ text_heading: 'text-lg', text_content: 'text-2xl' }} setTokenPhase={setTokenPhase} presaleData={saleParams} />
           </div>
         </div>
-        {isMobile && <MobileViewTab ledgerId={projectData?.canister_id } 
-        presaleData={saleParams} poolData={projectData ? { ...projectData, total_supply: tokenData?.total_supply } : {}} 
+        {isMobile && <MobileViewTab ledgerId={projectData?.canister_id}
+          presaleData={saleParams} poolData={projectData ? { ...projectData, total_supply: projectData?.total_supply } : {}}
         />}
       </div>
     </>
