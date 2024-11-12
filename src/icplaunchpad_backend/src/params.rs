@@ -13,13 +13,13 @@ lazy_static! {
     );
 
     pub static ref FEE_COLLECTOR_ACCOUNT: Mutex<Result<Account, String>> = Mutex::new(
-        Principal::from_text("wo4qc-igxxg-32h46-airnk-woc63-ixpru-7gb5c-blgku-cokyl-w6hul-3ae")//default
+        Principal::from_text("wo4qc-igxxg-32h46-airnk-woc63-ixpru-7gb5c-blgku-cokyl-w6hul-3ae")//feecollector
             .map(|owner| Account { owner, subaccount: None })
             .map_err(|e| format!("Invalid Principal for FEE_COLLECTOR_ACCOUNT: {:?}", e))
     );
 
     pub static ref ARCHIVE_OPTIONS: Mutex<Result<ArchiveOptions, String>> = Mutex::new(
-        Principal::from_text("u26p3-txkrx-m723w-gmfin-tynnd-hcwfg-wjel6-tbjvh-nsjgp-mwkzx-xqe")//archive_controller
+        Principal::from_text("aoymu-gaaaa-aaaak-ak5ra-cai")//archive_controller
             .map(|controller_id| ArchiveOptions {
                 num_blocks_to_archive: 1000,
                 max_transactions_per_response: Some(100),
