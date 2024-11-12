@@ -72,9 +72,11 @@ service : () -> {
   is_account_created : () -> (text) query;
   make_payment : (nat64, principal) -> (Result_3);
   search_by_token_name_or_symbol : (text) -> (opt CanisterIndexInfo) query;
-  update_sale_params : (principal, SaleDetailsUpdate) -> (Result);
-  update_user_account : (principal, UserAccount) -> (Result);
-  upload_cover_image : (text, ProfileImageData) -> (Result_4);
-  upload_profile_image : (text, ProfileImageData) -> (Result_4);
-  upload_token_image : (text, TokenImageData) -> (Result_4);
+  sell_tokens : (nat64, principal, principal, principal) -> (Result);
+  update_sale_params : (principal, SaleDetailsUpdate) -> (Result_1);
+  update_user_account : (principal, UserAccount) -> (Result_1);
+  upload_cover_image : (text, CoverImageData) -> (Result_5);
+  upload_profile_image : (text, ProfileImageData) -> (Result_5);
+  upload_token_image : (text, CoverImageData) -> (Result_5);
+
 }
