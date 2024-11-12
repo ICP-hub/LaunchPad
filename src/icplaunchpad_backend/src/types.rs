@@ -21,17 +21,6 @@ pub struct Account {
     pub subaccount: Option<Vec<u8>>,
 }
 
-#[derive(CandidType, Deserialize, Debug)]
-pub struct TransferFromArgs {
-    pub spender_subaccount: Option<Vec<u8>>, // SubAccount is a blob
-    pub from: Account,
-    pub to: Account,
-    pub amount: Nat, // Icrc1Tokens is a nat
-    pub fee: Option<Nat>,
-    pub memo: Option<Vec<u8>>,
-    pub created_at_time: Option<u64>, // Icrc1Timestamp is a nat64
-}
-
 #[derive(CandidType, Serialize, Deserialize, Debug)]
 pub struct Metadata {
     pub key: String,
@@ -218,7 +207,6 @@ pub struct CanisterIndexInfo {
     pub index_canister_id: String,
     pub token_name: String,
     pub token_symbol: String,
-    pub total_supply: Nat,
 }
 #[derive(CandidType, Deserialize, Debug)]
 pub struct Icrc28TrustedOriginsResponse {
@@ -249,14 +237,6 @@ pub struct ProfileImageData {
     pub content: Option<ByteBuf>,
     // You can add more fields if necessary
 }
-
-#[derive(Clone, CandidType, Serialize, Deserialize)]
-pub struct CoverImageData {
-    pub content: Option<ByteBuf>,  // The image content for the cover image
-    pub ledger_id: Principal,      // Ledger ID associated with the cover image
-    // Additional parameters specific to cover images can be added here if needed
-}
-
 
 #[derive(CandidType, Clone, Debug, Default, Deserialize, Serialize)]
 pub struct CreateFileInput {
@@ -301,7 +281,6 @@ pub struct CanisterIdWrapper {
     pub image_id: Option<u32>,
     pub ledger_id: Option<Principal>,  
     pub owner: Principal,  
-    pub total_supply: Nat,
 }
 
 
@@ -348,24 +327,4 @@ pub struct SaleDetails {
 pub struct SaleDetailsWithID {
     pub ledger_canister_id: String,
     pub sale_details: SaleDetails,
-}
-
-#[derive(CandidType, Deserialize, Debug)]
-pub enum TransferFromError {
-    BadFee { expected_fee: Nat },
-    BadBurn { min_burn_amount: Nat },
-    InsufficientFunds { balance: Nat },
-    InsufficientAllowance { allowance: Nat },
-    TooOld,
-    CreatedInFuture { ledger_time: u64 },
-    Duplicate { duplicate_of: Nat },
-    TemporarilyUnavailable,
-    GenericError { error_code: Nat, message: String },
-}
-
-// Result type for transfer operations
-#[derive(CandidType, Deserialize, Debug)]
-pub enum TransferFromResult {
-    Ok(Nat), // Icrc1BlockIndex is a nat
-    Err(TransferFromError),
 }

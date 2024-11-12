@@ -2,10 +2,8 @@ import React, { useState } from 'react';
 import AnimationButton from '../common/AnimationButton';
 import { Link, useNavigate } from 'react-router-dom';
 import CreateTokenModal from '../components/Modals/CreateTokenModal';
-import { useAuth } from '../StateManagement/useContext/useAuth';
 import ConnectFirst from './ConnectFirst';
-import { useSelector } from 'react-redux';
-import { Principal } from '@dfinity/principal';
+import { useAuth } from '../StateManagement/useContext/useClient';
 
 const CreatePreLaunch = () => {
   const { isAuthenticated, actor } = useAuth();

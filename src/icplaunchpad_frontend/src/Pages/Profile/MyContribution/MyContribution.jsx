@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import l3 from '../../../../assets/images/carousel/l3.png'
 import ProjectCard from "../../Projects/ProjectCard";
 import { useSelector } from "react-redux";
+import MyProjectCard from "./MyProjectCard";
 
 
 

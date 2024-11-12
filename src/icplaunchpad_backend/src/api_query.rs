@@ -1,6 +1,6 @@
 use candid::Principal;
 
-use crate::{read_state, CanisterIndexInfo, SaleDetails, SaleDetailsWithID, State, UserAccount};
+use crate::{read_state, CanisterIndexInfo, SaleDetails, SaleDetailsWithID,UserAccount};
 
 #[ic_cdk::query]
 pub fn get_user_account(principal: Principal) -> Option<UserAccount> {
@@ -36,57 +36,18 @@ pub fn is_account_created() -> String {
 
 #[ic_cdk::query]
 pub fn get_tokens_info() -> Vec<CanisterIndexInfo> {
-    let current_time_ns = ic_cdk::api::time(); // Current time in nanoseconds
-    let current_time = current_time_ns / 1_000_000_000; // Convert to seconds
-
     read_state(|state| {
-        state.canister_ids.iter().zip(state.index_canister_ids.iter()).filter_map(|((canister_key, canister_wrapper), (index_key, _))| {
-            // Check if sale details exist and are active for this token
-            if let Some(sale_wrapper) = state.sale_details.get(&canister_key) { 
-                let sale_details = &sale_wrapper.sale_details;
 
-                // Only include tokens with ongoing/active sales
-                if sale_details.start_time_utc <= current_time && sale_details.end_time_utc > current_time {
-                    return Some(CanisterIndexInfo {
-                        canister_id: canister_key.clone(),
-                        index_canister_id: index_key.clone(),
-                        token_name: canister_wrapper.token_name.clone(),
-                        token_symbol: canister_wrapper.token_symbol.clone(),
-                        total_supply: canister_wrapper.total_supply.clone(), 
-                    });
-                }
+        state.canister_ids.iter().zip(state.index_canister_ids.iter()).map(|((canister_key, canister_wrapper), (index_key, _))| {
+            CanisterIndexInfo {
+                canister_id: canister_key.clone(),
+                index_canister_id: index_key.clone(),
+                token_name: canister_wrapper.token_name.clone(),   // Include token name
+                token_symbol: canister_wrapper.token_symbol.clone(), // Include token symbol
             }
-            None // Exclude tokens without sale details or inactive sales
         }).collect()
     })
 }
-
-
-
-// #[ic_cdk::query]
-// pub fn get_tokens_info() -> Vec<CanisterIndexInfo> {
-//     read_state(|state| {
-//         state.canister_ids.iter().filter_map(|(canister_key, canister_wrapper)| {
-//             // Ensure canister_key is of type String when looking it up
-//             let index_canister_key = canister_key.to_string();
-
-//             // Check if the token has associated index canister details
-//             if let Some(wrapper) = state.index_canister_ids.get(&index_canister_key) {
-//                 Some(CanisterIndexInfo {
-//                     canister_id: canister_key.clone(),
-//                     index_canister_id: wrapper.index_canister_ids.to_string(), // Convert Principal to String
-//                     token_name: canister_wrapper.token_name.clone(),
-//                     token_symbol: canister_wrapper.token_symbol.clone(),
-//                 })
-//             } else {
-//                 // Skip tokens without index canister details
-//                 None
-//             }
-//         }).collect()
-//     })
-// }
-
-
 
 #[ic_cdk::query]
 pub fn get_user_tokens_info() -> Vec<CanisterIndexInfo> {
@@ -103,7 +64,6 @@ pub fn get_user_tokens_info() -> Vec<CanisterIndexInfo> {
                         index_canister_id: index_key.clone(),
                         token_name: canister_wrapper.token_name.clone(),
                         token_symbol: canister_wrapper.token_symbol.clone(),
-                        total_supply: canister_wrapper.total_supply.clone(),
                     })
                 } else {
                     None
@@ -134,7 +94,6 @@ pub fn search_by_token_name_or_symbol(token_identifier: String) -> Option<Canist
                     index_canister_id,
                     token_name: canister_wrapper.token_name.clone(),
                     token_symbol: canister_wrapper.token_symbol.clone(),
-                    total_supply: canister_wrapper.total_supply.clone(),
                 });
             }
         }
@@ -182,13 +141,13 @@ pub fn get_profile_image_id() -> Option<u32> {
 }
 
 #[ic_cdk::query]
-pub fn get_cover_image_id(ledger_id: Principal) -> Option<u32> {
+pub fn get_cover_image_id() -> Option<u32> {
+    let principal = ic_cdk::api::caller();
+
     read_state(|state| {
-        // Search for the given ledger_id in the cover_image_ids map
-        state.cover_image_ids.get(&ledger_id.to_string()).map(|wrapper| wrapper.image_id)
+        state.cover_image_ids.get(&principal.to_string()).map(|wrapper| wrapper.image_id)
     })
 }
-
 
 
 
@@ -202,61 +161,6 @@ pub fn get_sale_params(ledger_canister_id: Principal) -> Result<SaleDetails, Str
     // Return the sale details
     Ok(sale_details)
 }
-
-#[ic_cdk::query]
-pub fn get_user_sale_params() -> Result<Vec<(CanisterIndexInfo, SaleDetails)>, String> {
-    let caller = ic_cdk::caller();
-
-    // Retrieve all tokens created by the user
-    let tokens_info: Vec<CanisterIndexInfo> = read_state(|state: &State| {
-        state.canister_ids.iter()
-            .filter_map(|(canister_key, canister_wrapper)| {
-                if canister_wrapper.owner == caller {
-                    // Convert Principal to String for canister_id
-                    let canister_id = canister_wrapper.canister_ids.to_text();
-
-                    // Retrieve and convert Principal to String for index_canister_id
-                    // Use a reference to canister_key when accessing the index_canister_ids map
-                    let index_canister_id = state.index_canister_ids
-                        .get(&canister_key)  // <- Here, use & to borrow canister_key
-                        .map(|index_wrapper| index_wrapper.index_canister_ids.to_text())
-                        .unwrap_or_default();
-
-                    Some(CanisterIndexInfo {
-                        canister_id: canister_id,
-                        index_canister_id: index_canister_id,
-                        token_name: canister_wrapper.token_name.clone(),
-                        token_symbol: canister_wrapper.token_symbol.clone(),
-                        total_supply: canister_wrapper.total_supply.clone(),
-                    })
-                } else {
-                    None
-                }
-            })
-            .collect()
-    });
-
-    let mut sale_params = Vec::new();
-    for token_info in tokens_info {
-        // Convert String canister_id back to Principal if necessary
-        let canister_id_principal = Principal::from_text(&token_info.canister_id)
-            .map_err(|e| format!("Invalid canister ID: {}", e))?;
-
-        let sale_details: SaleDetails = read_state(|state: &State| {
-            state.sale_details.get(&canister_id_principal.to_string())
-                .map(|wrapper| wrapper.sale_details.clone())
-                .ok_or_else(|| "Sale details not found".to_string())
-        })?;
-
-        sale_params.push((token_info, sale_details));
-    }
-
-    Ok(sale_params)
-}
-
-
-
-
 
 
 #[ic_cdk::query]
@@ -324,36 +228,6 @@ pub fn get_successful_sales() -> Vec<SaleDetailsWithID> {
             })
             .collect()
     })
-}
-
-#[ic_cdk::query]
-pub fn get_all_sales() -> Vec<(SaleDetailsWithID, String)> {
-    let current_time_ns = ic_cdk::api::time();
-    let current_time = current_time_ns / 1_000_000_000; // Convert nanoseconds to seconds
-
-    let mut all_sales = Vec::new();
-
-    read_state(|state| {
-        for (key, wrapper) in state.sale_details.iter() {
-            let sale_status = if wrapper.sale_details.start_time_utc <= current_time && wrapper.sale_details.end_time_utc > current_time {
-                "active"
-            } else if wrapper.sale_details.start_time_utc > current_time {
-                "upcoming"
-            } else {
-                "successful"
-            };
-
-            all_sales.push((
-                SaleDetailsWithID {
-                    ledger_canister_id: key.clone(),
-                    sale_details: wrapper.sale_details.clone(),
-                },
-                sale_status.to_string()
-            ));
-        }
-    });
-
-    all_sales
 }
 
 

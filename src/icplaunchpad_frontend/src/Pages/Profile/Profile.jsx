@@ -7,8 +7,8 @@ import Affiliate from './Affiliate/Affiliate';
 import Favorited from './Favorited/Favorited';
 import RecentlyViewed from './RecentlyViewed/RecentlyViewed';
 import MyContribution from './MyContribution/MyContribution';
-import { useAuth } from '../../StateManagement/useContext/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../StateManagement/useContext/useClient';
 
 const Profile = () => {
   const [activeTab, setActiveTab] = useState("Activities");
@@ -21,12 +21,16 @@ const Profile = () => {
   //     await logout().then(() => window.location.reload()); 
   
   // };
-  const handleLogout = async (e) => {
-    e.preventDefault();
-    await logout().then(() => {
-      navigate("/");
-      window.location.reload(); 
-    });
+  const handleLogout = async () => {
+    try {
+      console.log("Logging out...");
+      await logout();
+
+      window.location.href = "/";
+      console.log("Logged out successfully. Redirecting...");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
 
   useEffect(() => {
@@ -45,12 +49,12 @@ const Profile = () => {
     switch (activeTab) {
       case "Activities":
         return <Activities />;
-      case "Affiliate":
-        return <Affiliate />;
-      case "Favorited":
-        return <Favorited />;
-      case "Recently Viewed":
-        return <RecentlyViewed />;
+      // case "Affiliate":
+      //   return <Affiliate />;
+      // case "Favorited":
+      //   return <Favorited />;
+      // case "Recently Viewed":
+      //   return <RecentlyViewed />;
       case "My Contribution":
         return <MyContribution />;
       default:
@@ -60,9 +64,9 @@ const Profile = () => {
 
   const tabNames = [
     "Activities",
-    "Affiliate",
-    "Favorited",
-    "Recently Viewed",
+    // "Affiliate",
+    // "Favorited",
+    // "Recently Viewed",
     "My Contribution",
   ];
 
@@ -84,7 +88,7 @@ const Profile = () => {
                 <button
                   onClick={handleLogout} 
                   disabled={!isAuthenticated}
-                  className="bg-transparent border border-gray-500 py-2 px-4 w-[200px] rounded-2xl"
+                  className="bg-transparent border border-gray-500 py-2 px-4 w-[200px] rounded-2xl cursor-pointer"
                 >
                   <GradientText>LOGOUT</GradientText>
                 </button>

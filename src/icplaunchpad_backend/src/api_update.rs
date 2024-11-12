@@ -1,3 +1,4 @@
+
 use candid::{encode_one, Nat, Principal};
 use ic_cdk::api::{
     call::{CallResult, RejectionCode},
@@ -12,6 +13,7 @@ use crate::{
     ReturnResult, SaleDetails, SaleDetailsUpdate, SaleDetailsWrapper, TokenCreationResult,
     TokenImageData, UserAccount, UserAccountWrapper, UserInputParams, STATE,
 };
+
 
 #[ic_cdk::update]
 pub fn create_account(user_input: UserAccount) -> Result<(), String> {
@@ -99,10 +101,13 @@ pub fn update_user_account(
 
 #[ic_cdk::update]
 pub async fn create_token(user_params: UserInputParams) -> Result<TokenCreationResult, String> {
+
     let caller = ic_cdk::api::caller();
 
     // Check if the user account already exists
-    let account_exists = read_state(|state| state.user_accounts.contains_key(&caller));
+    let account_exists = read_state(|state| {
+        state.user_accounts.contains_key(&caller)
+    });
 
     if !account_exists {
         return Err("Please create an account before creating a token.".into());
@@ -143,14 +148,6 @@ pub async fn create_token(user_params: UserInputParams) -> Result<TokenCreationR
     let canister_id_principal = canister_id.canister_id;
     let index_canister_id_principal = index_canister_id.canister_id;
 
-    // Calculate total supply from initial balances
-    let total_supply: Nat = user_params
-        .initial_balances
-        .iter()
-        .fold(Nat::from(0u64), |acc, (_, balance)| acc + balance.clone());
-
-    // Clone initial_balances to use in LedgerArg::Init without moving it
-    let cloned_initial_balances = user_params.initial_balances.clone();
 
     let minting_account = params::MINTING_ACCOUNT
         .lock()
@@ -207,8 +204,8 @@ pub async fn create_token(user_params: UserInputParams) -> Result<TokenCreationR
 
     // Index Init Args
     let index_init_args = IndexInitArgs {
-        ledger_id: canister_id_principal, // Ledger canister ID
-        retrieve_blocks_from_ledger_interval_seconds: Some(10), // 10 seconds
+        ledger_id: canister_id_principal,               // Ledger canister ID
+        retrieve_blocks_from_ledger_interval_seconds: Some(10),  // 10 seconds
     };
 
     // Wrap the IndexInitArgs in a variant { Init }
@@ -227,7 +224,7 @@ pub async fn create_token(user_params: UserInputParams) -> Result<TokenCreationR
         mode: CanisterInstallMode::Install,
         canister_id: index_canister_id_principal,
         wasm_module: WasmModule::from(index_wasm_module.clone()),
-        arg: index_init_arg, // Pass the encoded init argument
+        arg: index_init_arg,  // Pass the encoded init argument
     };
 
     // Install code for the ledger canister
@@ -235,7 +232,7 @@ pub async fn create_token(user_params: UserInputParams) -> Result<TokenCreationR
         Ok(_) => {
             mutate_state(|state| {
                 state.canister_ids.insert(
-                    canister_id_principal.to_string(),
+                    canister_id_principal.to_string(), 
                     CanisterIdWrapper {
                         canister_ids: canister_id_principal,
                         token_name: user_params.token_name.clone(), // Store token name
@@ -420,7 +417,7 @@ pub async fn upload_cover_image(
     // Handle the response and update the state accordingly
     match response {
         Ok((Ok(image_id),)) => {
-            // Store the cover image ID with the ledger_id in the cover_image_ids map
+            // Store the cover image ID with the user's principal in the cover_image_ids map
             mutate_state(|state| {
                 let ledger_id_str = image_data.ledger_id.to_string();
 
@@ -498,10 +495,10 @@ pub fn update_sale_params(
 
             // Updating various fields if provided
             if let Some(start_time) = updated_details.start_time_utc {
-                sale_details.start_time_utc = start_time;
+                sale_details.start_time_utc = start_time * 1_000_000;
             }
             if let Some(end_time) = updated_details.end_time_utc {
-                sale_details.end_time_utc = end_time;
+                sale_details.end_time_utc = end_time * 1_000_000;
             }
             if let Some(website) = updated_details.website {
                 sale_details.website = website;
