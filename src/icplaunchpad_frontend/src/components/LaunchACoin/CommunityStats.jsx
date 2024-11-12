@@ -3,7 +3,7 @@ import { FaDiscord, FaTwitter, FaTelegramPlane, FaUsers } from 'react-icons/fa';
 
 const CommunityStats = () => {
   return (
-    <div className="container mx-auto px-[9%] py-12 text-center">
+    <div className="container mx-auto px-[6%] lg:px-[9%] py-12 text-center">
       <h2 className="text-[26px] ss2:text-3xl font-bold font-posterama  mb-4">OUR STRONG COMMUNITY</h2>
       <p className="text-gray-400 mb-8">
         We maintain a worldwide distributed network of dedicated supporters who are keen on backing innovative projects, such as yours.
