@@ -79,6 +79,7 @@ service : () -> {
   get_user_tokens_info : () -> (vec CanisterIndexInfo) query;
   is_account_created : () -> (text) query;
   search_by_token_name_or_symbol : (text) -> (opt CanisterIndexInfo) query;
+  sell_tokens : (nat64, principal, principal, principal) -> (Result);
   update_sale_params : (principal, SaleDetailsUpdate) -> (Result_1);
   update_user_account : (principal, UserAccount) -> (Result_1);
   upload_cover_image : (text, CoverImageData) -> (Result_5);

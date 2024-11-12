@@ -70,47 +70,57 @@ async fn transfer(tokens: u64, user_principal: Principal, icrc1_ledger_canister_
 }
 
 
+async fn sell_transfer(
+    tokens: u64,
+    from_principal: Principal,
+    to_principal: Principal,
+    token_ledger_canister_id: Principal
+) -> Result<Nat, String> {
+    let transfer_args = TransferFromArgs {
+        amount: Nat::from(tokens),
+        to: Account {
+            owner: to_principal,
+            subaccount: None,
+        },
+        fee: None,
+        memo: None,
+        created_at_time: None,
+        spender_subaccount: None,
+        from: Account {
+            owner: from_principal,
+            subaccount: None,
+        },
+    };
 
+    let response: CallResult<(TransferFromResult,)> = ic_cdk::call(
+        token_ledger_canister_id,
+        "icrc2_transfer_from",
+        (transfer_args,),
+    )
+    .await;
 
-// async fn transfer(tokens: u64, user_principal: Principal) -> Result<Nat, String> {
-//     let canister_id: Principal = ic_cdk::api::id();
-//     let ledger_canister_id = Principal::from_text("ryjl3-tyaaa-aaaaa-aaaba-cai").unwrap(); // Specify the ledger canister ID
-
-//     let transfer_args = TransferFromArgs {
-//         amount: Nat::from(tokens),
-//         to: Account {
-//             owner: canister_id,
-//             subaccount: None,
-//         },
-//         fee: None,
-//         memo: None,
-//         created_at_time: None,
-//         spender_subaccount: None,
-//         from: Account {
-//             owner: user_principal,
-//             subaccount: None,
-//         },
-//     };
-
-//     let response: CallResult<(TransferFromResult,)> = ic_cdk::call(
-//         ledger_canister_id,
-//         "icrc2_transfer_from",
-//         (transfer_args,),
-//     )
-//     .await;
-
-//     match response {
-//         Ok((TransferFromResult::Ok(block_index),)) => Ok(block_index),
-//         Ok((TransferFromResult::Err(error),)) => Err(format!("Ledger transfer error: {:?}", error)),
-//         Err((code, message)) => Err(format!("Failed to call ledger: {:?} - {}", code, message)),
-//     }
-// } working function
+    match response {
+        Ok((TransferFromResult::Ok(block_index),)) => Ok(block_index),
+        Ok((TransferFromResult::Err(error),)) => Err(format!("Ledger transfer error: {:?}", error)),
+        Err((code, message)) => Err(format!("Failed to call ledger: {:?} - {}", code, message)),
+    }
+}
 
 
 
 #[update(guard = prevent_anonymous)]
 async fn buy_tokens(tokens: u64, user: Principal, icrc1_ledger_canister_id: Principal) -> Result<Nat, String> {
     transfer(tokens, user, icrc1_ledger_canister_id).await
+}
+
+#[update(guard = prevent_anonymous)]
+async fn sell_tokens(
+    tokens: u64,
+    from_user: Principal,
+    to_user: Principal,
+    token_ledger_canister_id: Principal
+) -> Result<Nat, String> {
+    sell_transfer(tokens, from_user, to_user, token_ledger_canister_id).await
 }
 
 
