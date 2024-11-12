@@ -369,6 +369,7 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
 
       if (response.Ok) {
         dispatch(TokensInfoHandlerRequest());
+        dispatch(UserTokensInfoHandlerRequest());
 
         const { ledger_canister_id, index_canister_id } = response.Ok;
         console.log("ledger_canister_id---",ledger_canister_id,"  ", index_canister_id)

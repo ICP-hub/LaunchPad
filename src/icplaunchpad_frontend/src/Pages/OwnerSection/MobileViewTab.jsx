@@ -4,21 +4,21 @@ import { GoChevronRight } from "react-icons/go";
 import { GoChevronDown } from "react-icons/go";
 import ProjectTokenAbout from "./about/ProjectTokenAbout";
 import PreviousSale from "./PreviousSale/PreviousSale.jsx";
-import FAQsDiscussion from "./FAQsDiscussion/FaqDiscussionTab";
+import FAQsDiscussion from "./FAQsDiscussion/FaqDiscussionTab.jsx";
 import Pooolinfo from "./pooolinfo/Pooolinfo";
 import Token from "./token/Token";
 import "./tokenpage.css";
 
-const MobileViewTab = ({actor}) => {
+const MobileViewTab = ({actor , poolData, presaleData}) => {
     const [activeTab, setActiveTab] = useState("About");
   const renderContent = () => {
     switch (activeTab) {
       case "ABOUT":
-        return <ProjectTokenAbout />;
+        return <ProjectTokenAbout presaleData={presaleData} />;
       case "TOKEN":
-        return <Token actor={actor}/>;
+        return <Token ledger_canister_id ={poolData?.canister_id} actor={actor}/>;
       case "POOL INFO":
-        return <Pooolinfo />;
+        return <Pooolinfo poolData={poolData}/>;
       case "FAQs & DISCUSSION":
         return <FAQsDiscussion />;
       case "PREVIOUS SALE":

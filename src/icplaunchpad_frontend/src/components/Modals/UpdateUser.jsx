@@ -154,7 +154,7 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
         overlayClassName="fixed z-[100] inset-0 bg-opacity-50"
         ariaHideApp={false}
       >
-        <div className="bg-[#222222] p-6 rounded-2xl text-white max-h-[100vh] overflow-y-auto no-scrollbar w-[786px] relative">
+        <div className="bg-[#222222] p-6 rounded-2xl text-white max-h-[90vh] overflow-y-auto no-scrollbar w-[786px] relative">
           <button onClick={closeModal} className="absolute top-2 right-4 text-[30px] text-white">
             <TfiClose />
           </button>

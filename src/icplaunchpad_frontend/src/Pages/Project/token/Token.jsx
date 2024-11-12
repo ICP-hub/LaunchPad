@@ -38,7 +38,7 @@ const TokenTab = ({ ledgerId }) => {
       <div className="flex justify-between mb-4">
         <span>Address</span>
         <span className="border-b-2 ml-2 text-right overflow-hidden text-ellipsis whitespace-nowrap">
-          0xd8319162260Db2Fa5027AACFfBf52E319b1E7C0
+          {ledgerId}
         </span>
       </div>
       <p className="text-xs mb-6">Do not send BNB to the token address</p>

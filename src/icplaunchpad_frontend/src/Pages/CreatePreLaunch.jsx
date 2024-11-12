@@ -1,72 +1,102 @@
 import React, { useState } from 'react';
 import AnimationButton from '../common/AnimationButton';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import CreateTokenModal from '../components/Modals/CreateTokenModal';
 import ConnectFirst from './ConnectFirst';
 import { useAuth } from '../StateManagement/useContext/useClient';
 
 const CreatePreLaunch = () => {
-  const { isAuthenticated }=useAuth()
+  const { isAuthenticated, actor } = useAuth();
   const [modalIsOpen, setIsOpen] = useState(false);
+  const [error,setError]=useState(null);
+  const navigate = useNavigate();
+  const userToken = useSelector((state) => state.UserTokensInfo.data);
 
+  const handleVerifyToken = async () => {
+    if ( userToken || userToken.length > 0) {
+      const missingSaleParams = await Promise.all(
+        userToken.map(async (token) => {
+          try {
+            const ledgerPrincipal = Principal.fromText(token.canister_id);
+            const response = await actor.get_sale_params(ledgerPrincipal);
+            console.log(response)
+            if (response.Err)
+               return token;
+
+          } catch (error) {
+            console.error('Error fetching sale params:', error);
+          }
+          return null;
+        })
+      ).then((results) => results.filter((token) => token !== null));
+     
+      if( missingSaleParams.length == 0 ){
+          setError("There is no unverified token available. Please create a new token")
+      }
+      navigate("/verify-token", {
+        state: {ledger_canister_id: missingSaleParams[missingSaleParams.length-1].canister_id },}
+      )
+      
+
+      
+    }
+  };
 
   const openModal = () => {
     setIsOpen(true);
   };
 
   return (
-    <div className="flex justify-center items-center  bg-black text-white">
+    <div className="flex justify-center items-center bg-black text-white">
       <div className="w-full max-w-[1070px] p-8 rounded-2xl">
         <h1 className="text-3xl font-bold text-start font-posterama mb-6">CREATE PRELAUNCH</h1>
 
-        { !isAuthenticated ? <ConnectFirst/>
-             :
+        {!isAuthenticated ? (
+          <ConnectFirst />
+        ) : (
           <div className="bg-[#222222] p-4 rounded-lg">
-          {/* Chain Text with Gray Background */}
-          <div className="flex items-center mb-8 bg-[rgb(68,68,68)] p-2 mt-[-15px] mx-[-15px] rounded-2xl">
-            <span className="text-white text-[20px]">Chain</span>
-          </div>
+            {/* Chain Text with Gray Background */}
+            <div className="flex items-center mb-8 bg-[rgb(68,68,68)] p-2 mt-[-15px] mx-[-15px] rounded-2xl">
+              <span className="text-white text-[20px]">Chain</span>
+            </div>
 
-
-
-          {/* Search Label with Placeholder */}
-          <div className="mb-8">
-            <label className="block text-[16px] font-medium text-white mb-4">Token Address</label>
-            <div className="flex items-center justify-between bg-[#444444] rounded-2xl space-x-2">
-              <div className='w-full'>
+            {/* Search Label with Placeholder */}
+            <div className="mb-8">
+              <label className="block text-[16px] font-medium text-white mb-4">Token Address</label>
+              <div className="flex items-center justify-between bg-[#444444] rounded-2xl space-x-2">
                 <input
                   type="text"
                   className="w-full p-2 bg-[#444444] text-white rounded-md border-none outline-none"
                   placeholder="Search"
                 />
+                <button
+                  onClick={openModal}
+                  className="border-1 bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5] text-black w-[100px] ss2:w-[130px] xxs1:w-[200px] md:w-[250px] h-[38px] lg:h-[38px] text-[12px] xxs1:text-[16px] md:text-[18px] font-[600] rounded-2xl"
+                >
+                  CREATE TOKEN
+                </button>
+                {modalIsOpen && <CreateTokenModal modalIsOpen={modalIsOpen} setIsOpen={setIsOpen} />}
               </div>
-              <div>
-              <button onClick={openModal} className='border-1   bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5] 
-             text-black   w-[100px] ss2:w-[130px] xxs1:w-[200px] md:w-[250px] h-[38px] lg:h-[38px]
-                 text-[12px] xxs1:text-[16px] md:text-[18px] font-[600] rounded-2xl'>
-                CREATE TOKEN
-              </button>
-              <CreateTokenModal modalIsOpen={modalIsOpen} setIsOpen={setIsOpen} />
             </div>
+
+            {/* Information List */}
+            <div className="bg-[#F5F5F51A] text-white p-3 rounded-md mb-8">
+              <ul className="text-[15px] px-2 ss2:px-7 py-4 list-disc">
+                <li>Lorem ipsum dolor sit amet consectetur. Egestas faucibus suspendisse turpis cras sed bibendum massa arcu.</li>
+                <li>Quisque enim amet ipsum ipsum faucibus leo adipiscing molestie. Tincidunt enim dis lobortis ac gravida. Non mollis lacus convallis non sit ac sit.</li>
+              </ul>
             </div>
-          </div>
 
-          {/* 3 Line Lorem Ipsum with Light Background */}
-          <div className="bg-[#F5F5F51A]  text-white p-3 rounded-md mb-8">
-            <ul className='text-[15px] px-2 ss2:px-7 py-4 list-disc '>
-              <li>  Lorem ipsum dolor sit amet consectetur. Egestas faucibus suspendisse turpis cras sed bibendum massa arcu.</li>
-              <li> Quisque enim amet ipsum ipsum faucibus leo adipiscing molestie. Tincidunt enim dis lobortis ac gravida. Non mollis lacus convallis non sit ac sit.</li>
-            </ul>
+            {/* Gradient Button */}
+            <div className="flex justify-center items-center">
+              <Link onClick={handleVerifyToken}>
+                <AnimationButton text="VERIFY TOKEN" />
+              </Link>
+            </div>
+            {/* error message */}
+            <p className='text-center mt-5 mb-2 text-red-500'> {error && error} </p>
           </div>
-
-          {/* Gradient Button */}
-          <div className='flex justify-center items-center'>
-            <Link to="/verify-token">
-              <AnimationButton text="VERIFY TOKEN" />
-            </Link>
-          </div>
-        </div>
-        }
+        )}
       </div>
     </div>
   );

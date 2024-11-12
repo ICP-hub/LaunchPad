@@ -9,14 +9,16 @@ import { FaTrash } from 'react-icons/fa';
 import { formatDateForDateTimeLocal } from '../../utils/formatDateFromBigInt';
 import { useAuth } from '../../StateManagement/useContext/useClient';
 // import { formatDateFromBigInt } from '../../utils/formatDateFromBigInt';
-const UpdateToken = ({ ledgerId, tokenModalIsOpen, setTokenModalIsOpen }) => {
+
+const UpdateToken = ({ ledgerId, tokenModalIsOpen,setRenderComponent, setTokenModalIsOpen }) => {
     const { actor, isAuthenticated } = useAuth();
     const { register, handleSubmit, formState: { errors }, reset, control, setValue, clearErrors, setError } = useForm();
     const [validationError, setValidationError] = useState('');
     const [termsAccepted, setTermsAccepted] = useState(false);
     const [tokenData, setTokenData] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
-
+    
+    const dispatch= useDispatch();
     const ledgerPrincipal = Principal.fromText(ledgerId);
     const [links, setLinks] = useState([{ url: '' }]);
     console.log("Start time and end time :", tokenData);
@@ -25,7 +27,7 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen, setTokenModalIsOpen }) => {
             getTokenData();
         }
     }, [isAuthenticated, tokenModalIsOpen]);
-   
+
     // useEffect(() => {
     //     if (tokenData) {
     //         const socialLinks = tokenData.social_links?.map((link) => ({ url: link })) || [{ url: '' }];
@@ -33,7 +35,7 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen, setTokenModalIsOpen }) => {
     //         console.log("Updated social links:", socialLinks);
     //         const startTime = formatDateForDateTimeLocal(tokenData.start_time_utc);
     //         const endTime = formatDateForDateTimeLocal(tokenData.end_time_utc);
-          
+
     //         setValue("description", tokenData.description || '');
     //         setValue("website", tokenData.website || '');
     //         setValue("start_time_utc", startTime);
@@ -46,13 +48,14 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen, setTokenModalIsOpen }) => {
             const socialLinks = tokenData.social_links?.map((link) => ({ url: link })) || [{ url: '' }];
             setLinks(socialLinks);
 
-            reset({  
+            reset({
                 description: tokenData.description || '',
                 website: tokenData.website || '',
                 project_video: tokenData.project_video || '',
                 start_time_utc: formatDateForDateTimeLocal(tokenData.start_time_utc),
                 end_time_utc: formatDateForDateTimeLocal(tokenData.end_time_utc),
-                links: socialLinks.map(link => link.url)
+                links: socialLinks.map(link => link.url),
+                project_video: tokenData.project_video
             });
         }
     }, [tokenData, reset]);
@@ -68,7 +71,7 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen, setTokenModalIsOpen }) => {
     };
 
     const validateTimes = (startTime, endTime) => {
-        if (endTime < startTime) {
+        if (endTime <= startTime) {
             setValidationError('Start time should be less than end time.');
             setIsSubmitting(false);
             return false;
@@ -77,13 +80,14 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen, setTokenModalIsOpen }) => {
     };
 
     const onSubmit = async (data) => {
-        console.log("submit start,",data)
+        console.log("submit start,", data)
         setIsSubmitting(true);
         setValidationError('');
-       
+
         const {
             description,
             website,
+            project_video,
             end_time_utc,
             start_time_utc,
             project_video,
@@ -97,7 +101,8 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen, setTokenModalIsOpen }) => {
 
         const startTime = Math.floor(new Date(start_time_utc).getTime() / 1000);
         const endTime = Math.floor(new Date(end_time_utc).getTime() / 1000);
-        console.log("start time submit ,",startTime)
+
+        console.log("start time submit ,", startTime)
         console.log("end time submit ,", endTime)
         if (!validateTimes(startTime, endTime)) return;
 
@@ -107,6 +112,7 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen, setTokenModalIsOpen }) => {
         const updatedTokenData = {
             description: description ? [description] : [],
             website: website ? [website] : null,
+            project_video: project_video ? [project_video] : null,
             end_time_utc: endTime ? [endTime] : [],
             start_time_utc: startTime ? [startTime] : [],
             project_video: project_video ? [project_video] : null,
@@ -116,6 +122,14 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen, setTokenModalIsOpen }) => {
         try {
             const response = await actor.update_sale_params(ledgerPrincipal, updatedTokenData);
             console.log('Token updated:', response);
+              
+            if(response){
+            setRenderComponent((prev)=>!prev);    
+            dispatch(upcomingSalesHandlerRequest());
+            dispatch(SuccessfulSalesHandlerRequest())
+            
+            }
+
             if (response?.Err) {
                 setValidationError(response.Err);
             } else {
@@ -153,6 +167,7 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen, setTokenModalIsOpen }) => {
         setValue(`links.${index}`, value);
     };
     const InputField = ({ label, name, type = 'text' }) => (
+
         <div className="w-full xxs1:w-1/2 xxs1:px-2 mb-4">
             <label className="block text-[19px] mb-1">{label}</label>
             <input
@@ -174,7 +189,7 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen, setTokenModalIsOpen }) => {
                 overlayClassName="fixed z-[100] inset-0 bg-opacity-50"
                 ariaHideApp={false}
             >
-                <div className="bg-[#222222] p-6 rounded-2xl text-white max-h-[100vh] overflow-y-auto no-scrollbar w-[786px] relative">
+                <div className="bg-[#222222] p-6 rounded-2xl text-white max-h-[90vh] overflow-y-auto no-scrollbar w-[786px] relative">
                     <div className="bg-[#FFFFFF4D] px-4 py-1 mb-4 rounded-2xl relative">
                         <button
                             onClick={closeModal}
@@ -186,13 +201,13 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen, setTokenModalIsOpen }) => {
                     </div>
 
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                       
+
 
                         <div className="flex flex-col xxs1:flex-row justify-between mb-[50px] xxs1:mb-8">
                             <InputField label="Start Time" name="start_time_utc" type="datetime-local" />
                             <InputField label="End Time" name="end_time_utc" type="datetime-local" />
                         </div>
-                       
+
                         <div className="mb-6">
                             <label className="block text-[19px] mb-1">Website</label>
                             <input
@@ -209,6 +224,7 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen, setTokenModalIsOpen }) => {
                             />
                             {errors.project_video && <p className="text-red-500">{errors.project_video.message}</p>}
                         </div>
+
                         {/* Social Links */}
                         <div className="mb-4">
                             <h2 className="block text-[19px] mb-1">Social Links</h2>
@@ -219,11 +235,11 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen, setTokenModalIsOpen }) => {
                                             <div className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full">
                                                 {getSocialLogo(links[index].url)}
                                             </div>
-                                           
+
                                             <Controller
                                                 name={`links.${index}`}
                                                 control={control}
-                                                defaultValue={links[index]?.url || ''}  
+                                                defaultValue={links[index]?.url || ''}
                                                 render={({ field }) => (
                                                     <input
                                                         type="text"
@@ -232,7 +248,7 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen, setTokenModalIsOpen }) => {
                                                         {...field}
                                                         onChange={(e) => {
                                                             field.onChange(e);
-                                                            updateLink(index, e.target.value); 
+                                                            updateLink(index, e.target.value);
                                                         }}
                                                     />
                                                 )}

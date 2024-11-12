@@ -45,7 +45,7 @@ const FaqDiscussionTab = () => {
   };
 
   return (
-    <div className="max-w-full mx-2   rounded-lg">
+    <div className="w-full max-w-full  p-6  rounded-lg">
       {/* FAQ Section */}
       <div className="mb-6">
         <h2 className="text-xl text-white mb-4">Frequently Asked Questions</h2>
@@ -84,7 +84,7 @@ const FaqDiscussionTab = () => {
           placeholder="Start The Discussion..."
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
-          className='w-[800px] h-[30px] bg-[#222222]'
+          className='w-full h-[30px] bg-[#222222]'
         />
          <div className='justify-center items-center'>
         <button

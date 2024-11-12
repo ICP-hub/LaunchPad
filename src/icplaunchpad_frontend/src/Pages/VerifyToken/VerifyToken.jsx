@@ -188,7 +188,7 @@
 
 
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -205,6 +205,7 @@ import { useDispatch } from "react-redux";
 import { SetLedgerIdHandler } from "../../StateManagement/Redux/Reducers/LedgerId";
 import { upcomingSalesHandlerRequest } from "../../StateManagement/Redux/Reducers/UpcomingSales";
 import { SuccessfulSalesHandlerRequest } from "../../StateManagement/Redux/Reducers/SuccessfulSales";
+import { SaleParamsHandlerRequest } from "../../StateManagement/Redux/Reducers/SaleParams";
 // Validation schema using Yup
 const getSchemaForStep = (step) => {
   switch (step) {
@@ -228,14 +229,28 @@ const getSchemaForStep = (step) => {
             yup.ref("minimumBuy"),
             "Maximum buy must be greater than minimum buy"
           ),
-        startTime: yup
+          startTime: yup
           .date()
           .required("Start time is required")
           .min(new Date(), "Start time must be in the future"),
         endTime: yup
           .date()
           .required("End time is required")
-          .min(yup.ref("startTime"), "End time should be after the start time"),
+          .min(
+            yup.ref("startTime"), 
+            "End time should be after the start time"
+          )
+          .test(
+            "is-at-least-one-minute-later",
+            "End time should be at least one minute after the start time",
+            function (value) {
+              const { startTime } = this.parent;
+              if (startTime && value) {
+                return value.getTime() >= new Date(startTime).getTime() + 60000;
+              }
+              return true;
+            }
+          ),
         social_links: yup
           .array()
           .of(
@@ -331,6 +346,7 @@ const convertFileToBytes = async (file) => {
 };
 const VerifyToken = () => {
   const [currentStep, setCurrentStep] = useState(1);
+  const [tokenData, setTokenData] = useState({});
   const [presaleDetails, setPresaleDetails] = useState({ social_links: [] });
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -339,6 +355,12 @@ const VerifyToken = () => {
   const { formData, ledger_canister_id, index_canister_id } = location.state || {};
   const [isSubmitting, setIsSubmitting] = useState(false);
   const dispatch=useDispatch();
+
+  useEffect(()=>{
+    if(formData)
+     setTokenData(formData)
+  },[formData])
+
   const {
     register,
     handleSubmit,
@@ -358,12 +380,14 @@ const VerifyToken = () => {
   });
 
   console.log("Form validation errors:", errors);
+
   // Function to submit presale details
   const submitPresaleDetails = async (data) => {
     console.log("Submitting presale details with data:", data);
     try {
       setIsSubmitting(true);
       const {
+        token_name=tokenData?.token_name,
         presaleRate,
         minimumBuy,
         maximumBuy,
@@ -373,12 +397,14 @@ const VerifyToken = () => {
         description,
         social_links,
         project_video,
+        coverImageURL,
         website = "",
       } = presaleDetails;
 
       const start_time_utc = Math.floor(new Date(startTime).getTime() / 1000);
       const end_time_utc = Math.floor(new Date(endTime).getTime() / 1000);
       const TokenPicture = await convertFileToBytes(logoURL);
+      const CoverPicture = await convertFileToBytes(coverImageURL);
       const creatorPrincipal =
         typeof principal === "string"
           ? Principal.fromText(principal)
@@ -396,12 +422,14 @@ const VerifyToken = () => {
         creator: creatorPrincipal,
         social_links: socialLinksURLs,
         website,
-        project_video
+        project_video,
+        
       };
   
-      const ledgerPrincipalId = ledger_canister_id
-        ? Principal.fromUint8Array(ledger_canister_id)
-        : null;
+      const ledgerPrincipalId = typeof ledger_canister_id !== 'string' && ledger_canister_id
+      ? Principal.fromUint8Array(ledger_canister_id)
+      : Principal.fromText(ledger_canister_id)
+    
       if (!ledgerPrincipalId) throw new Error("Invalid ledger canister ID");
 
       const response = await actor.create_sale(ledgerPrincipalId, presaleData);
@@ -413,8 +441,19 @@ const VerifyToken = () => {
           content: [TokenPicture],
           ledger_id: ledgerPrincipalId,
         };
-        await actor.upload_token_image("br5f7-7uaaa-aaaaa-qaaca-cai", imgUrl);
+       const res= await actor.upload_token_image("br5f7-7uaaa-aaaaa-qaaca-cai", imgUrl);
+       console.log("uploaded img response ",res)
       }
+
+      if (CoverPicture) {
+        const imgUrl = {
+          content: [CoverPicture],
+          ledger_id: ledgerPrincipalId,
+        };
+        const res=await actor.upload_cover_image("br5f7-7uaaa-aaaaa-qaaca-cai", imgUrl);
+        console.log("uploaded cover img response ",res)
+      }
+      
       console.log("Submission successful");
 
       // adding ledger_canister_id and index_canister_id in redux store   
@@ -424,12 +463,11 @@ const VerifyToken = () => {
           index_canister_id: index_canister_id,
         })
       );
-      
+        
       // for rerendering the tokens 
+      // SaleParamsHandlerRequest()
       dispatch(upcomingSalesHandlerRequest());
       dispatch(SuccessfulSalesHandlerRequest());
-
-
 
       navigate("/token-page", { state: { ledger_canister_id } });
     } catch (error) {
@@ -448,7 +486,7 @@ const VerifyToken = () => {
     setPresaleDetails((prev) => ({
       ...prev,
       ...data,
-      ...formData,
+      ...tokenData,
     }));
     console.log("Moving to the next step:", currentStep);
     if (currentStep < 4) {
@@ -468,7 +506,9 @@ const VerifyToken = () => {
         {currentStep === 1 && (
           <VerifyTokenTab
             register={register}
-            tokenData={formData}
+            tokenData={tokenData}
+            setTokenData={setTokenData}
+            ledger_canister_id={ledger_canister_id && ledger_canister_id}
             setPresaleDetails={setPresaleDetails}
             presaleDetails={presaleDetails}
             errors={errors}
@@ -532,7 +572,7 @@ const VerifyToken = () => {
           </button>
         )}
       </div>
-      {error && <div className="text-red-500 mt-4 px-8">{error}</div>}
+      {error && <div className="text-red-500 mt-8 px-8">{error}</div>}
     </div>
   );
 };

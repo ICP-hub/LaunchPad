@@ -51,9 +51,8 @@ const UpcomingSales = React.forwardRef((props, ref) => {
 
   // Handle navigation to the projects page
   const handleViewMoreClick = () => {
-    if (salesData.length > 0) {
-      navigate('/projects', { state: { salesData } });
-    }
+    if (salesData.length > 0)
+      navigate('/projects', { state: { salesData,saleType:"upcoming" } });
   };
 
   return (
@@ -70,7 +69,7 @@ const UpcomingSales = React.forwardRef((props, ref) => {
       <div className="flex lg:flex-row flex-col items-center flex-wrap w-[95%] m-auto justify-around">
         {salesData.length > 0 ? (
           salesData.slice(0, 3).map((sale, index) => (
-            <ProjectCard key={index} projectData={sale} index={index} />
+            <ProjectCard key={index} projectData={sale} saleType="upcoming" index={index} />
           ))
         ) : (
           <h1 className="text-xl my-16"> Data Not Found... </h1>

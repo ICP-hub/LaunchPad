@@ -15,9 +15,9 @@ const ProjectLists = () => {
   const salesData = useSelector((state)=>state.UserTokensInfo.data)
 
   // Handle navigation to the projects page
-  const handleViewMoreClick2 = () => {
-    navigate('/project');
-  };
+  // const handleViewMoreClick2 = () => {
+  //   navigate('/project');
+  // };
   
 
   return (
@@ -26,7 +26,7 @@ const ProjectLists = () => {
       
       {salesData.map((sale, index) => (
     
-        <MyProjectCard projectData={sale} key={index} />
+        <ProjectCard isUserToken={true} projectData={sale} key={index} />
       ))}
     </div>
     </div>
