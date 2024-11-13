@@ -165,7 +165,7 @@ const VerifyToken = () => {
   const { actor, principal } = useAuth();
   const { formData, ledger_canister_id, index_canister_id } = location.state || {};
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const dispatch=useDispatch();
+  // const dispatch=useDispatch();
 
   useEffect(()=>{
     if(formData)
@@ -279,10 +279,6 @@ const VerifyToken = () => {
       // dispatch(upcomingSalesHandlerRequest());
       // dispatch(SuccessfulSalesHandlerRequest());
 
-
-      // SaleParamsHandlerRequest()
-      dispatch(upcomingSalesHandlerRequest());
-      dispatch(SuccessfulSalesHandlerRequest());
 
       navigate("/token-page", { state: { ledger_canister_id } });
     } catch (error) {
