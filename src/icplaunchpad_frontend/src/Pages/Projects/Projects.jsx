@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import ProjectCard from "./ProjectCard.jsx";
 import { TokensInfoHandlerRequest } from "../../StateManagement/Redux/Reducers/TokensInfo.jsx";
+import { useAuth } from "../../StateManagement/useContext/useClient.jsx";
 
 const ProjectLists = () => {
   const [selectedTab, setSelectedTab] = useState("all");
@@ -19,12 +20,33 @@ const ProjectLists = () => {
   const dispatch= useDispatch();
   
   const salesData = location.state?.salesData;
-  const saleType = location.state?.saleType || "ongoing";
-  const projectsData = useSelector((state) => state?.TokensInfo?.data);
+  
+  
+  const { actor } = useAuth();
+  const [projectsData, setprojectsData] = useState([]);
+
+  console.log("Fetched tokens in ProjectLists:", projectsData);
 
   useEffect(() => {
-    dispatch(TokensInfoHandlerRequest());
-  }, []);
+    const fetchUserTokensInfo = async () => {
+      try {
+        if (actor) {
+          const response = await actor.get_tokens_info();
+          if (response && response.length > 0) {
+            setprojectsData(response);
+          } else {
+            console.log("No tokens data available or empty response.");
+          }
+        } else {
+          console.log("User account has not been created yet.");
+        }
+      } catch (error) {
+        console.error("Error fetching user tokens info:", error.message);
+      }
+    };
+
+    fetchUserTokensInfo();
+  }, [actor]);
 
   useEffect(() => {
     const allTokens = salesData || projectsData;

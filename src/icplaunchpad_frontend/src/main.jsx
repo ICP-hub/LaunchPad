@@ -24,16 +24,23 @@ Modal.setAppElement('#root');
 
 // Define signers and canister ID
 const signers = [NFIDW, Plug, InternetIdentity];
-const canisterID = import.meta.env.VITE_CANISTER_ID_ICPLAUNCHPAD_BACKEND;
+const canisterID = process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND;
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <IdentityKitProvider
+    onConnectSuccess={(res) => {
+      console.log("logged in successfully", res);
+    }}
+    onDisconnect={(res) => {
+      console.log("logged out successfully", res);
+    }}
     signers={signers}
     theme={IdentityKitTheme.SYSTEM}
     authType={IdentityKitAuthType.DELEGATION}
+    // authType={IdentityKitAuthType.ACCOUNTS}
     signerClientOptions={{
       targets: [canisterID],
-      retryTimes: 2                           
+                              
     }}
   >
     <React.StrictMode>

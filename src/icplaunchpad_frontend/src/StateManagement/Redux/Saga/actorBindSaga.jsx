@@ -19,7 +19,7 @@ function* initActorSaga() {
     const actor = yield call(createActor, canisterId, {
       agentOptions: { identity, verifyQuerySignatures: false },
     });
-
+  
     console.log('Actor initialized in initActorSaga:', actor);
 
     yield put(setActor(actor));

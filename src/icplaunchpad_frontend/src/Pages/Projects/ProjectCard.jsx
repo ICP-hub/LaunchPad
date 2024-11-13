@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import person1 from '../../../assets/images/carousel/person1.png';
 import l3 from '../../../assets/images/carousel/l3.png';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../StateManagement/useContext/useAuth';
 import { Principal } from '@dfinity/principal';
 import SaleStart from '../OwnerSection/SaleStart';
+import { useAuth } from '../../StateManagement/useContext/useClient';
 
 const ProjectCard = ({ isUserToken, projectData, saleType, index }) => {
   const navigate = useNavigate();

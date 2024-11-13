@@ -1,319 +1,207 @@
-// import React, { createContext, useContext, useState, useEffect } from "react";
-// import { useAgent, useIdentityKit } from "@nfid/identitykit/react";
-// import { createActor } from "../../../../declarations/icplaunchpad_backend/index";
-// import { Navigate, useNavigate } from "react-router-dom";
-// import toast from "react-hot-toast";
-// import { DelegationIdentity } from "@dfinity/identity";
 
-// const AuthContext = createContext();
-
-// const canisterID = process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND;
-// export const useAuthClient = () => {
-//     const [isConnected, setIsConnected] = useState(false);
-//     const signerId = localStorage.getItem("signerId");
-//     const [wallet, setWallet] = useState("");
-//     // const [delegationExpiry, setDelegationExpiry] = useState(null)
-//     const delegationExpiry =
-//         Number(localStorage.getItem("delegationExpiry")) || 0;
-//     const {
-//         user,
-//         connect,
-//         disconnect: identityKitDisconnect,
-//         identity,
-//         icpBalance,
-//     } = useIdentityKit();
-//     const authenticatedAgent = useAgent();
-//     console.log('user', user)
-//     const disconnect = () => {
-//         identityKitDisconnect();
-//         setIsConnected(false);
-//         localStorage.removeItem("delegationExpiry");
-//     };
-//     console.log("deligation", delegationExpiry);
-
-//     const checkDelegationExpiry = () => {
-//         if (delegationExpiry) {
-//             const currentTime = Date.now();
-//             console.log(
-//                 "Delegation Expiry Time:",
-//                 new Date(delegationExpiry).toLocaleString()
-//             );
-
-//             if (currentTime >= delegationExpiry) {
-//                 toast.success("Delegation expired, logging out...");
-//                 disconnect();
-//                 //window.location.href = "/login";
-//                 setTimeout(() => {
-//                     window.location.reload(true); // Force page reload
-//                 }, 2000); // Optional delay to allow toast to show fully
-//             }
-//         }
-//     };
-
-//     useEffect(() => {
-//         if (user && identity !== "AnonymousIdentity") {
-//             setIsConnected(true);
-
-//             const expiryTime = Number(
-//                 identity?._delegation?.delegations?.[0]?.delegation?.expiration
-//             );
-//             if (expiryTime) {
-//                 localStorage.setItem("delegationExpiry", expiryTime / 1e6);
-//             }
-
-//             if (signerId === "Plug") {
-//                 setWallet("plug");
-//             } else if (signerId === "NFIDW") {
-//                 setWallet("nfidw");
-//             } else {
-//                 setWallet("sometingwrong");
-//             }
-
-//             const interval = setInterval(checkDelegationExpiry, 1000);
-
-//             return () => clearInterval(interval);
-//         } else {
-//             setIsConnected(false);
-//         }
-//     }, [user, delegationExpiry, connect]);
-
-
-//     async function updateClient({ agent, identity, principal }, walletType) {
-//         if (!agent || !identity || !principal) {
-//             console.error("Invalid authentication details. Aborting updateClient.");
-//             return;
-//         }
-
-//         let isAuthenticated = false;
-
-//         // Handle authentication checks for different wallet types
-//         switch (walletType) {
-//             case "authClient":
-//                 isAuthenticated = await authClient.isAuthenticated();
-
-//                 // Fetch root key only in non-production environments for authClient
-//                 if (isAuthenticated && process.env.DFX_NETWORK !== "ic") {
-//                     try {
-//                         await agent.fetchRootKey();
-//                     } catch (err) {
-//                         console.warn("Unable to fetch root key:", err);
-//                     }
-//                 }
-//                 break;
-
-//             case "NFID":
-//                 isAuthenticated = !!identity;
-//                 break;
-
-//             case "Plug":
-//                 isAuthenticated = await window.ic.plug.isConnected();
-//                 break;
-
-//             default:
-//                 console.error("Unknown wallet type.");
-//                 return;
-//         }
-
-//         if (!isAuthenticated) {
-//             console.error("User is not authenticated. Aborting updateClient.");
-//             return;
-//         }
-
-//         // Create the actor with the authenticated agent
-//         const actor = createActor(process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND, { agent });
-
-//         // Dispatch login success and actor state updates
-//         dispatch(loginSuccess({ isAuthenticated: true, principal, defaultIdentity: identity }));
-//         dispatch(setActor(actor));
-
-//         // Update local state
-//         setActorState(actor);
-//         setIsAuthenticated(true);
-//         setPrincipal(principal);
-//     }
-
-
-
-//     const host = "http://127.0.0.1:4943/";
-//     const createCustomActor = async (canisterId) => {
-//         try {
-//             console.log("Identity value before agent creation:", defaultIdentity);
-//             console.log("Creating actor for canister ID:", canisterId);
-
-//             const agent = new HttpAgent({ defaultIdentity, host });
-
-//             if (process.env.DFX_NETWORK !== "ic") {
-//                 await agent.fetchRootKey().catch((err) => {
-//                     console.warn(
-//                         "Unable to fetch root key. Check your local replica.",
-//                         err
-//                     );
-//                 });
-//             }
-
-//             const ledgerActor = Actor.createActor(ledgerIDL, { agent, canisterId });
-//             console.log("Created ledger actor:", ledgerActor);
-//             return ledgerActor;
-//         } catch (err) {
-//             console.error("Error creating ledger actor:", err);
-//         }
-//     };
-
-
-//     // const createCustomActor = async (canisterId) => {
-//     //     const agent = new HttpAgent({ identity, host: process.env.HOST || "https://ic0.app" });
-//     //     if (process.env.DFX_NETWORK !== "ic") {
-//     //         await agent.fetchRootKey().catch((err) => console.warn("Unable to fetch root key:", err));
-//     //     }
-//     //     return Actor.createActor(ledgerIDL, { agent, canisterId });
-//     // };
-//     return {
-//         isConnected,
-//         delegationExpiry,
-//         wallet,
-//         login: connect,
-//         logout: disconnect,
-//         createCustomActor,
-//         balance: icpBalance,
-//         principal: user?.principal,
-//         actor: createActor(canisterID, {
-//             agentOptions: { identity, verifyQuerySignatures: false },
-//         }),
-//     };
-// };
-
-// export const AuthProvider = ({ children }) => {
-//     const auth = useAuthClient();
-//     return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
-// };
-
-// export const useAuth = () => useContext(AuthContext);
-
-
-
-
-
-
-
-
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { useAgent, useIdentityKit } from "@nfid/identitykit/react";
-import { createActor } from "../../../../declarations/icplaunchpad_backend/index";
-import toast from "react-hot-toast";
 import { Actor, HttpAgent } from "@dfinity/agent";
+
+import { createActor } from "../../../../declarations/icplaunchpad_backend/index";
 import { useDispatch } from "react-redux";
-import { loginSuccess, logoutSuccess, logoutFailure, loginStart } from "../Redux/Reducers/InternetIdentityReducer";
+import { loginSuccess, setAuthContext } from "../Redux/Reducers/InternetIdentityReducer";
 import { setActor } from "../Redux/Reducers/actorBindReducer";
 
+import { idlFactory as ledgerIDL } from "./ledger.did.js";
 const AuthContext = createContext();
 
+const canisterID = process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND;
 export const useAuthClient = () => {
+    const identityKit = useIdentityKit();
+
+
     const [isConnected, setIsConnected] = useState(false);
-    const [wallet, setWallet] = useState("");
-    const [actor, setActorState] = useState(null);
     const [principal, setPrincipal] = useState(null);
+    const [backendActor, setBackendActor] = useState(createActor(canisterID));
+    const [orderPlacementLoad, setOrderPlacementLoad] = useState(false);
+    const [delegation, setDelegation] = useState(null);
+    const [agent, setAgent] = useState(null);
+    const authenticatedAgent = useAgent()
+    const [isLoading, setIsLoading] = useState(true);
     const dispatch = useDispatch();
-
-    const signerId = localStorage.getItem("signerId");
-    const delegationExpiry = Number(localStorage.getItem("delegationExpiry")) || 0;
-
     const {
+        // agent,
         user,
-        connect,
-        disconnect: identityKitDisconnect,
         identity,
-        icpBalance,
+        accounts,
+        connect,
+        disconnect,
     } = useIdentityKit();
-    const authenticatedAgent = useAgent();
-    const canisterID = import.meta.env.VITE_CANISTER_ID_ICPLAUNCHPAD_BACKEND;
 
-    // Disconnect function
-    const disconnect = () => {
-        identityKitDisconnect();
-        setIsConnected(false);
-        localStorage.removeItem("delegationExpiry");
-    };
 
-    // Check delegation expiration and log out if expired
+    
     useEffect(() => {
-        const checkDelegationExpiry = () => {
-            const currentTime = Date.now();
-            if (delegationExpiry && currentTime >= delegationExpiry) {
-                toast.success("Delegation expired, logging out...");
-                disconnect();
+        const createAgent = async () => {
+            if (authenticatedAgent) {
+                console.log("Authenticated Agent Identity:", authenticatedAgent);
+
+                setIsLoading(true);
+                const agentInstance = new HttpAgent({ host: process.env.HOST || "https://ic0.app" });
+                if (process.env.DFX_NETWORK !== "ic") {
+                    await agentInstance.fetchRootKey();
+                }
+            console.log(" agent created:", agent);
+                const newActor = Actor.createActor(ledgerIDL, {
+                    agent: agentInstance,
+                    canisterId: canisterID,
+                });
+            
+                setAgent(authenticatedAgent);
+                setBackendActor(newActor);
+
+                dispatch(setActor(newActor));
+                console.log("Actor and Agent initialized successfully.");
+            } else {
+                setIsLoading(false);
+                console.error("Failed to initialize agent and actor:", error);
             }
         };
+     
+        createAgent();
+    }, [authenticatedAgent]);
+      
 
-        const interval = setInterval(checkDelegationExpiry, 5 * 60 * 1000); // Check every 5 minutes
-        return () => clearInterval(interval);
-    }, [delegationExpiry]);
+
+    //actor
+    useEffect(() => {
+        if (agent) {
+            const initActor = async () => {
+                try {
+                    const actor = createActor(process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND, { agent });
+                    
+                    dispatch(setActor(actor));
+                    console.log("Authenticated actor initialized.");
+                } catch (error) {
+                    console.error("Failed to create actor:", error);
+                }
+            };
+            initActor();
+        }
+    }, [agent, dispatch]);
+
+  
 
     useEffect(() => {
-        if (user && identity !== "AnonymousIdentity") {
-            setIsConnected(true);
-            setPrincipal(user?.principal?.toText());
-
-            const expiryTime = Number(identity?._delegation?.delegations?.[0]?.delegation?.expiration);
-            if (expiryTime) {
-                localStorage.setItem("delegationExpiry", expiryTime / 1e6);
+        const fetchPrincipal = async () => {
+            if (user) {
+                setIsConnected(true);
+                try {
+                    const userPrincipal = await user.principal;
+                    setPrincipal(userPrincipal);
+                    dispatch(loginSuccess({ isAuthenticated: true, principal: userPrincipal }));
+                } catch (error) {
+                    console.error("Error fetching principal:", error);
+                    setPrincipal(null);
+                }
+            } else {
+                setIsConnected(false);
+                setPrincipal(null);
             }
+        };
+        fetchPrincipal();
+    }, [user, dispatch]);
 
-            setWallet(signerId === "Plug" ? "plug" : signerId === "NFIDW" ? "nfidw" : "unknown");
 
-            const newActor = createActor(canisterID, { agent: authenticatedAgent });
-            setActorState(newActor); 
+  
+    useEffect(() => {
+        const genCanister = async () => {
+            const backend = Actor.createActor(ledgerIDL, {
+                agent: agent,
+                canisterId: canisterID,
+            });
+            setBackendActor(backend);
+        };
+        genCanister();
+        setDelegation(identity);
+        console.log("delegation is ", delegation);
+    }, [agent]);
+ 
 
-            // Dispatch login success
-            dispatch(loginSuccess({ isConnected: true, principal: principal, defaultIdentity: identity }));
-            dispatch(setActor(newActor));
-      
-        } else {
-            setIsConnected(false);
-        }
-    }, [user, identity, signerId, authenticatedAgent, dispatch]);
+    const login = useCallback(() => {
+        connect();
+        dispatch(loginStart());
+    }, [connect]);
 
-   
-    const login = async () => {
-        try {
-            dispatch(loginStart({ wallet }));
-            await connect(); 
-        } catch (error) {
-            console.error("Error connecting wallet:", error);
-        }
-    };
-    // Create custom actor with local agent for local canisters
+    // const logout = useCallback(async () => {
+    //     await disconnect();
+    //     setIsConnected(false);
+    //     setPrincipal(null);
+    //     setBackendActor(null);
+    //     setAgent(null);
+    // }, [disconnect]);
+
+    const host = "http://127.0.0.1:4943/";
     const createCustomActor = async (canisterId) => {
         try {
-            const agent = new HttpAgent({ identity, host: "http://127.0.0.1:4943/" });
+            console.log("Identity value before agent creation:", identity);
+            console.log("Creating actor for canister ID:", canisterId);
+
+            const agent = new HttpAgent({ identity, host });
 
             if (process.env.DFX_NETWORK !== "ic") {
-                await agent.fetchRootKey();
+                await agent.fetchRootKey().catch((err) => {
+                    console.warn(
+                        "Unable to fetch root key. Check your local replica.",
+                        err
+                    );
+                });
             }
 
-            return Actor.createActor(ledgerIDL, { agent, canisterId });
+            const ledgerActor = Actor.createActor(ledgerIDL, { agent, canisterId });
+            console.log("Created ledger actor:", ledgerActor);
+            return ledgerActor;
         } catch (err) {
-            console.error("Error creating custom actor:", err);
+            console.error("Error creating ledger actor:", err);
         }
     };
-
     return {
         isAuthenticated: isConnected,
-        delegationExpiry,
-        wallet,
-        // login: connect,
         login,
         logout: disconnect,
-        createCustomActor,
-        balance: icpBalance,
         principal,
-        // updateClient,
-        actor,
+        agent: agent || null,
+        // createCustomActor: backendActor || null,
+        createCustomActor,
+        identity,
+        orderPlacementLoad,
+        setOrderPlacementLoad,
+        actor: createActor(canisterID, {
+            agentOptions: { identity, verifyQuerySignatures: false },
+        }),
     };
 };
 
 export const AuthProvider = ({ children }) => {
     const auth = useAuthClient();
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        // Dispatch the auth context to Redux for saga access
+        if (auth) { // This will log the data
+            console.log("Auth is ", auth);
+            dispatch(setAuthContext(auth));
+        }
+    }, [auth, dispatch]);
+    console.log("Auth is ", auth);
     return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
 };
 
+export const useBackend = () => { };
+
 export const useAuth = () => useContext(AuthContext);
+
+
+
+
+
+
+
+
+
+

@@ -3,7 +3,6 @@ import { TfiClose } from "react-icons/tfi";
 
 import Modal from 'react-modal';
 import person1 from "../../../assets/images/carousel/person1.png"
-import { useSelector } from 'react-redux';
 import { useAuth } from '../../StateManagement/useContext/useClient';
 
 
@@ -24,19 +23,51 @@ const ProfileCard = ({ profileModalIsOpen, setProfileModalIsOpen }) => {
 const domain = process.env.DFX_NETWORK === "ic" ? "raw.icp0.io" : "localhost:4943";
 const canisterId = process.env.CANISTER_ID_IC_ASSET_HANDLER;
   const[profileImg,setProfileImg]=useState();
-  const UserData =useSelector((state)=> state?.userData?.data[0])
-  const profile_ImgId = useSelector((state)=> state?.ProfileImageID?.data)
-
+  const [profile_ImgId, setprofile_ImgId] = useState(null);
+  
+  const [UserData, setuserdata] = useState([])
   useEffect(()=>{
-    getProfileIMG();
-  },[profile_ImgId])
+    
+    if (isAuthenticated) {
+      userDatacheck()
+      getProfileIMG();
+      userProfileImage()
+    } 
+  }, [profile_ImgId, isAuthenticated])
 
+
+  async function userDatacheck() {
+    try {
+      // Check if actor is defined
+      if (actor) {
+        const response = await actor.get_user_account(principal);
+        setuserdata(response)
+      }
+      else {
+        console.log("User account has not been created yet.");
+      }
+    } catch (error) {
+      console.error("Specific error occurred:", error.message);
+    }
+  }
+  async function userProfileImage() {
+    try {
+      // Check if actor is defined
+      if (actor) {
+        const response = await actor.get_profile_image_id();
+        setprofile_ImgId(response)
+      }
+      else {
+        console.log("User account has not been created yet.");
+      }
+    } catch (error) {
+      console.error("Specific error occurred:", error.message);
+    }
+  }
 async function getProfileIMG(){
   if(profile_ImgId){
-  console.log('profile_iMGId',profile_ImgId)
   const imageUrl = `${protocol}://${canisterId}.${domain}/f/${profile_ImgId[0]}`;
   setProfileImg(imageUrl);
-  console.log("userImg-", imageUrl);
   }
 }
 
@@ -89,8 +120,8 @@ async function getProfileIMG(){
           className="w-20 h-20 rounded-full object-cover"
         />
          <div className='w-48'>
-        <h2 className="text-lg font-semibold mt-2">{UserData ? UserData?.username : 'ABCD'}</h2>
-        <p className="text-sm text-gray-400 overflow-hidden whitespace-nowrap text-ellipsis"> {principal} </p>
+        <h2 className="text-lg font-semibold mt-2">{UserData[0] ? UserData[0]?.username : 'ABCD'}</h2>
+                <p className="text-sm text-gray-400 overflow-hidden whitespace-nowrap text-ellipsis"> {principal ? principal.toText() : "No principal found"} </p>
 
         {/* Block Explorer Button */}
         <button className="bg-[#3c3c3c] text-xs text-gray-400 px-3 py-1 mt-1 rounded-full">
