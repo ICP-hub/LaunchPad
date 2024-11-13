@@ -87,7 +87,6 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen,setRenderComponent, setTokenMo
         const {
             description,
             website,
-            project_video,
             end_time_utc,
             start_time_utc,
         } = data;

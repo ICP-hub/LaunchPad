@@ -253,7 +253,7 @@ const TokenPage = () => {
             <input
               type="number"
               className="w-full p-2 rounded-md bg-[#333333] border-none text-white text-base mb-5 "
-              placeholder="Enter Amount"
+              placeholder={ projectData && `Enter Amount of ${  projectData.token_name}`}
               onChange={handleAmount}
             />
             {/* token amount per icp */}

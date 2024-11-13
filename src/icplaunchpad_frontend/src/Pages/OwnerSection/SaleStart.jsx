@@ -36,6 +36,8 @@ const SaleStart = ({ style, setTokenPhase, presaleData }) => {
             const now = new Date();
 
             if (now >= end && phase !== "ended") {
+        console.log('hii ended')
+            
                 setTimeRemaining("Sale Ended!");
                 setTokenPhase("SUCCESSFULL");
                 setPhase("ended");
@@ -43,6 +45,7 @@ const SaleStart = ({ style, setTokenPhase, presaleData }) => {
             }
 
             if (now >= start && now < end && phase !== "ongoing") {
+                console.log('hii ongoing')
                 setTimeRemaining("Sale Started!");
                 setTokenPhase("ONGOING");
                 dispatch(upcomingSalesHandlerRequest());
@@ -57,6 +60,7 @@ const SaleStart = ({ style, setTokenPhase, presaleData }) => {
                 const minutes = String(Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
                 const seconds = String(Math.floor((timeLeft % (1000 * 60)) / 1000)).padStart(2, '0');
                 setTimeRemaining(`${days}:${hours}:${minutes}:${seconds}`);
+                setTokenPhase("UPCOMING")
             }
         };
 

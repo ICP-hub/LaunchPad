@@ -35,7 +35,7 @@ const UpcomingSales = React.forwardRef((props, ref) => {
   // Handle navigation to the projects page
   const handleViewMoreClick = () => {
     if (salesData.length > 0)
-      navigate('/projects', { state: { salesData,saleType:"upcoming" } });
+      navigate('/projects', { state: { salesData,sale_Type:"Upcoming" } });
   };
   return (
     <div ref={ref} className="upcoming-sales h-full mt-8 md:mb-[5%] lg:mb-0 sm4:mb-3 py-[5%]">
