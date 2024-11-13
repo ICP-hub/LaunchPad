@@ -16,6 +16,7 @@ export default defineConfig({
         global: "globalThis",
       },
     },
+    include: ["@nfid/identitykit/react"], // Add this line
   },
   resolve: {
     alias: {
