@@ -2,28 +2,39 @@ import React, { useEffect, useState } from "react";
 import logo from "../../../assets/images/icLogo.png";
 import GradientText from "../../common/GradientText";
 import { IoSearch, IoClose, IoMenu, IoCloseSharp } from "react-icons/io5";
-
+import person1 from "../../../assets/images/carousel/person1.png"
 import ConnectWallets from "../Modals/ConnectWallets";
 import { Link, useNavigate } from "react-router-dom";
 import ProfileCard from "../Modals/ProfileCard";
 import { FaUser } from "react-icons/fa";
 import { BsThreeDotsVertical } from "react-icons/bs";
-
+import { PiWalletBold } from "react-icons/pi";
 import CreateUser from "../Modals/CreateUser";
 import { Principal } from "@dfinity/principal";
-import { useAuth } from "../../StateManagement/useContext/useAuth";
-import { useDispatch, useSelector } from "react-redux";
 import { addUserData } from "../../Redux-Config/ReduxSlices/UserSlice";
 import UpdateUser from "../Modals/UpdateUser";
 import { userRegisteredHandlerRequest } from "../../StateManagement/Redux/Reducers/userRegisteredData";
-
+import { useAuth, useAuthClient } from "../../StateManagement/useContext/useClient";
+import { ConnectWallet } from "@nfid/identitykit/react";
+const ConnectBtn = ({ onClick }) => (
+  
+   <button
+              onClick={onClick}
+              className="w-[120px] md:w-[150px] lg:w-[190px] h-[25px] lg:h-[32px] 
+        dxl:h-[35px] text-[10px] md:text-[15px] dlg:text-[19px] font-[400] items-center justify-center  rounded-xl p-[1.5px] bg-gradient-to-r from-[#f09787]  to-[#CACCF5]"
+            >
+              <div className="bg-gray-950 w-full h-full  rounded-xl flex items-center justify-center ">
+               Connect Wallet
+              </div>
+            </button>
+);
 const Header = () => {
 
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [userModalIsOpen, setUserModalIsOpen] = useState(true);
   const [isSearching, setIsSearching] = useState(false);
   const [userUpdateIsOpen, setUserUpdateIsOpen] = useState(false);
-
+  const [userdata, setuserdata] = useState([])
   const [searchText, setSearchText] = useState("");
   const [tokenData,setTokenData]=useState(null);
   const [menuOpen, setMenuOpen] = useState(false); // State to toggle hamburger menu
@@ -36,14 +47,20 @@ const Header = () => {
   const protocol = process.env.DFX_NETWORK === "ic" ? "https" : "http";
   const domain = process.env.DFX_NETWORK === "ic" ? "raw.icp0.io" : "localhost:4943";
   const canisterId = process.env.CANISTER_ID_IC_ASSET_HANDLER;
+  const { isAuthenticated, disconnect, principal, actor } = useAuth();
+  
 
-  const { isAuthenticated, principal, actor } = useAuth();
-  const userData = useSelector((state) => state?.userData?.data[0]);
+  
  const navigate =useNavigate();
-
+//  const profile_ImgId = useSelector((state)=> state?.ProfileImageID?.data)
+  const [profileImg, setProfileImg] = useState();
+  const [profile_ImgId, setprofile_ImgId] = useState(null);
+  console.log("profile image id 58",profile_ImgId)
+  console.log("profile image 59", profileImg)
   useEffect(() => {
     if (isAuthenticated) {
       userCheck();
+      userDatacheck()
     }
   }, [isAuthenticated]);
   
@@ -52,7 +69,6 @@ const Header = () => {
       // Check if actor is defined
       if (actor) {
       const response = await actor.is_account_created();
-      console.log("Account creation response:", response);
       const resultResponse = response.slice(-16);
       if (resultResponse === "already created.") {
         setUserRegister(true);
@@ -63,7 +79,48 @@ const Header = () => {
       }
     }
     } catch (error) {
-        console.error("Specific error occurred:", error.message); // Handle specific known errors
+        console.error("Specific error occurred:", error.message);
+    }
+  }
+  async function userDatacheck() {
+    try {
+      // Check if actor is defined
+      if (actor) {
+        const response = await actor.get_user_account(principal);
+        setuserdata(response)
+      }
+      else {
+        console.log("User account has not been created yet.");
+      }
+    } catch (error) {
+      console.error("Specific error occurred:", error.message);
+    }
+  }
+  
+  
+//fetch profile image  
+ useEffect(()=>{
+  getProfileIMG();
+   userProfileImage()
+},[])
+  async function userProfileImage() {
+    try {
+      // Check if actor is defined
+      if (actor) {
+        const response = await actor.get_profile_image_id();
+        setprofile_ImgId(response)
+      }
+      else {
+        console.log("User account has not been created yet.");
+      }
+    } catch (error) {
+      console.error("Specific error occurred:", error.message);
+    }
+  }
+  async function getProfileIMG() {
+    if (profile_ImgId) {
+      const imageUrl = `${protocol}://${canisterId}.${domain}/f/${profile_ImgId[0]}`;
+      setProfileImg(imageUrl);
     }
   }
 
@@ -102,15 +159,15 @@ const Header = () => {
     setIsOpen(!isOpen);
   };
 
-  const openModal = () => {
+  const openModal = () => { //used for connect wallet
     setModalIsOpen(true);
   };
 
-  const openProfileModal = () => {
+  const openProfileModal = () => { //for profile card
     setProfileModalIsOpen(true);
   };
 
-  const openUserModal = () => {
+  const openUserModal = () => {  //for update modal
     setUserUpdateIsOpen(true);
   };
 
@@ -271,18 +328,14 @@ const Header = () => {
 
         {!isAuthenticated && (
           <div className="hidden font-posterama md:block">
-            <button
-              onClick={openModal}
-              className="w-[120px] md:w-[150px] lg:w-[190px] h-[25px] lg:h-[32px] 
-        dxl:h-[35px] text-[10px] md:text-[15px] dlg:text-[19px] font-[400] items-center justify-center  rounded-xl p-[1.5px] bg-gradient-to-r from-[#f09787]  to-[#CACCF5]"
-            >
-              <div className="bg-gray-950 w-full h-full  rounded-xl flex items-center justify-center ">
-                Connect Wallet
-              </div>
-            </button>
-            <ConnectWallets
+           
+            {/* <ConnectWallets
               modalIsOpen={modalIsOpen}
               setModalIsOpen={setModalIsOpen}
+            /> */}
+            <ConnectWallet
+              connectButtonComponent={ConnectBtn}
+              className="rounded-full bg-black"
             />
           </div>
         )}
@@ -295,13 +348,11 @@ const Header = () => {
               className="flex items-center text-white rounded-full"
             >
               <div className="bg-black h-full w-full rounded-2xl flex items-center p-1 px-3">
-                <FaUser className="mr-2" />
+                <img src={profileImg || person1} alt="profile-img" className="h-7 w-7 rounded-full object-cover mr-2 "/>
                 <div className="flex flex-col items-start w-24 h-8 lg:w-40 lg:h-full ">
-                  <span className="text-sm">
-                    {userData? userData?.name : "ABCD"}
-                  </span>
+                  <span className="text-sm">{userdata[0]?.name || "Guest"}</span>
                   <span className=" text-[10px] lg:text-xs text-gray-400 w-full overflow-hidden whitespace-nowrap text-ellipsis">
-                    {principal}
+                    {principal?.toString() || "N/A"}
                   </span>
                 </div>
                 <BsThreeDotsVertical className="ml-2" />
@@ -442,3 +493,5 @@ const Header = () => {
   );
 };
 export default Header;
+
+

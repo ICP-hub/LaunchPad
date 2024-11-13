@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '../../../StateManagement/useContext/useAuth';
+import { useAuth } from '../../../StateManagement/useContext/useClient';
+
 
 const TokenTab = ({ ledgerId }) => {
   const {createCustomActor}=useAuth();

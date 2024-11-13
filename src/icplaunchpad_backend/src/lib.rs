@@ -1,27 +1,21 @@
-use candid::{CandidType, Principal};
+use candid::Principal;
 use ic_cdk::{
     api::{
         call::{call_with_payment128, CallResult},
         canister_version,
         management_canister::main::WasmModule,
 
-    }, export_candid, update
+    }, export_candid
 };
 mod state_handler;
 mod params;
 mod transaction;
 mod types;
-mod api_query;
 mod api_update;
-use serde::Deserialize;
 use state_handler::*;
 use types::*;
 use candid::Nat;
 
-#[derive(Clone, Debug, CandidType, Deserialize)]
-pub struct Icrc28TrustedOriginsResponse {
-    pub trusted_origins: Vec<String>
-}
 
 // create canister
 async fn create_canister(
@@ -93,8 +87,7 @@ async fn index_install_code(arg: IndexInstallCodeArgument, wasm_module: Vec<u8>)
 }
 
 
-#[update]
-fn icrc28_trusted_origins() -> Icrc28TrustedOriginsResponse {
+pub async fn icrc28_trusted_origins() -> Icrc28TrustedOriginsResponse {
     let trusted_origins = vec![
         String::from("https://ajzka-lyaaa-aaaak-ak5rq-cai.icp0.io"),
         String::from("http://localhost:3000"),

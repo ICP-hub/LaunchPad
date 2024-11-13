@@ -12,7 +12,7 @@ dfx canister call icp_ledger_canister icrc2_approve '(record {
     expected_allowance = null;
     expires_at = null;
     spender = record {
-        owner = principal "bw4dl-smaaa-aaaaa-qaacq-cai";
+        owner = principal "ymypx-puez2-ove2k-qi4n6-es74k-vpik3-zkopu-mul4o-wvh6c-hupl6-zae";
         subaccount = null;
     }
 })'

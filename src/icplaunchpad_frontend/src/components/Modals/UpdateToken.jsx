@@ -2,15 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { TfiClose } from 'react-icons/tfi';
 import Modal from 'react-modal';
 import AnimationButton from '../../common/AnimationButton';
-import { useAuth } from '../../StateManagement/useContext/useAuth';
 import { Principal } from '@dfinity/principal';
 import { getSocialLogo } from '../../common/getSocialLogo';
 import { useForm, Controller } from 'react-hook-form';
 import { FaTrash } from 'react-icons/fa';
 import { formatDateForDateTimeLocal } from '../../utils/formatDateFromBigInt';
-import { upcomingSalesHandlerRequest } from '../../StateManagement/Redux/Reducers/UpcomingSales';
-import { useDispatch } from 'react-redux';
-import { SuccessfulSalesHandlerRequest } from '../../StateManagement/Redux/Reducers/SuccessfulSales';
+import { useAuth } from '../../StateManagement/useContext/useClient';
 // import { formatDateFromBigInt } from '../../utils/formatDateFromBigInt';
 
 const UpdateToken = ({ ledgerId, tokenModalIsOpen,setRenderComponent, setTokenModalIsOpen }) => {
@@ -54,10 +51,11 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen,setRenderComponent, setTokenMo
             reset({
                 description: tokenData.description || '',
                 website: tokenData.website || '',
+                project_video: tokenData.project_video || '',
                 start_time_utc: formatDateForDateTimeLocal(tokenData.start_time_utc),
                 end_time_utc: formatDateForDateTimeLocal(tokenData.end_time_utc),
                 links: socialLinks.map(link => link.url),
-                project_video: tokenData.project_video
+                
             });
         }
     }, [tokenData, reset]);
@@ -89,7 +87,6 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen,setRenderComponent, setTokenMo
         const {
             description,
             website,
-            project_video,
             end_time_utc,
             start_time_utc,
         } = data;
@@ -116,6 +113,7 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen,setRenderComponent, setTokenMo
             project_video: project_video ? [project_video] : null,
             end_time_utc: endTime ? [endTime] : [],
             start_time_utc: startTime ? [startTime] : [],
+            project_video: project_video ? [project_video] : null,
             social_links: socialLinksURLs.length > 0 ? [socialLinksURLs] : [],
         };
         console.log("update token data ,", updatedTokenData)
@@ -197,7 +195,7 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen,setRenderComponent, setTokenMo
                         >
                             <TfiClose />
                         </button>
-                        <h2 className="text-[25px] font-semibold">Update Token details</h2>
+                        <h2 className="text-[25px] font-semibold">Update Sale details</h2>
                     </div>
 
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">

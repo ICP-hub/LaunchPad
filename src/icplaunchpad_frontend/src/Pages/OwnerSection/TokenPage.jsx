@@ -19,14 +19,14 @@ import MobileViewTab from "./MobileViewTab";
 import { FiEdit3 } from "react-icons/fi";
 
 import AddToWhitelist from "../../components/Modals/AddToWhitelist.jsx";
-import { useAuth } from "../../StateManagement/useContext/useAuth.jsx";
 import { Principal } from '@dfinity/principal';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, } from "react-redux";
 import UpdateToken from "../../components/Modals/UpdateToken.jsx";
 import { SaleParamsHandlerRequest } from "../../StateManagement/Redux/Reducers/SaleParams.jsx";
 import SaleStart from "./SaleStart.jsx";
 import { getSocialLogo } from "../../common/getSocialLogo.jsx";
+import { useAuth } from "../../StateManagement/useContext/useClient.jsx";
 
 const TokenPage = () => {
   const [activeTab, setActiveTab] = useState("About");
@@ -49,6 +49,7 @@ const TokenPage = () => {
   const [presaleData, setPresaleData] = useState(null);
   const [renderComponent, setRenderComponent] = useState(false);
   const [saleProgress, setSaleProgress]=useState(0);
+
 
   // const presale = useSelector((state) => state.SaleParams.data.Ok);
   const dispatch = useDispatch()
@@ -125,8 +126,9 @@ const TokenPage = () => {
           }));
         }
     
+          console.log(" tokens data available or  response tokenName.", tokenName);
     }
-
+   
 // Fetch token image if ledgerId is available
 if (ledger_canister_id) {
   try {
