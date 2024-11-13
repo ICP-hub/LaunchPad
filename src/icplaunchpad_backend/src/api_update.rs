@@ -5,12 +5,7 @@ use ic_cdk::api::{
 };
 
 use crate::{
-    create_canister, deposit_cycles, index_install_code, install_code, mutate_state, params,
-    read_state, CanisterIdWrapper, CoverImageData, CoverImageIdWrapper, CreateCanisterArgument,
-    CreateFileInput, ImageIdWrapper, IndexArg, IndexCanisterIdWrapper, IndexInitArgs,
-    IndexInstallCodeArgument, InitArgs, InstallCodeArgument, LedgerArg, ProfileImageData,
-    ReturnResult, SaleDetails, SaleDetailsUpdate, SaleDetailsWrapper, TokenCreationResult,
-    TokenImageData, UserAccount, UserAccountWrapper, UserInputParams, STATE,
+    create_canister, deposit_cycles, index_install_code, install_code, mutate_state, params, read_state, Account, CanisterIdWrapper, CoverImageData, CoverImageIdWrapper, CreateCanisterArgument, CreateFileInput, ImageIdWrapper, IndexArg, IndexCanisterIdWrapper, IndexInitArgs, IndexInstallCodeArgument, InitArgs, InstallCodeArgument, LedgerArg, ProfileImageData, ReturnResult, SaleDetails, SaleDetailsUpdate, SaleDetailsWrapper, TokenCreationResult, TokenImageData, UserAccount, UserAccountWrapper, UserInputParams, STATE
 };
 
 #[ic_cdk::update]
@@ -101,7 +96,6 @@ pub fn update_user_account(
 pub async fn create_token(user_params: UserInputParams) -> Result<TokenCreationResult, String> {
     let caller = ic_cdk::api::caller();
 
-    // Check if the user account already exists
     let account_exists = read_state(|state| state.user_accounts.contains_key(&caller));
 
     if !account_exists {
@@ -149,44 +143,21 @@ pub async fn create_token(user_params: UserInputParams) -> Result<TokenCreationR
         .iter()
         .fold(Nat::from(0u64), |acc, (_, balance)| acc + balance.clone());
 
-    // Clone initial_balances to use in LedgerArg::Init without moving it
-    let cloned_initial_balances = user_params.initial_balances.clone();
-
-    let minting_account = params::MINTING_ACCOUNT
-        .lock()
-        .unwrap()
-        .clone()
-        .map_err(|e| e.to_string())?;
-
-    // Handle potential error from FEE_COLLECTOR_ACCOUNT
-    let fee_collector_account = params::FEE_COLLECTOR_ACCOUNT
-        .lock()
-        .unwrap()
-        .clone()
-        .map_err(|e| e.to_string())?;
-
-    // Handle potential error from ARCHIVE_OPTIONS
-    let archive_options = params::ARCHIVE_OPTIONS
-        .lock()
-        .unwrap()
-        .clone()
-        .map_err(|e| e.to_string())?;
-
     // Ledger Init Args
     let init_args = LedgerArg::Init(InitArgs {
-        minting_account,                                    // Hardcoded value from params.rs
-        fee_collector_account: Some(fee_collector_account), // Hardcoded value from params.rs
+        minting_account: params::MINTING_ACCOUNT.clone().unwrap(), // Hardcoded minter
+        fee_collector_account: Some(Account { owner: caller, subaccount: None }), // Caller as fee collector
         transfer_fee: params::TRANSFER_FEE.clone(),         // Hardcoded value
         decimals: user_params.decimals,                     // User-supplied value
         max_memo_length: Some(params::MAX_MEMO_LENGTH),     // Hardcoded value
         token_symbol: user_params.token_symbol.clone(),     // User-supplied value
         token_name: user_params.token_name.clone(),         // User-supplied value
         metadata: vec![], // Empty or pre-defined metadata if needed
-        initial_balances: cloned_initial_balances, // Clone of the user-supplied value
+        initial_balances: user_params.initial_balances.clone(), // Clone of the user-supplied value
         feature_flags: Some(params::FEATURE_FLAGS), // Hardcoded value
         maximum_number_of_accounts: Some(params::MAXIMUM_NUMBER_OF_ACCOUNTS), // Hardcoded value
         accounts_overflow_trim_quantity: Some(params::ACCOUNTS_OVERFLOW_TRIM_QUANTITY), // Hardcoded value
-        archive_options, // Hardcoded value from params.rs
+        archive_options: params::ARCHIVE_OPTIONS.lock().unwrap().clone().unwrap(), // Hardcoded value from params.rs
     });
 
     let init_arg: Vec<u8> = encode_one(init_args).map_err(|e| e.to_string())?;
@@ -205,30 +176,30 @@ pub async fn create_token(user_params: UserInputParams) -> Result<TokenCreationR
         arg: init_arg.clone(),
     };
 
-    // Index Init Args
-    let index_init_args = IndexInitArgs {
-        ledger_id: canister_id_principal, // Ledger canister ID
-        retrieve_blocks_from_ledger_interval_seconds: Some(10), // 10 seconds
-    };
-
-    // Wrap the IndexInitArgs in a variant { Init }
-    let index_arg = IndexArg::Init(index_init_args);
-
-    // Log index init args for debugging
-    ic_cdk::println!("Index init args: {:?}", index_arg);
-
-    // Encode the variant
-    let index_init_arg: Vec<u8> = encode_one(Some(index_arg)).map_err(|e| {
-        ic_cdk::println!("Error encoding init args for index canister: {}", e);
-        e.to_string()
-    })?;
-
-    let arg2: IndexInstallCodeArgument = IndexInstallCodeArgument {
-        mode: CanisterInstallMode::Install,
-        canister_id: index_canister_id_principal,
-        wasm_module: WasmModule::from(index_wasm_module.clone()),
-        arg: index_init_arg, // Pass the encoded init argument
-    };
+        // Index Init Args
+        let index_init_args = IndexInitArgs {
+            ledger_id: canister_id_principal, // Ledger canister ID
+            retrieve_blocks_from_ledger_interval_seconds: Some(10), // 10 seconds
+        };
+    
+        // Wrap the IndexInitArgs in a variant { Init }
+        let index_arg = IndexArg::Init(index_init_args);
+    
+        // Log index init args for debugging
+        ic_cdk::println!("Index init args: {:?}", index_arg);
+    
+        // Encode the variant
+        let index_init_arg: Vec<u8> = encode_one(Some(index_arg)).map_err(|e| {
+            ic_cdk::println!("Error encoding init args for index canister: {}", e);
+            e.to_string()
+        })?;
+    
+        let arg2: IndexInstallCodeArgument = IndexInstallCodeArgument {
+            mode: CanisterInstallMode::Install,
+            canister_id: index_canister_id_principal,
+            wasm_module: WasmModule::from(index_wasm_module.clone()),
+            arg: index_init_arg, // Pass the encoded init argument
+        };
 
     // Install code for the ledger canister
     match install_code(arg1.clone(), wasm_module).await {
@@ -276,13 +247,14 @@ pub async fn create_token(user_params: UserInputParams) -> Result<TokenCreationR
         }
         Err((code, msg)) => {
             ic_cdk::println!("Error installing index code: {} - {}", code as u8, msg);
-            Err(format!(
+            return Err(format!(
                 "Error installing index code: {} - {}",
                 code as u8, msg
-            ))
+            ));
         }
     }
 }
+
 
 #[ic_cdk::update]
 pub async fn upload_token_image(
