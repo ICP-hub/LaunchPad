@@ -1,11 +1,11 @@
-use candid::Principal;
+use candid::{CandidType, Principal};
 use ic_cdk::{
     api::{
         call::{call_with_payment128, CallResult},
         canister_version,
         management_canister::main::WasmModule,
 
-    }, export_candid
+    }, export_candid, update
 };
 mod state_handler;
 mod params;
@@ -13,10 +13,15 @@ mod transaction;
 mod types;
 mod api_query;
 mod api_update;
+use serde::Deserialize;
 use state_handler::*;
 use types::*;
 use candid::Nat;
 
+#[derive(Clone, Debug, CandidType, Deserialize)]
+pub struct Icrc28TrustedOriginsResponse {
+    pub trusted_origins: Vec<String>
+}
 
 // create canister
 async fn create_canister(
@@ -88,19 +93,18 @@ async fn index_install_code(arg: IndexInstallCodeArgument, wasm_module: Vec<u8>)
 }
 
 
-pub async fn icrc28_trusted_origins() -> Icrc28TrustedOriginsResponse {
+#[update]
+fn icrc28_trusted_origins() -> Icrc28TrustedOriginsResponse {
     let trusted_origins = vec![
-        "https://ajzka-lyaaa-aaaak-ak5rq-cai.icp0.io".to_string(),
-        "http://localhost:3000".to_string(),
-        "http://avqkn-guaaa-aaaaa-qaaea-cai.localhost:4943".to_string(),
-        "http://127.0.0.1:4943/?canisterId=aoymu-gaaaa-aaaak-ak5ra-cai".to_string(),
-        "http://127.0.0.1:4943".to_string(),
-        "http://localhost:4200".to_string(),
+        String::from("https://ajzka-lyaaa-aaaak-ak5rq-cai.icp0.io"),
+        String::from("http://localhost:3000"),
+        String::from("http://avqkn-guaaa-aaaaa-qaaea-cai.localhost:4943"),
+        String::from("http://127.0.0.1:4943/?canisterId=aoymu-gaaaa-aaaak-ak5ra-cai"),
+        String::from("http://127.0.0.1:4943"),
+        String::from("http://localhost:4200"),
     ];
 
-    Icrc28TrustedOriginsResponse {
-        trusted_origins,
-    }
+    return Icrc28TrustedOriginsResponse { trusted_origins };
 }
 
 
