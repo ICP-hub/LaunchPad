@@ -12,7 +12,6 @@ import { useAuth } from "../../StateManagement/useContext/useClient.jsx";
 const ProjectLists = () => {
   const location = useLocation();
   const { salesData, sale_Type } = location.state || {};
-
   const [selectedTab, setSelectedTab] = useState("all");
   const [search, setSearch] = useState("");
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
@@ -20,17 +19,15 @@ const ProjectLists = () => {
   const [tokensData, setTokensData] = useState([]);
   const [filteredTokensData, setFilteredTokensData] = useState([]);
   const [saleType, setSaleType] = useState(sale_Type || "Active");
+  const { actor, createCustomActor } = useAuth();
+  const [projectsData, setprojectsData] = useState([]);
 
-  const dispatch = useDispatch();
-  const projectsData = useSelector((state) => state?.TokensInfo?.data || []);
-  const upcomingSales = useSelector((state) => state?.upcomingSales?.data || []);
-  const successfulSales = useSelector((state) => state?.SuccessfulSales?.data || []);
-  const { createCustomActor } = useAuth();
+  console.log("Fetched tokens in ProjectLists:", projectsData);
+  const [upcomingSales, setUpcommintSales] = useState([])
+  console.log("my upcomming sales in upcomming sale", salesData)
+  const[successfulSales, setSuccessfullSalesData] = useState([]);
 
-  useEffect(() => {
-    dispatch(TokensInfoHandlerRequest());
-  }, [dispatch]);
-
+  console.log("Fetched tokens in ProjectLists:", salesData);
   const getTokenName = useCallback(
     async (ledger_canister_id) => {
       try {
@@ -44,16 +41,7 @@ const ProjectLists = () => {
     },
     [createCustomActor]
   );
-  const location = useLocation();
-  const dispatch= useDispatch();
   
-  const salesData = location.state?.salesData;
-  
-  
-  const { actor } = useAuth();
-  const [projectsData, setprojectsData] = useState([]);
-
-  console.log("Fetched tokens in ProjectLists:", projectsData);
 
   useEffect(() => {
     const fetchUserTokensInfo = async () => {
@@ -78,8 +66,49 @@ const ProjectLists = () => {
 
 
   useEffect(() => {
+    UpcommingSales()
+  }, [])
+
+  async function UpcommingSales() {
+    try {
+      // Check if actor is defined
+      if (actor) {
+        const response = await actor.get_upcoming_sales();
+        setUpcommintSales(response)
+      }
+      else {
+        console.log("User account has not been created yet.");
+      }
+    } catch (error) {
+      console.error("Specific error occurred:", error.message);
+    }
+  }
+  useEffect(() => {
     setTokensData(salesData || projectsData);
   }, [salesData, projectsData]);
+
+
+  useEffect(() => {
+    // Fetch token information when the component mounts
+    const fetchUserTokensInfo = async () => {
+      try {
+        if (actor) {
+          const response = await actor.get_successful_sales();
+          if (response && response.length > 0) {
+            setSuccessfullSalesData(response);
+          } else {
+            console.log("No tokens data available or empty response.");
+          }
+        } else {
+          console.log("User account has not been created yet.");
+        }
+      } catch (error) {
+        console.error("Error fetching user tokens info:", error.message);
+      }
+    };
+
+    fetchUserTokensInfo();
+  }, [actor]);
 
   useEffect(() => {
     const filterData = async () => {

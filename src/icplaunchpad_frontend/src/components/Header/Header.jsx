@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import logo from "../../../assets/images/icLogo.png";
 import GradientText from "../../common/GradientText";
 import { IoSearch, IoClose, IoMenu, IoCloseSharp } from "react-icons/io5";
-
+import person1 from "../../../assets/images/carousel/person1.png"
 import ConnectWallets from "../Modals/ConnectWallets";
 import { Link, useNavigate } from "react-router-dom";
 import ProfileCard from "../Modals/ProfileCard";
@@ -47,15 +47,16 @@ const Header = () => {
   const protocol = process.env.DFX_NETWORK === "ic" ? "https" : "http";
   const domain = process.env.DFX_NETWORK === "ic" ? "raw.icp0.io" : "localhost:4943";
   const canisterId = process.env.CANISTER_ID_IC_ASSET_HANDLER;
-  const[profileImg,setProfileImg]=useState();
   const { isAuthenticated, disconnect, principal, actor } = useAuth();
   
 
   
  const navigate =useNavigate();
- const profile_ImgId = useSelector((state)=> state?.ProfileImageID?.data)
-
-
+//  const profile_ImgId = useSelector((state)=> state?.ProfileImageID?.data)
+  const [profileImg, setProfileImg] = useState();
+  const [profile_ImgId, setprofile_ImgId] = useState(null);
+  console.log("profile image id 58",profile_ImgId)
+  console.log("profile image 59", profileImg)
   useEffect(() => {
     if (isAuthenticated) {
       userCheck();
@@ -100,16 +101,28 @@ const Header = () => {
 //fetch profile image  
  useEffect(()=>{
   getProfileIMG();
-},[profile_ImgId])
-
-async function getProfileIMG(){
-if(profile_ImgId){
-console.log('profile_iMGId',profile_ImgId)
-const imageUrl = `${protocol}://${canisterId}.${domain}/f/${profile_ImgId[0]}`;
-setProfileImg(imageUrl);
-console.log("userImg-", imageUrl);
-}
-}
+   userProfileImage()
+},[])
+  async function userProfileImage() {
+    try {
+      // Check if actor is defined
+      if (actor) {
+        const response = await actor.get_profile_image_id();
+        setprofile_ImgId(response)
+      }
+      else {
+        console.log("User account has not been created yet.");
+      }
+    } catch (error) {
+      console.error("Specific error occurred:", error.message);
+    }
+  }
+  async function getProfileIMG() {
+    if (profile_ImgId) {
+      const imageUrl = `${protocol}://${canisterId}.${domain}/f/${profile_ImgId[0]}`;
+      setProfileImg(imageUrl);
+    }
+  }
 
 // fetch token data by search field
   const handleFetchToken = async () => {
@@ -335,7 +348,7 @@ console.log("userImg-", imageUrl);
               className="flex items-center text-white rounded-full"
             >
               <div className="bg-black h-full w-full rounded-2xl flex items-center p-1 px-3">
-               <img src={profileImg} alt="profile-img" className="h-7 w-7 rounded-full object-cover mr-2 "/>
+                <img src={profileImg || person1} alt="profile-img" className="h-7 w-7 rounded-full object-cover mr-2 "/>
                 <div className="flex flex-col items-start w-24 h-8 lg:w-40 lg:h-full ">
                   <span className="text-sm">{userdata[0]?.name || "Guest"}</span>
                   <span className=" text-[10px] lg:text-xs text-gray-400 w-full overflow-hidden whitespace-nowrap text-ellipsis">
