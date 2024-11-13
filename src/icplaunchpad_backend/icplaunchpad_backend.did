@@ -1,0 +1,56 @@
+type Account = record { owner : principal; subaccount : opt blob };
+type CoverImageData = record { content : opt blob; ledger_id : principal };
+type ProfileImageData = record { content : opt blob };
+type Result = variant { Ok : nat; Err : text };
+type Result_1 = variant { Ok; Err : text };
+type Result_2 = variant { Ok : TokenCreationResult; Err : text };
+type Result_3 = variant { Ok : text; Err : text };
+type SaleDetails = record {
+  listing_rate : float64;
+  creator : principal;
+  min_buy : nat64;
+  description : text;
+  website : text;
+  end_time_utc : nat64;
+  project_video : text;
+  start_time_utc : nat64;
+  max_buy : nat64;
+  social_links : vec text;
+};
+type SaleDetailsUpdate = record {
+  description : opt text;
+  website : opt text;
+  end_time_utc : opt nat64;
+  project_video : opt text;
+  start_time_utc : opt nat64;
+  social_links : opt vec text;
+};
+type TokenCreationResult = record {
+  index_canister_id : principal;
+  ledger_canister_id : principal;
+};
+type UserAccount = record {
+  tag : vec text;
+  username : text;
+  profile_picture : opt blob;
+  name : text;
+  links : vec text;
+};
+type UserInputParams = record {
+  decimals : opt nat8;
+  token_symbol : text;
+  initial_balances : vec record { Account; nat };
+  token_name : text;
+};
+service : () -> {
+  buy_tokens : (nat64, principal, principal) -> (Result);
+  create_account : (UserAccount) -> (Result_1);
+  create_sale : (principal, SaleDetails) -> (Result_1);
+  create_token : (UserInputParams) -> (Result_2);
+  sell_tokens : (nat64, principal, principal, principal) -> (Result);
+  update_sale_params : (principal, SaleDetailsUpdate) -> (Result_1);
+  update_user_account : (principal, UserAccount) -> (Result_1);
+  upload_cover_image : (text, CoverImageData) -> (Result_3);
+  upload_profile_image : (text, ProfileImageData) -> (Result_3);
+  upload_token_image : (text, CoverImageData) -> (Result_3);
+}
