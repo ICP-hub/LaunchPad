@@ -13,7 +13,9 @@ mod transaction;
 mod types;
 mod api_update;
 use state_handler::*;
+mod api_query;
 use types::*;
+
 use candid::Nat;
 
 
