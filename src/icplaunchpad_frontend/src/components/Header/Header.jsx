@@ -36,10 +36,13 @@ const Header = () => {
   const protocol = process.env.DFX_NETWORK === "ic" ? "https" : "http";
   const domain = process.env.DFX_NETWORK === "ic" ? "raw.icp0.io" : "localhost:4943";
   const canisterId = process.env.CANISTER_ID_IC_ASSET_HANDLER;
+  const[profileImg,setProfileImg]=useState();
 
   const { isAuthenticated, principal, actor } = useAuth();
   const userData = useSelector((state) => state?.userData?.data[0]);
  const navigate =useNavigate();
+ const profile_ImgId = useSelector((state)=> state?.ProfileImageID?.data)
+
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -66,6 +69,21 @@ const Header = () => {
         console.error("Specific error occurred:", error.message); // Handle specific known errors
     }
   }
+  
+  
+//fetch profile image  
+ useEffect(()=>{
+  getProfileIMG();
+},[profile_ImgId])
+
+async function getProfileIMG(){
+if(profile_ImgId){
+console.log('profile_iMGId',profile_ImgId)
+const imageUrl = `${protocol}://${canisterId}.${domain}/f/${profile_ImgId[0]}`;
+setProfileImg(imageUrl);
+console.log("userImg-", imageUrl);
+}
+}
 
 // fetch token data by search field
   const handleFetchToken = async () => {
@@ -295,10 +313,10 @@ const Header = () => {
               className="flex items-center text-white rounded-full"
             >
               <div className="bg-black h-full w-full rounded-2xl flex items-center p-1 px-3">
-                <FaUser className="mr-2" />
+               <img src={profileImg} alt="profile-img" className="h-7 w-7 rounded-full object-cover mr-2 "/>
                 <div className="flex flex-col items-start w-24 h-8 lg:w-40 lg:h-full ">
                   <span className="text-sm">
-                    {userData? userData?.name : "ABCD"}
+                    {userData? userData?.name : ""}
                   </span>
                   <span className=" text-[10px] lg:text-xs text-gray-400 w-full overflow-hidden whitespace-nowrap text-ellipsis">
                     {principal}

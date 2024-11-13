@@ -219,7 +219,7 @@ const VerifyTokenTab = ({ register, errors, setTokenData, watch, ledger_canister
           <span className="text-white text-[22px]">Chain</span>
         </div>
 
-        <h2 className="text-lg font-semibold mb-4">Token Address</h2>
+        <h2 className="text-lg font-semibold mb-4">Canister ID</h2>
         <div className="relative w-full">
           <input
             ref={inputRef}

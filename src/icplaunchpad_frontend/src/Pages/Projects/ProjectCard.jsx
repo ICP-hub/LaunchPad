@@ -208,7 +208,7 @@ const ProjectCard = ({ isUserToken, projectData, saleType, index }) => {
               <span className="text-lg font-semibold">{"365 DAYS"}</span>
             </div>
             <div className="flex flex-col">
-
+   
               {tokenInfo && <SaleStart style={{ text_heading: 'text-sm', text_content: 'text-lg' }} setTokenPhase={setTokenPhase} presaleData={projectData?.sale_details || tokenInfo?.sale_Params} />}
             </div>
             <button onClick={handleViewMoreClick} className="border-b-2 border-r-gray-600 w-20 cursor-pointer">View More</button>
