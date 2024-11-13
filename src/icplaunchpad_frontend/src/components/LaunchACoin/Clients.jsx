@@ -1,23 +1,45 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import person1 from "../../../assets/images/carousel/person1.png";
 import { useNavigate } from 'react-router-dom';
 import l3 from '../../../assets/images/carousel/l3.png'
 import { useDispatch, useSelector } from "react-redux";
 import ProjectCard from "../../Pages/Projects/ProjectCard";
+import { useAuth } from "../../StateManagement/useContext/useClient";
 import { SuccessfulSalesHandlerRequest } from "../../StateManagement/Redux/Reducers/SuccessfulSales";
 
   
 
 const Clients = () => {
-  const dispatch =useDispatch();
-
-  useEffect(()=>{
-    dispatch(SuccessfulSalesHandlerRequest());
-  },[])
   
-  const salesData = useSelector((state)=> state?.SuccessfulSales?.data)
+  
   const navigate = useNavigate();
 
+  const { actor } = useAuth();
+  const [salesData, setSuccessfullSalesData] = useState([]);
+
+  console.log("Fetched tokens in ProjectLists:", salesData);
+
+  useEffect(() => {
+    // Fetch token information when the component mounts
+    const fetchUserTokensInfo = async () => {
+      try {
+        if (actor) {
+          const response = await actor.get_successful_sales();
+          if (response && response.length > 0) {
+            setSuccessfullSalesData(response);
+          } else {
+            console.log("No tokens data available or empty response.");
+          }
+        } else {
+          console.log("User account has not been created yet.");
+        }
+      } catch (error) {
+        console.error("Error fetching user tokens info:", error.message);
+      }
+    };
+
+    fetchUserTokensInfo();
+  }, [actor]);
   // Handle navigation to the projects page
   const handleViewMoreClick = () => {
     if(salesData.length > 0)

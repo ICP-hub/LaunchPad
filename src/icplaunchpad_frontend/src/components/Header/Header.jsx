@@ -11,7 +11,6 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import { PiWalletBold } from "react-icons/pi";
 import CreateUser from "../Modals/CreateUser";
 import { Principal } from "@dfinity/principal";
-import { useDispatch, useSelector } from "react-redux";
 import { addUserData } from "../../Redux-Config/ReduxSlices/UserSlice";
 import UpdateUser from "../Modals/UpdateUser";
 import { userRegisteredHandlerRequest } from "../../StateManagement/Redux/Reducers/userRegisteredData";
@@ -35,7 +34,7 @@ const Header = () => {
   const [userModalIsOpen, setUserModalIsOpen] = useState(true);
   const [isSearching, setIsSearching] = useState(false);
   const [userUpdateIsOpen, setUserUpdateIsOpen] = useState(false);
-
+  const [userdata, setuserdata] = useState([])
   const [searchText, setSearchText] = useState("");
   const [tokenData,setTokenData]=useState(null);
   const [menuOpen, setMenuOpen] = useState(false); // State to toggle hamburger menu
@@ -50,9 +49,8 @@ const Header = () => {
   const canisterId = process.env.CANISTER_ID_IC_ASSET_HANDLER;
   const[profileImg,setProfileImg]=useState();
   const { isAuthenticated, disconnect, principal, actor } = useAuth();
-  const userData = useSelector((state) => state?.userData?.data[0]);
-  console.log("Account creation response userData:", userData);
-  console.log("Account creation response actor:", actor);
+  
+
   
  const navigate =useNavigate();
  const profile_ImgId = useSelector((state)=> state?.ProfileImageID?.data)
@@ -70,7 +68,6 @@ const Header = () => {
       // Check if actor is defined
       if (actor) {
       const response = await actor.is_account_created();
-      console.log("Account creation response aa :", response);
       const resultResponse = response.slice(-16);
       if (resultResponse === "already created.") {
         setUserRegister(true);
@@ -88,9 +85,8 @@ const Header = () => {
     try {
       // Check if actor is defined
       if (actor) {
-        const response = await actor.get_user_account();
-        console.log("get_user_account creation response aa :", response);
-      
+        const response = await actor.get_user_account(principal);
+        setuserdata(response)
       }
       else {
         console.log("User account has not been created yet.");
@@ -341,7 +337,7 @@ console.log("userImg-", imageUrl);
               <div className="bg-black h-full w-full rounded-2xl flex items-center p-1 px-3">
                <img src={profileImg} alt="profile-img" className="h-7 w-7 rounded-full object-cover mr-2 "/>
                 <div className="flex flex-col items-start w-24 h-8 lg:w-40 lg:h-full ">
-                  <span className="text-sm">{userData?.name || "Guest"}</span>
+                  <span className="text-sm">{userdata[0]?.name || "Guest"}</span>
                   <span className=" text-[10px] lg:text-xs text-gray-400 w-full overflow-hidden whitespace-nowrap text-ellipsis">
                     {principal?.toString() || "N/A"}
                   </span>

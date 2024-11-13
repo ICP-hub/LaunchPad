@@ -2,14 +2,14 @@ import React, { useEffect, useState } from 'react';
 import person1 from '../../../../assets/images/carousel/person1.png';
 import l3 from '../../../../assets/images/carousel/l3.png';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../../StateManagement/useContext/useAuth';
 import { Principal } from '@dfinity/principal';
+import { useAuth } from '../../../StateManagement/useContext/useClient';
 
 const MyProjectCard = ({ projectData, index }) => {
     const protocol = process.env.DFX_NETWORK === 'ic' ? 'https' : 'http';
     const domain = process.env.DFX_NETWORK === 'ic' ? 'raw.icp0.io' : 'localhost:4943';
     const canisterId = process.env.CANISTER_ID_IC_ASSET_HANDLER;
-
+     console.log("project data in projectcard", projectData)
     const { createCustomActor, actor } = useAuth();
     const [TokenImg, setTokenImg] = useState();
     const [isFetchingIMG, setFetchingIMG] = useState(false);

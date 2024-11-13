@@ -21,7 +21,7 @@ import { FiEdit3 } from "react-icons/fi";
 import AddToWhitelist from "../../components/Modals/AddToWhitelist.jsx";
 import { Principal } from '@dfinity/principal';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, } from "react-redux";
 import UpdateToken from "../../components/Modals/UpdateToken.jsx";
 import { SaleParamsHandlerRequest } from "../../StateManagement/Redux/Reducers/SaleParams.jsx";
 import SaleStart from "./SaleStart.jsx";
@@ -126,8 +126,9 @@ const TokenPage = () => {
           }));
         }
     
+          console.log(" tokens data available or  response tokenName.", tokenName);
     }
-
+   
 // Fetch token image if ledgerId is available
 if (ledger_canister_id) {
   try {

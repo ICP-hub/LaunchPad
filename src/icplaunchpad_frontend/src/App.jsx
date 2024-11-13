@@ -11,44 +11,53 @@ import { UserTokensInfoHandlerRequest } from "./StateManagement/Redux/Reducers/U
 // import { AuthProvider } from "./StateManagement/useContext/useAuth";
 import {  useAuth } from "./StateManagement/useContext/useClient";
 import { useIdentityKit } from "@nfid/identitykit/react";
+import { handleActorRequest } from "./StateManagement/Redux/Reducers/actorBindReducer";
+import ErrorBoundary from "./ErrorBoundery";
+import { loginStart } from "./StateManagement/Redux/Reducers/InternetIdentityReducer";
+import { Principal } from "@dfinity/candid/lib/cjs/idl";
 function App() {
   const {
-    createCustomActor,
-    isAuthenticated
+    isAuthenticated,
+    identity,
+    createCustomActor
   } = useAuth();
  
-  
-  const actor = useSelector((currState) => currState.actors.actor);
-  const identity = useSelector((currState) => currState.internet.identity);
-  const principal = useSelector((currState) => currState.internet.principal);
-  const userData = useSelector((state) => state?.userData?.data[0]);
-
-  console.log('userData', userData), 
-
-  console.log('actor in app.js', actor);
-  console.log('isAuthenticated in app.js', isAuthenticated);
-  console.log('principal in app.js', principal);
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    if ( isAuthenticated && principal && actor  ) {
-      dispatch(userRegisteredHandlerRequest());
-      dispatch(ProfileImageIDHandlerRequest());
-      dispatch(TokensInfoHandlerRequest());
-      dispatch(UserTokensInfoHandlerRequest());
-    }
-    if(actor){
-      console.log("appjs actor-", actor)
-    dispatch(upcomingSalesHandlerRequest());
-    dispatch(SuccessfulSalesHandlerRequest());
-    }
+  console.log("createCustomActor  initialized  27.", createCustomActor);
+  console.log("identity  initialized  34.", identity);
+ 
 
-  }, [actor, dispatch,isAuthenticated,principal]); 
+
+  // useEffect(() => {
+  //   const fetchDataSequentially = () => {
+  //     try {
+  //       if (isAuthenticated && identity ) {
+  //         dispatch(userRegisteredHandlerRequest());
+  //          dispatch(ProfileImageIDHandlerRequest());
+  //          dispatch(TokensInfoHandlerRequest());
+  //          dispatch(UserTokensInfoHandlerRequest());
+  //          dispatch(handleActorRequest());
+  //         dispatch(loginStart());
+  //          dispatch(upcomingSalesHandlerRequest());
+  //          dispatch(SuccessfulSalesHandlerRequest());
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //     }
+  //   };
+
+  //   fetchDataSequentially();
+  // }, [isAuthenticated, identity, dispatch]);
+
+
 
   return (
    
     <div className="text-white max-w-[1700px] mx-auto container">
+      {/* <ErrorBoundary> */}
       <AllRoutes />
+      {/* </ErrorBoundary> */}
     </div>
 
   );

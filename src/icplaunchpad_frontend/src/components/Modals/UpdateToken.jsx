@@ -55,7 +55,7 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen,setRenderComponent, setTokenMo
                 start_time_utc: formatDateForDateTimeLocal(tokenData.start_time_utc),
                 end_time_utc: formatDateForDateTimeLocal(tokenData.end_time_utc),
                 links: socialLinks.map(link => link.url),
-                project_video: tokenData.project_video
+                
             });
         }
     }, [tokenData, reset]);
@@ -89,7 +89,6 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen,setRenderComponent, setTokenMo
             website,
             end_time_utc,
             start_time_utc,
-            project_video,
         } = data;
 
         if (!termsAccepted) {
