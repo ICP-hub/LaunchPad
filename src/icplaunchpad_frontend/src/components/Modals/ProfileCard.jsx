@@ -3,13 +3,23 @@ import { TfiClose } from "react-icons/tfi";
 
 import Modal from 'react-modal';
 import person1 from "../../../assets/images/carousel/person1.png"
-import { useAuth } from '../../StateManagement/useContext/useAuth';
 import { useSelector } from 'react-redux';
+import { useAuth } from '../../StateManagement/useContext/useClient';
 
 
 
 const ProfileCard = ({ profileModalIsOpen, setProfileModalIsOpen }) => {
-  const { logout, principal } = useAuth();
+  // const { logout, principal } = useAuth();
+  const {
+    identity,
+    actor,
+    principal,
+    connectWallet,
+    logout,
+    disconnect,
+    login,
+    isAuthenticated,
+  } = useAuth();
   const protocol = process.env.DFX_NETWORK === "ic" ? "https" : "http";
 const domain = process.env.DFX_NETWORK === "ic" ? "raw.icp0.io" : "localhost:4943";
 const canisterId = process.env.CANISTER_ID_IC_ASSET_HANDLER;

@@ -16,43 +16,33 @@ function* fetchUserHandler() {
     const actor = yield select(selectActor);
     const principalString = yield select(selectPrincipal);
 
+    console.log("Actor:", actor);
+    console.log("Principal String:", principalString);
+
     if (actor && principalString) {
-      console.log("Actor and principalString are available, proceeding...");
+      const principal = Principal.fromText(principalString);
+      console.log("Converted Principal:", principal);
 
-      // Check if the principalString is valid before converting it to Principal
-      if (principalString) {
-        const principal = Principal.fromText(principalString);
-        console.log("Converted Principal:", principal);
+      const userData = yield call([actor, 'get_user_account'], principal);
+      console.log("UserData in saga:", userData);
 
-        // Call the actor's method to get the user data
-        const userData = yield call([actor, actor.get_user_account], principal);
-        console.log("UserData in saga:", userData);
-
-        // Dispatch success action with the user data
+      if (userData) {
         yield put(userRegisteredHandlerSuccess(userData));
       } else {
-        throw new Error("Principal string is invalid or undefined.");
+        console.error("User data is undefined from actor method.");
+        yield put(userRegisteredHandlerFailure("User data is undefined."));
       }
     } else {
-      let errorMessage = "";
-      if (!actor) {
-        errorMessage += "Actor is undefined or invalid. ";
-      }
-      if (!principalString) {
-        errorMessage += "Principal string is undefined or invalid.";
-      }
-      console.error("Error fetching user data:", errorMessage);
-      yield put(userRegisteredHandlerFailure(`Failed to fetch user data: ${errorMessage}`));
+      console.error("Actor or principal is undefined.");
+      yield put(userRegisteredHandlerFailure("Actor or principal is undefined."));
     }
   } catch (error) {
     console.error("Error fetching user data:", error);
-    yield put(
-      userRegisteredHandlerFailure(
-        `Failed to fetch user data: ${error.message}`
-      )
-    );
+    yield put(userRegisteredHandlerFailure(`Failed to fetch user data: ${error.message}`));
   }
 }
+
+
 
 export function* fetchUserSaga() {
   yield takeLatest(userRegisteredHandlerRequest.type, fetchUserHandler);
