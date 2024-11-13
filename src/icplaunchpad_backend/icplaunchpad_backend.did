@@ -4,13 +4,19 @@ type CanisterIndexInfo = record {
   canister_id : text;
   index_canister_id : text;
   token_name : text;
+  total_supply : nat;
 };
+type CoverImageData = record { content : opt blob; ledger_id : principal };
 type ProfileImageData = record { content : opt blob };
-type Result = variant { Ok; Err : text };
-type Result_1 = variant { Ok : TokenCreationResult; Err : text };
-type Result_2 = variant { Ok : SaleDetails; Err : text };
-type Result_3 = variant { Ok : nat; Err : text };
-type Result_4 = variant { Ok : text; Err : text };
+type Result = variant { Ok : nat; Err : text };
+type Result_1 = variant { Ok; Err : text };
+type Result_2 = variant { Ok : TokenCreationResult; Err : text };
+type Result_3 = variant { Ok : SaleDetails; Err : text };
+type Result_4 = variant {
+  Ok : vec record { CanisterIndexInfo; SaleDetails };
+  Err : text;
+};
+type Result_5 = variant { Ok : text; Err : text };
 type SaleDetails = record {
   listing_rate : float64;
   creator : principal;
@@ -39,7 +45,6 @@ type TokenCreationResult = record {
   index_canister_id : principal;
   ledger_canister_id : principal;
 };
-type TokenImageData = record { content : opt blob; ledger_id : principal };
 type UserAccount = record {
   tag : vec text;
   username : text;
@@ -54,13 +59,15 @@ type UserInputParams = record {
   token_name : text;
 };
 service : () -> {
-  create_account : (UserAccount) -> (Result);
-  create_sale : (principal, SaleDetails) -> (Result);
-  create_token : (UserInputParams) -> (Result_1);
+  buy_tokens : (nat64, principal, principal) -> (Result);
+  create_account : (UserAccount) -> (Result_1);
+  create_sale : (principal, SaleDetails) -> (Result_1);
+  create_token : (UserInputParams) -> (Result_2);
   get_active_sales : () -> (vec SaleDetailsWithID) query;
-  get_cover_image_id : () -> (opt nat32) query;
+  get_all_sales : () -> (vec record { SaleDetailsWithID; text }) query;
+  get_cover_image_id : (principal) -> (opt nat32) query;
   get_profile_image_id : () -> (opt nat32) query;
-  get_sale_params : (principal) -> (Result_2) query;
+  get_sale_params : (principal) -> (Result_3) query;
   get_successful_sales : () -> (vec SaleDetailsWithID) query;
   get_token_image_id : (principal) -> (opt nat32) query;
   get_token_image_ids : () -> (vec record { nat32; principal }) query;
@@ -68,15 +75,13 @@ service : () -> {
   get_upcoming_sales : () -> (vec SaleDetailsWithID) query;
   get_user_account : (principal) -> (opt UserAccount) query;
   get_user_by_username : (text) -> (opt UserAccount) query;
+  get_user_sale_params : () -> (Result_4) query;
   get_user_tokens_info : () -> (vec CanisterIndexInfo) query;
   is_account_created : () -> (text) query;
-  make_payment : (nat64, principal) -> (Result_3);
   search_by_token_name_or_symbol : (text) -> (opt CanisterIndexInfo) query;
-  sell_tokens : (nat64, principal, principal, principal) -> (Result);
   update_sale_params : (principal, SaleDetailsUpdate) -> (Result_1);
   update_user_account : (principal, UserAccount) -> (Result_1);
   upload_cover_image : (text, CoverImageData) -> (Result_5);
   upload_profile_image : (text, ProfileImageData) -> (Result_5);
   upload_token_image : (text, CoverImageData) -> (Result_5);
-
 }
