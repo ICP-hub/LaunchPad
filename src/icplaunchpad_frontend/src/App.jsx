@@ -8,43 +8,58 @@ import { TokensInfoHandlerRequest } from "./StateManagement/Redux/Reducers/Token
 import { upcomingSalesHandlerRequest } from "./StateManagement/Redux/Reducers/UpcomingSales";
 import { SuccessfulSalesHandlerRequest } from "./StateManagement/Redux/Reducers/SuccessfulSales";
 import { UserTokensInfoHandlerRequest } from "./StateManagement/Redux/Reducers/UserTokensInfo";
-
+// import { AuthProvider } from "./StateManagement/useContext/useAuth";
+import {  useAuth } from "./StateManagement/useContext/useClient";
+import { useIdentityKit } from "@nfid/identitykit/react";
+import { handleActorRequest } from "./StateManagement/Redux/Reducers/actorBindReducer";
+import ErrorBoundary from "./ErrorBoundery";
+import { loginStart } from "./StateManagement/Redux/Reducers/InternetIdentityReducer";
+import { Principal } from "@dfinity/candid/lib/cjs/idl";
 function App() {
-  const actor = useSelector((currState) => currState.actors.actor);
-  const identity = useSelector((currState) => currState.internet.identity);
-  const principal = useSelector((currState) => currState.internet.principal);
-
-  const isAuthenticated = useSelector(
-    (currState) => currState.internet.isAuthenticated
-  );
-
-  console.log('actor in app.js', actor);
-  console.log('identity in app.js', identity);
-  console.log('isAuthenticated in app.js', isAuthenticated);
-
-
+  const {
+    isAuthenticated,
+    identity,
+    createCustomActor
+  } = useAuth();
+ 
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    if ( isAuthenticated && principal && actor  ) {
-      // Dispatch the user registration request when the user is authenticated
-      dispatch(userRegisteredHandlerRequest());
-      dispatch(ProfileImageIDHandlerRequest());
-      dispatch(TokensInfoHandlerRequest());
-      dispatch(UserTokensInfoHandlerRequest());
-    }
-    if(actor){
-      console.log("appjs actor-", actor)
-    dispatch(upcomingSalesHandlerRequest());
-    dispatch(SuccessfulSalesHandlerRequest());
-    }
+  console.log("createCustomActor  initialized  27.", createCustomActor);
+  console.log("identity  initialized  34.", identity);
+ 
 
-  }, [actor, dispatch,isAuthenticated,principal]); // Add dependencies
+
+  // useEffect(() => {
+  //   const fetchDataSequentially = () => {
+  //     try {
+  //       if (isAuthenticated && identity ) {
+  //         dispatch(userRegisteredHandlerRequest());
+  //          dispatch(ProfileImageIDHandlerRequest());
+  //          dispatch(TokensInfoHandlerRequest());
+  //          dispatch(UserTokensInfoHandlerRequest());
+  //          dispatch(handleActorRequest());
+  //         dispatch(loginStart());
+  //          dispatch(upcomingSalesHandlerRequest());
+  //          dispatch(SuccessfulSalesHandlerRequest());
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //     }
+  //   };
+
+  //   fetchDataSequentially();
+  // }, [isAuthenticated, identity, dispatch]);
+
+
 
   return (
-    <div id="root" className="text-white max-w-[1700px] mx-auto container">
+   
+    <div className="text-white max-w-[1700px] mx-auto container">
+      {/* <ErrorBoundary> */}
       <AllRoutes />
+      {/* </ErrorBoundary> */}
     </div>
+
   );
 }
 

@@ -16,33 +16,30 @@ function* fetchUserHandler() {
     const actor = yield select(selectActor);
     const principalString = yield select(selectPrincipal);
 
-    if (actor && principalString) {
-      console.log("Actor and principalString are available, proceeding...");
+    console.log("Actor in user saga:", actor);
+    console.log("Methods on actor:", actor ? Object.keys(actor) : "Actor is undefined");
+    console.log("Principal string in user saga:", principalString);
 
-      // Check if the principalString is valid before converting it to Principal
-      if (principalString) {
-        const principal = Principal.fromText(principalString);
-        console.log("Converted Principal:", principal);
+    if (actor && typeof actor.get_user_account === "function" && principalString) {
+      console.log("Actor and principal string are available, proceeding...");
 
-        // Call the actor's method to get the user data
-        const userData = yield call([actor, actor.get_user_account], principal);
-        console.log("UserData in saga:", userData);
+      // Convert the principal string to a Principal if required
+      const principal = Principal.fromText(principalString);
 
-        // Dispatch success action with the user data
-        yield put(userRegisteredHandlerSuccess(userData));
-      } else {
-        throw new Error("Principal string is invalid or undefined.");
-      }
+      // Call the actor's method to get the user data
+      const userData = yield call([actor, actor.get_user_account], principal);
+      console.log("UserData in saga:", userData);
+
+      // Dispatch success action with the user data
+      yield put(userRegisteredHandlerSuccess(userData));
     } else {
-      let errorMessage = "";
-      if (!actor) {
-        errorMessage += "Actor is undefined or invalid. ";
-      }
-      if (!principalString) {
-        errorMessage += "Principal string is undefined or invalid.";
-      }
+      let errorMessage = "Failed to fetch user data due to missing dependencies.";
+      if (!actor) errorMessage += " Actor is undefined or invalid. ";
+      if (!principalString) errorMessage += " Principal string is undefined or invalid.";
+      if (actor && typeof actor.get_user_account !== "function") errorMessage += " Actor method get_user_account is not available.";
+
       console.error("Error fetching user data:", errorMessage);
-      yield put(userRegisteredHandlerFailure(`Failed to fetch user data: ${errorMessage}`));
+      yield put(userRegisteredHandlerFailure(errorMessage));
     }
   } catch (error) {
     console.error("Error fetching user data:", error);

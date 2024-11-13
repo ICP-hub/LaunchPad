@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import person1 from '../../../assets/images/carousel/person1.png';
 import l3 from '../../../assets/images/carousel/l3.png';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../StateManagement/useContext/useAuth';
 import { Principal } from '@dfinity/principal';
 import SaleStart from '../OwnerSection/SaleStart';
+import { useAuth } from '../../StateManagement/useContext/useClient';
 
 const ProjectCard = ({ isUserToken, projectData, saleType, index }) => {
   const navigate = useNavigate();
@@ -208,7 +208,7 @@ const ProjectCard = ({ isUserToken, projectData, saleType, index }) => {
               <span className="text-lg font-semibold">{"365 DAYS"}</span>
             </div>
             <div className="flex flex-col">
-
+   
               {tokenInfo && <SaleStart style={{ text_heading: 'text-sm', text_content: 'text-lg' }} setTokenPhase={setTokenPhase} presaleData={projectData?.sale_details || tokenInfo?.sale_Params} />}
             </div>
             <button onClick={handleViewMoreClick} className="border-b-2 border-r-gray-600 w-20 cursor-pointer">View More</button>

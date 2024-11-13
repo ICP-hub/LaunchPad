@@ -4,8 +4,7 @@ import Modal from 'react-modal';
 import AnimationButton from '../../common/AnimationButton';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useAuth } from '../../StateManagement/useContext/useAuth';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Principal } from '@dfinity/principal';
 import { updatevalidationSchema } from '../../common/UpdateUserValidation';
 import ReactSelect from 'react-select';
@@ -15,12 +14,13 @@ import { FaTrash } from 'react-icons/fa';
 import { convertFileToBase64 } from '../../utils/convertToBase64';
 import { userRegisteredHandlerRequest } from '../../StateManagement/Redux/Reducers/userRegisteredData';
 import { ProfileImageIDHandlerRequest } from '../../StateManagement/Redux/Reducers/ProfileImageID';
+import { useAuth } from '../../StateManagement/useContext/useClient';
 
 const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const { actor, principal, isAuthenticated } = useAuth();
   const dispatch = useDispatch();
-  const userData = useSelector((state) => state.userData.data);
-
+console.log("principle in update user",principal)
+  console.log("actor in update user", actor)
   const [validationError, setValidationError] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -29,7 +29,7 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const [profileImagePreview, setProfileImagePreview] = useState(null);
   const [profilePictureData, setProfilePictureData] = useState(null);
   const [links, setLinks] = useState([{ url: '' }]);
-
+  const [userData, setuserdata] = useState([])
   const [tagsOptions] = useState([
     { value: 'tag1', label: 'Tag 1' },
     { value: 'tag2', label: 'Tag 2' },
@@ -38,12 +38,29 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
     { value: 'tag5', label: 'Tag 5' },
   ]);
 
-  const userPrincipal = Principal.fromText(principal);
 
   const { register, handleSubmit, formState: { errors }, reset, control, setValue, clearErrors, setError } = useForm({
     resolver: yupResolver(updatevalidationSchema),
   });
-
+  useEffect(() => {
+    if (isAuthenticated) {
+      userDatacheck()
+    }
+  }, [isAuthenticated]);
+  async function userDatacheck() {
+    try {
+      // Check if actor is defined
+      if (actor) {
+        const response = await actor.get_user_account(principal);
+        setuserdata(response)
+      }
+      else {
+        console.log("User account has not been created yet.");
+      }
+    } catch (error) {
+      console.error("Specific error occurred:", error.message);
+    }
+  }
   useEffect(() => {
     if (userData && userData.length > 0) {
       const user = userData[0];
@@ -87,6 +104,20 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const onSubmit = async (data) => {
     setIsSubmitting(true);
     setValidationError('');
+
+    if (!isAuthenticated) {
+      setValidationError('Please log in to update your account.'); 
+      setIsSubmitting(false);
+      return;
+    }
+    if (!principal) {
+      setValidationError('Principal is undefined. Please log in again.');
+      setIsSubmitting(false);
+      return;
+    } 
+    console.log("Principal before conversion:", principal);
+    const userPrincipal = typeof principal === 'string' ? Principal.fromText(principal) : principal;
+    console.log("User Principal:", userPrincipal.toString());
     const { name, username, tags } = data;
 
     if (!termsAccepted) {
@@ -99,9 +130,13 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
     const linksArray = links.map(link => link.url.trim());
 
     try {
+      if (!userPrincipal) {
+        throw new Error('User is not authenticated. Principal is undefined.');
+      }
+     
       const updatedUserData = { name, username, profile_picture, links: linksArray, tag: tags };
       const response = await actor.update_user_account(userPrincipal, updatedUserData);
-
+      console.log("Calling update_user_account with:", userPrincipal, updatedUserData);
       if (response?.Err) {
         setIsSubmitting(false);
         setValidationError(response.Err);

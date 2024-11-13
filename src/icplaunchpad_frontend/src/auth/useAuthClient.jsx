@@ -254,7 +254,6 @@ export const useAuthClient = (options = defaultOptions) => {
     logout,
     backendActor,
     userPrincipal,
-
     isAuthenticated,
     identity,
     createCustomActor,

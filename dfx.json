@@ -37,18 +37,18 @@
       }
     },
     "icplaunchpad_frontend": {
-      "dependencies": [
-        "icplaunchpad_backend"
-      ],
-      "frontend": {
-        "entrypoint": "src/icplaunchpad_frontend/src/index.html"
-      },
-      "source": [
-        "src/icplaunchpad_frontend/assets",
-        "dist/icplaunchpad_frontend/"
-      ],
-      "type": "assets"
-    }
+  "dependencies": [
+    "icplaunchpad_backend"
+  ],
+  "frontend": {
+    "entrypoint": "src/icplaunchpad_frontend/src/index.html"
+  },
+  "source": [
+    "dist/icplaunchpad_frontend/"
+  ],
+  "type": "assets"
+}
+
   },
   "defaults": {
     "build": {

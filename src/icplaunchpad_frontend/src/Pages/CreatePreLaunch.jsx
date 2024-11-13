@@ -1,19 +1,40 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import AnimationButton from '../common/AnimationButton';
 import { Link, useNavigate } from 'react-router-dom';
 import CreateTokenModal from '../components/Modals/CreateTokenModal';
-import { useAuth } from '../StateManagement/useContext/useAuth';
 import ConnectFirst from './ConnectFirst';
-import { useSelector } from 'react-redux';
-import { Principal } from '@dfinity/principal';
+import { useAuth } from '../StateManagement/useContext/useClient';
 
 const CreatePreLaunch = () => {
   const { isAuthenticated, actor } = useAuth();
   const [modalIsOpen, setIsOpen] = useState(false);
   const [error,setError]=useState(null);
   const navigate = useNavigate();
-  const userToken = useSelector((state) => state.UserTokensInfo.data);
+  // const userToken = useSelector((state) => state.UserTokensInfo.data);
+ 
+  const [userToken, setSalesData] = useState([])
+  console.log("Fetched tokens in ProjectLists:", userToken);
 
+  useEffect(() => {
+    const fetchUserTokensInfo = async () => {
+      try {
+        if (actor) {
+          const response = await actor.get_user_tokens_info();
+          if (response && response.length > 0) {
+            setSalesData(response);
+          } else {
+            console.log("No tokens data available or empty response.");
+          }
+        } else {
+          console.log("User account has not been created yet.");
+        }
+      } catch (error) {
+        console.error("Error fetching user tokens info:", error.message);
+      }
+    };
+
+    fetchUserTokensInfo();
+  }, [actor]);
   const handleVerifyToken = async () => {
     if ( userToken || userToken.length > 0) {
       const missingSaleParams = await Promise.all(
