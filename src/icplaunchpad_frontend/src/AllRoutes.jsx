@@ -11,7 +11,6 @@ import VerifyToken from './Pages/VerifyToken/VerifyToken';
 import ProjectList from './Pages/Projects/Projects';
 import TokenPage from './Pages/OwnerSection/TokenPage';
 import Project from './Pages/Project/project'
-import ErrorBoundary from './ErrorBoundery';
 
 function AllRoutes() {
   return (

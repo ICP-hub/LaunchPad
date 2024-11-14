@@ -5,12 +5,12 @@ import Modal from "react-modal";
 import AnimationButton from "../../common/AnimationButton";
 import { useNavigate } from "react-router-dom";
 import { Principal } from "@dfinity/principal";
-import { useDispatch } from "react-redux";
+// import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { SetLedgerIdHandler } from "../../StateManagement/Redux/Reducers/LedgerId";
-import { TokensInfoHandlerRequest } from "../../StateManagement/Redux/Reducers/TokensInfo";
+// import { SetLedgerIdHandler } from "../../StateManagement/Redux/Reducers/LedgerId";
+// import { TokensInfoHandlerRequest } from "../../StateManagement/Redux/Reducers/TokensInfo";
 import { useAuth } from "../../StateManagement/useContext/useClient";
 
 // Define the validation schema using Yup
@@ -65,7 +65,7 @@ const tokenSchema = yup.object().shape({
 const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
   const { actor, principal } = useAuth();
   const [termsAccepted, setTermsAccepted] = useState(false);
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const navigate = useNavigate();
  const [isSubmitting, setIsSubmitting] = useState(false);
  const [validationError, setValidationError] = useState('');
@@ -127,8 +127,8 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
       console.log("Token created:", response);
 
       if (response.Ok) {
-        dispatch(TokensInfoHandlerRequest());
-        dispatch(UserTokensInfoHandlerRequest());
+        // dispatch(TokensInfoHandlerRequest());
+        // dispatch(UserTokensInfoHandlerRequest());
 
         const { ledger_canister_id, index_canister_id } = response.Ok;
         console.log("ledger_canister_id---",ledger_canister_id,"  ", index_canister_id)

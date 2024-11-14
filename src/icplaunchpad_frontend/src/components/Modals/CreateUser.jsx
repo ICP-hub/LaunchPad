@@ -4,7 +4,7 @@ import Modal from 'react-modal';
 import { useNavigate } from 'react-router-dom';
 import { useForm, Controller, useFieldArray } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useDispatch } from 'react-redux';
+// import { useDispatch } from 'react-redux';
 import { Principal } from '@dfinity/principal';
 import { ThreeDots } from "react-loader-spinner";
 import ReactSelect from 'react-select';
@@ -14,8 +14,8 @@ import { FaTrash } from "react-icons/fa";
 import { getSocialLogo } from "../../common/getSocialLogo";
 import { validationSchema } from '../../common/UserValidation';
 import AnimationButton from '../../common/AnimationButton';
-import { userRegisteredHandlerRequest } from '../../StateManagement/Redux/Reducers/userRegisteredData';
-import { ProfileImageIDHandlerRequest } from '../../StateManagement/Redux/Reducers/ProfileImageID';
+// import { userRegisteredHandlerRequest } from '../../StateManagement/Redux/Reducers/userRegisteredData';
+// import { ProfileImageIDHandlerRequest } from '../../StateManagement/Redux/Reducers/ProfileImageID';
 import { useAuth } from '../../StateManagement/useContext/useClient';
 
 
@@ -27,7 +27,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
     resolver: yupResolver(validationSchema),
   });
 
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const [validationError, setValidationError] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [fileName, setFileName] = useState('');
@@ -78,10 +78,10 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
         return;
       }
 
-       if(response){
-        console.log("user created ", response)
-         dispatch(userRegisteredHandlerRequest());
-       }
+      //  if(response){
+      //   console.log("user created ", response)
+      //    dispatch(userRegisteredHandlerRequest());
+      //  }
 
       // Upload profile picture if exists
       if (userData.profile_picture.length > 0) {
@@ -89,7 +89,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
           await actor.upload_profile_image("br5f7-7uaaa-aaaaa-qaaca-cai", {
             content: userData.profile_picture,
           });      
-             dispatch(ProfileImageIDHandlerRequest());
+            //  dispatch(ProfileImageIDHandlerRequest());
         } catch (imgErr) {
           console.error("Error uploading profile picture:", imgErr);
         }

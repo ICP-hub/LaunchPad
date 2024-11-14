@@ -24,7 +24,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 // import { useDispatch, } from "react-redux";
 // import { useDispatch, } from "react-redux";
 import UpdateToken from "../../components/Modals/UpdateToken.jsx";
-import { SaleParamsHandlerRequest } from "../../StateManagement/Redux/Reducers/SaleParams.jsx";
+// import { SaleParamsHandlerRequest } from "../../StateManagement/Redux/Reducers/SaleParams.jsx";
 import SaleStart from "./SaleStart.jsx";
 import { getSocialLogo } from "../../common/getSocialLogo.jsx";
 import { useAuth } from "../../StateManagement/useContext/useClient.jsx";
@@ -71,9 +71,9 @@ const TokenPage = () => {
     }
   }, [tokenPhase,tokenData]);
 
-
-  const ledger_canister_id = projectData ? projectData.canister_id
-    : useSelector((state) => state?.LedgerId?.data?.ledger_canister_id)
+  const ledger_canister_id = projectData?.canister_id;
+  // const ledger_canister_id = projectData ? projectData.canister_id
+  //   : useSelector((state) => state?.LedgerId?.data?.ledger_canister_id)
   console.log("ledgerCanister-", ledger_canister_id)
 
   function handleTokenEdit() {
@@ -85,7 +85,9 @@ const TokenPage = () => {
     
       if (projectData) {
         console.log('projectData.canister_id=>', projectData.canister_id)
-        const ledgerId = Principal.fromText(projectData.canister_id)
+        // const ledgerId = Principal.fromText(projectData.canister_id)
+        const ledgerId = projectData.canister_id
+        console.log('ledgerId.canister_id=>', ledgerId)
         const presale = await actor.get_sale_params(ledgerId)
         console.log('presale', presale)
         setPresaleData(presale.Ok)

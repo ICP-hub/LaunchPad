@@ -4,9 +4,9 @@ import { useAgent, useIdentityKit } from "@nfid/identitykit/react";
 import { Actor, HttpAgent } from "@dfinity/agent";
 
 import { createActor } from "../../../../declarations/icplaunchpad_backend/index";
-import { useDispatch } from "react-redux";
-import { loginSuccess, setAuthContext } from "../Redux/Reducers/InternetIdentityReducer";
-import { setActor } from "../Redux/Reducers/actorBindReducer";
+// import { useDispatch } from "react-redux";
+// import { loginSuccess, setAuthContext } from "../Redux/Reducers/InternetIdentityReducer";
+// import { setActor } from "../Redux/Reducers/actorBindReducer";
 
 import { idlFactory as ledgerIDL } from "./ledger.did.js";
 const AuthContext = createContext();
@@ -24,7 +24,7 @@ export const useAuthClient = () => {
     const [agent, setAgent] = useState(null);
     const authenticatedAgent = useAgent()
     const [isLoading, setIsLoading] = useState(true);
-    const dispatch = useDispatch();
+    // const dispatch = useDispatch();
     const {
         // agent,
         user,
@@ -55,7 +55,7 @@ export const useAuthClient = () => {
                 setAgent(authenticatedAgent);
                 setBackendActor(newActor);
 
-                dispatch(setActor(newActor));
+                // dispatch(setActor(newActor));
                 console.log("Actor and Agent initialized successfully.");
             } else {
                 setIsLoading(false);
@@ -75,7 +75,7 @@ export const useAuthClient = () => {
                 try {
                     const actor = createActor(process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND, { agent });
                     
-                    dispatch(setActor(actor));
+                    // dispatch(setActor(actor));
                     console.log("Authenticated actor initialized.");
                 } catch (error) {
                     console.error("Failed to create actor:", error);
@@ -83,7 +83,7 @@ export const useAuthClient = () => {
             };
             initActor();
         }
-    }, [agent, dispatch]);
+    }, [agent]);
 
   
 
@@ -94,7 +94,7 @@ export const useAuthClient = () => {
                 try {
                     const userPrincipal = await user.principal;
                     setPrincipal(userPrincipal);
-                    dispatch(loginSuccess({ isAuthenticated: true, principal: userPrincipal }));
+                    // dispatch(loginSuccess({ isAuthenticated: true, principal: userPrincipal }));
                 } catch (error) {
                     console.error("Error fetching principal:", error);
                     setPrincipal(null);
@@ -105,7 +105,7 @@ export const useAuthClient = () => {
             }
         };
         fetchPrincipal();
-    }, [user, dispatch]);
+    }, [user]);
 
 
   
@@ -125,7 +125,7 @@ export const useAuthClient = () => {
 
     const login = useCallback(() => {
         connect();
-        dispatch(loginStart());
+        // dispatch(loginStart());
     }, [connect]);
 
     // const logout = useCallback(async () => {
@@ -179,15 +179,15 @@ export const useAuthClient = () => {
 
 export const AuthProvider = ({ children }) => {
     const auth = useAuthClient();
-    const dispatch = useDispatch();
+    // const dispatch = useDispatch();
 
     useEffect(() => {
         // Dispatch the auth context to Redux for saga access
         if (auth) { // This will log the data
             console.log("Auth is ", auth);
-            dispatch(setAuthContext(auth));
+            // dispatch(setAuthContext(auth));
         }
-    }, [auth, dispatch]);
+    }, [auth]);
     console.log("Auth is ", auth);
     return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
 };

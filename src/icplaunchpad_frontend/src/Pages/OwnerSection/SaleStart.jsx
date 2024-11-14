@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+// import { useDispatch } from 'react-redux';
 import { SuccessfulSalesHandlerRequest } from '../../StateManagement/Redux/Reducers/SuccessfulSales';
 import { upcomingSalesHandlerRequest } from '../../StateManagement/Redux/Reducers/UpcomingSales';
 
 const SaleStart = ({ style, setTokenPhase, presaleData }) => {
-    const dispatch = useDispatch();
+    // const dispatch = useDispatch();
     const [timeRemaining, setTimeRemaining] = useState("Loading...");
     const [phase, setPhase] = useState("upcoming"); // Track the sale phase internally
 
@@ -48,7 +48,7 @@ const SaleStart = ({ style, setTokenPhase, presaleData }) => {
                 console.log('hii ongoing')
                 setTimeRemaining("Sale Started!");
                 setTokenPhase("ONGOING");
-                dispatch(upcomingSalesHandlerRequest());
+                // dispatch(upcomingSalesHandlerRequest());
                 setPhase("ongoing");
                 return;
             }
@@ -70,7 +70,7 @@ const SaleStart = ({ style, setTokenPhase, presaleData }) => {
 
         // Cleanup interval on unmount
         return () => clearInterval(intervalId);
-    }, [presaleData, dispatch, setTokenPhase, phase]);
+    }, [presaleData, setTokenPhase, phase]);
 
     return (
         <>
