@@ -1,10 +1,12 @@
-use candid::{Nat, Principal};
+use candid::{CandidType, Nat, Principal};
 use ic_cdk::api;
 use ic_cdk::api::call::CallResult;
 use ic_cdk_macros::update;
 use icrc_ledger_types::icrc1::account::Account;
 use icrc_ledger_types::icrc2::transfer_from::TransferFromArgs;
+use serde::{Deserialize, Serialize};
 
+use crate::api_query::get_sale_params;
 use crate::TransferFromResult;
 
 pub fn prevent_anonymous() -> Result<(), String> {
@@ -14,34 +16,26 @@ pub fn prevent_anonymous() -> Result<(), String> {
     Ok(())
 }
 
-async fn get_seller_principal(icrc1_ledger_canister_id: Principal) -> Result<Principal, String> {
-    // Call `icrc1_minting_account` on the ICRC1 token ledger canister
-    let response: CallResult<(Option<Account>,)> = ic_cdk::call(
-        icrc1_ledger_canister_id,
-        "icrc1_minting_account",
-        (),
-    )
-    .await;
-
-    match response {
-        Ok((Some(account),)) => Ok(account.owner), // Return the owner (seller's principal)
-        Ok((None,)) => Err("Minting account not found.".to_string()),
-        Err((code, message)) => Err(format!("Failed to fetch minting account: {:?} - {}", code, message)),
-    }
+#[derive(CandidType, Deserialize, Serialize)]
+pub struct BuyTransferParams {
+    pub tokens: u64,
+    pub buyer_principal: Principal,
+    pub icrc1_ledger_canister_id: Principal,
 }
 
 
-async fn transfer(tokens: u64, user_principal: Principal, icrc1_ledger_canister_id: Principal) -> Result<Nat, String> {
+async fn buy_transfer(params: BuyTransferParams) -> Result<Nat, String> {
     let icp_ledger_canister_id = Principal::from_text("ryjl3-tyaaa-aaaaa-aaaba-cai").unwrap(); // ICP Ledger Canister ID
 
-    // Fetch the seller's principal from the ICRC1 token ledger
-    let seller_principal = get_seller_principal(icrc1_ledger_canister_id).await?;
+    // Fetch the sale parameters directly from your backend storage
+    let sale_params = get_sale_params(params.icrc1_ledger_canister_id)?;
+    let seller_principal = sale_params.creator;
 
     // Define the transfer arguments for the ICP Ledger canister
     let transfer_args = TransferFromArgs {
-        amount: Nat::from(tokens),
+        amount: Nat::from(params.tokens),
         to: Account {
-            owner: seller_principal, // Send ICP to the seller's account
+            owner: seller_principal, // Send ICP to the creator's account specified in the sale parameters
             subaccount: None,
         },
         fee: None,
@@ -49,7 +43,7 @@ async fn transfer(tokens: u64, user_principal: Principal, icrc1_ledger_canister_
         created_at_time: None,
         spender_subaccount: None,
         from: Account {
-            owner: user_principal,
+            owner: params.buyer_principal,
             subaccount: None,
         },
     };
@@ -59,8 +53,7 @@ async fn transfer(tokens: u64, user_principal: Principal, icrc1_ledger_canister_
         icp_ledger_canister_id,
         "icrc2_transfer_from",
         (transfer_args,),
-    )
-    .await;
+    ).await;
 
     match response {
         Ok((TransferFromResult::Ok(block_index),)) => Ok(block_index),
@@ -70,16 +63,29 @@ async fn transfer(tokens: u64, user_principal: Principal, icrc1_ledger_canister_
 }
 
 
-async fn sell_transfer(
-    tokens: u64,
-    from_principal: Principal,
-    to_principal: Principal,
-    token_ledger_canister_id: Principal
-) -> Result<Nat, String> {
+
+#[update(guard = prevent_anonymous)]
+async fn buy_tokens(params: BuyTransferParams) -> Result<Nat, String> {
+    buy_transfer(params).await
+}
+
+
+#[derive(CandidType, Deserialize, Serialize)]
+pub struct SellTransferParams {
+    pub tokens: u64,
+    pub to_principal: Principal,
+    pub token_ledger_canister_id: Principal,
+}
+
+async fn sell_transfer(params: SellTransferParams) -> Result<Nat, String> {
+    // Fetch the sale parameters directly from your backend storage
+    let sale_params = get_sale_params(params.token_ledger_canister_id)?;
+    let from_principal = sale_params.creator;
+
     let transfer_args = TransferFromArgs {
-        amount: Nat::from(tokens),
+        amount: Nat::from(params.tokens),
         to: Account {
-            owner: to_principal,
+            owner: params.to_principal,
             subaccount: None,
         },
         fee: None,
@@ -87,13 +93,13 @@ async fn sell_transfer(
         created_at_time: None,
         spender_subaccount: None,
         from: Account {
-            owner: from_principal,
+            owner: from_principal, // Use the creator as the sender
             subaccount: None,
         },
     };
 
     let response: CallResult<(TransferFromResult,)> = ic_cdk::call(
-        token_ledger_canister_id,
+        params.token_ledger_canister_id,
         "icrc2_transfer_from",
         (transfer_args,),
     )
@@ -106,22 +112,12 @@ async fn sell_transfer(
     }
 }
 
-
-
 #[update(guard = prevent_anonymous)]
-async fn buy_tokens(tokens: u64, user: Principal, icrc1_ledger_canister_id: Principal) -> Result<Nat, String> {
-    transfer(tokens, user, icrc1_ledger_canister_id).await
+async fn sell_tokens(params: SellTransferParams) -> Result<Nat, String> {
+    sell_transfer(params).await
 }
 
-#[update(guard = prevent_anonymous)]
-async fn sell_tokens(
-    tokens: u64,
-    from_user: Principal,
-    to_user: Principal,
-    token_ledger_canister_id: Principal
-) -> Result<Nat, String> {
-    sell_transfer(tokens, from_user, to_user, token_ledger_canister_id).await
-}
+
 
 
 
