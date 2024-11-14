@@ -2,10 +2,8 @@ import React, { useEffect, useState } from "react";
 import person1 from "../../../assets/images/carousel/person1.png";
 import { useNavigate } from 'react-router-dom';
 import l3 from '../../../assets/images/carousel/l3.png'
-import { useDispatch, useSelector } from "react-redux";
 import ProjectCard from "../../Pages/Projects/ProjectCard";
 import { useAuth } from "../../StateManagement/useContext/useClient";
-import { SuccessfulSalesHandlerRequest } from "../../StateManagement/Redux/Reducers/SuccessfulSales";
 
   
 

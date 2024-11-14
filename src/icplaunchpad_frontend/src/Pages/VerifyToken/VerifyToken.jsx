@@ -16,7 +16,6 @@ import { SetLedgerIdHandler } from "../../StateManagement/Redux/Reducers/LedgerI
 import { upcomingSalesHandlerRequest } from "../../StateManagement/Redux/Reducers/UpcomingSales";
 import { SuccessfulSalesHandlerRequest } from "../../StateManagement/Redux/Reducers/SuccessfulSales";
 import { useAuth } from "../../StateManagement/useContext/useClient";
-import { SaleParamsHandlerRequest } from "../../StateManagement/Redux/Reducers/SaleParams";
 // Validation schema using Yup
 const getSchemaForStep = (step) => {
   switch (step) {
@@ -278,6 +277,7 @@ const VerifyToken = () => {
       // for rerendering the tokens 
       // dispatch(upcomingSalesHandlerRequest());
       // dispatch(SuccessfulSalesHandlerRequest());
+
 
 
       navigate("/token-page", { state: { ledger_canister_id } });
