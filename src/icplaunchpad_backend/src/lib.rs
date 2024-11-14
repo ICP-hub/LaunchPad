@@ -13,9 +13,9 @@ mod transaction;
 mod types;
 mod api_update;
 use state_handler::*;
-mod api_query;
+mod api_query;   
 use types::*;
-
+use crate::transaction::*;
 use candid::Nat;
 
 

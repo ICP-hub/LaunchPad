@@ -1,4 +1,9 @@
 type Account = record { owner : principal; subaccount : opt blob };
+type BuyTransferParams = record {
+  icrc1_ledger_canister_id : principal;
+  tokens : nat64;
+  buyer_principal : principal;
+};
 type CanisterIndexInfo = record {
   token_symbol : text;
   canister_id : text;
@@ -41,6 +46,11 @@ type SaleDetailsWithID = record {
   sale_details : SaleDetails;
   ledger_canister_id : text;
 };
+type SellTransferParams = record {
+  to_principal : principal;
+  token_ledger_canister_id : principal;
+  tokens : nat64;
+};
 type TokenCreationResult = record {
   index_canister_id : principal;
   ledger_canister_id : principal;
@@ -59,7 +69,7 @@ type UserInputParams = record {
   token_name : text;
 };
 service : () -> {
-  buy_tokens : (nat64, principal, principal) -> (Result);
+  buy_tokens : (BuyTransferParams) -> (Result);
   create_account : (UserAccount) -> (Result_1);
   create_sale : (principal, SaleDetails) -> (Result_1);
   create_token : (UserInputParams) -> (Result_2);
@@ -79,7 +89,7 @@ service : () -> {
   get_user_tokens_info : () -> (vec CanisterIndexInfo) query;
   is_account_created : () -> (text) query;
   search_by_token_name_or_symbol : (text) -> (opt CanisterIndexInfo) query;
-  sell_tokens : (nat64, principal, principal, principal) -> (Result);
+  sell_tokens : (SellTransferParams) -> (Result);
   update_sale_params : (principal, SaleDetailsUpdate) -> (Result_1);
   update_user_account : (principal, UserAccount) -> (Result_1);
   upload_cover_image : (text, CoverImageData) -> (Result_5);
