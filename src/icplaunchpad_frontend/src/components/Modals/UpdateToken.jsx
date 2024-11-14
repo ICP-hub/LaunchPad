@@ -18,8 +18,9 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen,setRenderComponent, setTokenMo
     const [tokenData, setTokenData] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     
-    const dispatch= useDispatch();
     const ledgerPrincipal = Principal.fromText(ledgerId);
+    console.log("ledgerId at 22 :", ledgerId);
+    console.log("ledgerPrincipal at 23 :", ledgerPrincipal);
     const [links, setLinks] = useState([{ url: '' }]);
     console.log("Start time and end time :", tokenData);
     useEffect(() => {
@@ -55,13 +56,14 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen,setRenderComponent, setTokenMo
                 start_time_utc: formatDateForDateTimeLocal(tokenData.start_time_utc),
                 end_time_utc: formatDateForDateTimeLocal(tokenData.end_time_utc),
                 links: socialLinks.map(link => link.url),
-                
+                project_video: tokenData.project_video || '',
             });
         }
     }, [tokenData, reset]);
 
     const getTokenData = async () => {
         try {
+            console.log("Principal pass in get token at update 64", ledgerPrincipal)
             const data = await actor.get_sale_params(ledgerPrincipal);
             setTokenData(data.Ok);
             console.log('Fetched token data:', data);
@@ -89,6 +91,7 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen,setRenderComponent, setTokenMo
             website,
             end_time_utc,
             start_time_utc,
+            project_video,
         } = data;
 
         if (!termsAccepted) {
@@ -110,7 +113,6 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen,setRenderComponent, setTokenMo
         const updatedTokenData = {
             description: description ? [description] : [],
             website: website ? [website] : null,
-            project_video: project_video ? [project_video] : null,
             end_time_utc: endTime ? [endTime] : [],
             start_time_utc: startTime ? [startTime] : [],
             project_video: project_video ? [project_video] : null,
@@ -123,8 +125,6 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen,setRenderComponent, setTokenMo
               
             if(response){
             setRenderComponent((prev)=>!prev);    
-            dispatch(upcomingSalesHandlerRequest());
-            dispatch(SuccessfulSalesHandlerRequest())
             
             }
 

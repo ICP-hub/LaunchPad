@@ -4,7 +4,7 @@ import Modal from 'react-modal';
 import AnimationButton from '../../common/AnimationButton';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useDispatch } from 'react-redux';
+// import { useDispatch } from 'react-redux';
 import { Principal } from '@dfinity/principal';
 import { updatevalidationSchema } from '../../common/UpdateUserValidation';
 import ReactSelect from 'react-select';
@@ -18,7 +18,7 @@ import { useAuth } from '../../StateManagement/useContext/useClient';
 
 const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const { actor, principal, isAuthenticated } = useAuth();
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 console.log("principle in update user",principal)
   console.log("actor in update user", actor)
   const [validationError, setValidationError] = useState('');
@@ -146,10 +146,10 @@ console.log("principle in update user",principal)
       if (profile_picture.length > 0) {
         await actor.upload_profile_image("br5f7-7uaaa-aaaaa-qaaca-cai", { content: [profile_picture[0]] });
         console.log("profile pic uploaded")
-        dispatch(ProfileImageIDHandlerRequest());
+        // dispatch(ProfileImageIDHandlerRequest());
       }
 
-      dispatch(userRegisteredHandlerRequest());
+      // dispatch(userRegisteredHandlerRequest());
       setUserModalIsOpen(false);
       reset();
     } catch (err) {

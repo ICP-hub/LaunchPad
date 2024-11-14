@@ -11,11 +11,12 @@ import ReviewInfoTab from "./Tabs/ReviewInfoTab";
 import StepProgressBar from "./StepProgressBar";
 import { Principal } from "@dfinity/principal";
 import { ThreeDots } from "react-loader-spinner";
-import { useDispatch } from "react-redux";
+// import { useDispatch } from "react-redux";
 import { SetLedgerIdHandler } from "../../StateManagement/Redux/Reducers/LedgerId";
-import { upcomingSalesHandlerRequest } from "../../StateManagement/Redux/Reducers/UpcomingSales";
-import { SuccessfulSalesHandlerRequest } from "../../StateManagement/Redux/Reducers/SuccessfulSales";
 import { useAuth } from "../../StateManagement/useContext/useClient";
+// import { upcomingSalesHandlerRequest } from "../../StateManagement/Redux/Reducers/UpcomingSales";
+// import { SuccessfulSalesHandlerRequest } from "../../StateManagement/Redux/Reducers/SuccessfulSales";
+
 // Validation schema using Yup
 const getSchemaForStep = (step) => {
   switch (step) {
@@ -239,7 +240,7 @@ const VerifyToken = () => {
       const ledgerPrincipalId = typeof ledger_canister_id !== 'string' && ledger_canister_id
       ? Principal.fromUint8Array(ledger_canister_id)
       : Principal.fromText(ledger_canister_id)
-    
+     console.log("principal id at 243",ledgerPrincipalId)
       if (!ledgerPrincipalId) throw new Error("Invalid ledger canister ID");
 
       const response = await actor.create_sale(ledgerPrincipalId, presaleData);
@@ -267,12 +268,12 @@ const VerifyToken = () => {
       console.log("Submission successful");
 
       // adding ledger_canister_id and index_canister_id in redux store   
-      dispatch(
-        SetLedgerIdHandler({
-          ledger_canister_id:ledgerPrincipalId.toText(),
-          index_canister_id: index_canister_id,
-        })
-      );
+      // dispatch(
+      //   SetLedgerIdHandler({
+      //     ledger_canister_id:ledgerPrincipalId.toText(),
+      //     index_canister_id: index_canister_id,
+      //   })
+      // );
         
       // for rerendering the tokens 
       // dispatch(upcomingSalesHandlerRequest());

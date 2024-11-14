@@ -13,10 +13,10 @@ import Token from "./token/Token.jsx";
 import Tokenomic from "./Tokenomic/Tokenomic.jsx";
 import MobileViewTab from "./MobileViewTab.jsx";
 import { useLocation } from "react-router-dom";
-import { useAuth } from "../../StateManagement/useContext/useAuth.jsx";
 import { Principal } from "@dfinity/principal";
 import SaleStart from "../OwnerSection/SaleStart.jsx";
 import { getSocialLogo } from "../../common/getSocialLogo.jsx";
+import { useAuth } from "../../StateManagement/useContext/useClient.jsx";
 
 const TokenPage = () => {
   const [tokenPhase, setTokenPhase] = useState("UPCOMING");

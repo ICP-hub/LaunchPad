@@ -150,10 +150,10 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { FaRegCopy } from "react-icons/fa";
-import { useAuth } from "../../../StateManagement/useContext/useAuth";
 import { Principal } from "@dfinity/principal";
+import { useAuth } from "../../../StateManagement/useContext/useClient";
 
-const VerifyTokenTab = ({ register, errors, setTokenData, watch, ledger_canister_id }) => {
+const VerifyTokenTab = ({ register, errors, setTokenData, watch, ledger_canister_id, tokenData }) => {
   const [copySuccess, setCopySuccess] = useState(false);
   const inputRef = useRef(null);
   const [tokenInfo, setTokenInfo] = useState(null);
@@ -176,14 +176,14 @@ const VerifyTokenTab = ({ register, errors, setTokenData, watch, ledger_canister
 
   const getTokenData = async (ledger_canister_id) => {
     try {
-
+      console.log("ledger_canister_id at 179 in varify token tab", ledger_canister_id)
       const actor = await createCustomActor(ledger_canister_id);
       if (actor) {
         const tokenName = await actor.icrc1_name();
         const tokenSymbol = await actor.icrc1_symbol();
         const tokenDecimals = await actor.icrc1_decimals();
         const tokenSupply = await actor.icrc1_total_supply();
-
+        console.log("tokenName at 186 in varify token tab", tokenName)
         setTokenData((prev) => ({ ...prev, token_name: tokenName,token_symbol:tokenSymbol, decimals:tokenDecimals, total_supply:tokenSupply}));
         setTokenInfo({
           token_name: tokenName,
@@ -211,7 +211,11 @@ const VerifyTokenTab = ({ register, errors, setTokenData, watch, ledger_canister
         .catch((err) => console.error("Failed to copy!", err));
     }
   };
-
+  const onChange = (event) => {
+    const updatedData = tokenData ? { ...tokenData } : {}; // Ensures tokenData is defined
+    updatedData[event.target.name] = event.target.value;
+    setTokenData(updatedData);
+  };
   return (
     <div className="flex justify-center items-center mb-[80px] dxs:mb-[145px] xxs1:mb-[80px] sm2:mb-[70px] md:mb-[30px] dlg:mb-0 m-4 bg-black text-white">
       <div className="bg-[#222222] w-full max-w-[1070px] h-[920px] xxs1:h-[850px] sm2:h-[780px] md:h-[730px] dlg:h-[780px] p-4 xxs1:p-8 rounded-2xl">
