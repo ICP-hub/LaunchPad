@@ -21,7 +21,8 @@ import { FiEdit3 } from "react-icons/fi";
 import AddToWhitelist from "../../components/Modals/AddToWhitelist.jsx";
 import { Principal } from '@dfinity/principal';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useDispatch, } from "react-redux";
+// import { useDispatch, } from "react-redux";
+// import { useDispatch, } from "react-redux";
 import UpdateToken from "../../components/Modals/UpdateToken.jsx";
 import { SaleParamsHandlerRequest } from "../../StateManagement/Redux/Reducers/SaleParams.jsx";
 import SaleStart from "./SaleStart.jsx";
@@ -52,7 +53,7 @@ const TokenPage = () => {
 
 
   // const presale = useSelector((state) => state.SaleParams.data.Ok);
-  const dispatch = useDispatch()
+  // const dispatch = useDispatch()
 
   console.log('project data', projectData)
   // const location = useLocation();
@@ -163,10 +164,10 @@ if (ledger_canister_id) {
 }
 
 
-    // Fetch presale data if ledgerId is available
-    if (ledger_canister_id && !projectData) {
-      dispatch(SaleParamsHandlerRequest())
-    }
+    // // Fetch presale data if ledgerId is available
+    // if (ledger_canister_id && !projectData) {
+    //   dispatch(SaleParamsHandlerRequest())
+    // }
   } catch (error) {
     console.error("Error fetching data:", error);
   }
@@ -254,7 +255,7 @@ return (
             <div className="content-div flex font-posterama justify-between w-[90%] m-auto mt-7 ">
               <div className="left flex flex-col gap-5">
                 <div className="text-[25px]"> {tokenData ? tokenData.token_name : "PUPPO"}</div>
-                <div className="font-extralight">FAir Launnch - Max buy 5 SOL</div>
+                <div className="font-extralight">Fair Launnch - Max buy 5 SOL</div>
                 <div className="logos flex  gap-11">
                  {
                   (presaleData && presaleData.social_links.length > 0 ) ? 
