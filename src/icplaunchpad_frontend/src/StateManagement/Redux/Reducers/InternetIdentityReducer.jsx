@@ -1,39 +1,40 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-// Initial state for the authentication slice
 const initialState = {
   isAuthenticated: false,
-  principal: null,
   identity: null,
+  principal: null,
   loading: false,
   error: null,
-  authContext: null, // Stores auth context with login/logout functions
 };
 
-// Create the authentication slice
 const internetIdentitySlice = createSlice({
   name: 'internet',
   initialState,
   reducers: {
-    setAuthContext: (state, action) => {
-      state.authContext = action.payload;
-    },
-    loginStart: (state, action) => {
+    checkLoginOnStart: (state) => {
       state.loading = true;
       state.error = null;
-      state.walletType = action.payload?.walletType || undefined; // Set wallet type if provided
+    },
+    loginStart: (state) => {
+      state.loading = true;
+      state.error = null;
     },
     loginSuccess: (state, action) => {
-      const { isAuthenticated, principal, identity } = action.payload;
+      const {
+        isAuthenticated = false,
+        identity = null,
+        principal = null,
+      } = action.payload || {};
       state.isAuthenticated = isAuthenticated;
-      state.principal = principal;
       state.identity = identity;
+      state.principal = principal;
       state.loading = false;
       state.error = null;
     },
     loginFailure: (state, action) => {
       state.loading = false;
-      state.error = action.payload || 'Login failed';
+      state.error = action.payload;
     },
     logoutStart: (state) => {
       state.loading = true;
@@ -41,34 +42,26 @@ const internetIdentitySlice = createSlice({
     },
     logoutSuccess: (state) => {
       state.isAuthenticated = false;
-      state.principal = null;
       state.identity = null;
-      state.walletType = undefined;
+      state.principal = null;
       state.loading = false;
       state.error = null;
     },
     logoutFailure: (state, action) => {
       state.loading = false;
-      state.error = action.payload || 'Logout failed';
-    },
-    checkLoginOnStart: (state) => {
-      state.loading = true;
-      state.error = null;
+      state.error = action.payload;
     },
   },
 });
 
-// Export the actions to use in sagas or components
 export const {
-  setAuthContext,
+  checkLoginOnStart,
   loginStart,
   loginSuccess,
   loginFailure,
   logoutStart,
   logoutSuccess,
   logoutFailure,
-  checkLoginOnStart,
 } = internetIdentitySlice.actions;
 
-// Export the reducer to configure the store
 export default internetIdentitySlice.reducer;

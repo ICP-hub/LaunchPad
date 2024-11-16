@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { convertTimestampToIST } from '../../../utils/convertTimestampToIST';
-import { useAuth } from '../../../StateManagement/useContext/useAuth';
 import { Principal } from '@dfinity/principal';
 
 const PoolInfoTab = ({ presaleData, poolData }) => {
-  const { actor } = useAuth();
+  const actor = useSelector((currState) => currState.actors.actor);
+  const isAuthenticated = useSelector(
+    (currState) => currState.internet.isAuthenticated
+  );
+  const principal = useSelector((currState) => currState.internet.principal);
   const [presale, setPresale] = useState(presaleData || null); // Set presaleData initially if available
   const [saleTime, setSaleTime] = useState({ start_time: "N/A", end_time: "N/A" });
 
@@ -71,3 +74,8 @@ const PoolInfoTab = ({ presaleData, poolData }) => {
 };
 
 export default PoolInfoTab;
+
+
+
+
+

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import l3 from '../../../../assets/images/carousel/l3.png'
 import ProjectCard from "../../Projects/ProjectCard";
 import MyProjectCard from "./MyProjectCard";
-import { useAuth } from "../../../StateManagement/useContext/useClient";
+import { useSelector } from "react-redux";
 
 
 
@@ -12,9 +12,11 @@ import { useAuth } from "../../../StateManagement/useContext/useClient";
 
 const ProjectLists = () => {
   const navigate = useNavigate();
-  const {
-    actor,
-  } = useAuth();
+  const actor = useSelector((currState) => currState.actors.actor);
+  const isAuthenticated = useSelector(
+    (currState) => currState.internet.isAuthenticated
+  );
+  const principal = useSelector((currState) => currState.internet.principal);
   const [salesData, setSalesData] = useState([])
   console.log("Fetched tokens in ProjectLists:", salesData);
 

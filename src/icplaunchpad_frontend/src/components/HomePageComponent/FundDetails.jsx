@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '../../StateManagement/useContext/useAuth';
 import { Principal } from '@dfinity/principal';
 import { convertTimestampToISTFormatted } from '../../utils/convertTimestampToIST';
+import { useAuth } from '../../StateManagement/useContext/useClient';
+import { useSelector } from 'react-redux';
 
 const FundDetails = ({ sale, index }) => {
     const [tokenDetails, setTokenDetails] = useState({});
-    const { actor, createCustomActor } = useAuth();
+    const {  createCustomActor } = useAuth();
+    const actor = useSelector((currState) => currState.actors.actor);
+ 
     const protocol = process.env.DFX_NETWORK === 'ic' ? 'https' : 'http';
     const domain = process.env.DFX_NETWORK === 'ic' ? 'raw.icp0.io' : 'localhost:4943';
     const canisterId = process.env.CANISTER_ID_IC_ASSET_HANDLER;

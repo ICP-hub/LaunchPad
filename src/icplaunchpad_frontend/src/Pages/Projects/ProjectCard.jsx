@@ -5,10 +5,12 @@ import { useNavigate } from 'react-router-dom';
 import { Principal } from '@dfinity/principal';
 import SaleStart from '../OwnerSection/SaleStart';
 import { useAuth } from '../../StateManagement/useContext/useClient';
+import { useSelector } from 'react-redux';
 
 const ProjectCard = ({ isUserToken, projectData, saleType, index }) => {
   const navigate = useNavigate();
-  const { createCustomActor, actor } = useAuth();
+  const { createCustomActor } = useAuth();
+  const actor = useSelector((currState) => currState.actors.actor);
   const [tokenInfo, setTokenInfo] = useState({});
   const [isFetchingIMG, setFetchingIMG] = useState(false);
   const [tokenPhase, setTokenPhase] = useState("UPCOMING");
@@ -162,7 +164,7 @@ const ProjectCard = ({ isUserToken, projectData, saleType, index }) => {
         <div className="flex">
           <div className="relative flex items-center overflow-hidden w-[60%] h-72">
             <div className="absolute left-[-110%] ss2:left-[-62%] xxs1:left-[-30%] sm:left-[-20%] md:left-[-45%] top-0 w-72 h-72">
-            <svg style={{ transform: 'rotate(-90deg)' }} viewBox="0 0 36 36">
+              <svg style={{ transform: 'rotate(-90deg)' }} viewBox="0 0 36 36">
                 <defs>
                   <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
                     <stop offset="0%" style={{ stopColor: '#f3b3a7', stopOpacity: 1 }} />
@@ -208,7 +210,7 @@ const ProjectCard = ({ isUserToken, projectData, saleType, index }) => {
               <span className="text-lg font-semibold">{"365 DAYS"}</span>
             </div>
             <div className="flex flex-col">
-   
+
               {tokenInfo && <SaleStart style={{ text_heading: 'text-sm', text_content: 'text-lg' }} setTokenPhase={setTokenPhase} presaleData={projectData?.sale_details || tokenInfo?.sale_Params} />}
             </div>
             <button onClick={handleViewMoreClick} className="border-b-2 border-r-gray-600 w-20 cursor-pointer">View More</button>

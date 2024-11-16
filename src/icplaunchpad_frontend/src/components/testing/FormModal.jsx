@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import { useAuth } from "../../auth/useAuthClient";
 import { Principal } from "@dfinity/principal";
+import { useSelector } from "react-redux";
 const FormModal = () => {
-  const { backendActor, createCustomActor } = useAuth();
+  const {  createCustomActor } = useAuth();
+  const actor = useSelector((currState) => currState.actors.actor);
+
   const [formData, setFormData] = useState({
     TokenName: "",
     symbol: "",
@@ -82,10 +85,10 @@ const FormModal = () => {
 
   const handleGetCaniterID = async () => {
     try {
-      if (!backendActor) {
+      if (!actor) {
         throw new Error("Backend actor is not initialized");
       }
-      const response = await backendActor.get_all_canister_ids();
+      const response = await actor.get_all_canister_ids();
       console.log("all Canister IDs:", response);
     } catch (error) {
       console.error("Error fetching canister IDs:", error);

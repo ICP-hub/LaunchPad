@@ -1,4 +1,5 @@
 
+
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -11,12 +12,11 @@ import ReviewInfoTab from "./Tabs/ReviewInfoTab";
 import StepProgressBar from "./StepProgressBar";
 import { Principal } from "@dfinity/principal";
 import { ThreeDots } from "react-loader-spinner";
-// import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { SetLedgerIdHandler } from "../../StateManagement/Redux/Reducers/LedgerId";
-import { useAuth } from "../../StateManagement/useContext/useClient";
-// import { upcomingSalesHandlerRequest } from "../../StateManagement/Redux/Reducers/UpcomingSales";
-// import { SuccessfulSalesHandlerRequest } from "../../StateManagement/Redux/Reducers/SuccessfulSales";
-
+import { upcomingSalesHandlerRequest } from "../../StateManagement/Redux/Reducers/UpcomingSales";
+import { SuccessfulSalesHandlerRequest } from "../../StateManagement/Redux/Reducers/SuccessfulSales";
+import { SaleParamsHandlerRequest } from "../../StateManagement/Redux/Reducers/SaleParams";
 // Validation schema using Yup
 const getSchemaForStep = (step) => {
   switch (step) {
@@ -40,7 +40,7 @@ const getSchemaForStep = (step) => {
             yup.ref("minimumBuy"),
             "Maximum buy must be greater than minimum buy"
           ),
-          startTime: yup
+        startTime: yup
           .date()
           .required("Start time is required")
           .min(new Date(), "Start time must be in the future"),
@@ -48,7 +48,7 @@ const getSchemaForStep = (step) => {
           .date()
           .required("End time is required")
           .min(
-            yup.ref("startTime"), 
+            yup.ref("startTime"),
             "End time should be after the start time"
           )
           .test(
@@ -162,15 +162,18 @@ const VerifyToken = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
-  const { actor, principal } = useAuth();
   const { formData, ledger_canister_id, index_canister_id } = location.state || {};
   const [isSubmitting, setIsSubmitting] = useState(false);
-  // const dispatch=useDispatch();
-
-  useEffect(()=>{
-    if(formData)
-     setTokenData(formData)
-  },[formData])
+  const dispatch = useDispatch();
+  const actor = useSelector((currState) => currState.actors.actor);
+  const isAuthenticated = useSelector(
+    (currState) => currState.internet.isAuthenticated
+  );
+  const principal = useSelector((currState) => currState.internet.principal);
+  useEffect(() => {
+    if (formData)
+      setTokenData(formData)
+  }, [formData])
 
   const {
     register,
@@ -198,7 +201,7 @@ const VerifyToken = () => {
     try {
       setIsSubmitting(true);
       const {
-        token_name=tokenData?.token_name,
+        token_name = tokenData?.token_name,
         presaleRate,
         minimumBuy,
         maximumBuy,
@@ -234,13 +237,13 @@ const VerifyToken = () => {
         social_links: socialLinksURLs,
         website,
         project_video,
-        
+
       };
-  
+
       const ledgerPrincipalId = typeof ledger_canister_id !== 'string' && ledger_canister_id
-      ? Principal.fromUint8Array(ledger_canister_id)
-      : Principal.fromText(ledger_canister_id)
-     console.log("principal id at 243",ledgerPrincipalId)
+        ? Principal.fromUint8Array(ledger_canister_id)
+        : Principal.fromText(ledger_canister_id)
+
       if (!ledgerPrincipalId) throw new Error("Invalid ledger canister ID");
 
       const response = await actor.create_sale(ledgerPrincipalId, presaleData);
@@ -252,8 +255,8 @@ const VerifyToken = () => {
           content: [TokenPicture],
           ledger_id: ledgerPrincipalId,
         };
-       const res= await actor.upload_token_image("br5f7-7uaaa-aaaaa-qaaca-cai", imgUrl);
-       console.log("uploaded img response ",res)
+        const res = await actor.upload_token_image("br5f7-7uaaa-aaaaa-qaaca-cai", imgUrl);
+        console.log("uploaded img response ", res)
       }
 
       if (CoverPicture) {
@@ -261,25 +264,24 @@ const VerifyToken = () => {
           content: [CoverPicture],
           ledger_id: ledgerPrincipalId,
         };
-        const res=await actor.upload_cover_image("br5f7-7uaaa-aaaaa-qaaca-cai", imgUrl);
-        console.log("uploaded cover img response ",res)
+        const res = await actor.upload_cover_image("br5f7-7uaaa-aaaaa-qaaca-cai", imgUrl);
+        console.log("uploaded cover img response ", res)
       }
-      
+
       console.log("Submission successful");
 
       // adding ledger_canister_id and index_canister_id in redux store   
-      // dispatch(
-      //   SetLedgerIdHandler({
-      //     ledger_canister_id:ledgerPrincipalId.toText(),
-      //     index_canister_id: index_canister_id,
-      //   })
-      // );
-        
+      dispatch(
+        SetLedgerIdHandler({
+          ledger_canister_id: ledgerPrincipalId.toText(),
+          index_canister_id: index_canister_id,
+        })
+      );
+
       // for rerendering the tokens 
-      // dispatch(upcomingSalesHandlerRequest());
-      // dispatch(SuccessfulSalesHandlerRequest());
-
-
+      // SaleParamsHandlerRequest()
+      dispatch(upcomingSalesHandlerRequest());
+      dispatch(SuccessfulSalesHandlerRequest());
 
       navigate("/token-page", { state: { ledger_canister_id } });
     } catch (error) {

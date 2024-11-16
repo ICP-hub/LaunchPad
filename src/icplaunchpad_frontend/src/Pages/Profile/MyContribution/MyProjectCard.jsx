@@ -4,13 +4,19 @@ import l3 from '../../../../assets/images/carousel/l3.png';
 import { useNavigate } from 'react-router-dom';
 import { Principal } from '@dfinity/principal';
 import { useAuth } from '../../../StateManagement/useContext/useClient';
+import { useSelector } from 'react-redux';
 
 const MyProjectCard = ({ projectData, index }) => {
     const protocol = process.env.DFX_NETWORK === 'ic' ? 'https' : 'http';
     const domain = process.env.DFX_NETWORK === 'ic' ? 'raw.icp0.io' : 'localhost:4943';
     const canisterId = process.env.CANISTER_ID_IC_ASSET_HANDLER;
      console.log("project data in projectcard", projectData)
-    const { createCustomActor, actor } = useAuth();
+    const { createCustomActor } = useAuth();
+    const actor = useSelector((currState) => currState.actors.actor);
+    const isAuthenticated = useSelector(
+        (currState) => currState.internet.isAuthenticated
+    );
+    const principal = useSelector((currState) => currState.internet.principal);
     const [TokenImg, setTokenImg] = useState();
     const [isFetchingIMG, setFetchingIMG] = useState(false);
     const [TokenData, setTokenData] = useState({});

@@ -31,10 +31,10 @@ const TokenPage = () => {
   const [amount, setAmount] = useState();
 
   useEffect(() => {
-    
+
     const fetchTokenData = async () => {
       if (projectData?.canister_id) {
-        console.log("projectData=>",projectData)
+        console.log("projectData=>", projectData)
         try {
           const ledgerPrincipal = Principal.fromText(projectData.canister_id);
           const ledgerActor = await createCustomActor(ledgerPrincipal);
@@ -234,8 +234,8 @@ const TokenPage = () => {
                   <div
                     key={tab}
                     className={`cursor-pointer relative ${activeTab === tab
-                        ? "before:absolute before:left-0 before:right-0 before:top-5 before:h-[2px] before:bg-gradient-to-r before:from-[#F3B3A7] before:to-[#CACCF5] before:rounded"
-                        : ""
+                      ? "before:absolute before:left-0 before:right-0 before:top-5 before:h-[2px] before:bg-gradient-to-r before:from-[#F3B3A7] before:to-[#CACCF5] before:rounded"
+                      : ""
                       }`}
                     onClick={() => setActiveTab(tab)}
                   >
@@ -253,7 +253,7 @@ const TokenPage = () => {
             <input
               type="number"
               className="w-full p-2 rounded-md bg-[#333333] border-none text-white text-base mb-5 "
-              placeholder={ projectData && `Enter Amount of ${  projectData.token_name}`}
+              placeholder={projectData && `Enter Amount of ${projectData.token_name}`}
               onChange={handleAmount}
             />
             {/* token amount per icp */}
@@ -287,16 +287,16 @@ const TokenPage = () => {
                     fill="none"
                     stroke="url(#gradient)"
                     strokeWidth="3.8"
-                    strokeDasharray={`${projectData.saleProgress ? projectData.saleProgress  : 0}, 100`}
+                    strokeDasharray={`${projectData.saleProgress ? projectData.saleProgress : 0}, 100`}
                   />
                 </svg>
                 <div className="absolute ml-12 ss2:ml-28 dxs:ml-10 inset-0 flex flex-col items-center justify-center">
                   <span>Progress</span>
                   <span className="text-lg font-semibold text-white">
-                    ({projectData.saleProgress ? projectData.saleProgress  : 0 }%)
+                    ({projectData.saleProgress ? projectData.saleProgress : 0}%)
                   </span>
                   <span className="text-[11px] ss2:text-sm text-gray-400 mt-1">
-                  {tokenOwnerInfo ? tokenOwnerInfo.owner_bal : 0} ICP RAISED
+                    {tokenOwnerInfo ? tokenOwnerInfo.owner_bal : 0} ICP RAISED
                   </span>
                 </div>
               </div>

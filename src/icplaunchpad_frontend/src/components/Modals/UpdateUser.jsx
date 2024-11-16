@@ -4,7 +4,7 @@ import Modal from 'react-modal';
 import AnimationButton from '../../common/AnimationButton';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-// import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Principal } from '@dfinity/principal';
 import { updatevalidationSchema } from '../../common/UpdateUserValidation';
 import ReactSelect from 'react-select';
@@ -14,13 +14,16 @@ import { FaTrash } from 'react-icons/fa';
 import { convertFileToBase64 } from '../../utils/convertToBase64';
 import { userRegisteredHandlerRequest } from '../../StateManagement/Redux/Reducers/userRegisteredData';
 import { ProfileImageIDHandlerRequest } from '../../StateManagement/Redux/Reducers/ProfileImageID';
-import { useAuth } from '../../StateManagement/useContext/useClient';
 
 const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
-  const { actor, principal, isAuthenticated } = useAuth();
-  // const dispatch = useDispatch();
-console.log("principle in update user",principal)
-  console.log("actor in update user", actor)
+  const actor = useSelector((currState) => currState.actors.actor);
+  const isAuthenticated = useSelector(
+    (currState) => currState.internet.isAuthenticated
+  );
+  const principal = useSelector((currState) => currState.internet.principal);
+  const dispatch = useDispatch();
+  const userData = useSelector((state) => state.userData.data);
+
   const [validationError, setValidationError] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -29,7 +32,7 @@ console.log("principle in update user",principal)
   const [profileImagePreview, setProfileImagePreview] = useState(null);
   const [profilePictureData, setProfilePictureData] = useState(null);
   const [links, setLinks] = useState([{ url: '' }]);
-  const [userData, setuserdata] = useState([])
+
   const [tagsOptions] = useState([
     { value: 'tag1', label: 'Tag 1' },
     { value: 'tag2', label: 'Tag 2' },
@@ -38,29 +41,12 @@ console.log("principle in update user",principal)
     { value: 'tag5', label: 'Tag 5' },
   ]);
 
+  const userPrincipal = Principal.fromText(principal);
 
   const { register, handleSubmit, formState: { errors }, reset, control, setValue, clearErrors, setError } = useForm({
     resolver: yupResolver(updatevalidationSchema),
   });
-  useEffect(() => {
-    if (isAuthenticated) {
-      userDatacheck()
-    }
-  }, [isAuthenticated]);
-  async function userDatacheck() {
-    try {
-      // Check if actor is defined
-      if (actor) {
-        const response = await actor.get_user_account(principal);
-        setuserdata(response)
-      }
-      else {
-        console.log("User account has not been created yet.");
-      }
-    } catch (error) {
-      console.error("Specific error occurred:", error.message);
-    }
-  }
+
   useEffect(() => {
     if (userData && userData.length > 0) {
       const user = userData[0];
@@ -104,20 +90,6 @@ console.log("principle in update user",principal)
   const onSubmit = async (data) => {
     setIsSubmitting(true);
     setValidationError('');
-
-    if (!isAuthenticated) {
-      setValidationError('Please log in to update your account.'); 
-      setIsSubmitting(false);
-      return;
-    }
-    if (!principal) {
-      setValidationError('Principal is undefined. Please log in again.');
-      setIsSubmitting(false);
-      return;
-    } 
-    console.log("Principal before conversion:", principal);
-    const userPrincipal = typeof principal === 'string' ? Principal.fromText(principal) : principal;
-    console.log("User Principal:", userPrincipal.toString());
     const { name, username, tags } = data;
 
     if (!termsAccepted) {
@@ -130,13 +102,9 @@ console.log("principle in update user",principal)
     const linksArray = links.map(link => link.url.trim());
 
     try {
-      if (!userPrincipal) {
-        throw new Error('User is not authenticated. Principal is undefined.');
-      }
-     
       const updatedUserData = { name, username, profile_picture, links: linksArray, tag: tags };
       const response = await actor.update_user_account(userPrincipal, updatedUserData);
-      console.log("Calling update_user_account with:", userPrincipal, updatedUserData);
+
       if (response?.Err) {
         setIsSubmitting(false);
         setValidationError(response.Err);
@@ -146,10 +114,10 @@ console.log("principle in update user",principal)
       if (profile_picture.length > 0) {
         await actor.upload_profile_image("br5f7-7uaaa-aaaaa-qaaca-cai", { content: [profile_picture[0]] });
         console.log("profile pic uploaded")
-        // dispatch(ProfileImageIDHandlerRequest());
+        dispatch(ProfileImageIDHandlerRequest());
       }
 
-      // dispatch(userRegisteredHandlerRequest());
+      dispatch(userRegisteredHandlerRequest());
       setUserModalIsOpen(false);
       reset();
     } catch (err) {
@@ -241,14 +209,14 @@ console.log("principle in update user",principal)
             {/* Social Links */}
             <div className="mb-4">
               <h2 className="block text-[19px] mb-1">Social Links</h2>
-              
+
               {links.map((item, index) => (
                 <div key={index} className='flex flex-col'>
                   <div className='flex items-center mb-2 pb-1'>
                     <Controller
-                      name={`links.${index}`}  
+                      name={`links.${index}`}
                       control={control}
-                      defaultValue={item.url || ''} 
+                      defaultValue={item.url || ''}
                       render={({ field }) => (
                         <div className='flex items-center w-full'>
                           <div className='flex items-center space-x-2 w-full'>
@@ -261,8 +229,8 @@ console.log("principle in update user",principal)
                               className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
                               {...field}
                               onChange={(e) => {
-                                field.onChange(e); 
-                                updateLink(index, e.target.value); 
+                                field.onChange(e);
+                                updateLink(index, e.target.value);
                               }}
                             />
                           </div>
@@ -365,4 +333,3 @@ console.log("principle in update user",principal)
 };
 
 export default UpdateUser;
-

@@ -3,10 +3,14 @@ import AnimationButton from '../common/AnimationButton';
 import { Link, useNavigate } from 'react-router-dom';
 import CreateTokenModal from '../components/Modals/CreateTokenModal';
 import ConnectFirst from './ConnectFirst';
-import { useAuth } from '../StateManagement/useContext/useClient';
+import { useSelector } from 'react-redux';
 
 const CreatePreLaunch = () => {
-  const { isAuthenticated, actor } = useAuth();
+  const actor = useSelector((currState) => currState.actors.actor);
+  const isAuthenticated = useSelector(
+    (currState) => currState.internet.isAuthenticated
+  );
+  const principal = useSelector((currState) => currState.internet.principal);
   const [modalIsOpen, setIsOpen] = useState(false);
   const [error,setError]=useState(null);
   const navigate = useNavigate();
