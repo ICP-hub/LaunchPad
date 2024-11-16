@@ -1,65 +1,48 @@
-import { put, call, takeLatest, select } from 'redux-saga/effects';
-import { loginStart, loginSuccess, loginFailure, logoutStart, logoutSuccess, logoutFailure } from '../Reducers/InternetIdentityReducer';
-import { setActor } from '../Reducers/actorBindReducer';
-import { createActor } from '../../../../../declarations/icplaunchpad_backend/index'; // Adjust the import path as necessary
-import { HttpAgent, Actor } from '@dfinity/agent';
-import { useAuth } from '../../useContext/useClient';
-
-// Selector to get `login` function from context
-const selectAuthContext = (state) => state.internetIdentity.authContext;
+import { call, put, takeLatest } from 'redux-saga/effects';
+import {
+  loginStart,
+  loginSuccess,
+  loginFailure,
+  logoutStart,
+  logoutSuccess,
+} from '../Reducers/InternetIdentityReducer';
+import { useIdentityKit } from '@nfid/identitykit/react';
 
 function* handleLogin() {
   try {
-    // Retrieve `authContext` from Redux state
-    const authContext = yield select(selectAuthContext);
-    console.log('authContext in saga', authContext)
+    const { connect, identity, user } = yield call(useIdentityKit);
 
-    if (!authContext || typeof authContext.login !== 'function') {
-      throw new Error('Auth context is not properly set.');
-    }
+    console.log('user', user);
+    console.log('identity', identity);
 
-    const { login } = authContext;
-    const { principal, actor, isAuthenticated, identity } = yield call(login);
+    yield call(connect);
 
-    console.log('principal in saga', principal)
+    const principal = identity.getPrincipal().toText();
 
-    if (isAuthenticated && principal && actor) {
-      const agent = new HttpAgent({ identity });
-      const newActor = yield call(() =>
-        Actor.createActor(process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND, { agent })
-      );
-
-      // Dispatch success actions
-      yield put(loginSuccess({ isAuthenticated: true, principal, identity }));
-      yield put(setActor(newActor));
-    } else {
-      throw new Error('Authentication failed. Principal or actor is undefined.');
-    }
+    yield put(
+      loginSuccess({
+        isAuthenticated: !!user,
+        identity,
+        principal,
+      })
+    );
   } catch (error) {
-    console.error('Login error:', error);
-    yield put(loginFailure(error.message));
+    yield put(loginFailure(error.toString()));
   }
 }
 
-// Saga for handling logout
 function* handleLogout() {
   try {
-    const authContext = yield select(selectAuthContext);
+    const { disconnect } = yield call(useIdentityKit);
+    yield call(disconnect);
 
-    if (!authContext || typeof authContext.logout !== 'function') {
-      throw new Error('Auth context is not properly set.');
-    }
-
-    const { logout } = authContext;
-    yield call(logout);
     yield put(logoutSuccess());
   } catch (error) {
-    yield put(logoutFailure(error.message));
+    yield put(loginFailure(error.toString()));
   }
 }
 
-// Watcher Saga
 export function* internetIdentitySaga() {
-  yield takeLatest(loginStart.type, handleLogin);
-  yield takeLatest(logoutStart.type, handleLogout);
+  yield takeLatest(loginStart().type, handleLogin);
+  yield takeLatest(logoutStart().type, handleLogout);
 }

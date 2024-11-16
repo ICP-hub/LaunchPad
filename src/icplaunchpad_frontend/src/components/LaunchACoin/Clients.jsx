@@ -3,7 +3,7 @@ import person1 from "../../../assets/images/carousel/person1.png";
 import { useNavigate } from 'react-router-dom';
 import l3 from '../../../assets/images/carousel/l3.png'
 import ProjectCard from "../../Pages/Projects/ProjectCard";
-import { useAuth } from "../../StateManagement/useContext/useClient";
+import { useSelector } from "react-redux";
 
   
 
@@ -11,8 +11,7 @@ const Clients = () => {
   
   
   const navigate = useNavigate();
-
-  const { actor } = useAuth();
+  const actor = useSelector((currState) => currState.actors.actor);
   const [salesData, setSuccessfullSalesData] = useState([]);
 
   console.log("Fetched tokens in ProjectLists:", salesData);

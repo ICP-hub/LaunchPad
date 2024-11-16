@@ -7,20 +7,20 @@ import storage from 'redux-persist/lib/storage';
 import { encryptTransform } from 'redux-persist-transform-encrypt';
 
 // Configure your encryption transform
-const encryptor = encryptTransform({
-  secretKey: 'bjhcvdygvhnwoicbvyuridbiushvyudhbciu',
-  onError: function(error) {
-    console.error('Encryption Error:', error);
-  },
-});
+// const encryptor = encryptTransform({
+//   secretKey: 'bjhcvdygvhnwoicbvyuridbiushvyudhbciu',
+//   onError: function(error) {
+//     console.error('Encryption Error:', error);
+//   },
+// });
 
 const sagaMiddleware = createSagaMiddleware();
 
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['internet', 'actors'],
-  transforms: [encryptor], // encrypt k lie kia
+  whitelist: [],
+  // transforms: [encryptor], 
 };
 
 // Wrap kie rootReducer with persistReducer

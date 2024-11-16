@@ -2,13 +2,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import ProjectCard from "../../Pages/Projects/ProjectCard";
-import { useAuth } from "../../StateManagement/useContext/useClient";
+import { useSelector } from "react-redux";
 
 const UpcomingSales = React.forwardRef((props, ref) => {
   const navigate = useNavigate();
-  const {
-    actor,
-  } = useAuth();
+  const actor = useSelector((currState) => currState.actors.actor);
+
   const [salesData, setUpcommintSales] = useState([])
   console.log("my upcomming sales in upcomming sale", salesData)
   useEffect(() => {

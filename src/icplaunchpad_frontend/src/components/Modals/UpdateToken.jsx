@@ -7,11 +7,15 @@ import { getSocialLogo } from '../../common/getSocialLogo';
 import { useForm, Controller } from 'react-hook-form';
 import { FaTrash } from 'react-icons/fa';
 import { formatDateForDateTimeLocal } from '../../utils/formatDateFromBigInt';
-import { useAuth } from '../../StateManagement/useContext/useClient';
+import { useSelector } from 'react-redux';
 // import { formatDateFromBigInt } from '../../utils/formatDateFromBigInt';
 
 const UpdateToken = ({ ledgerId, tokenModalIsOpen,setRenderComponent, setTokenModalIsOpen }) => {
-    const { actor, isAuthenticated } = useAuth();
+    const actor = useSelector((currState) => currState.actors.actor);
+    const isAuthenticated = useSelector(
+        (currState) => currState.internet.isAuthenticated
+    );
+
     const { register, handleSubmit, formState: { errors }, reset, control, setValue, clearErrors, setError } = useForm();
     const [validationError, setValidationError] = useState('');
     const [termsAccepted, setTermsAccepted] = useState(false);
@@ -56,7 +60,6 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen,setRenderComponent, setTokenMo
                 start_time_utc: formatDateForDateTimeLocal(tokenData.start_time_utc),
                 end_time_utc: formatDateForDateTimeLocal(tokenData.end_time_utc),
                 links: socialLinks.map(link => link.url),
-                project_video: tokenData.project_video || '',
             });
         }
     }, [tokenData, reset]);

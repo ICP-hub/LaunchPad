@@ -5,13 +5,13 @@ import Modal from "react-modal";
 import AnimationButton from "../../common/AnimationButton";
 import { useNavigate } from "react-router-dom";
 import { Principal } from "@dfinity/principal";
-// import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-// import { SetLedgerIdHandler } from "../../StateManagement/Redux/Reducers/LedgerId";
-// import { TokensInfoHandlerRequest } from "../../StateManagement/Redux/Reducers/TokensInfo";
-import { useAuth } from "../../StateManagement/useContext/useClient";
+import { SetLedgerIdHandler } from "../../StateManagement/Redux/Reducers/LedgerId";
+import { TokensInfoHandlerRequest } from "../../StateManagement/Redux/Reducers/TokensInfo";
+import { UserTokensInfoHandlerRequest } from "../../StateManagement/Redux/Reducers/UserTokensInfo";
 
 // Define the validation schema using Yup
 const tokenSchema = yup.object().shape({
@@ -44,7 +44,7 @@ const tokenSchema = yup.object().shape({
       }
     ),
 
-    decimals: yup
+  decimals: yup
     .number()
     .typeError("Decimals must be a number")
     .required("Decimals are required")
@@ -52,7 +52,7 @@ const tokenSchema = yup.object().shape({
     .integer("Decimals must be an integer")
     .min(1, "Decimals must be greater than 0")
     .max(255, "Decimals must be less than or equal to 255"),
-  
+
 
   total_supply: yup
     .number()
@@ -63,13 +63,16 @@ const tokenSchema = yup.object().shape({
 });
 
 const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
-  const { actor, principal } = useAuth();
+  const actor = useSelector((currState) => currState.actors.actor);
+  const isAuthenticated = useSelector(
+    (currState) => currState.internet.isAuthenticated
+  );
+  const principal = useSelector((currState) => currState.internet.principal);
   const [termsAccepted, setTermsAccepted] = useState(false);
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
- const [isSubmitting, setIsSubmitting] = useState(false);
- const [validationError, setValidationError] = useState('');
- console.log("principal aa gya token create", principal)
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [validationError, setValidationError] = useState('');
   // React Hook Form setup
   const {
     register,
@@ -92,32 +95,28 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
     setValidationError('')
     setIsSubmitting(true);
     try {
-    if (!termsAccepted) {
-      setValidationError("Please accept the terms and conditions.");
-      throw("Please accept the terms and conditions")
-    }
+      if (!termsAccepted) {
+        setValidationError("Please accept the terms and conditions.");
+        throw ("Please accept the terms and conditions")
+      }
 
 
       const { token_name, token_symbol, decimals, total_supply } = formData;
-      console.log("principal : ",principal?.toText())
-      console.log(!principal,typeof principal)
-      if (!principal || typeof principal === "string") {
-        throw new Error("Invalid principal. Please ensure you are logged in correctly. teri maa ki chut");
-      }
-      const ownerPrincipal =principal;
 
-      
+      const ownerPrincipal = Principal.fromText(principal);
+
+
       const tokenData = {
-        token_name:token_name.toLowerCase(),
+        token_name: token_name.toLowerCase(),
         token_symbol,
         decimals: [parseInt(decimals)],
         initial_balances: [
           [
             {
-              owner: ownerPrincipal, 
-              subaccount: [], 
+              owner: ownerPrincipal,
+              subaccount: [],
             },
-            BigInt(total_supply), 
+            BigInt(total_supply),
           ],
         ],
       };
@@ -127,20 +126,20 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
       console.log("Token created:", response);
 
       if (response.Ok) {
-        // dispatch(TokensInfoHandlerRequest());
-        // dispatch(UserTokensInfoHandlerRequest());
+        dispatch(TokensInfoHandlerRequest());
+        dispatch(UserTokensInfoHandlerRequest());
 
         const { ledger_canister_id, index_canister_id } = response.Ok;
-        console.log("ledger_canister_id---",ledger_canister_id,"  ", index_canister_id)
-   
+        console.log("ledger_canister_id---", ledger_canister_id, "  ", index_canister_id)
+
         navigate("/verify-token", {
-          state: { formData,ledger_canister_id: ledger_canister_id._arr, index_canister_id },
+          state: { formData, ledger_canister_id: ledger_canister_id._arr, index_canister_id },
         });
       }
     } catch (err) {
       console.error("Error creating token:", err);
     }
-    finally{
+    finally {
       setIsSubmitting(false);
     }
   };
@@ -178,8 +177,7 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
                   type="text"
                   {...register("token_name")}
                   className={`w-full p-2 bg-[#444444] text-white rounded-3xl outline-none 
-                    ${
-                      errors.token_name ? "border-red-500" : "border-white"
+                    ${errors.token_name ? "border-red-500" : "border-white"
                     } border-b-2`}
                 />
                 {errors.token_name && (
@@ -208,8 +206,7 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
                   type="number"
                   {...register("decimals")}
                   className={`w-full p-2 bg-[#444444] text-white rounded-3xl outline-none 
-                    ${
-                      errors.decimals ? "border-red-500" : "border-white"
+                    ${errors.decimals ? "border-red-500" : "border-white"
                     } border-b-2`}
                 />
                 {errors.decimals && (
@@ -224,8 +221,7 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
                   type="number"
                   {...register("total_supply")}
                   className={`w-full p-2 bg-[#444444] text-white rounded-3xl outline-none 
-                    ${
-                      errors.total_supply ? "border-red-500" : "border-white"
+                    ${errors.total_supply ? "border-red-500" : "border-white"
                     } border-b-2`}
                 />
                 {errors.total_supply && (
@@ -243,9 +239,8 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
                   className="hidden peer"
                 />
                 <div
-                  className={`w-4 h-4 border-2 flex items-center mt-1 justify-center rounded-sm mr-2 cursor-pointer ${
-                    termsAccepted ? "" : "border-white bg-transparent"
-                  }`}
+                  className={`w-4 h-4 border-2 flex items-center mt-1 justify-center rounded-sm mr-2 cursor-pointer ${termsAccepted ? "" : "border-white bg-transparent"
+                    }`}
                 >
                   <label
                     htmlFor="termsCheckbox"
@@ -259,8 +254,8 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
                 </p>
               </div>
 
-                 {/* Validation Error Message */}
-               {validationError && (
+              {/* Validation Error Message */}
+              {validationError && (
                 <p className="text-red-500 mb-4">{validationError}</p>
               )}
               {/* Create Token Button */}

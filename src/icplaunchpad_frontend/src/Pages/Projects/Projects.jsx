@@ -2,15 +2,16 @@ import React, { useEffect, useState, useCallback } from "react";
 import { TbFilterCheck } from "react-icons/tb";
 import { PiArrowsDownUpBold } from "react-icons/pi";
 import { FaChevronDown } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import ProjectCard from "./ProjectCard.jsx";
-// import { TokensInfoHandlerRequest } from "../../StateManagement/Redux/Reducers/TokensInfo.jsx";
-
+import { TokensInfoHandlerRequest } from "../../StateManagement/Redux/Reducers/TokensInfo.jsx";
 import { useAuth } from "../../StateManagement/useContext/useClient.jsx";
 
 const ProjectLists = () => {
   const location = useLocation();
   const { salesData, sale_Type } = location.state || {};
+
   const [selectedTab, setSelectedTab] = useState("all");
   const [search, setSearch] = useState("");
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
@@ -18,15 +19,17 @@ const ProjectLists = () => {
   const [tokensData, setTokensData] = useState([]);
   const [filteredTokensData, setFilteredTokensData] = useState([]);
   const [saleType, setSaleType] = useState(sale_Type || "Active");
-  const { actor, createCustomActor } = useAuth();
-  const [projectsData, setprojectsData] = useState([]);
 
-  console.log("Fetched tokens in ProjectLists:", projectsData);
-  const [upcomingSales, setUpcommintSales] = useState([])
-  console.log("my upcomming sales in upcomming sale", salesData)
-  const[successfulSales, setSuccessfullSalesData] = useState([]);
+  const dispatch = useDispatch();
+  const projectsData = useSelector((state) => state?.TokensInfo?.data || []);
+  const upcomingSales = useSelector((state) => state?.upcomingSales?.data || []);
+  const successfulSales = useSelector((state) => state?.SuccessfulSales?.data || []);
+  const { createCustomActor } = useAuth();
 
-  console.log("Fetched tokens in ProjectLists:", salesData);
+  useEffect(() => {
+    dispatch(TokensInfoHandlerRequest());
+  }, [dispatch]);
+
   const getTokenName = useCallback(
     async (ledger_canister_id) => {
       try {
@@ -40,74 +43,10 @@ const ProjectLists = () => {
     },
     [createCustomActor]
   );
-  
 
-  useEffect(() => {
-    const fetchUserTokensInfo = async () => {
-      try {
-        if (actor) {
-          const response = await actor.get_tokens_info();
-          if (response && response.length > 0) {
-            setprojectsData(response);
-          } else {
-            console.log("No tokens data available or empty response.");
-          }
-        } else {
-          console.log("User account has not been created yet.");
-        }
-      } catch (error) {
-        console.error("Error fetching user tokens info:", error.message);
-      }
-    };
-
-    fetchUserTokensInfo();
-  }, [actor]);
-
-
-  useEffect(() => {
-    UpcommingSales()
-  }, [])
-
-  async function UpcommingSales() {
-    try {
-      // Check if actor is defined
-      if (actor) {
-        const response = await actor.get_upcoming_sales();
-        setUpcommintSales(response)
-      }
-      else {
-        console.log("User account has not been created yet.");
-      }
-    } catch (error) {
-      console.error("Specific error occurred:", error.message);
-    }
-  }
   useEffect(() => {
     setTokensData(salesData || projectsData);
   }, [salesData, projectsData]);
-
-
-  useEffect(() => {
-    // Fetch token information when the component mounts
-    const fetchUserTokensInfo = async () => {
-      try {
-        if (actor) {
-          const response = await actor.get_successful_sales();
-          if (response && response.length > 0) {
-            setSuccessfullSalesData(response);
-          } else {
-            console.log("No tokens data available or empty response.");
-          }
-        } else {
-          console.log("User account has not been created yet.");
-        }
-      } catch (error) {
-        console.error("Error fetching user tokens info:", error.message);
-      }
-    };
-
-    fetchUserTokensInfo();
-  }, [actor]);
 
   useEffect(() => {
     const filterData = async () => {
@@ -177,11 +116,10 @@ const ProjectLists = () => {
           {["all", "advanced"].map((tab) => (
             <button
               key={tab}
-              className={`cursor-pointer relative ${
-                selectedTab === tab
+              className={`cursor-pointer relative ${selectedTab === tab
                   ? "before:absolute before:left-0 before:right-0 before:top-7 before:h-[2px] before:bg-gradient-to-r before:from-[#F3B3A7] before:to-[#CACCF5] before:rounded text-transparent bg-clip-text bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5]"
                   : ""
-              }`}
+                }`}
               onClick={() => setSelectedTab(tab)}
             >
               {tab.toUpperCase()}
