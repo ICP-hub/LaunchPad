@@ -21,9 +21,10 @@ export const useAuthClient = () => {
     const [backendActor, setBackendActor] = useState(createActor(canisterID));
     const [orderPlacementLoad, setOrderPlacementLoad] = useState(false);
     const [delegation, setDelegation] = useState(null);
-    const [agent, setAgent] = useState(null);
+    // const [agent, setAgent] = useState(null);
     const authenticatedAgent = useAgent()
     const [isLoading, setIsLoading] = useState(true);
+    const agent = useAgent()
     // const dispatch = useDispatch();
     const {
         // agent,
@@ -36,35 +37,35 @@ export const useAuthClient = () => {
 
 
     
-    useEffect(() => {
-        const createAgent = async () => {
-            if (authenticatedAgent) {
-                console.log("Authenticated Agent Identity:", authenticatedAgent);
+    // useEffect(() => {
+    //     const createAgent = async () => {
+    //         if (authenticatedAgent) {
+    //             console.log("Authenticated Agent Identity:", authenticatedAgent);
 
-                setIsLoading(true);
-                const agentInstance = new HttpAgent({ host: process.env.HOST || "https://ic0.app" });
-                if (process.env.DFX_NETWORK !== "ic") {
-                    await agentInstance.fetchRootKey();
-                }
-            console.log(" agent created:", agent);
-                const newActor = Actor.createActor(ledgerIDL, {
-                    agent: agentInstance,
-                    canisterId: canisterID,
-                });
+    //             setIsLoading(true);
+    //             const agentInstance = new HttpAgent({ host: process.env.HOST || "https://ic0.app" });
+    //             if (process.env.DFX_NETWORK !== "ic") {
+    //                 await agentInstance.fetchRootKey();
+    //             }
+    //         console.log(" agent created:", agent);
+    //             const newActor = Actor.createActor(ledgerIDL, {
+    //                 agent: agentInstance,
+    //                 canisterId: canisterID,
+    //             });
             
-                setAgent(authenticatedAgent);
-                setBackendActor(newActor);
+    //             setAgent(authenticatedAgent);
+    //             setBackendActor(newActor);
 
-                // dispatch(setActor(newActor));
-                console.log("Actor and Agent initialized successfully.");
-            } else {
-                setIsLoading(false);
-                console.error("Failed to initialize agent and actor:", error);
-            }
-        };
+    //             // dispatch(setActor(newActor));
+    //             console.log("Actor and Agent initialized successfully.");
+    //         } else {
+    //             setIsLoading(false);
+    //             console.error("Failed to initialize agent and actor:", error);
+    //         }
+    //     };
      
-        createAgent();
-    }, [authenticatedAgent]);
+    //     createAgent();
+    // }, [authenticatedAgent]);
       
 
 

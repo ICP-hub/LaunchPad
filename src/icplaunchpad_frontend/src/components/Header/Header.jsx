@@ -3,6 +3,7 @@ import logo from "../../../assets/images/icLogo.png";
 import GradientText from "../../common/GradientText";
 import { IoSearch, IoClose, IoMenu, IoCloseSharp } from "react-icons/io5";
 import person1 from "../../../assets/images/carousel/person1.png"
+import icp from "../../../assets/images/icp.png"
 import ConnectWallets from "../Modals/ConnectWallets";
 import { Link, useNavigate } from "react-router-dom";
 import ProfileCard from "../Modals/ProfileCard";
@@ -15,7 +16,7 @@ import { addUserData } from "../../Redux-Config/ReduxSlices/UserSlice";
 import UpdateUser from "../Modals/UpdateUser";
 import { userRegisteredHandlerRequest } from "../../StateManagement/Redux/Reducers/userRegisteredData";
 import { useAuth, useAuthClient } from "../../StateManagement/useContext/useClient";
-import { ConnectWallet } from "@nfid/identitykit/react";
+import { ConnectWallet, useIdentityKit } from "@nfid/identitykit/react";
 const ConnectBtn = ({ onClick }) => (
   
    <button
@@ -47,9 +48,24 @@ const Header = () => {
   const protocol = process.env.DFX_NETWORK === "ic" ? "https" : "http";
   const domain = process.env.DFX_NETWORK === "ic" ? "raw.icp0.io" : "localhost:4943";
   const canisterId = process.env.CANISTER_ID_IC_ASSET_HANDLER;
-  const { isAuthenticated, disconnect, principal, actor } = useAuth();
-  
+  const { isAuthenticated, disconnect, principal, actor, identity } = useAuth();
+  const {
+    fetchIcpBalance,
+    icpBalance,
+  } = useIdentityKit();
 
+  useEffect(() => {
+    if (isAuthenticated && identity) {
+      (async () => {
+        try {
+          await fetchIcpBalance(); 
+          console.log("ICP balance fetched successfully");
+        } catch (err) {
+          console.error("Error fetching ICP balance:", err);
+        }
+      })();
+    }
+  }, [isAuthenticated, identity, fetchIcpBalance]);
   
  const navigate =useNavigate();
 //  const profile_ImgId = useSelector((state)=> state?.ProfileImageID?.data)
@@ -186,6 +202,9 @@ const Header = () => {
     setMenuOpen(false);
     setIsOpen(false);
   };
+
+  const formattedIcpBalance =
+    icpBalance !== undefined ? Number(icpBalance).toFixed(5) : "Fetching...";
 
   return (
     <div>
@@ -364,6 +383,13 @@ const Header = () => {
               <div className="absolute right-0 mt-2 font-posterama w-48 bg-[#222222] rounded-md z-50">
                 <div className="py-2 px-2">
                   <div className="hidden border-b md:block">
+                    <div className="block px-4 py-2 text-[18px] ">  {icpBalance !== undefined ? (
+                      <span className="flex gap-2"> <img src={icp} alt="" className="h-6" />${icpBalance} ICP</span>
+                    ) : (
+                      "Fetching your balance..."
+                    )}</div>
+                  </div>
+                  <div className="hidden border-b md:block">
                     <button
                       onClick={openProfileModal}
                       className="block px-4 py-2 text-[18px] "
@@ -371,6 +397,7 @@ const Header = () => {
                       Account
                     </button>
                     <ProfileCard
+                      formattedIcpBalance={formattedIcpBalance}
                       profileModalIsOpen={profileModalIsOpen}
                       setProfileModalIsOpen={setProfileModalIsOpen}
                     />
