@@ -540,7 +540,7 @@ import { Link, useNavigate } from "react-router-dom";
 import ProfileCard from "../Modals/ProfileCard";
 import { FaUser } from "react-icons/fa";
 import { BsThreeDotsVertical } from "react-icons/bs";
-
+import icp from "../../../assets/images/icp.png"
 import CreateUser from "../Modals/CreateUser";
 import { Principal } from "@dfinity/principal";
 import { useDispatch, useSelector } from "react-redux";
@@ -548,18 +548,18 @@ import { addUserData } from "../../Redux-Config/ReduxSlices/UserSlice";
 import UpdateUser from "../Modals/UpdateUser";
 import { userRegisteredHandlerRequest } from "../../StateManagement/Redux/Reducers/userRegisteredData";
 import { useAuth } from "../../StateManagement/useContext/useClient";
-import { ConnectWallet } from "@nfid/identitykit/react";
+import { ConnectWallet, useIdentityKit } from "@nfid/identitykit/react";
 const ConnectBtn = ({ onClick }) => (
 
-   <button
-              onClick={onClick}
-              className="w-[120px] md:w-[150px] lg:w-[190px] h-[25px] lg:h-[32px] 
+  <button
+    onClick={onClick}
+    className="w-[120px] md:w-[150px] lg:w-[190px] h-[25px] lg:h-[32px] 
         dxl:h-[35px] text-[10px] md:text-[15px] dlg:text-[19px] font-[400] items-center justify-center  rounded-xl p-[1.5px] bg-gradient-to-r from-[#f09787]  to-[#CACCF5]"
-            >
-              <div className="bg-gray-950 w-full h-full  rounded-xl flex items-center justify-center ">
-               Connect Wallet
-              </div>
-            </button>
+  >
+    <div className="bg-gray-950 w-full h-full  rounded-xl flex items-center justify-center ">
+      Connect Wallet
+    </div>
+  </button>
 );
 const Header = () => {
 
@@ -586,7 +586,10 @@ const Header = () => {
   const userData = useSelector((state) => state?.userData?.data[0]);
   const navigate = useNavigate();
   const profile_ImgId = useSelector((state) => state?.ProfileImageID?.data)
-
+    const {
+      fetchIcpBalance,
+      icpBalance,
+    } = useIdentityKit();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -691,6 +694,10 @@ const Header = () => {
     setMenuOpen(false);
     setIsOpen(false);
   };
+
+
+    const formattedIcpBalance =
+      icpBalance !== undefined ? Number(icpBalance).toFixed(5) : "Fetching...";
 
   return (
     <div>
@@ -867,6 +874,13 @@ const Header = () => {
               <div className="absolute right-0 mt-2 font-posterama w-48 bg-[#222222] rounded-md z-50">
                 <div className="py-2 px-2">
                   <div className="hidden border-b md:block">
+                    <div className="block px-4 py-2 text-[18px] ">  {icpBalance !== undefined ? (
+                      <span className="flex gap-2"> <img src={icp} alt="" className="h-6" />${icpBalance} ICP</span>
+                    ) : (
+                      "Fetching your balance..."
+                    )}</div>
+                  </div>
+                  <div className="hidden border-b md:block">
                     <button
                       onClick={openProfileModal}
                       className="block px-4 py-2 text-[18px] "
@@ -874,6 +888,7 @@ const Header = () => {
                       Account
                     </button>
                     <ProfileCard
+                      formattedIcpBalance={formattedIcpBalance}
                       profileModalIsOpen={profileModalIsOpen}
                       setProfileModalIsOpen={setProfileModalIsOpen}
                     />
@@ -968,6 +983,7 @@ const Header = () => {
                 </div>
               </button>
               <ProfileCard
+                formattedIcpBalance={formattedIcpBalance}
                 profileModalIsOpen={profileModalIsOpen}
                 setProfileModalIsOpen={setProfileModalIsOpen}
               />

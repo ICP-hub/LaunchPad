@@ -124,6 +124,20 @@ const TokenPage = () => {
     }
   };
 
+
+  // const destinationPrincipal = SOME_DESTINATION_PRINCIPAL
+  // const address = AccountIdentifier.fromPrincipal({
+  //   principal: Principal.fromText(destinationPrincipal),
+  // }).toHex()
+
+  // const transferArgs = {
+  //   to: fromHexString(address),
+  //   fee: { e8s: BigInt(10000) },
+  //   memo: BigInt(0),
+  //   from_subaccount: [],
+  //   created_at_time: [],
+  //   amount: { e8s: BigInt(1000) },
+  // }
   const handleTransaction = async () => {
     if (ledgerActor) {
       const res = await ledgerActor.icrc2_approve();

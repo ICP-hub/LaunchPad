@@ -169,7 +169,7 @@ import { useAuth } from '../../StateManagement/useContext/useClient';
 
 
 
-const ProfileCard = ({ profileModalIsOpen, setProfileModalIsOpen }) => {
+const ProfileCard = ({ profileModalIsOpen, setProfileModalIsOpen, formattedIcpBalance }) => {
   const { logout } = useAuth();
   const principal = useSelector((currState) => currState.internet.principal);
   const protocol = process.env.DFX_NETWORK === "ic" ? "https" : "http";
@@ -254,7 +254,7 @@ const ProfileCard = ({ profileModalIsOpen, setProfileModalIsOpen }) => {
             {/* ICP, Activity, and Disconnect */}
             <div className="mt-4">
               <div className="text-sm font-semibold border-b border-gray-600 py-2">
-                ICP
+                ICP  ${formattedIcpBalance}
               </div>
               <div className="text-sm font-semibold border-b border-gray-600 py-2">
                 ACTIVITY
