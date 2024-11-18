@@ -25,6 +25,7 @@ const ReviewInfoTab = ({ presaleDetails }) => {
             ["Start time", presaleDetails?.startTime || "N/A"],
             ["End time", presaleDetails?.endTime || "N/A"],
             ["Website", presaleDetails?.website || "N/A"],
+            ["Video", presaleDetails?.project_video || "N/A"],
             // Add the description with a specific Tailwind box styling
           ].map(([label, value], idx) => (
             <tr key={idx} className="border-b border-gray-600">

@@ -139,6 +139,9 @@ const TokenPage = () => {
   //   amount: { e8s: BigInt(1000) },
   // }
   const handleTransaction = async () => {
+    if(!amount || amount <=0)
+      return;
+    
     if (ledgerActor) {
       const res = await ledgerActor.icrc2_approve();
       console.log(res);
@@ -266,6 +269,7 @@ const TokenPage = () => {
             <p className="text-lg mb-2">AMOUNT</p>
             <input
               type="number"
+              disabled={tokenPhase !== "ONGOING"} 
               className="w-full p-2 rounded-md bg-[#333333] border-none text-white text-base mb-5 "
               placeholder={projectData && `Enter Amount of ${projectData.token_name}`}
               onChange={handleAmount}

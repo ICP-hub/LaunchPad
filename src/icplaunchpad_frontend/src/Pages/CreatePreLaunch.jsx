@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import CreateTokenModal from '../components/Modals/CreateTokenModal';
 import ConnectFirst from './ConnectFirst';
 import { useSelector } from 'react-redux';
+import { Principal } from '@dfinity/principal';
 
 const CreatePreLaunch = () => {
   const actor = useSelector((currState) => currState.actors.actor);
