@@ -47,7 +47,7 @@ dfx identity new minter
   dfx identity use minter
   export MINTER_ACCOUNT_ID=$(dfx ledger account-id)
 
-  dfx identity use buyer
+  dfx identity use default
   export DEFAULT_ACCOUNT_ID=$(dfx ledger account-id)
 
 dfx identity use controller 

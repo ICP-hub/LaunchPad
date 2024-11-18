@@ -61,6 +61,62 @@ pub fn get_tokens_info() -> Vec<CanisterIndexInfo> {
     })
 }
 
+#[ic_cdk::query]
+pub fn get_user_tokens_upcoming_info() -> Vec<CanisterIndexInfo> {
+    let current_time_ns = ic_cdk::api::time();
+    let current_time = current_time_ns / 1_000_000_000; // Convert to seconds
+    let caller = ic_cdk::caller();
+
+
+    read_state(|state| {
+        state.canister_ids.iter().zip(state.index_canister_ids.iter()).filter_map(|((canister_key, canister_wrapper), (index_key, _))| {
+            if let Some(sale_wrapper) = state.sale_details.get(&canister_key) {
+                let sale_details = &sale_wrapper.sale_details;
+
+                if sale_details.creator == caller && sale_details.start_time_utc > current_time {
+                    return Some(CanisterIndexInfo {
+                        canister_id: canister_key.clone(),
+                        index_canister_id: index_key.clone(),
+                        token_name: canister_wrapper.token_name.clone(),
+                        token_symbol: canister_wrapper.token_symbol.clone(),
+                        total_supply: canister_wrapper.total_supply.clone(),
+                    });
+                }
+            }
+            None
+        }).collect()
+    })
+}
+
+
+
+
+#[ic_cdk::query]
+pub fn get_user_token_successful_info() -> Vec<CanisterIndexInfo> {
+    let current_time_ns = ic_cdk::api::time(); // Current time in nanoseconds
+    let current_time = current_time_ns / 1_000_000_000; // Convert to seconds
+    let caller = ic_cdk::caller(); // Get the caller’s principal
+
+    read_state(|state| {
+        state.canister_ids.iter().zip(state.index_canister_ids.iter()).filter_map(|((canister_key, canister_wrapper), (index_key, _))| {
+            if let Some(sale_wrapper) = state.sale_details.get(&canister_key) {
+                let sale_details = &sale_wrapper.sale_details;
+
+                // Filter for successful sales specific to the caller's principal
+                if sale_details.creator == caller && sale_details.end_time_utc <= current_time {
+                    return Some(CanisterIndexInfo {
+                        canister_id: canister_key.clone(),
+                        index_canister_id: index_key.clone(),
+                        token_name: canister_wrapper.token_name.clone(),
+                        token_symbol: canister_wrapper.token_symbol.clone(),
+                        total_supply: canister_wrapper.total_supply.clone(),
+                    });
+                }
+            }
+            None
+        }).collect()
+    })
+}
 
 
 // #[ic_cdk::query]

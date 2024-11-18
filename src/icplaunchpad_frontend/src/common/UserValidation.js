@@ -32,70 +32,19 @@ export const validationSchema = yup
         }
       ),
 
-    // links: yup
-    //   .array() // links must be an array
-    //   .of(
-    //     yup.object().shape({
-    //       link: yup
-    //         .string() // link must be a string
-    //         .test(
-    //           'no-leading-trailing-spaces',
-    //           'URL should not have leading or trailing spaces',
-    //           (value) => {
-    //             return value === value?.trim(); // Ensure no leading/trailing spaces
-    //           }
-    //         )
-    //         .test(
-    //           'no-invalid-extensions',
-    //           'URL should not end with .php, .js, or .txt',
-    //           (value) => {
-    //             const invalidExtensions = ['.php', '.js', '.txt']; // Restrict certain file types
-    //             return value
-    //               ? !invalidExtensions.some((ext) => value.endsWith(ext))
-    //               : true;
-    //           }
-    //         )
-    //         .test('is-website', 'Only website links are allowed', (value) => {
-    //           if (value) {
-    //             try {
-    //               const url = new URL(value); // Parse the URL to ensure it is valid
-    //               const hostname = url.hostname.toLowerCase();
-    //               const validExtensions = [
-    //                 '.com',
-    //                 '.org',
-    //                 '.net',
-    //                 '.in',
-    //                 '.co',
-    //                 '.io',
-    //                 '.gov',
-    //               ];
-    //               const hasValidExtension = validExtensions.some((ext) =>
-    //                 hostname.endsWith(ext)
-    //               ); // Ensure domain has valid extension
-    //               return hasValidExtension;
-    //             } catch (err) {
-    //               return false; // Invalid URL
-    //             }
-    //           }
-    //           return true; // Optional, so valid if not provided
-    //         })
-    //         .url('Invalid URL') // Ensures it's a valid URL format
-    //         .nullable(true) // Allows null value for optional URLs
-    //         .optional(), // Marks the field as optional
-    //     })
-    //   )
-    //   .max(10, 'You can only add up to 10 links') // Limit the number of links to 10
-    //   .optional(), // Links are optional
-
-    // links: yup
-    //   .array()
-    //   .of(
-    //     yup.object().shape({
-    //       platform: yup.string().required('Platform is required'), // Ensures platform name is required
-    //       url: yup.string().url('Invalid URL').required('URL is required'), // Validates URL and ensures it's required
-    //     })
-    //   )
-    //   .required('Social links are required'),
+        // Social links (if needed, uncomment)
+        links: yup
+            .array()
+            .of(
+                yup
+                    .string()
+                    .min(10, "Each link must be at least 1 character long.")
+                    .max(50, "Each tag can be at most 20 characters long.")
+            )
+            .min(1, "You must provide at least 1 link.")
+            .max(10, "You can provide up to 5 link.")
+            .required("links are required."),
+    
 
     profile_picture: yup
       .mixed() // image must be a mixed type (allowing files)
