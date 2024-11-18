@@ -3,6 +3,8 @@ import ProjectRectangleBg from "../../../assets/images/project-rectangle-bg.png"
 import { FaFacebook, FaTwitter, FaReddit, FaInstagram, FaDiscord } from "react-icons/fa";
 import { IoGlobeOutline } from "react-icons/io5";
 import { FaTelegram } from "react-icons/fa6";
+import { toast, Toaster } from "react-hot-toast";
+
 
 import person1 from "../../../assets/images/carousel/person1.png";
 import ProjectTokenAbout from "./about/ProjectTokenAbout.jsx";
@@ -29,6 +31,7 @@ const TokenPage = () => {
   const [ledgerActor, setLedgerActor] = useState(null);
   const [tokenOwnerInfo, setTokenOwnerInfo] = useState(null);
   const [amount, setAmount] = useState();
+
 
   useEffect(() => {
 
@@ -125,28 +128,56 @@ const TokenPage = () => {
   };
 
 
-  // const destinationPrincipal = SOME_DESTINATION_PRINCIPAL
-  // const address = AccountIdentifier.fromPrincipal({
-  //   principal: Principal.fromText(destinationPrincipal),
-  // }).toHex()
+  const acc = {
+    owner: Principal.fromText(
+      process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND
+    ),
+    subaccount: [],
+  }
+  // const acc = process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND
+  const icrc2_approve_args = {
+    from_subaccount: [],
+    spender:acc,
+    fee: [],
+    memo: [],
+    amount: BigInt(5000 * 10 ** 18),
+    created_at_time: [],
+    expected_allowance: [],
+    expires_at: [],
+  }
 
-  // const transferArgs = {
-  //   to: fromHexString(address),
-  //   fee: { e8s: BigInt(10000) },
-  //   memo: BigInt(0),
-  //   from_subaccount: [],
-  //   created_at_time: [],
-  //   amount: { e8s: BigInt(1000) },
-  // }
+  
   const handleTransaction = async () => {
     if(!amount || amount <=0)
       return;
     
     if (ledgerActor) {
-      const res = await ledgerActor.icrc2_approve();
-      console.log(res);
+      try {
+        const res = await ledgerActor.icrc2_approve(icrc2_approve_args);
+
+        if (res?.Err?.InsufficientFunds) {
+          toast.error(
+            `Insufficient funds: Balance is ${res.Err.InsufficientFunds.balance.toString()}`,
+            {
+              position: "top-right",
+            }
+          );
+        } else {
+          toast.success("Transaction approved successfully!", {
+            position: "top-right",
+          });
+        }
+      } catch (error) {
+        toast.error(`Transaction failed: ${error.message}`, {
+          position: "top-right",
+        });
+        console.error("Error during transaction:", error);
+      }
     }
   };
+
+
+
 
   return (
     <>
@@ -349,6 +380,7 @@ const TokenPage = () => {
           presaleData={saleParams} poolData={projectData ? { ...projectData, total_supply: projectData?.total_supply } : {}}
         />}
       </div>
+     <Toaster />
     </>
   );
 };
