@@ -30,7 +30,8 @@ const getSchemaForStep = (step) => {
         minimumBuy: yup
           .number()
           .required("Minimum buy is required")
-          .positive("Minimum buy must be positive"),
+          .positive("Minimum buy must be positive")
+          .notOneOf([0], "Minimum buy cannot be 0"),
         maximumBuy: yup
           .number()
           .required("Maximum buy is required")
