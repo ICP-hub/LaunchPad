@@ -148,7 +148,7 @@ const ProjectLists = () => {
               <FaChevronDown className="ml-2" />
             </button>
             {showFilterDropdown && (
-              <div className="absolute top-[110%] left-0 w-[160px] bg-[#333333] font-posterama text-white rounded-lg p-2 z-10 shadow-lg">
+              <div className="absolute text-[15px] top-[110%] left-0 w-[100px] bg-[#333333] font-posterama text-white rounded-lg p-1 z-10 shadow-lg">
                 {["Upcoming", "Active", "Successful"].map((type) => (
                   <p
                     key={type}
@@ -174,7 +174,7 @@ const ProjectLists = () => {
               <FaChevronDown className="ml-2" />
             </button>
             {showSortDropdown && (
-              <div className="absolute top-[110%] right-0 w-[135px] bg-[#333333] font-posterama text-white rounded-lg p-2 z-10 shadow-lg">
+              <div className="absolute text-[15px] top-[110%] right-0 w-[105px] bg-[#333333] font-posterama text-white rounded-lg p-2 z-10 shadow-lg">
                 <p
                   className="cursor-pointer border-b-2 py-2"
                   onClick={() => handleSort("A to Z")}
