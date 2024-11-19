@@ -174,7 +174,7 @@ const ProjectLists = () => {
               <FaChevronDown className="ml-2" />
             </button>
             {showSortDropdown && (
-              <div className="absolute text-[15px] top-[110%] right-0 w-[105px] bg-[#333333] font-posterama text-white rounded-lg p-2 z-10 shadow-lg">
+              <div className="absolute text-[15px] top-[110%] right-2 w-[105px] bg-[#333333] font-posterama text-white rounded-lg p-2 z-10 shadow-lg">
                 <p
                   className="cursor-pointer border-b-2 py-2"
                   onClick={() => handleSort("A to Z")}
