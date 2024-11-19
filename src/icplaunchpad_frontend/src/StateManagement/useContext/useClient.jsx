@@ -309,6 +309,7 @@ export const useAuthClient = () => {
     };
     const principal = user && user.principal ? user.principal.toText() : null;
 
+
     return {
         isAuthInitializing,
         isAuthenticated: !!user,

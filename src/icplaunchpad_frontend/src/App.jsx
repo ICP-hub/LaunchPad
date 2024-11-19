@@ -12,7 +12,7 @@ import { loginStart } from "./StateManagement/Redux/Reducers/InternetIdentityRed
 import { handleActorRequest } from "./StateManagement/Redux/Reducers/actorBindReducer";
 import { useIdentityKit } from "@nfid/identitykit/react";
 import { Principal } from "@dfinity/principal";
-
+import {useAuth}  from '../src/StateManagement/useContext/useClient'
 function App() {
   const actor = useSelector((currState) => currState.actors.actor);
   const isAuthenticated = useSelector(
@@ -27,7 +27,7 @@ function App() {
   const dispatch = useDispatch();
   const { identity } = useIdentityKit();
 
-
+  const { fetchUserIcpBalance } = useAuth()
 
   const fetchDataSequentially = async () => {
     if (isAuthenticated && identity) {
@@ -51,7 +51,19 @@ function App() {
     fetchDataSequentially();
   }, [isAuthenticated, identity, dispatch]);
 
+  const fetchBalance = async () => {
+    try {
+      const balance = await fetchUserIcpBalance();
+      console.log('fetchUserIcpBalance', balance);
+    } catch (error) {
+      console.error('Error fetching ICP balance:', error);
+    }
+  };
 
+
+  useEffect(() => {
+    fetchBalance();
+  }, [isAuthenticated, identity]);
   return (
    
     <div className="text-white max-w-[1700px] mx-auto container">
