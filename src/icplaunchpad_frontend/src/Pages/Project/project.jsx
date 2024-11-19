@@ -4,7 +4,7 @@ import { FaFacebook, FaTwitter, FaReddit, FaInstagram, FaDiscord } from "react-i
 import { IoGlobeOutline } from "react-icons/io5";
 import { FaTelegram } from "react-icons/fa6";
 import { toast, Toaster } from "react-hot-toast";
-
+import { idlFactory  } from "../../StateManagement/useContext/ledger.did.js";
 
 import person1 from "../../../assets/images/carousel/person1.png";
 import ProjectTokenAbout from "./about/ProjectTokenAbout.jsx";
@@ -19,6 +19,8 @@ import { Principal } from "@dfinity/principal";
 import SaleStart from "../OwnerSection/SaleStart.jsx";
 import { getSocialLogo } from "../../common/getSocialLogo.jsx";
 import { useAuth } from "../../StateManagement/useContext/useClient.jsx";
+import { useAgent } from "@nfid/identitykit/react";
+import { Actor } from "@dfinity/agent";
 
 const TokenPage = () => {
   const [tokenPhase, setTokenPhase] = useState("UPCOMING");
@@ -26,13 +28,14 @@ const TokenPage = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 640);
   const location = useLocation();
   const { projectData } = location.state || {};
-  const { actor, createCustomActor } = useAuth();
+  const { actor, createCustomActor, principal } = useAuth();
   const [saleParams, setSaleParams] = useState(null);
   const [ledgerActor, setLedgerActor] = useState(null);
   const [tokenOwnerInfo, setTokenOwnerInfo] = useState(null);
-  const [amount, setAmount] = useState();
-
-
+  console.log("baclance at 35",tokenOwnerInfo)
+  const [amount, setAmount] = useState(0);
+  console.log("amount")
+  const [isLoading, setIsLoading] = useState(false); 
   useEffect(() => {
 
     const fetchTokenData = async () => {
@@ -129,57 +132,180 @@ const TokenPage = () => {
   };
 
 
-  const acc = {
-    owner: Principal.fromText(
-      process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND
-    ),
-    subaccount: [],
-  }
-  // const acc = process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND
-  const icrc2_approve_args = {
-    from_subaccount: [],
-    spender: acc,
-    fee: [],
-    memo: [],
-    amount: BigInt(5000 * 10 ** 18),
-    created_at_time: [],
-    expected_allowance: [],
-    expires_at: [],
-  }
+//   const acc = {
+//     owner: Principal.fromText(
+//       process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND
+//     ),
+//     subaccount: [],
+//   }
+//   const icrc2_approve_args = {
+//     from_subaccount: [],
+//     spender:acc,
+//     fee: [],
+//     memo: [],
+//     amount: BigInt(5000 * 10 ** 8),
+//     created_at_time: [],
+//     expected_allowance: [],
+//     expires_at: [],
+//   }
 
-
+  
+//   const handleTransaction = async () => {
+//     if (ledgerActor) {
+//       try {
+//         const res = await ledgerActor.icrc2_approve(icrc2_approve_args);
+// console.log("why not working",res)
+//         if (res?.Err?.InsufficientFunds) {
+//           toast.error(
+//             `Insufficient funds: Balance is ${res.Err.InsufficientFunds.balance.toString()}`,
+//             {
+//               position: "top-right",
+//             }
+//           );
+//         } else {
+//           toast.success("Transaction approved successfully!", {
+//             position: "top-right",
+//           });
+//         }
+//       } catch (error) {
+//         toast.error(`Transaction failed: ${error.message}`, {
+//           position: "top-right",
+//         });
+//         console.error("Error during transaction:", error);
+//       }
+//     }
+//   };
+ 
+console.log("ledger actor ", ledgerActor)
   const handleTransaction = async () => {
-    if (!amount || amount <= 0)
+    if (!amount || amount <= 0) {
+      toast.error("Invalid amount. Please enter a valid value.");
+
       return;
+    }
 
-    if (ledgerActor) {
-      try {
-        const res = await ledgerActor.icrc2_approve(icrc2_approve_args);
+    if ( !projectData?.canister_id) {
+      toast.error("Missing required data to process the transaction.");
+      console.log(" authenticprojectData?.canister_idatedAgent 188", projectData?.canister_id)
+      return;
+    }
+    setIsLoading(true);
 
-        if (res?.Err?.InsufficientFunds) {
-          toast.error(
-            `Insufficient funds: Balance is ${res.Err.InsufficientFunds.balance.toString()}`,
-            {
-              position: "top-right",
-            }
-          );
-        } else {
-          toast.success("Transaction approved successfully!", {
-            position: "top-right",
-          });
-        }
-      } catch (error) {
-        toast.error(`Transaction failed: ${error.message}`, {
-          position: "top-right",
-        });
-        console.error("Error during transaction:", error);
+
+    const acc = {
+      owner: Principal.fromText(process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND),
+      subaccount: [],
+    };
+
+    console.log('dh', BigInt(amount * 10 ** 8 + 100000))
+    const icrc2_approve_args = {
+      from_subaccount: [],
+      spender: acc,
+      fee: [],
+      memo: [],
+      amount: BigInt(amount * 10 ** 8 + 100000),
+      created_at_time: [],
+      expected_allowance: [],
+      expires_at: [],
+    };
+    console.log("icrc2_approve_args icrc2_approve_args 201:", icrc2_approve_args);
+    const totalamount = BigInt(amount * 10 ** 8);
+ 
+    console.log("Total amount:", totalamount);
+    try {
+      const response = await ledgerActor.icrc2_approve(icrc2_approve_args);
+      console.log("Response from payment approve", response);
+
+      if (response.Ok) {
+       const byer ={
+         buyer_principal: Principal.fromText(principal),
+         tokens: totalamount,
+         icrc1_ledger_canister_id: projectData?.canister_id,
+       }
+        const finalOrderResponse = await actor.buy_tokens(byer);
+        console.log("Final Order Response", finalOrderResponse);
+        toast.success("Transaction successful!");
+        
+      } else {
+        console.error("Approval failed", response);
+        toast.error("Payment approval failed. Please check your wallet balance.");
       }
+    } catch (err) {
+      console.error("Error during payment approval or token purchase", err);
+      toast.error("Payment process failed. Please try again.");
+    } finally {
+      setIsLoading(false); // End loading
     }
   };
 
+  // useEffect(() => {
+  //   const paymentProcess = async () => {
+  //     const actor = Actor.createActor(idlFactory, {
+  //       agent: authenticatedAgent,
+  //       canisterId: "bw4dl-smaaa-aaaaa-qaacq-cai",
+  //     });
 
+  //     // Acc info
+  //     const acc = {
+  //       owner: Principal.fromText(process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND),
+  //       /* owner: Principal.fromText(
+  //       "oavgn-aq63y-4ppgd-ws735-bqrrn-xdhtc-m3azu-6qga7-i4phr-c7nie-wqe"
+  //     ), */
+  //       subaccount: [],
+  //     };
 
+  //     const icrc2_approve_args = {
+  //       from_subaccount: [],
+  //       spender: acc,
+  //       fee: [],
+  //       memo: [],
+  //       amount: BigInt(amount * 10 ** 8 + 100000),
+  //       created_at_time: [],
+  //       expected_allowance: [],
+  //       expires_at: [],
+  //     };
+  //     // console.log(orderPlacementData);
+  //     //const amount = BigInt(orderPlacementData.totalAmount * 10 ** 8 + 10_000);
+  //     //const totalamount = 210_000;
+  //     const totalamount = BigInt(amount * 10 ** 8);
+  //     console.log("totalamount", totalamount);
 
+  //     try {
+  //       const response = await actor.icrc2_approve(icrc2_approve_args);
+  //       console.log("Response from payment approve", response);
+  //       try {
+  //         if (response.Ok) {
+  //           try {
+  //             const finalOrderResponse = await actor.buy_tokens(
+  //               principal,
+  //               totalamount,
+  //               projectData?.canister_id,
+  //             );
+  //             console.log("Final Order Response", finalOrderResponse);
+  //             navigate("/order-confirm");
+  //           } catch (err) {
+  //             console.error("Error in final order", err);
+  //           }
+  //         } else {
+  //           console.error("Payment failed", response);
+  //           toast.error("Payment failed, Please check your wallet balance");
+  //         }
+  //       } catch (err) {
+  //         console.error("Transaction failed", err);
+  //         toast.error("Transaction failed");
+  //       }
+  //     } catch (err) {
+  //       console.error("Error in transfer approve", err);
+  //       toast.error("Failed in transfer approve");
+  //     } finally {
+  //       setOrderPlacementLoad(false);
+  //     }
+  //   };
+  //   if (authenticatedAgent && amount && projectData?.canister_id) {
+  //     paymentProcess();
+  //   }
+  // }, [authenticatedAgent, amount, projectData?.canister_id]);
+ 
   return (
     <>
       <div className="flex flex-col  gap-5 max-w-[90%] mx-auto lg:flex-row">
