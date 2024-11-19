@@ -12,7 +12,7 @@ const UpcomingSales = React.forwardRef((props, ref) => {
   // Handle navigation to the projects page
   const handleViewMoreClick = () => {
     if (salesData.length > 0) {
-      navigate("/projects", { state: { salesData, sale_Type: "Upcoming" } });
+      navigate("/projects", { state: { salesData:salesData[0], sale_Type: "Upcoming" } });
     }
   };
 
@@ -40,7 +40,8 @@ const UpcomingSales = React.forwardRef((props, ref) => {
           salesData.slice(0, 3).map((sale, index) => (
             <ProjectCard
               key={index}
-              projectData={sale}
+              initial_Total_supply={ sale[1] || null}
+              projectData={sale[0]}
               saleType="upcoming"
               index={index}
             />

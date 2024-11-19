@@ -6,12 +6,9 @@ const ProjectTokenAbout = ({presaleData}) => {
   return (
     <div className=" flex gap-5 bg-[#FFFFFF1A] sm:bg-transparent  p-2 rounded-2xl md:text-[13px]  xl:text-[17px] flex-col">
           <div>
-            Lorem ipsum dolor sit amet consectetur. Proin volutpat ornare arcu sit vulputate pellentesque id viverra. Malesuada id tellus et at. Ut morbi faucibus id commodo ac eget. Hendrerit nisl vestibulum lectus varius euismod molestie euismod urna phasellus. Ante sit proin mi donec elit sodales. Ac sed amet sed vestibulum pulvinar dui faucibus. Nullam et enim odio cursus bibendum amet parturient. Tempus habitasse proin elementum faucibus semper dignissim risus. Sit consequat condimentum parturient accumsan ultrices purus quam est nibh. Porta diam ornare at velit orci maecenas nisl. Maecenas aliquam condimentum at semper urna dis suspendisse dignissim. Proin tincidunt facilisis scelerisque rhoncus congue ipsum nisi. Eget pharetra malesuada eu ipsum. Quis dignissim vestibulum ultrices sed at scelerisque. Feugiat gravida at feugiat sapien. Ac blandit quis adipiscing facilisis id augue fermentum et tristique. Turpis vitae nisl auctor lectus eget praesent. Purus quis arcu fames in viverra. Velit consequat aliquam massa volutpat non vitae blandit. Ut est aenean arcu placerat consequat. Scelerisque pellentesque risus sit vivamus pellentesque volutpat. Suspendisse quis sit dictum cras sed ullamcorper. Diam rhoncus elit dolor donec ut elementum nulla velit turpis. Pretium a enim ut nibh.
+            {presaleData?.description}
           </div>
-          <h3 className="text-[20px]">Lorem ipsum</h3>
-          <div>
-            Lorem ipsum dolor sit amet consectetur. Proin volutpat ornare arcu sit vulputate pellentesque id viverra. Malesuada id tellus et at. Ut morbi faucibus id commodo ac eget. Hendrerit nisl vestibulum lectus varius euismod molestie euismod urna phasellus. Ante sit proin mi donec elit sodales. Ac sed amet sed vestibulum pulvinar dui faucibus. Nullam et enim odio cursus bibendum amet parturient.
-          </div>
+       
           <div className="relative">
 
             {presaleData ? <video

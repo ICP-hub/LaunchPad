@@ -24,7 +24,7 @@ const FundList = () => {
           <tbody className="text-white text-sm divide-y    divide-[#FFFFFF33]">
             {SuccesFullSales && SuccesFullSales.length > 0 ? (
               SuccesFullSales.map((sale, index) => (
-                <FundDetails sale={sale} index={index}/>
+                <FundDetails sale={sale[0]} index={index}/>
               ))
             ) : (
               <tr>

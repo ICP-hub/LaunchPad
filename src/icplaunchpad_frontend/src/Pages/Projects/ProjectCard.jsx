@@ -7,7 +7,7 @@ import SaleStart from '../OwnerSection/SaleStart';
 import { useAuth } from '../../StateManagement/useContext/useClient';
 import { useSelector } from 'react-redux';
 
-const ProjectCard = ({ isUserToken, projectData, saleType, index }) => {
+const ProjectCard = ({ isUserToken, projectData, initial_Total_supply, saleType, index }) => {
   const navigate = useNavigate();
   const { createCustomActor } = useAuth();
   const actor = useSelector((currState) => currState.actors.actor);
@@ -25,14 +25,22 @@ const ProjectCard = ({ isUserToken, projectData, saleType, index }) => {
 
   // Calculate sale progress based on the token phase and supply
   useEffect(() => {
-    if (tokenPhase === 'UPCOMING') {
-      setSaleProgress(0);
-    } else if (tokenPhase === 'SUCCESSFULL') {
-      setSaleProgress(100);
+    if (tokenPhase === 'UPCOMING' && initial_Total_supply && Number(initial_Total_supply) > 0){
+      const progress = 100 - (Number(tokenInfo.total_supply) / Number(initial_Total_supply)) * 100;
+      setSaleProgress(progress.toFixed(2));
+
+    } else if (tokenPhase === 'SUCCESSFULL' && initial_Total_supply && Number(initial_Total_supply) > 0) {
+      const progress = 100 - (Number(tokenInfo.total_supply) / Number(initial_Total_supply)) * 100;
+      setSaleProgress(progress.toFixed(2));
+
     } else if (tokenInfo.total_supply && projectData.total_supply && Number(projectData.total_supply) > 0) {
       const progress = 100 - (Number(tokenInfo.total_supply) / Number(projectData.total_supply)) * 100;
       setSaleProgress(progress.toFixed(2));
     }
+   else if ( isUserToken && tokenInfo.total_supply && projectData.total_supply && Number(projectData.total_supply) > 0) {
+    const progress = 100 - (Number(tokenInfo.total_supply) / Number(projectData.total_supply)) * 100;
+    setSaleProgress(progress.toFixed(2));
+  }
   }, [tokenPhase, tokenInfo.total_supply, projectData.total_supply]);
 
   // Fetch ledger actor and initial token owner information

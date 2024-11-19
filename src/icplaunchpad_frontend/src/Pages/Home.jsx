@@ -4,17 +4,22 @@ import FundList from '../components/HomePageComponent/FundList';
 import Carousel from '../components/HomePageComponent/Carousel';
 import Hero from '../components/HomePageComponent/Hero';
 import UpcomingSales from '../components/HomePageComponent/UpcomingSales';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { upcomingSalesHandlerRequest } from '../StateManagement/Redux/Reducers/UpcomingSales';
 import { SuccessfulSalesHandlerRequest } from '../StateManagement/Redux/Reducers/SuccessfulSales';
 
 function Home() {
 const dispatch=useDispatch();
-
-  useEffect(()=>{
+const actor = useSelector((currState) => currState.actors.actor);
+  // useEffect(()=>{
+  //   dispatch(upcomingSalesHandlerRequest()) 
+  //   dispatch(SuccessfulSalesHandlerRequest()) 
+  // },[actor])
+  useEffect(() => {
     dispatch(upcomingSalesHandlerRequest()) 
-    dispatch(SuccessfulSalesHandlerRequest()) 
-  },[])
+    dispatch(SuccessfulSalesHandlerRequest())
+  }, [dispatch]);
+
   const upcomingSalesRef = useRef(null);
 
   const scrollToUpcomingSales = () => {
