@@ -181,6 +181,12 @@ const LaunchpadInfoTab = ({
           className={`w-full p-2 bg-[#333333] text-white rounded-md ${errors.presaleRate ? "border-red-500" : "border-white"
             }  border-b-2`}
           aria-label="Presale Rate"
+          onKeyDown={(e) => {
+            if (e.key === '-' || e.key === 'e' || e.key === '+') {
+              e.preventDefault();
+            }
+          }}
+           min="0"
         />
         {errors.presaleRate && (
           <p className="text-red-500 text-[14px]">{errors.presaleRate.message}</p>
@@ -196,6 +202,12 @@ const LaunchpadInfoTab = ({
           className={`w-full p-2 bg-[#333333] text-white rounded-md ${errors.hardcapToken ? "border-red-500" : "border-white"
             }  border-b-2`}
           aria-label="Hardcap Token"
+          onKeyDown={(e) => {
+            if (e.key === '-' || e.key === 'e' || e.key === '+') {
+              e.preventDefault();
+            }
+          }}
+           min="0"
         />
         {errors.hardcapToken && (
           <p className="text-red-500 text-[14px]">{errors.hardcapToken.message}</p>
@@ -211,6 +223,12 @@ const LaunchpadInfoTab = ({
           className={`w-full p-2 bg-[#333333] text-white rounded-md ${errors.softcapToken ? "border-red-500" : "border-white"
             }  border-b-2`}
           aria-label="Softcap Token"
+          onKeyDown={(e) => {
+            if (e.key === '-' || e.key === 'e' || e.key === '+') {
+              e.preventDefault();
+            }
+          }}
+           min="0"
         />
         {errors.softcapToken && (
           <p className="text-red-500 text-[14px]">{errors.softcapToken.message}</p>
@@ -266,6 +284,12 @@ const LaunchpadInfoTab = ({
             className={`w-full p-2 bg-[#333333] text-white rounded-md ${errors.minimumBuy ? "border-red-500" : "border-white"
               }  border-b-2`}
             aria-label="Minimum Buy"
+            onKeyDown={(e) => {
+              if (e.key === '-' || e.key === 'e' || e.key === '+') {
+                e.preventDefault();
+              }
+            }}
+             min="0"
           />
           {errors.minimumBuy && (
             <p className="text-red-500 text-[15px]">{errors.minimumBuy.message}</p>
@@ -279,6 +303,12 @@ const LaunchpadInfoTab = ({
             className={`w-full p-2 bg-[#333333] text-white rounded-md ${errors.maximumBuy ? "border-red-500" : "border-white"
               }  border-b-2`}
             aria-label="Maximum Buy"
+            onKeyDown={(e) => {
+              if (e.key === '-' || e.key === 'e' || e.key === '+') {
+                e.preventDefault();
+              }
+            }}
+             min="0"
           />
           {errors.maximumBuy && (
             <p className="text-red-500 text-[15px]">{errors.maximumBuy.message}</p>

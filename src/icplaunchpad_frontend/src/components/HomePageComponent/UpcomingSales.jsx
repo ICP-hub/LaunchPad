@@ -7,25 +7,7 @@ const UpcomingSales = React.forwardRef((props, ref) => {
   const navigate = useNavigate();
   const actor = useSelector((currState) => currState.actors.actor);
 
-  const [salesData, setSalesData] = useState([]);
-
-  useEffect(() => {
-    fetchUpcomingSales();
-  }, [actor]); // Add actor to the dependency array
-
-  // Function to fetch upcoming sales
-  async function fetchUpcomingSales() {
-    try {
-      if (actor) {
-        const response = await actor.get_upcoming_sales();
-        setSalesData(response || []); // Set to an empty array if the response is undefined/null
-      } else {
-        console.log("User account has not been created yet.");
-      }
-    } catch (error) {
-      console.error("An error occurred while fetching upcoming sales:", error);
-    }
-  }
+ const salesData= useSelector((state)=>state.upcomingSales.data)
 
   // Handle navigation to the projects page
   const handleViewMoreClick = () => {
