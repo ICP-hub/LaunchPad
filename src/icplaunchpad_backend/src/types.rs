@@ -220,6 +220,7 @@ pub struct CanisterIndexInfo {
     pub token_symbol: String,
     pub total_supply: Nat,
 }
+
 #[derive(CandidType, Deserialize, Debug)]
 pub struct Icrc28TrustedOriginsResponse {
     pub(crate) trusted_origins: Vec<String>,
