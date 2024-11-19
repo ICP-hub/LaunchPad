@@ -59,13 +59,14 @@ const TokenPage = () => {
     };
 
     const fetchSaleParams = async () => {
+
       if (actor && projectData?.canister_id) {
         try {
           const ledgerPrincipal = Principal.fromText(projectData.canister_id);
           const sale = await actor.get_sale_params(ledgerPrincipal);
-
+          console.log('SALE=>>>', sale)
           if (sale?.Ok) {
-            console.log(sale?.Ok)
+
             setSaleParams(sale.Ok);
           } else {
             console.warn("No sale data available or an error occurred.");
@@ -137,7 +138,7 @@ const TokenPage = () => {
   // const acc = process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND
   const icrc2_approve_args = {
     from_subaccount: [],
-    spender:acc,
+    spender: acc,
     fee: [],
     memo: [],
     amount: BigInt(5000 * 10 ** 18),
@@ -146,11 +147,11 @@ const TokenPage = () => {
     expires_at: [],
   }
 
-  
+
   const handleTransaction = async () => {
-    if(!amount || amount <=0)
+    if (!amount || amount <= 0)
       return;
-    
+
     if (ledgerActor) {
       try {
         const res = await ledgerActor.icrc2_approve(icrc2_approve_args);
@@ -300,11 +301,24 @@ const TokenPage = () => {
             <p className="text-lg mb-2">AMOUNT</p>
             <input
               type="number"
-              disabled={tokenPhase !== "ONGOING"} 
-              className="w-full p-2 rounded-md bg-[#333333] border-none text-white text-base mb-5 "
-              placeholder={projectData && `Enter Amount of ${projectData.token_name}`}
-              onChange={handleAmount}
+              disabled={tokenPhase !== "ONGOING"}
+              className="w-full p-2 rounded-md bg-[#333333] border-none text-white text-base mb-5"
+              placeholder={projectData && `Enter Amount of ${projectData.token_symbol} tokens`}
+              onKeyDown={(e) => {
+                if (e.key === '-' || e.key === 'e' || e.key === '+') {
+                  e.preventDefault();
+                }
+              }}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value < 0) {
+                  e.target.value = 0; // Reset to 0 if negative value is entered programmatically
+                }
+                handleAmount(e); // Call your handler
+              }}
+              min="0"
             />
+
             {/* token amount per icp */}
             <h1 className="mb-5 text-green-500"> {amount && ` ${amount} ICP `} </h1>
 
@@ -380,7 +394,7 @@ const TokenPage = () => {
           presaleData={saleParams} poolData={projectData ? { ...projectData, total_supply: projectData?.total_supply } : {}}
         />}
       </div>
-     <Toaster />
+      <Toaster />
     </>
   );
 };

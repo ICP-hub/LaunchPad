@@ -68,5 +68,5 @@ export const updatevalidationSchema = yup
             )
             .min(1, "You must provide at least 1 link.")
             .max(10, "You can provide up to 5 link.")
-            .required("links are required."),
+            .notRequired(),
     });

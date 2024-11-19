@@ -34,17 +34,17 @@ export const validationSchema = yup
 
         // Social links (if needed, uncomment)
         links: yup
-            .array()
-            .of(
-                yup
-                    .string()
-                    .min(10, "Each link must be at least 1 character long.")
-                    .max(50, "Each tag can be at most 20 characters long.")
-            )
-            .min(1, "You must provide at least 1 link.")
-            .max(10, "You can provide up to 5 link.")
-            .required("links are required."),
-    
+        .array()
+        .of(
+          yup
+            .string()
+            .min(10, "Each link must be at least 10 characters long.")
+            .max(50, "Each link can be at most 50 characters long.")
+        )
+        .min(1, "You must provide at least 1 link.")
+        .max(10, "You can provide up to 10 links.")
+        .notRequired(),
+      
 
     profile_picture: yup
       .mixed() // image must be a mixed type (allowing files)

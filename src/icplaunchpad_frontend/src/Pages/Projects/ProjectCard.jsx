@@ -11,9 +11,10 @@ const ProjectCard = ({ isUserToken, projectData, saleType, index }) => {
   const navigate = useNavigate();
   const { createCustomActor } = useAuth();
   const actor = useSelector((currState) => currState.actors.actor);
+
   const [tokenInfo, setTokenInfo] = useState({});
   const [isFetchingIMG, setFetchingIMG] = useState(false);
-  const [tokenPhase, setTokenPhase] = useState("UPCOMING");
+  const [tokenPhase, setTokenPhase] = useState('UPCOMING');
   const [saleProgress, setSaleProgress] = useState(0);
   const [ledgerActor, setLedgerActor] = useState();
 
@@ -24,11 +25,11 @@ const ProjectCard = ({ isUserToken, projectData, saleType, index }) => {
 
   // Calculate sale progress based on the token phase and supply
   useEffect(() => {
-    if (tokenPhase === "UPCOMING") {
+    if (tokenPhase === 'UPCOMING') {
       setSaleProgress(0);
-    } else if (tokenPhase === "SUCCESSFULL") {
+    } else if (tokenPhase === 'SUCCESSFULL') {
       setSaleProgress(100);
-    } else if (tokenInfo.total_supply && projectData.total_supply) {
+    } else if (tokenInfo.total_supply && projectData.total_supply && Number(projectData.total_supply) > 0) {
       const progress = 100 - (Number(tokenInfo.total_supply) / Number(projectData.total_supply)) * 100;
       setSaleProgress(progress.toFixed(2));
     }
@@ -51,7 +52,7 @@ const ProjectCard = ({ isUserToken, projectData, saleType, index }) => {
           }));
         }
       } catch (error) {
-        console.error("Error fetching token owner info:", error);
+        console.error(`Error fetching token owner info for ledgerId: ${ledgerId}`, error);
       }
     };
     if (ledgerId) fetchTokenOwnerInfo();
@@ -87,7 +88,7 @@ const ProjectCard = ({ isUserToken, projectData, saleType, index }) => {
         }
         setFetchingIMG(true);
       } catch (error) {
-        console.error("Error fetching project data:", error);
+        console.error(`Error fetching project data for ledgerId: ${ledgerId}`, error);
       }
     };
     if (ledgerId) fetchProjectData();
@@ -97,7 +98,7 @@ const ProjectCard = ({ isUserToken, projectData, saleType, index }) => {
   useEffect(() => {
     const fetchTokenInfo = async () => {
       try {
-        const ledgerPrincipal = Principal.fromText(projectData.canister_id);
+        const ledgerPrincipal = Principal.fromText(ledgerId);
         const saleParams = await actor.get_sale_params(ledgerPrincipal);
 
         setTokenInfo((prev) => ({ ...prev, sale_Params: saleParams.Ok }));
@@ -117,11 +118,11 @@ const ProjectCard = ({ isUserToken, projectData, saleType, index }) => {
         }
         setFetchingIMG(true);
       } catch (error) {
-        console.error("Error fetching token info:", error);
+        console.error(`Error fetching token info for canisterId: ${projectData.canister_id}`, error);
       }
     };
     if (projectData.canister_id) fetchTokenInfo();
-  }, [actor, projectData.canister_id, canisterId, domain, protocol]);
+  }, [actor, ledgerId, domain, protocol]);
 
   // Handle navigation based on the token or project data
   const handleViewMoreClick = () => {
@@ -132,11 +133,14 @@ const ProjectCard = ({ isUserToken, projectData, saleType, index }) => {
         ...tokenInfo,
         saleProgress,
       };
-      navigate(isUserToken ? "/token-page" : "/project", { state: { projectData: routeData } });
+      navigate(isUserToken ? '/token-page' : '/project', { state: { projectData: routeData } });
     }
   };
+
   return (
-    <div>
+    (isUserToken && !tokenInfo.sale_Params) ? 
+    <> </>
+    : <div>
       <div
         key={index}
         onClick={handleViewMoreClick}
