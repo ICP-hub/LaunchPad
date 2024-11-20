@@ -88,7 +88,7 @@ async fn index_install_code(arg: IndexInstallCodeArgument, wasm_module: Vec<u8>)
     .await
 }
 
-
+#[ic_cdk::update]
 pub async fn icrc28_trusted_origins() -> Icrc28TrustedOriginsResponse {
     let trusted_origins = vec![
         String::from("https://ajzka-lyaaa-aaaak-ak5rq-cai.icp0.io"),

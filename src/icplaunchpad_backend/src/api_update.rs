@@ -10,6 +10,11 @@ use crate::{
 
 #[ic_cdk::update]
 pub fn create_account(user_input: UserAccount) -> Result<(), String> {
+    // Validate input first
+    if user_input.username.trim().is_empty() || user_input.name.trim().is_empty() {
+        return Err("Username and name cannot be empty".to_string());
+    }
+
     // Check if the username is unique
     let is_unique = STATE.with(|state| {
         state
@@ -27,11 +32,11 @@ pub fn create_account(user_input: UserAccount) -> Result<(), String> {
 
     // Create a new UserAccount from the input struct
     let new_user_account = UserAccount {
-        name: user_input.name,
-        username: user_input.username,
-        profile_picture: user_input.profile_picture,
-        links: user_input.links,
-        tag: user_input.tag,
+        name: user_input.name.clone(),
+        username: user_input.username.clone(),
+        profile_picture: user_input.profile_picture.clone(),
+        links: user_input.links.clone(),
+        tag: user_input.tag.clone(),
     };
 
     // Store the new user account in the map
@@ -43,9 +48,11 @@ pub fn create_account(user_input: UserAccount) -> Result<(), String> {
             },
         );
     });
+    
 
     Ok(())
 }
+
 
 #[ic_cdk::update]
 pub fn update_user_account(
@@ -163,10 +170,10 @@ pub async fn create_token(user_params: UserInputParams) -> Result<TokenCreationR
     let init_arg: Vec<u8> = encode_one(init_args).map_err(|e| e.to_string())?;
 
     let wasm_module =
-        include_bytes!("../../../.dfx/local/canisters/token_deployer/token_deployer.wasm.gz")
+        include_bytes!("../../../.dfx/ic/canisters/token_deployer/token_deployer.wasm.gz")
             .to_vec();
     let index_wasm_module =
-        include_bytes!("../../../.dfx/local/canisters/index_canister/index_canister.wasm.gz")
+        include_bytes!("../../../.dfx/ic/canisters/index_canister/index_canister.wasm.gz")
             .to_vec();
 
     let arg1: InstallCodeArgument = InstallCodeArgument {
