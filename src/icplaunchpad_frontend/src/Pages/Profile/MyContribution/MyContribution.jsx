@@ -17,16 +17,17 @@ const ProjectLists = () => {
     (currState) => currState.internet.isAuthenticated
   );
   const principal = useSelector((currState) => currState.internet.principal);
-  const [salesData, setSalesData] = useState([])
-  console.log("Fetched tokens in ProjectLists:", salesData);
+  const [tokens, setTokens] = useState([])
+  console.log("Fetched tokens in ProjectLists:", tokens);
 
   useEffect(() => {
     const fetchUserTokensInfo = async () => {
       try {
         if (actor) {
           const response = await actor.get_user_tokens_info();
+
           if (response && response.length > 0) {
-            setSalesData(response);
+            setTokens(response);
           } else {
             console.log("No tokens data available or empty response.");
           }
@@ -50,7 +51,7 @@ const ProjectLists = () => {
     <div  className="    md:mb-[5%] lg:mb-0 sm4:mb-3 py-[5%]">
     <div className="flex lg:flex-row flex-wrap gap-6 items-center w-[95%]  m-auto justify-around">
       
-      {salesData.map((sale, index) => (
+      {tokens && tokens.map((sale, index) => (
     
         <ProjectCard isUserToken={true} projectData={sale} key={index} />
       ))}

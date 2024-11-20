@@ -256,6 +256,7 @@ const AdditionalInfoTab = ({
           ref={fileInputRef}
           onChange={handleFileChange}
           style={{ display: "none" }}
+          accept="image/*" // Allow only image files
         />
         <div
           onClick={handleFileUploadClick}
@@ -276,6 +277,7 @@ const AdditionalInfoTab = ({
           ref={coverFileInputRef}
           onChange={handleCoverFileChange}
           style={{ display: "none" }}
+          accept="image/*" // Allow only image files
         />
         <div
           onClick={handleCoverFileUploadClick}

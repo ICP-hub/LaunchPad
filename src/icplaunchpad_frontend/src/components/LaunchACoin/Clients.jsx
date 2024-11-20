@@ -53,12 +53,12 @@ const Clients = () => {
         </button>
       </div>
 
-    <div className="flex md:flex-row flex-col flex-wrap w-[95%] items-center m-auto justify-around">
+    <div className="flex lg:flex-row flex-col flex-wrap items-center w-[95%] m-auto gap-24 justify-start">
       
       { (salesData.length > 0 ) ? salesData.map((sales, index) => (
-        (index < 3) && <ProjectCard projectData={sales} saleType="successfull" index={index}/> 
+        (index < 3) && <ProjectCard initial_Total_supply={ sales[1] || null} projectData={sales[0]} saleType="successfull" index={index}/> 
       )) :
-      <h1 className="text-xl my-16"> Data Not Found... </h1>
+      <h1 className="text-xl mx-auto my-16"> Data Not Found... </h1>
       }
       <button onClick={handleViewMoreClick} className="text-white font-posterama  xxs1:hidden underline text-[20px] mt-6 xxs1:text-xl">
           Load More

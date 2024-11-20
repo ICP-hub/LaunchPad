@@ -52,9 +52,9 @@ const PoolInfoTab = ({ presaleData, poolData }) => {
           <span className="text-white">{`${poolData?.total_supply || "N/A"} ${poolData?.token_symbol || ""}`}</span>
         </div>
         <div className="flex border-b justify-between py-2">
-          <span className="text-gray-400">Initial Market Cap</span>
+          <span className="text-gray-400"> Listing Rate</span>
           {console.log('poolData',poolData)}
-          <span className="text-white">{`1,453,500 ${poolData?.token_symbol || ""}`}</span>
+          <span className="text-white">{`${Number(presaleData?.listing_rate)|| 0 } ICP `}</span>
         </div>
         <div className="flex border-b justify-between py-2">
           <span className="text-gray-400">SoftCap</span>

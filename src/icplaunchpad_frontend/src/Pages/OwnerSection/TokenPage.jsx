@@ -252,13 +252,13 @@ const TokenPage = () => {
               <div className="content-div flex font-posterama justify-between w-[90%] m-auto mt-7 ">
                 <div className="left flex flex-col gap-5">
                   <div className="text-[25px]"> {tokenData ? tokenData.token_name : "PUPPO"}</div>
-                  <div className="font-extralight">FAir Launnch - Max buy 5 SOL</div>
+                  <div className="font-extralight"> {` Presale - Max Buy ${Number(presaleData?.max_buy)} ICP`} </div>
                   <div className="logos flex  gap-11">
                     {
                       (presaleData && presaleData.social_links.length > 0) ?
                         presaleData.social_links.map((link, index) => {
                           console.log('link=', link)
-                          return <a href={link} key={index}> {getSocialLogo(link)} </a>
+                          return <a href={link} target="blank" key={index}> {getSocialLogo(link)} </a>
                         })
                         :
                         <>
@@ -304,7 +304,7 @@ const TokenPage = () => {
 
                 </div>
                 <div className="righttext-[16px] font-medium">
-                  FAir Launnch - Max buy 5 SOL
+                {` Presale - Max Buy ${Number(presaleData?.max_buy)} ICP`}
                 </div>
                 <div className="text-[#FFC145] text-[18px] font-semibold">
                   Upcoming

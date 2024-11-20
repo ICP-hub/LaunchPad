@@ -35,7 +35,7 @@ const AffiliateProgram = ({ poolData, presaleData }) => {
         {/* Initial Market Cap */}
         <div className="flex justify-between text-[14px] xxs1:text-[17px] border-b py-2">
           <span>Initial Market Cap</span>
-          <span>{`1,453,500 ${poolData?.token_symbol || ''}`}</span>
+          <span>{`${Number(presaleData?.listing_rate) || 0 } ICP `}</span>
         </div>
 
         {/* SoftCap */}

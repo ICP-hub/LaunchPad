@@ -62,13 +62,14 @@ const TokenPage = () => {
     };
 
     const fetchSaleParams = async () => {
+
       if (actor && projectData?.canister_id) {
         try {
           const ledgerPrincipal = Principal.fromText(projectData.canister_id);
           const sale = await actor.get_sale_params(ledgerPrincipal);
-
+          console.log('SALE=>>>', sale)
           if (sale?.Ok) {
-            console.log(sale?.Ok)
+
             setSaleParams(sale.Ok);
           } else {
             console.warn("No sale data available or an error occurred.");
@@ -326,13 +327,13 @@ console.log("ledger actor ", ledgerActor)
               <div className="content-div font-posterama flex justify-between w-[90%] m-auto mt-7 ">
                 <div className="left flex flex-col gap-5">
                   <div> {projectData && projectData?.token_name} </div>
-                  <div>FAir Launnch - Max buy 5 SOL</div>
+                  <div> {` Presale - Max Buy ${Number(saleParams?.max_buy)} ICP`} </div>
                   <div className="logos flex  gap-11">
                     {
                       (saleParams && saleParams.social_links.length > 0) ?
                         saleParams.social_links.map((link, index) => {
                           console.log('link=', link)
-                          return <a href={link} key={index}> {getSocialLogo(link)} </a>
+                          return <a href={link} target="blank" key={index}> {getSocialLogo(link)} </a>
                         })
                         :
                         <>
@@ -369,7 +370,7 @@ console.log("ledger actor ", ledgerActor)
               <div className="mt-[70px] font-posterama text-center text-white space-y-2">
                 <div className=" text-[24px] font-bold"> {projectData && projectData?.token_name}</div>
                 <div className=" text-[16px] font-medium">
-                  FAir Launnch - Max buy 5 SOL
+                {` Presale - Max Buy ${Number(saleParams?.max_buy)} ICP`}
                 </div>
                 <div className="text-[#FFC145] text-[18px] font-semibold">
                   Upcoming
@@ -426,11 +427,24 @@ console.log("ledger actor ", ledgerActor)
             <p className="text-lg mb-2">AMOUNT</p>
             <input
               type="number"
-              disabled={tokenPhase !== "ONGOING"} 
-              className="w-full p-2 rounded-md bg-[#333333] border-none text-white text-base mb-5 "
-              placeholder={projectData && `Enter Amount of ${projectData.token_name}`}
-              onChange={handleAmount}
+              disabled={tokenPhase !== "ONGOING"}
+              className="w-full p-2 rounded-md bg-[#333333] border-none text-white text-base mb-5"
+              placeholder={projectData && `Enter Amount of ${projectData.token_symbol} tokens`}
+              onKeyDown={(e) => {
+                if (e.key === '-' || e.key === 'e' || e.key === '+') {
+                  e.preventDefault();
+                }
+              }}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value < 0) {
+                  e.target.value = 0; // Reset to 0 if negative value is entered programmatically
+                }
+                handleAmount(e); // Call your handler
+              }}
+              min="0"
             />
+
             {/* token amount per icp */}
             <h1 className="mb-5 text-green-500"> {amount && ` ${amount} ICP `} </h1>
 
@@ -506,7 +520,7 @@ console.log("ledger actor ", ledgerActor)
           presaleData={saleParams} poolData={projectData ? { ...projectData, total_supply: projectData?.total_supply } : {}}
         />}
       </div>
-     <Toaster />
+      <Toaster />
     </>
   );
 };

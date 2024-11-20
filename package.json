@@ -31,6 +31,7 @@
     "browser-image-compression": "^2.0.2",
     "buffer": "^6.0.3",
     "chart.js": "^4.4.3",
+    "lodash": "^4.17.21",
     "react-chartjs-2": "^5.2.0",
     "react-fonts": "^1.1.1",
     "react-hook-form": "^7.53.0",
