@@ -88,10 +88,7 @@ service : () -> {
   get_user_by_username : (text) -> (opt UserAccount) query;
   get_user_sale_params : () -> (Result_4) query;
   get_user_tokens_info : () -> (vec CanisterIndexInfo) query;
-<<<<<<< Updated upstream
-=======
   icrc28_trusted_origins : () -> (Icrc28TrustedOriginsResponse);
->>>>>>> Stashed changes
   is_account_created : () -> (text) query;
   search_by_token_name_or_symbol : (text) -> (opt CanisterIndexInfo) query;
   sell_tokens : (SellTransferParams) -> (Result);

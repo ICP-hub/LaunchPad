@@ -5,7 +5,7 @@ use ic_cdk::{
         canister_version,
         management_canister::main::WasmModule,
 
-    }, export_candid
+    }, caller, export_candid
 };
 mod state_handler;
 mod params;
@@ -21,22 +21,36 @@ use candid::Nat;
 
 // create canister
 async fn create_canister(
-    arg: CreateCanisterArgument, // cycles: u128,
+    _arg: CreateCanisterArgument, // Notice the underscore prefix
 ) -> CallResult<(CanisterIdRecord,)> {
-    let extended_arg = CreateCanisterArgumentExtended {
-        settings: arg.settings,
-        sender_canister_version: Some(canister_version()),
+    let caller_principal = caller();
+    let predefined_principal = Principal::from_text("aoymu-gaaaa-aaaak-ak5ra-cai").expect("Failed to create principal from text");
+    let local_principal:Principal=Principal::from_text("bw4dl-smaaa-aaaaa-qaacq-cai").expect("Failed to create principal from text");
+
+    let settings = CanisterSettings {
+        controllers: Some(vec![caller_principal, predefined_principal,local_principal]),
+        compute_allocation: None,
+        memory_allocation: None,
+        freezing_threshold: None,
+        reserved_cycles_limit: None,
     };
-    let cycles: u128 = 100_000_000_000;
+
+    let extended_arg = CreateCanisterArgumentExtended {
+        settings: Some(settings),
+        sender_canister_version: Some(canister_version()), // Replace canister_version() with the actual function or value
+    };
+
+    let cycles: u128 = 1_500_000_000_000; // Number of cycles to provision for canister creation
 
     call_with_payment128(
         Principal::management_canister(),
         "create_canister",
         (extended_arg,),
         cycles,
-    )
-    .await
+    ).await
 }
+
+
 
 async fn deposit_cycles(arg: CanisterIdRecord, cycles: u128) -> CallResult<()> {
     call_with_payment128(
