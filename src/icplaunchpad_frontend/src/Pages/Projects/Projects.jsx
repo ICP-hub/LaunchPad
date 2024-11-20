@@ -7,6 +7,7 @@ import { useLocation } from "react-router-dom";
 import ProjectCard from "./ProjectCard.jsx";
 import { TokensInfoHandlerRequest } from "../../StateManagement/Redux/Reducers/TokensInfo.jsx";
 import { useAuth } from "../../StateManagement/useContext/useClient.jsx";
+import { debounce } from "lodash";
 
 const ProjectLists = () => {
   const location = useLocation();
@@ -26,6 +27,7 @@ const ProjectLists = () => {
   const successfulSales = useSelector((state) => state?.SuccessfulSales?.data || []);
   const { createCustomActor } = useAuth();
 
+  // Fetch tokens data on mount
   useEffect(() => {
     dispatch(TokensInfoHandlerRequest());
   }, [dispatch]);
@@ -48,28 +50,44 @@ const ProjectLists = () => {
     setTokensData(salesData || projectsData);
   }, [salesData, projectsData]);
 
-  useEffect(() => {
-    const filterData = async () => {
-      if (!search) {
-        setFilteredTokensData(tokensData);
+  // Debounced filter function
+  const debouncedFilterData = useCallback(
+    debounce(async (searchValue, tokens) => {
+      if (!searchValue) {
+        setFilteredTokensData(tokens);
         return;
       }
+
       const filteredData = await Promise.all(
-        tokensData.map(async (data) => {
+        tokens.map(async (data) => {
           try {
-            const tokenName = data.token_name || (await getTokenName(data.ledger_canister_id));
-            return tokenName.toLowerCase().includes(search.toLowerCase()) ? data : null;
+            const tokenName =
+              data.token_name || (await getTokenName(data[0]?.ledger_canister_id));
+            return tokenName.toLowerCase().includes(searchValue.toLowerCase())
+              ? data
+              : null;
           } catch (error) {
             console.error("Error filtering tokens:", error);
             return null;
           }
         })
       );
-      setFilteredTokensData(filteredData.filter(Boolean));
-    };
-    filterData();
-  }, [search, tokensData, getTokenName]);
 
+      setFilteredTokensData(filteredData.filter(Boolean));
+    }, 500),
+    [getTokenName]
+  );
+
+  // Handle search filtering
+  useEffect(() => {
+    debouncedFilterData(search, tokensData);
+
+    return () => {
+      debouncedFilterData.cancel();
+    };
+  }, [search, tokensData, debouncedFilterData]);
+
+  // Update tokens based on sale type
   useEffect(() => {
     switch (saleType) {
       case "Upcoming":
@@ -86,11 +104,13 @@ const ProjectLists = () => {
     }
   }, [saleType, projectsData, upcomingSales, successfulSales]);
 
+  // Handle sorting
   const handleSort = useCallback(
     async (order) => {
       const sortedData = await Promise.all(
         tokensData.map(async (data) => {
-          const tokenName = data.token_name || (await getTokenName(data.ledger_canister_id));
+          const tokenName =
+            data.token_name || (await getTokenName(data[0]?.ledger_canister_id));
           return { ...data, resolvedTokenName: tokenName.toLowerCase() };
         })
       );
@@ -174,7 +194,7 @@ const ProjectLists = () => {
               <FaChevronDown className="ml-2" />
             </button>
             {showSortDropdown && (
-              <div className="absolute text-[15px] top-[110%] right-2 w-[105px] bg-[#333333] font-posterama text-white rounded-lg p-2 z-10 shadow-lg">
+               <div className="absolute text-[15px] top-[110%] right-2 w-[105px] bg-[#333333] font-posterama text-white rounded-lg p-2 z-10 shadow-lg">
                 <p
                   className="cursor-pointer border-b-2 py-2"
                   onClick={() => handleSort("A to Z")}
@@ -195,10 +215,14 @@ const ProjectLists = () => {
 
       {/* Project Cards Display */}
       <div className="flex lg:flex-row flex-col flex-wrap items-center w-[95%] m-auto gap-24 justify-start">
-        {filteredTokensData &&
+        {filteredTokensData.length > 0 ?
           filteredTokensData.map((sale, index) => (
-            sale && <ProjectCard projectData={sale} saleType={saleType} key={index} />
-          ))}
+            sale && <ProjectCard initial_Total_supply={ sale[1] || null} projectData={sale[0] || sale} saleType={saleType} key={index} />
+          ))
+          :
+      <h1 className="text-xl mx-auto my-16"> Data Not Found... </h1>
+
+        }
       </div>
     </div>
   );

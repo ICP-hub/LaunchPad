@@ -651,33 +651,6 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
             {/* Social Links */}
             <div className="mb-4">
               <h2 className="block text-[19px] mb-1">Social Links</h2>
-              {/* {links.map((link, index) => (
-                <div key={link.id} className="flex gap-2 items-center mb-2">
-                  {getSocialLogo(link)}
-
-                  <Controller
-                    name={`links[${index}]`}
-                    control={control}
-                    defaultValue={link}
-                    render={({ field }) => (
-                      <input
-                        {...field}
-                        type="url"
-                        className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
-                        placeholder="Enter URL"
-                      />
-                    )}
-                  />
-                 
-                  <button
-                    type="button"
-                    onClick={() => remove(index)}
-                    className="ml-2 text-red-500"
-                  >
-                    <FaTrash />
-                  </button>
-                </div>
-              ))} */}
               {links.map((item, index) => (
                 <div key={index} className='flex flex-col'>
                   <div className='flex items-center mb-2 pb-1'>

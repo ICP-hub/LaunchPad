@@ -8,46 +8,47 @@ import { useForm, Controller } from 'react-hook-form';
 import { FaTrash } from 'react-icons/fa';
 import { formatDateForDateTimeLocal } from '../../utils/formatDateFromBigInt';
 import { useSelector } from 'react-redux';
-// import { formatDateFromBigInt } from '../../utils/formatDateFromBigInt';
+import { UpdateTokenValidationSchema } from '../../common/UpdateTokenValidation';
+import { yupResolver } from '@hookform/resolvers/yup';
 
-const UpdateToken = ({ ledgerId, tokenModalIsOpen,setRenderComponent, setTokenModalIsOpen }) => {
+const UpdateToken = ({ ledgerId, tokenModalIsOpen, setRenderComponent, setTokenModalIsOpen }) => {
     const actor = useSelector((currState) => currState.actors.actor);
-    const isAuthenticated = useSelector(
-        (currState) => currState.internet.isAuthenticated
-    );
+    const isAuthenticated = useSelector((currState) => currState.internet.isAuthenticated);
 
-    const { register, handleSubmit, formState: { errors }, reset, control, setValue, clearErrors, setError } = useForm();
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+        reset,
+        control,
+        setValue,
+        clearErrors,
+    } = useForm({
+        resolver: yupResolver(UpdateTokenValidationSchema),
+        defaultValues: {
+            description: '',
+            website: '',
+            project_video: '',
+            start_time_utc: '',
+            end_time_utc: '',
+            links: [''],
+        },
+    });
+
     const [validationError, setValidationError] = useState('');
     const [termsAccepted, setTermsAccepted] = useState(false);
     const [tokenData, setTokenData] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    
+
     const ledgerPrincipal = Principal.fromText(ledgerId);
-    console.log("ledgerId at 22 :", ledgerId);
-    console.log("ledgerPrincipal at 23 :", ledgerPrincipal);
     const [links, setLinks] = useState([{ url: '' }]);
-    console.log("Start time and end time :", tokenData);
+
     useEffect(() => {
         if (isAuthenticated && tokenModalIsOpen) {
             getTokenData();
         }
     }, [isAuthenticated, tokenModalIsOpen]);
 
-    // useEffect(() => {
-    //     if (tokenData) {
-    //         const socialLinks = tokenData.social_links?.map((link) => ({ url: link })) || [{ url: '' }];
-    //         setLinks(socialLinks);
-    //         console.log("Updated social links:", socialLinks);
-    //         const startTime = formatDateForDateTimeLocal(tokenData.start_time_utc);
-    //         const endTime = formatDateForDateTimeLocal(tokenData.end_time_utc);
-
-    //         setValue("description", tokenData.description || '');
-    //         setValue("website", tokenData.website || '');
-    //         setValue("start_time_utc", startTime);
-    //         setValue("end_time_utc", endTime);
-
-    //     }
-    // }, [tokenData, reset]);
     useEffect(() => {
         if (tokenData) {
             const socialLinks = tokenData.social_links?.map((link) => ({ url: link })) || [{ url: '' }];
@@ -59,17 +60,15 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen,setRenderComponent, setTokenMo
                 project_video: tokenData.project_video || '',
                 start_time_utc: formatDateForDateTimeLocal(tokenData.start_time_utc),
                 end_time_utc: formatDateForDateTimeLocal(tokenData.end_time_utc),
-                links: socialLinks.map(link => link.url),
+                links: socialLinks.map((link) => link.url),
             });
         }
     }, [tokenData, reset]);
 
     const getTokenData = async () => {
         try {
-            console.log("Principal pass in get token at update 64", ledgerPrincipal)
             const data = await actor.get_sale_params(ledgerPrincipal);
             setTokenData(data.Ok);
-            console.log('Fetched token data:', data);
         } catch (err) {
             console.error('Error fetching token data:', err);
         }
@@ -85,17 +84,10 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen,setRenderComponent, setTokenMo
     };
 
     const onSubmit = async (data) => {
-        console.log("submit start,", data)
         setIsSubmitting(true);
         setValidationError('');
 
-        const {
-            description,
-            website,
-            end_time_utc,
-            start_time_utc,
-            project_video,
-        } = data;
+        const { description, website, end_time_utc, start_time_utc, project_video, links } = data;
 
         if (!termsAccepted) {
             setValidationError('Please accept the terms and conditions.');
@@ -106,37 +98,25 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen,setRenderComponent, setTokenMo
         const startTime = Math.floor(new Date(start_time_utc).getTime() / 1000);
         const endTime = Math.floor(new Date(end_time_utc).getTime() / 1000);
 
-        console.log("start time submit ,", startTime)
-        console.log("end time submit ,", endTime)
         if (!validateTimes(startTime, endTime)) return;
-
-
-        const socialLinksURLs = links.map(link => link.url);
 
         const updatedTokenData = {
             description: description ? [description] : [],
             website: website ? [website] : null,
-            end_time_utc: endTime ? [endTime] : [],
-            start_time_utc: startTime ? [startTime] : [],
+            end_time_utc: [endTime],
+            start_time_utc: [startTime],
             project_video: project_video ? [project_video] : null,
-            social_links: socialLinksURLs.length > 0 ? [socialLinksURLs] : [],
+            social_links: links.filter((link) => link).length > 0 ? [links] : [],
         };
-        console.log("update token data ,", updatedTokenData)
+
         try {
             const response = await actor.update_sale_params(ledgerPrincipal, updatedTokenData);
-            console.log('Token updated:', response);
-              
-            if(response){
-            setRenderComponent((prev)=>!prev);    
-            
-            }
-
             if (response?.Err) {
                 setValidationError(response.Err);
             } else {
-                console.log('Token updated:', response);
                 setTokenModalIsOpen(false);
                 reset();
+                setRenderComponent((prev) => !prev);
             }
         } catch (err) {
             setValidationError('An error occurred while updating the token.');
@@ -150,15 +130,14 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen,setRenderComponent, setTokenMo
         setTokenModalIsOpen(false);
     };
 
-
     const addLink = () => {
-        setLinks(prev => [...prev, { url: '' }]);
+        setLinks((prev) => [...prev, { url: '' }]);
     };
 
     const removeLink = (index) => {
-        setLinks(prev => prev.filter((_, i) => i !== index));
+        setLinks((prev) => prev.filter((_, i) => i !== index));
         clearErrors(`links.${index}`);
-        clearErrors("links");
+        clearErrors('links');
     };
 
     const updateLink = (index, value) => {
@@ -167,18 +146,6 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen,setRenderComponent, setTokenMo
         setLinks(updatedLinks);
         setValue(`links.${index}`, value);
     };
-    const InputField = ({ label, name, type = 'text' }) => (
-
-        <div className="w-full xxs1:w-1/2 xxs1:px-2 mb-4">
-            <label className="block text-[19px] mb-1">{label}</label>
-            <input
-                type={type}
-                {...register(name)}
-                className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
-            />
-            {errors[name] && <p className="text-red-500">{errors[name]?.message}</p>}
-        </div>
-    );
 
     return (
         <div className="absolute">
@@ -202,31 +169,51 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen,setRenderComponent, setTokenMo
                     </div>
 
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-
-
                         <div className="flex flex-col xxs1:flex-row justify-between mb-[50px] xxs1:mb-8">
-                            <InputField label="Start Time" name="start_time_utc" type="datetime-local" />
-                            <InputField label="End Time" name="end_time_utc" type="datetime-local" />
+                            <div className="w-full xxs1:w-1/2 xxs1:px-2 mb-4">
+                                <label className="block text-[19px] mb-1">Start Time</label>
+                                <input
+                                    type="datetime-local"
+                                    {...register('start_time_utc')}
+                                    className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
+                                />
+                                {errors.start_time_utc && (
+                                    <p className="text-red-500">{errors.start_time_utc.message}</p>
+                                )}
+                            </div>
+                            <div className="w-full xxs1:w-1/2 xxs1:px-2 mb-4">
+                                <label className="block text-[19px] mb-1">End Time</label>
+                                <input
+                                    type="datetime-local"
+                                    {...register('end_time_utc')}
+                                    className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
+                                />
+                                {errors.end_time_utc && (
+                                    <p className="text-red-500">{errors.end_time_utc.message}</p>
+                                )}
+                            </div>
                         </div>
 
                         <div className="mb-6">
                             <label className="block text-[19px] mb-1">Website</label>
                             <input
                                 {...register('website')}
-                                className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2 "
+                                className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
                             />
                             {errors.website && <p className="text-red-500">{errors.website.message}</p>}
                         </div>
+
                         <div className="mb-6">
                             <label className="block text-[19px] mb-1">Video URL</label>
                             <input
                                 {...register('project_video')}
-                                className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2 "
+                                className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
                             />
-                            {errors.project_video && <p className="text-red-500">{errors.project_video.message}</p>}
+                            {errors.project_video && (
+                                <p className="text-red-500">{errors.project_video.message}</p>
+                            )}
                         </div>
 
-                        {/* Social Links */}
                         <div className="mb-4">
                             <h2 className="block text-[19px] mb-1">Social Links</h2>
                             {links.map((item, index) => (
@@ -234,13 +221,12 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen,setRenderComponent, setTokenMo
                                     <div className="flex items-center mb-2 pb-1">
                                         <div className="flex items-center w-full space-x-2">
                                             <div className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full">
-                                                {getSocialLogo(links[index].url)}
+                                                {getSocialLogo(item.url)}
                                             </div>
-
                                             <Controller
                                                 name={`links.${index}`}
                                                 control={control}
-                                                defaultValue={links[index]?.url || ''}
+                                                defaultValue={item.url || ''}
                                                 render={({ field }) => (
                                                     <input
                                                         type="text"
@@ -254,7 +240,6 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen,setRenderComponent, setTokenMo
                                                     />
                                                 )}
                                             />
-
                                             <button
                                                 type="button"
                                                 onClick={() => removeLink(index)}
@@ -266,15 +251,10 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen,setRenderComponent, setTokenMo
                                     </div>
                                 </div>
                             ))}
-
-
-
                             <button onClick={addLink} type="button" className="text-blue-400 mt-2">
                                 + Add another link
                             </button>
                         </div>
-
-
 
                         <div className="mb-6">
                             <label className="block text-[19px] mb-1">Description</label>
@@ -282,7 +262,9 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen,setRenderComponent, setTokenMo
                                 {...register('description')}
                                 className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2 h-32"
                             />
-                            {errors.description && <p className="text-red-500">{errors.description.message}</p>}
+                            {errors.description && (
+                                <p className="text-red-500">{errors.description.message}</p>
+                            )}
                         </div>
 
                         {validationError && <p className="text-red-500 mb-4">{validationError}</p>}
