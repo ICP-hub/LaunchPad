@@ -19,7 +19,7 @@ import { Principal } from "@dfinity/principal";
 import SaleStart from "../OwnerSection/SaleStart.jsx";
 import { getSocialLogo } from "../../common/getSocialLogo.jsx";
 import { useAuth } from "../../StateManagement/useContext/useClient.jsx";
-import { useAgent } from "@nfid/identitykit/react";
+import { useAgent, useIdentityKit } from "@nfid/identitykit/react";
 import { Actor } from "@dfinity/agent";
 
 const TokenPage = () => {
@@ -35,6 +35,8 @@ const TokenPage = () => {
   console.log("baclance at 35",tokenOwnerInfo)
   const [amount, setAmount] = useState(0);
   console.log("amount")
+  const authenticatedAgent = useAgent()
+  console.log("agent project", authenticatedAgent)
   const [isLoading, setIsLoading] = useState(false); 
   useEffect(() => {
 
@@ -131,56 +133,10 @@ const TokenPage = () => {
     }
   };
 
-
-//   const acc = {
-//     owner: Principal.fromText(
-//       process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND
-//     ),
-//     subaccount: [],
-//   }
-//   const icrc2_approve_args = {
-//     from_subaccount: [],
-//     spender:acc,
-//     fee: [],
-//     memo: [],
-//     amount: BigInt(5000 * 10 ** 8),
-//     created_at_time: [],
-//     expected_allowance: [],
-//     expires_at: [],
-//   }
-
-  
-//   const handleTransaction = async () => {
-//     if (ledgerActor) {
-//       try {
-//         const res = await ledgerActor.icrc2_approve(icrc2_approve_args);
-// console.log("why not working",res)
-//         if (res?.Err?.InsufficientFunds) {
-//           toast.error(
-//             `Insufficient funds: Balance is ${res.Err.InsufficientFunds.balance.toString()}`,
-//             {
-//               position: "top-right",
-//             }
-//           );
-//         } else {
-//           toast.success("Transaction approved successfully!", {
-//             position: "top-right",
-//           });
-//         }
-//       } catch (error) {
-//         toast.error(`Transaction failed: ${error.message}`, {
-//           position: "top-right",
-//         });
-//         console.error("Error during transaction:", error);
-//       }
-//     }
-//   };
- 
 console.log("ledger actor ", ledgerActor)
   const handleTransaction = async () => {
     if (!amount || amount <= 0) {
       toast.error("Invalid amount. Please enter a valid value.");
-
       return;
     }
 
@@ -189,8 +145,12 @@ console.log("ledger actor ", ledgerActor)
       console.log(" authenticprojectData?.canister_idatedAgent 188", projectData?.canister_id)
       return;
     }
+    // const actor = Actor.createActor(idlFactory, {
+    //   agent: authenticatedAgent,
+    //   canisterId: "bw4dl-smaaa-aaaaa-qaacq-cai",
+    // });
     setIsLoading(true);
-
+  
 
     const acc = {
       owner: Principal.fromText(process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND),
