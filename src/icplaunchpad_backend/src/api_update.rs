@@ -1,11 +1,11 @@
 use candid::{encode_one, Nat, Principal};
 use ic_cdk::api::{
-    call::{CallResult, RejectionCode},
+    call::{call_with_payment128, CallResult, RejectionCode},
     management_canister::main::{CanisterInstallMode, WasmModule},
 };
 
 use crate::{
-    create_canister, deposit_cycles, index_install_code, install_code, mutate_state, params, read_state, Account, CanisterIdWrapper, CoverImageData, CoverImageIdWrapper, CreateCanisterArgument, CreateFileInput, ImageIdWrapper, IndexArg, IndexCanisterIdWrapper, IndexInitArgs, IndexInstallCodeArgument, InitArgs, InstallCodeArgument, LedgerArg, ProfileImageData, ReturnResult, SaleDetails, SaleDetailsUpdate, SaleDetailsWrapper, TokenCreationResult, TokenImageData, UserAccount, UserAccountWrapper, UserInputParams, STATE
+    create_canister, deposit_cycles, index_install_code, install_code, mutate_state, params, read_state, Account, CanisterIdRecord, CanisterIdWrapper, CoverImageData, CoverImageIdWrapper, CreateCanisterArgument, CreateFileInput, ImageIdWrapper, IndexArg, IndexCanisterIdWrapper, IndexInitArgs, IndexInstallCodeArgument, InitArgs, InstallCodeArgument, LedgerArg, ProfileImageData, ReturnResult, SaleDetails, SaleDetailsUpdate, SaleDetailsWrapper, TokenCreationResult, TokenImageData, UserAccount, UserAccountWrapper, UserInputParams, STATE
 };
 
 #[ic_cdk::update]
@@ -262,6 +262,16 @@ pub async fn create_token(user_params: UserInputParams) -> Result<TokenCreationR
     }
 }
 
+#[ic_cdk::update]
+async fn deposit_cycles_to_canister(arg: CanisterIdRecord, cycles: u128) -> CallResult<()> {
+    call_with_payment128(
+        Principal::management_canister(),
+        "deposit_cycles",
+        (arg,),
+        cycles,
+    )
+    .await
+}
 
 #[ic_cdk::update]
 pub async fn upload_token_image(
