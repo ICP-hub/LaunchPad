@@ -55,13 +55,9 @@ const ProjectTokenAbout = ({ presaleData }) => {
       {isMobile && (
         <div className="flex gap-5 p-2 text-[14px] flex-col ">
           <div >
-            Lorem ipsum dolor sit amet consectetur. Proin volutpat ornare arcu sit vulputate pellentesque id viverra. Malesuada id tellus et at. Ut morbi faucibus id commodo ac eget. Hendrerit nisl vestibulum lectus varius euismod molestie euismod urna phasellus.
+          {presaleData?.description}
           </div>
-          <h3 className=' text-[20px] bg-gradient-to-r  
-      from-[#F3B3A7] to-[#CACCF5] text-transparent bg-clip-text '>Lorem ipsum </h3>
-          <div>
-            Lorem ipsum dolor sit amet consectetur. Proin volutpat ornare arcu sit vulputate pellentesque id viverra. Malesuada id tellus et at. Ut morbi faucibus id commodo ac eget. Hendrerit nisl vestibulum lectus varius euismod molestie euismod urna phasellus. Ante sit proin mi donec elit sodales. Ac sed amet sed vestibulum pulvinar dui faucibus. Nullam et enim odio cursus bibendum amet parturient.
-          </div>
+        
           <div className="relative">
           { presaleData ? <video
               src={presaleData?.project_video}

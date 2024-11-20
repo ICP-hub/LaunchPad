@@ -66,7 +66,7 @@ const Hero = ({ scrollToUpcomingSales }) => {
         </p>
         <button
           type="submit"
-          className="border-1 font-posterama bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5] text-black relative w-[230px] h-[35px] text-[16px] md:text-[18px] font-[600] rounded-3xl"
+          className="border-1 z-10 font-posterama bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5] text-black relative w-[230px] h-[35px] text-[16px] md:text-[18px] font-[600] rounded-3xl"
           onClick={scrollToUpcomingSales}
         >
           UPCOMING SALES
