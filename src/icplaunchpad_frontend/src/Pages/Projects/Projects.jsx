@@ -8,6 +8,8 @@ import ProjectCard from "./ProjectCard.jsx";
 import { TokensInfoHandlerRequest } from "../../StateManagement/Redux/Reducers/TokensInfo.jsx";
 import { useAuth } from "../../StateManagement/useContext/useClient.jsx";
 import { debounce } from "lodash";
+import { upcomingSalesHandlerRequest } from "../../StateManagement/Redux/Reducers/UpcomingSales.jsx";
+import { SuccessfulSalesHandlerRequest } from "../../StateManagement/Redux/Reducers/SuccessfulSales.jsx";
 
 const ProjectLists = () => {
   const location = useLocation();
@@ -174,6 +176,9 @@ const ProjectLists = () => {
                     key={type}
                     className="cursor-pointer border-b-2 py-2"
                     onClick={() => {
+                      type == 'Upcoming' ? dispatch(upcomingSalesHandlerRequest()) 
+                      : type == 'Successful' ?  dispatch(SuccessfulSalesHandlerRequest())
+                      :  dispatch(TokensInfoHandlerRequest());
                       setSaleType(type);
                       setShowFilterDropdown(false);
                     }}

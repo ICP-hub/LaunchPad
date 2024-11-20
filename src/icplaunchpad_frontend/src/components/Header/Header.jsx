@@ -573,6 +573,7 @@ const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false); // State to toggle hamburger menu
   const [isOpen, setIsOpen] = useState(false);
   const [profileModalIsOpen, setProfileModalIsOpen] = useState(false); // State for ProfileCard modal
+  
 
   const [activeSection, setActiveSection] = useState("home");
   const [isUserRegistered, setUserRegister] = useState(null);
@@ -652,12 +653,14 @@ const Header = () => {
       // Fetch token image ID
       const tokenImgId = await actor.get_token_image_id(ledgerPrincipal);
       console.log("Fetched token image ID:", tokenImgId);
+      const saleParams = await actor.get_sale_params(ledgerPrincipal);
 
       if (tokenImgId && tokenImgId.length > 0) {
         const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId[tokenImgId.length - 1]}`;
         console.log("Token Image URL:", imageUrl);
 
-        navigate('/project', { state: { projectData: { ...data, token_image: imageUrl } } });
+        const creator=saleParams?.Ok?.creator;
+        navigate( creator == principal ? '/token-page' : '/project', { state: { projectData:{ ...data, token_image: imageUrl }} });
       }
     }
   }
