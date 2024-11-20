@@ -17,6 +17,7 @@ const ProjectCard = ({ isUserToken, projectData, initial_Total_supply, saleType,
   const [tokenPhase, setTokenPhase] = useState('UPCOMING');
   const [saleProgress, setSaleProgress] = useState(0);
   const [ledgerActor, setLedgerActor] = useState();
+  const principal = useSelector((currState) => currState.internet.principal);
 
   const protocol = process.env.DFX_NETWORK === 'ic' ? 'https' : 'http';
   const domain = process.env.DFX_NETWORK === 'ic' ? 'raw.icp0.io' : 'localhost:4943';
@@ -141,7 +142,9 @@ const ProjectCard = ({ isUserToken, projectData, initial_Total_supply, saleType,
         ...tokenInfo,
         saleProgress,
       };
-      navigate(isUserToken ? '/token-page' : '/project', { state: { projectData: routeData } });
+      console.log('routeData=>',routeData)
+      const creator=routeData?.sale_details?.creator || routeData?.sale_Params?.creator;
+      navigate(isUserToken || creator == principal ? '/token-page' : '/project', { state: { projectData: routeData } });
     }
   };
 

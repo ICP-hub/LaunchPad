@@ -57,17 +57,33 @@ const TokenPage = () => {
   // const location = useLocation();
 
   useEffect(() => {
-    if (tokenPhase == "UPCOMING")
-      setSaleProgress(0)
-
-    else if (tokenPhase == "SUCCESSFULL")
-      setSaleProgress(100)
-
-    else {
+   
       const progress = tokenData && projectData ? (100 - (Number(tokenData.total_supply) / Number(projectData.total_supply)) * 100) : 0;
       setSaleProgress(progress.toFixed(2))
-    }
+    
   }, [tokenPhase, tokenData]);
+
+
+
+  // useEffect(() => {
+  //   if (tokenPhase === 'UPCOMING' && initial_Total_supply && Number(initial_Total_supply) > 0){
+  //     const progress = 100 - (Number(tokenInfo.total_supply) / Number(initial_Total_supply)) * 100;
+  //     setSaleProgress(progress.toFixed(2));
+
+  //   } else if (tokenPhase === 'SUCCESSFULL' && initial_Total_supply && Number(initial_Total_supply) > 0) {
+  //     const progress = 100 - (Number(tokenInfo.total_supply) / Number(initial_Total_supply)) * 100;
+  //     setSaleProgress(progress.toFixed(2));
+
+  //   } else if (tokenInfo.total_supply && projectData.total_supply && Number(projectData.total_supply) > 0) {
+  //     const progress = 100 - (Number(tokenInfo.total_supply) / Number(projectData.total_supply)) * 100;
+  //     setSaleProgress(progress.toFixed(2));
+  //   }
+  //  else if ( isUserToken && tokenInfo.total_supply && projectData.total_supply && Number(projectData.total_supply) > 0) {
+  //   const progress = 100 - (Number(tokenInfo.total_supply) / Number(projectData.total_supply)) * 100;
+  //   setSaleProgress(progress.toFixed(2));
+  // }
+  // }, [tokenPhase, tokenInfo.total_supply, projectData.total_supply]);
+
 
 
   const ledger_canister_id = projectData ? projectData.canister_id
