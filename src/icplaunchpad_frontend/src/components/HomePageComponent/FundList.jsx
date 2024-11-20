@@ -15,12 +15,14 @@ const FundList = () => {
             <tr className="bg-[#1919194D] text-white font-posterama uppercase text-sm leading-normal">
               <th className="py-3 px-6 text-left">#</th>
               <th className="py-3 px-6 text-left">Projects</th>
+              <th className="py-3 px-6 text-left">Symbol</th>
               <th className="py-3 px-6 text-left">Total Raised</th>
               <th className="py-3 px-6 text-left">Current Price</th>
               <th className="py-3 px-6 text-left">Type</th>
               <th className="py-3 px-6 text-left">Ended In</th>
             </tr>
           </thead>
+          {console.log('SuccesFullSales=',SuccesFullSales)}
           <tbody className="text-white text-sm divide-y    divide-[#FFFFFF33]">
             {SuccesFullSales && SuccesFullSales.length > 0 ? (
               SuccesFullSales.map((sale, index) => (
@@ -28,7 +30,7 @@ const FundList = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="6" className="py-3 px-6 text-center">No Successful Sales Found</td>
+                <td colSpan="7" className="py-3 px-6 text-center">No Successful Sales Found</td>
               </tr>
             )}
           </tbody>

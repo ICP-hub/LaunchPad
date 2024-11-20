@@ -26,7 +26,8 @@ const FundDetails = ({ sale, index }) => {
 
                 if (customActor) {
                     const tokenName = await customActor.icrc1_name();
-                    setTokenDetails((prev) => ({ ...prev, token_name: tokenName }));
+                    const tokenSymbol = await customActor.icrc1_symbol();
+                    setTokenDetails((prev) => ({ ...prev, token_name: tokenName, token_symbol:tokenSymbol }));
                 }
 
                 // Fetching the owner of the token
@@ -57,7 +58,7 @@ const FundDetails = ({ sale, index }) => {
             console.error('Error fetching token data:', err);
         }
     };
-
+  console.log('tokenDetails=',tokenDetails)
 
     return (
         <tr key={index} className="text-base">
@@ -66,6 +67,7 @@ const FundDetails = ({ sale, index }) => {
                 <img src={tokenDetails.token_image || ""} alt="Logo" className="object-cover rounded-full h-full w-full mr-2" />
                 {tokenDetails.token_name || "N/A"}
             </td>
+            <td className="py-3 px-6"> {tokenDetails ? tokenDetails.token_symbol : "" } </td>
             <td className="py-3 px-6"> {tokenDetails ? tokenDetails.owner_bal : 0 } ICP</td>
             <td className="py-3 px-6">{` ${sale.sale_details.listing_rate} ICP `}</td>
             <td className="py-3 px-6">Token Sale</td>
