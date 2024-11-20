@@ -3,9 +3,9 @@ import React from 'react';
 const ReviewInfoTab = ({ presaleDetails }) => {
   console.log("REview side data", presaleDetails);
   return (
-    <div className="bg-[#222222] p-4 xxs1:p-8 rounded-2xl mb-[80px] ss2:mb-[70px] dxs:mb-[140px] xxs1:mb-[80px] 
-    sm3:mb-[60px] md:mb-[10px] mx-2 xxs1:mx-8 h-[1000px] xxs1:h-[1150px] sm3:h-[1100px]  md:h-[1050px] ">
-      <table className="w-full text-left text-[10px] xxs1:text-[14px] pr-2 mb-4">
+    <div className="bg-[#222222] p-2 xxs1:p-8 rounded-2xl mb-[80px] ss2:mb-[70px] dxs:mb-[140px] xxs1:mb-[80px] 
+    sm3:mb-[60px] md:mb-[10px] mx-2 xxs1:mx-8 h-[1130px] xxs1:h-[1300px] sm3:h-[1230px]  md:h-[1050px] ">
+      <table className="w-full text-left text-[8px]  sxs3:text-[10px] xxs1:text-[13px] pr-2 mb-4">
         <tbody>
           {[
             ["Total token", presaleDetails?.total_supply || "N/A"],
