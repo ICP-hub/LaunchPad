@@ -63,9 +63,11 @@ const FundDetails = ({ sale, index }) => {
     return (
         <tr key={index} className="text-base">
             <td className="py-3 px-6">{index + 1}</td>
-            <td className="flex h-8 w-8 rounded-full">
-                <img src={tokenDetails.token_image || ""} alt="Logo" className="object-cover rounded-full h-full w-full mr-2" />
-                {tokenDetails.token_name || "N/A"}
+           <td className=" py-3 px-6">
+           <span className='flex'>
+            <img src={tokenDetails.token_image || ""} alt="Logo" className="object-cover h-6 w-6  rounded-full  mr-2" />
+            {tokenDetails.token_name || "N/A"}
+            </span> 
             </td>
             <td className="py-3 px-6"> {tokenDetails ? tokenDetails.token_symbol : "" } </td>
             <td className="py-3 px-6"> {tokenDetails ? tokenDetails.owner_bal : 0 } ICP</td>
