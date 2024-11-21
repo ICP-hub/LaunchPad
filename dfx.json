@@ -13,7 +13,9 @@
       "main": "src/icplaunchpad_backend/src/lib.rs",
       "candid": "src/icplaunchpad_backend/icplaunchpad_backend.did",
       "package": "icplaunchpad_backend",
-      "type": "rust"
+      "type": "rust",
+      "optimize":"cycles"
+
     },
     "token_deployer": {
       "type": "custom",
