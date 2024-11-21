@@ -25,7 +25,16 @@ Modal.setAppElement('#root');
 // Define signers and canister ID
 const signers = [NFIDW, Plug, InternetIdentity];
 const canisterID = process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND;
-
+const signerClientOptions = {
+  targets: [canisterID],
+  maxTimeToLive: BigInt(7 * 24 * 60 * 60 * 1000 * 1000 * 1000), // 1 week in nanoseconds
+  idleOptions: {
+    idleTimeout: 4 * 60 * 60 * 1000, // 4 hours in milliseconds
+    disableIdle: false, // Enable logout on idle timeout
+  },
+  keyType: 'Ed25519', // Use Ed25519 key type for compatibility
+  allowInternetIdentityPinAuthentication: true, // Enable PIN authentication
+};
 ReactDOM.createRoot(document.getElementById("root")).render(
   <IdentityKitProvider
     onConnectSuccess={(res) => {
@@ -38,10 +47,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     theme={IdentityKitTheme.SYSTEM}
     authType={IdentityKitAuthType.DELEGATION}
     // authType={IdentityKitAuthType.ACCOUNTS}
-    signerClientOptions={{
-      targets: [canisterID],
-                              
-    }}
+    signerClientOptions={signerClientOptions}
   >
     <React.StrictMode>
       <Provider store={store}>
