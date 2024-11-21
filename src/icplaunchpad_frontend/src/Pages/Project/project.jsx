@@ -185,6 +185,29 @@ console.log("ledger actor ", ledgerActor)
         const finalOrderResponse = await actor.buy_tokens(byer);
         console.log("Final Order Response", finalOrderResponse);
         toast.success("Transaction successful!");
+
+        if (finalOrderResponse?.Ok) {
+          toast.success("Token purchase successful!");
+
+          const sellArgs = {
+            tokens: scaledAmount,
+            to_principal: Principal.fromText(principal),
+            token_ledger_canister_id: projectData?.canister_id,
+          };
+
+          const sellResponse = await actor.sell_tokens(sellArgs);
+          console.log("Sell Tokens Response:", sellResponse);
+
+          if (sellResponse?.Ok) {
+            toast.success("Sell transaction successful!");
+          } else {
+            console.error("Sell transaction failed:", sellResponse);
+            toast.error("Sell transaction failed. Please try again.");
+          }
+        } else {
+          console.error("Buy tokens failed:", finalOrderResponse);
+          toast.error("Token purchase failed. Please try again.");
+        }
         
       } else {
         console.error("Approval failed", response);
@@ -194,78 +217,11 @@ console.log("ledger actor ", ledgerActor)
       console.error("Error during payment approval or token purchase", err);
       toast.error("Payment process failed. Please try again.");
     } finally {
-      setIsLoading(false); // End loading
+      setIsLoading(false); 
     }
   };
 
-  // useEffect(() => {
-  //   const paymentProcess = async () => {
-  //     const actor = Actor.createActor(idlFactory, {
-  //       agent: authenticatedAgent,
-  //       canisterId: "bw4dl-smaaa-aaaaa-qaacq-cai",
-  //     });
-
-  //     // Acc info
-  //     const acc = {
-  //       owner: Principal.fromText(process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND),
-  //       /* owner: Principal.fromText(
-  //       "oavgn-aq63y-4ppgd-ws735-bqrrn-xdhtc-m3azu-6qga7-i4phr-c7nie-wqe"
-  //     ), */
-  //       subaccount: [],
-  //     };
-
-  //     const icrc2_approve_args = {
-  //       from_subaccount: [],
-  //       spender: acc,
-  //       fee: [],
-  //       memo: [],
-  //       amount: BigInt(amount * 10 ** 8 + 100000),
-  //       created_at_time: [],
-  //       expected_allowance: [],
-  //       expires_at: [],
-  //     };
-  //     // console.log(orderPlacementData);
-  //     //const amount = BigInt(orderPlacementData.totalAmount * 10 ** 8 + 10_000);
-  //     //const totalamount = 210_000;
-  //     const totalamount = BigInt(amount * 10 ** 8);
-  //     console.log("totalamount", totalamount);
-
-  //     try {
-  //       const response = await actor.icrc2_approve(icrc2_approve_args);
-  //       console.log("Response from payment approve", response);
-  //       try {
-  //         if (response.Ok) {
-  //           try {
-  //             const finalOrderResponse = await actor.buy_tokens(
-  //               principal,
-  //               totalamount,
-  //               projectData?.canister_id,
-  //             );
-  //             console.log("Final Order Response", finalOrderResponse);
-  //             navigate("/order-confirm");
-  //           } catch (err) {
-  //             console.error("Error in final order", err);
-  //           }
-  //         } else {
-  //           console.error("Payment failed", response);
-  //           toast.error("Payment failed, Please check your wallet balance");
-  //         }
-  //       } catch (err) {
-  //         console.error("Transaction failed", err);
-  //         toast.error("Transaction failed");
-  //       }
-  //     } catch (err) {
-  //       console.error("Error in transfer approve", err);
-  //       toast.error("Failed in transfer approve");
-  //     } finally {
-  //       setOrderPlacementLoad(false);
-  //     }
-  //   };
-  //   if (authenticatedAgent && amount && projectData?.canister_id) {
-  //     paymentProcess();
-  //   }
-  // }, [authenticatedAgent, amount, projectData?.canister_id]);
- 
+  
   return (
     <>
       <div className="flex flex-col  gap-5 max-w-[90%] mx-auto lg:flex-row">
