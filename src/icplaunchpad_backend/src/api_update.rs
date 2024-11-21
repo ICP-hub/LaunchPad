@@ -1,12 +1,72 @@
+use std::sync::Arc;
+
 use candid::{encode_one, Nat, Principal};
 use ic_cdk::api::{
     call::{call_with_payment128, CallResult, RejectionCode},
     management_canister::main::{CanisterInstallMode, WasmModule},
 };
+use ic_ledger_types::Subaccount;
 
 use crate::{
     create_canister, deposit_cycles, index_install_code, install_code, mutate_state, params, read_state, Account, CanisterIdRecord, CanisterIdWrapper, CoverImageData, CoverImageIdWrapper, CreateCanisterArgument, CreateFileInput, ImageIdWrapper, IndexArg, IndexCanisterIdWrapper, IndexInitArgs, IndexInstallCodeArgument, InitArgs, InstallCodeArgument, LedgerArg, ProfileImageData, ReturnResult, SaleDetails, SaleDetailsUpdate, SaleDetailsWrapper, TokenCreationResult, TokenImageData, UserAccount, UserAccountWrapper, UserInputParams, STATE
 };
+
+use canfund::{api::ledger::IcLedgerCanister, operations::{fetch::FetchCyclesBalanceFromCanisterStatus, obtain::ObtainCycles}};
+use canfund::operations::fetch::FetchCyclesBalance;
+use canfund::operations::obtain::MintCycles;
+use canfund::api::cmc::IcCyclesMintingCanister;
+
+
+#[ic_cdk::update]
+async fn fetch_canister_balance(canister_id: Principal) -> Result<u128, String> {
+    // Assuming you have the permission to call 'canister_status' on this canister.
+    let fetcher = FetchCyclesBalanceFromCanisterStatus::new()
+        .with_proxy(Principal::management_canister()); // This is typically only permissible if 'canister_id' is managed by your principal.
+
+    let balance_result = fetcher.fetch_cycles_balance(canister_id).await;
+    balance_result.map_err(|e| format!("Failed to fetch balance: {:?}", e))
+}
+
+#[ic_cdk::update]
+pub async fn obtain_cycles_for_canister(
+    amount: u128,
+    target_canister_id: Principal
+) -> Result<Nat, String> {
+    let caller_principal = ic_cdk::api::caller();
+
+    let mut from_subaccount_bytes = [0u8; 32];
+    let caller_bytes = caller_principal.as_slice();
+    from_subaccount_bytes[..caller_bytes.len()].copy_from_slice(caller_bytes);
+    let from_subaccount = Subaccount(from_subaccount_bytes);
+
+    // Mainnet Canister IDs for the Cycles Minting Canister (CMC) and the ICP Ledger
+    let cmc_principal = Principal::from_text("rkp4c-7iaaa-aaaaa-aaaca-cai").unwrap();
+    let ledger_principal = Principal::from_text("ryjl3-tyaaa-aaaaa-aaaba-cai").unwrap();
+
+    // Setup the cycle minting components
+    let cmc = Arc::new(IcCyclesMintingCanister::new(cmc_principal));
+    let ledger = Arc::new(IcLedgerCanister::new(ledger_principal));
+
+    let mint_cycles = MintCycles {
+        cmc,
+        ledger,
+        from_subaccount,
+    };
+
+    // Attempt to obtain cycles
+    match mint_cycles.obtain_cycles(amount, target_canister_id).await {
+        Ok(cycles) => {
+            ic_cdk::api::print(format!("Successfully obtained {} cycles", cycles));
+            Ok(Nat::from(cycles))
+        },
+        Err(e) => {
+            let error_message = format!("Failed to obtain cycles: {}", e.details);
+            ic_cdk::api::print(&error_message);
+            Err(error_message)
+        }
+    }
+}
+
 
 #[ic_cdk::update]
 pub fn create_account(user_input: UserAccount) -> Result<(), String> {
