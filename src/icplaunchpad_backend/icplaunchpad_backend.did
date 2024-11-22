@@ -104,6 +104,7 @@ service : () -> {
   get_user_tokens_info : () -> (vec CanisterIndexInfo) query;
   icrc28_trusted_origins : () -> (Icrc28TrustedOriginsResponse);
   is_account_created : () -> (text) query;
+  obtain_cycles_for_canister : (nat, principal) -> (Result_4);
   search_by_token_name_or_symbol : (text) -> (opt CanisterIndexInfo) query;
   sell_tokens : (SellTransferParams) -> (Result_4);
   update_sale_params : (principal, SaleDetailsUpdate) -> (Result_1);
