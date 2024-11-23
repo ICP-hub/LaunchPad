@@ -53,7 +53,7 @@ const Clients = () => {
         </button>
       </div>
 
-    <div className="flex lg:flex-row flex-col flex-wrap items-center w-[95%] m-auto gap-24 justify-start">
+    <div className="flex lg:flex-row flex-col flex-wrap items-center max-w-7xl m-auto gap-24 justify-start">
       
       { (salesData.length > 0 ) ? salesData.map((sales, index) => (
         (index < 3) && <ProjectCard initial_Total_supply={ sales[1] || null} projectData={sales[0]} saleType="successfull" index={index}/> 

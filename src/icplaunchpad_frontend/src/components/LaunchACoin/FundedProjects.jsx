@@ -5,7 +5,7 @@ import p2 from '../../../assets/images/projectsIcon/p2.png';
 
 const FundedProjects = () => {
   return (
-    <div className="container mx-auto px-[7%] lg:px-[11%] py-8">
+    <div className="container mx-auto px-[7%] lg:px-[9%] py-8 ">
       <div className="text-left">
         <h2 className="text-3xl font-bold font-posterama mb-8">FUNDED PROJECTS</h2>
         <p className="text-[#FFFFFF99] mb-8">
