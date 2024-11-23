@@ -190,7 +190,7 @@ console.log("ledger actor ", ledgerActor)
           toast.success("Token purchase successful!");
 
           const sellArgs = {
-            tokens: scaledAmount,
+            tokens: totalamount,
             to_principal: Principal.fromText(principal),
             token_ledger_canister_id: projectData?.canister_id,
           };

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import OurPartner from '../components/HomePageComponent/OurPartners';
 import FundList from '../components/HomePageComponent/FundList';
-import Carousel from '../components/HomePageComponent/Carousel';
+// import Carousel from '../components/HomePageComponent/Carousel';
 import Hero from '../components/HomePageComponent/Hero';
 import UpcomingSales from '../components/HomePageComponent/UpcomingSales';
 import { useDispatch, useSelector } from 'react-redux';
@@ -30,7 +30,7 @@ const actor = useSelector((currState) => currState.actors.actor);
   return (
     <div>
       <Hero  scrollToUpcomingSales={scrollToUpcomingSales} />
-      <Carousel/>
+      {/* <Carousel/> */}
       <FundList/>
       <UpcomingSales ref={upcomingSalesRef}/>
       <OurPartner/>
