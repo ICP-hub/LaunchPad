@@ -47,7 +47,7 @@ const UpcomingSales = React.forwardRef((props, ref) => {
             />
           ))
         ) : (
-          <h1 className="text-xl my-16">Data Not Found...</h1>
+          <h1 className="text-xl mx-auto my-16">Data Not Found...</h1>
         )}
         {salesData.length > 3 && (
           <button

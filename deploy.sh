@@ -89,6 +89,5 @@ candid-extractor target/wasm32-unknown-unknown/release/icplaunchpad_backend.wasm
 # Deploy canister_creater_backend
 dfx deploy icplaunchpad_backend
 
-dfx canister deposit-cycles 10000000000000000000000000000 --all
 echo "Deployment complete. Please use the Candid UI to call the 'create_token' function with your parameters."
 echo "Or run ./tokendeploy.sh to run example token parameters"
