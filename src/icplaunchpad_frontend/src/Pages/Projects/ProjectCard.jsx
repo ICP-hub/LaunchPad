@@ -170,7 +170,7 @@ const ProjectCard = ({ isUserToken, projectData, initial_Total_supply, saleType,
           </div>
           <div className="mt-[70px] text-center text-white space-y-5">
             <div className="text-[24px] font-semibold">{projectData?.token_name || tokenInfo?.token_name}</div>
-            <div className="text-[16px] text-[#FFFFFFA6] font-medium">FAIR LAUNCH - MAX BUY 5 SOL</div>
+            <div className="text-[16px] text-[#FFFFFFA6] font-medium">  {` Presale - Max Buy ${Number( projectData?.sale_details?.max_buy || tokenInfo?.sale_Params?.max_buy)} ICP`} </div>
 
             <div className="text-[#FFC145] text-[18px] font-normal"> {tokenPhase} </div>
           </div>
@@ -211,6 +211,7 @@ const ProjectCard = ({ isUserToken, projectData, initial_Total_supply, saleType,
               </div>
             </div>
           </div>
+          
           <div className="mt-6 w-[40%] flex flex-col justify-around">
             <div className="flex flex-col">
               <span className="text-sm text-gray-400">HARD</span>

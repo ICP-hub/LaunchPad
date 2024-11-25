@@ -226,7 +226,7 @@ const VerifyToken = () => {
             className="bg-transparent font-posterama border-2 w-[80px] ss2:w-[115px] sm4:w-[210px] h-[35px] mx-2 text-[17px] font-[400] rounded-2xl"
             onClick={handleBack}
           >
-            <div className="w-full h-full rounded-xl bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5] text-transparent bg-clip-text">
+            <div className="w-full h-full rounded-xl mt-[2px] bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5] text-transparent bg-clip-text">
               Back
             </div>
           </button>
