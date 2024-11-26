@@ -173,14 +173,14 @@ const LaunchpadInfoTab = ({
 
       {/* Presale Rate */}
       <div className="mb-4">
-        <label className="block text-[19px] mb-2">Presale Rate</label>
+        <label className="block text-[19px] mb-2">Fairlaunch Token</label>
         <input
           type="number"
-          placeholder={`Price of 1 ${presaleDetails.token_symbol} in ICP`}
-          {...register("presaleRate")} // Register input field
+          placeholder={' Total tokens for the Fairlaunch'}
+          {...register("FairlaunchTokens")} // Register input field
           className={`w-full p-2 bg-[#333333] text-white rounded-md ${errors.presaleRate ? "border-red-500" : "border-white"
             }  border-b-2`}
-          aria-label="Presale Rate"
+          aria-label="Fairlaunch Tokens"
           onKeyDown={(e) => {
             if (e.key === '-' || e.key === 'e' || e.key === '+') {
               e.preventDefault();
@@ -188,8 +188,8 @@ const LaunchpadInfoTab = ({
           }}
            min="0"
         />
-        {errors.presaleRate && (
-          <p className="text-red-500 text-[14px]">{errors.presaleRate.message}</p>
+        {errors.FairlaunchTokens && (
+          <p className="text-red-500 text-[14px]">{errors.FairlaunchTokens.message}</p>
         )}
       </div>
 
@@ -199,6 +199,7 @@ const LaunchpadInfoTab = ({
         <input
           type="number"
           {...register("hardcapToken")} // Register input field
+          placeholder=" Maximum funds to be raised "
           className={`w-full p-2 bg-[#333333] text-white rounded-md ${errors.hardcapToken ? "border-red-500" : "border-white"
             }  border-b-2`}
           aria-label="Hardcap Token"
@@ -220,6 +221,7 @@ const LaunchpadInfoTab = ({
         <input
           type="number"
           {...register("softcapToken")} // Register input field
+           placeholder=" Minimum funds to be raised "
           className={`w-full p-2 bg-[#333333] text-white rounded-md ${errors.softcapToken ? "border-red-500" : "border-white"
             }  border-b-2`}
           aria-label="Softcap Token"
@@ -237,7 +239,7 @@ const LaunchpadInfoTab = ({
 
       {/* Whitelist Option */}
          {/* Whitelist Option */}
-      <div className="mb-4">
+      {/* <div className="mb-4">
          <label className="block text-[19px] mb-1">Whitelist</label>
         <div className="flex items-center gap-4 mb-4">
            <label className="flex items-center">
@@ -272,7 +274,51 @@ const LaunchpadInfoTab = ({
            </label>
        </div>
         <p className="text-xs">Toggle whitelist on/off anytime.</p>
-      </div> 
+      </div>  */}
+
+   {/* Liquidity tokens and liquidity percentage */}
+<div className="flex flex-col xxs1:flex-row justify-between mb-4">
+        <div className="xxs1:w-1/2 pr-2 mb-6">
+          <label className="block text-[19px] mb-1"> Tokens Liquidity</label>
+          <input
+            type="number"
+            {...register("tokensLiquidity")} // Register input field
+             placeholder=" Tokens reserved for DEX liquidity"
+            className={`w-full p-2 bg-[#333333] text-white rounded-md ${errors.tokensLiquidity ? "border-red-500" : "border-white"
+              }  border-b-2`}
+            aria-label="Liquidity Tokens"
+            onKeyDown={(e) => {
+              if (e.key === '-' || e.key === 'e' || e.key === '+') {
+                e.preventDefault();
+              }
+            }}
+             min="0"
+          />
+          {errors.tokensLiquidity && (
+            <p className="text-red-500 text-[15px]">{errors.tokensLiquidity.message}</p>
+          )}
+        </div>
+        <div className="xxs1:w-1/2 xxs1:pl-2 mb-6">
+          <label className="block text-[19px] mb-1">Liquidity Percentage</label>
+          <input
+            type="number"
+            {...register("liquidityPercentage")} // Register input field
+            placeholder=" Percentage of funds allocated to DEX liquidity"
+            className={`w-full p-2 bg-[#333333] text-white rounded-md ${errors.maximumBuy ? "border-red-500" : "border-white"
+              }  border-b-2`}
+            aria-label="Liquidity Percentage"
+            onKeyDown={(e) => {
+              if (e.key === '-' || e.key === 'e' || e.key === '+') {
+                e.preventDefault();
+              }
+            }}
+             min="0"
+          />
+          {errors.liquidityPercentage && (
+            <p className="text-red-500 text-[15px]">{errors.liquidityPercentage.message}</p>
+          )}
+        </div>
+      </div>
 
       {/* Minimum Buy and Maximum Buy */}
       <div className="flex flex-col xxs1:flex-row justify-between mb-4">
@@ -281,6 +327,7 @@ const LaunchpadInfoTab = ({
           <input
             type="number"
             {...register("minimumBuy")} // Register input field
+             placeholder=" Minimum contribution per user"
             className={`w-full p-2 bg-[#333333] text-white rounded-md ${errors.minimumBuy ? "border-red-500" : "border-white"
               }  border-b-2`}
             aria-label="Minimum Buy"
@@ -300,6 +347,7 @@ const LaunchpadInfoTab = ({
           <input
             type="number"
             {...register("maximumBuy")} // Register input field
+            placeholder=" Maximum contribution per user"
             className={`w-full p-2 bg-[#333333] text-white rounded-md ${errors.maximumBuy ? "border-red-500" : "border-white"
               }  border-b-2`}
             aria-label="Maximum Buy"
