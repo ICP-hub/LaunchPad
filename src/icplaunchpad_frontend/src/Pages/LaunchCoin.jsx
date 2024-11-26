@@ -12,7 +12,7 @@ function Home() {
       <Launch/>
       <WhyLaunch/>
       <CommunityStats/>
-      <FundedProjects/>
+      {/* <FundedProjects/> */}
       <Clients/>
     </div>
   );
