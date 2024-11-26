@@ -6,7 +6,7 @@ const CommunityStats = () => {
     <div className="container mx-auto px-[6%] lg:px-[9%] py-12 text-center">
       <h2 className="text-[26px] ss2:text-3xl font-bold font-posterama  mb-4">OUR STRONG COMMUNITY</h2>
       <p className="text-gray-400 mb-8">
-        We maintain a worldwide distributed network of dedicated supporters who are keen on backing innovative projects, such as yours.
+        We have a global network of passionate supporters ready to back innovative projects like yours.
       </p>
       <div className="grid  ss2:grid-cols-2  lg:grid-cols-4 gap-6">
         <div className="bg-[#333333] text-white p-6 rounded-lg">

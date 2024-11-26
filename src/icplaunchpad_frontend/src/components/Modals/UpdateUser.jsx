@@ -14,7 +14,7 @@ import { FaTrash } from 'react-icons/fa';
 import { convertFileToBase64 } from '../../utils/convertToBase64';
 import { userRegisteredHandlerRequest } from '../../StateManagement/Redux/Reducers/userRegisteredData';
 import { ProfileImageIDHandlerRequest } from '../../StateManagement/Redux/Reducers/ProfileImageID';
-
+import { tagsOptions } from '../../utils/tagsOptions';
 const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const actor = useSelector((currState) => currState.actors.actor);
   const isAuthenticated = useSelector(
@@ -33,13 +33,7 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const [profilePictureData, setProfilePictureData] = useState(null);
   const [links, setLinks] = useState([{ url: '' }]);
 
-  const [tagsOptions] = useState([
-    { value: 'tag1', label: 'Tag 1' },
-    { value: 'tag2', label: 'Tag 2' },
-    { value: 'tag3', label: 'Tag 3' },
-    { value: 'tag4', label: 'Tag 4' },
-    { value: 'tag5', label: 'Tag 5' },
-  ]);
+  // const [tagsOptions] = useState(tagsOptions);
 
   const userPrincipal = Principal.fromText(principal);
 

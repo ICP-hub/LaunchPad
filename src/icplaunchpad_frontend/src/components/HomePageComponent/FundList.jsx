@@ -8,7 +8,10 @@ const FundList = () => {
 
   return (
     <div className="px-[8%] py-[5%] md:py-[6%] lg:py-[3%] bg-black">
-      <h2 className="text-[30px] font-bold text-white font-posterama mb-4">SUCCESSFUL PROJECTS RAISE FUNDING</h2>
+      <h2 className="text-[30px] font-bold text-white font-posterama mb-4">
+        {/* SUCCESSFUL PROJECTS RAISE FUNDING */}
+        Where Ideas Meet Funding Success
+      </h2>
       <div className="overflow-x-auto max-h-[400px] overflow-y-auto no-scrollbar">
         <table className="min-w-full bg-black border-b border-[#FFFFFF33]">
           <thead>

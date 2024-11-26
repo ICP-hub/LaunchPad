@@ -7,19 +7,29 @@ const FaqDiscussionTab = () => {
 
   const faqs = [
     {
-      question: 'What is BlockseBlock?',
+      question: 'What is Blockchain technology?',
       answer:
-        'This is the explanation for what BlockseBlock is. It can be a detailed answer or a simple description.',
+        'Blockchain is a decentralized and distributed digital ledger technology that securely records data or transactions across multiple computers. It ensures transparency, immutability, and security, making it a foundation for cryptocurrencies like Bitcoin and many other applications.',
     },
     {
-      question: 'What is BlockseBlock?',
+      question: 'What is a Token?',
       answer:
-        'This is the explanation for what BlockseBlock is. It can be a detailed answer or a simple description.',
+        'A token is a digital asset created on a blockchain, representing value, utility, or ownership. It can be fungible (like cryptocurrencies) or non-fungible (NFTs).',
     },
     {
-      question: 'What is BlockseBlock?',
+      question: 'WWhat is a Fair Launch?',
       answer:
-        'This is the explanation for what BlockseBlock is. It can be a detailed answer or a simple description.',
+        'A fair launch is when a cryptocurrency or blockchain project is introduced publicly, allowing equal participation without private sales, pre-mining, or exclusive allocations, promoting transparency and decentralization.',
+    },
+    {
+      question: 'What is a Hard Cap in Tokens?',
+      answer:
+        'A hard cap is the maximum amount of funds or tokens a blockchain project aims to raise or issue during a token sale, ensuring a fixed supply limit.',
+    },
+    {
+      question: 'What is a Soft Cap in Tokens?',
+      answer:
+        'A soft cap is the minimum amount of funds a blockchain project aims to raise during a token sale to proceed with its development or operations.',
     },
   ];
 
@@ -63,7 +73,7 @@ const FaqDiscussionTab = () => {
       </div>
 
       {/* Discussion Section */}
-      <div className="mt-6">
+      {/* <div className="mt-6">
         <h2 className="text-xl text-white mb-4">Discussion</h2>
         <p className="text-gray-400">{comments.length} Comments</p>
         
@@ -103,7 +113,7 @@ const FaqDiscussionTab = () => {
             ))}
           </div>
         )}
-      </div>
+      </div> */}
     </div>
   );
 };
