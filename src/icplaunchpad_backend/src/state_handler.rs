@@ -7,7 +7,9 @@ use candid::{Decode, Encode, Principal};
 use std::cell::RefCell;
 use std::borrow::Cow;
 
-use crate::{CanisterIdWrapper, CoverImageIdWrapper, ImageIdWrapper, IndexCanisterIdWrapper, SaleDetailsWrapper, State, UserAccountWrapper};
+use crate::{
+    CanisterIdWrapper, CoverImageIdWrapper, ImageIdWrapper, IndexCanisterIdWrapper, SaleDetailsWrapper, State, U64Wrapper, UserAccountWrapper
+};
 
 pub type Memory = VirtualMemory<DefaultMemoryImpl>;
 pub type CanisterIdsMap = StableBTreeMap<String, CanisterIdWrapper, Memory>;
@@ -16,6 +18,9 @@ pub type ImageIdsMap = StableBTreeMap<String, ImageIdWrapper, Memory>;
 pub type SaleDetailsMap = StableBTreeMap<String, SaleDetailsWrapper, Memory>;
 pub type UserAccountsMap = StableBTreeMap<Principal, UserAccountWrapper, Memory>;
 pub type CoverImageIdsMap = StableBTreeMap<String, CoverImageIdWrapper, Memory>;
+pub type FundsRaisedMap = StableBTreeMap<Principal, U64Wrapper, Memory>;
+pub type ContributionsMap = StableBTreeMap<(Principal, Principal), U64Wrapper, Memory>;
+
 
 const CANISTER_IDS_MEMORY: MemoryId = MemoryId::new(0);
 const INDEX_CANISTER_IDS_MEMORY: MemoryId = MemoryId::new(1);
@@ -23,8 +28,8 @@ const IMAGE_IDS_MEMORY: MemoryId = MemoryId::new(2);
 const SALE_DETAILS_MEMORY: MemoryId = MemoryId::new(3);
 const USER_ACCOUNTS_MEMORY: MemoryId = MemoryId::new(4);
 const COVER_IMAGE_IDS_MEMORY: MemoryId = MemoryId::new(5);
-
-
+const FUNDS_RAISED_MEMORY: MemoryId = MemoryId::new(6);
+const CONTRIBUTIONS_MEMORY: MemoryId = MemoryId::new(7);
 
 thread_local! {
     static MEMORY_MANAGER: RefCell<MemoryManager<DefaultMemoryImpl>> = RefCell::new(
@@ -39,6 +44,8 @@ thread_local! {
             sale_details: SaleDetailsMap::init(mm.borrow().get(SALE_DETAILS_MEMORY)),
             user_accounts: UserAccountsMap::init(mm.borrow().get(USER_ACCOUNTS_MEMORY)),
             cover_image_ids: CoverImageIdsMap::init(mm.borrow().get(COVER_IMAGE_IDS_MEMORY)),
+            funds_raised: FundsRaisedMap::init(mm.borrow().get(FUNDS_RAISED_MEMORY)),
+            contributions: ContributionsMap::init(mm.borrow().get(CONTRIBUTIONS_MEMORY)),
         })
     );
 }
@@ -46,7 +53,6 @@ thread_local! {
 pub fn read_state<R>(f: impl FnOnce(&State) -> R) -> R {
     STATE.with(|cell| f(&cell.borrow()))
 }
-
 
 pub fn mutate_state<R>(f: impl FnOnce(&mut State) -> R) -> R {
     STATE.with(|cell| f(&mut cell.borrow_mut()))
@@ -76,16 +82,18 @@ pub fn get_cover_image_ids_memory() -> Memory {
     MEMORY_MANAGER.with(|m| m.borrow().get(COVER_IMAGE_IDS_MEMORY))
 }
 
+pub fn get_funds_raised_memory() -> Memory {
+    MEMORY_MANAGER.with(|m| m.borrow().get(FUNDS_RAISED_MEMORY))
+}
+
+pub fn get_contributions_memory() -> Memory {
+    MEMORY_MANAGER.with(|m| m.borrow().get(CONTRIBUTIONS_MEMORY))
+}
+
 #[init]
 fn init() {
     STATE.with(|state| {
-        let mut state = state.borrow_mut();
-        state.canister_ids = init_canister_ids();
-        state.index_canister_ids = init_index_canister_ids();
-        state.image_ids = init_image_ids();
-        state.sale_details = init_sale_details();
-        state.user_accounts = init_user_accounts();
-        state.cover_image_ids = init_cover_image_ids();
+        *state.borrow_mut() = State::new();
     });
 }
 
@@ -93,11 +101,13 @@ impl State {
     pub fn new() -> Self {
         Self {
             canister_ids: init_canister_ids(),
-            index_canister_ids : init_index_canister_ids(),
+            index_canister_ids: init_index_canister_ids(),
             image_ids: init_image_ids(),
-            sale_details:init_sale_details(),
-            user_accounts:init_user_accounts(),
+            sale_details: init_sale_details(),
+            user_accounts: init_user_accounts(),
             cover_image_ids: init_cover_image_ids(),
+            funds_raised: init_funds_raised_map(),
+            contributions: init_contributions(),
         }
     }
 }
@@ -132,6 +142,26 @@ pub fn init_cover_image_ids() -> CoverImageIdsMap {
     CoverImageIdsMap::init(get_cover_image_ids_memory())
 }
 
+pub fn init_funds_raised_map() -> FundsRaisedMap {
+    FundsRaisedMap::init(get_funds_raised_memory())
+}
+
+pub fn init_contributions() -> ContributionsMap {
+    ContributionsMap::init(get_contributions_memory())
+}
+
+
+impl Storable for U64Wrapper {
+    fn to_bytes(&self) -> Cow<[u8]> {
+        Cow::Owned(self.0.to_le_bytes().to_vec())
+    }
+
+    fn from_bytes(bytes: Cow<[u8]>) -> Self {
+        U64Wrapper(u64::from_le_bytes(bytes.as_ref().try_into().unwrap()))
+    }
+
+    const BOUND: Bound = Bound::Unbounded;
+}
 
 impl Storable for CanisterIdWrapper {
     fn to_bytes(&self) -> Cow<[u8]> {

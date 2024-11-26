@@ -8,7 +8,7 @@ use ic_cdk::api::{
 use ic_ledger_types::Subaccount;
 
 use crate::{
-    create_canister, deposit_cycles, index_install_code, install_code, mutate_state, params, read_state, Account, CanisterIdRecord, CanisterIdWrapper, CoverImageData, CoverImageIdWrapper, CreateCanisterArgument, CreateFileInput, ImageIdWrapper, IndexArg, IndexCanisterIdWrapper, IndexInitArgs, IndexInstallCodeArgument, InitArgs, InstallCodeArgument, LedgerArg, ProfileImageData, ReturnResult, SaleDetails, SaleDetailsUpdate, SaleDetailsWrapper, TokenCreationResult, TokenImageData, UserAccount, UserAccountWrapper, UserInputParams, STATE
+    create_canister, deposit_cycles, index_install_code, install_code, mutate_state, params, read_state, Account, CanisterIdRecord, CanisterIdWrapper, CoverImageData, CoverImageIdWrapper, CreateCanisterArgument, CreateFileInput, ImageIdWrapper, IndexArg, IndexCanisterIdWrapper, IndexInitArgs, IndexInstallCodeArgument, InitArgs, InstallCodeArgument, LedgerArg, ProfileImageData, ReturnResult, SaleDetails, SaleDetailsUpdate, SaleDetailsWrapper, TokenCreationResult, TokenImageData, U64Wrapper, UserAccount, UserAccountWrapper, UserInputParams, STATE
 };
 
 use canfund::{api::ledger::IcLedgerCanister, operations::{fetch::FetchCyclesBalanceFromCanisterStatus, obtain::ObtainCycles}};
@@ -507,13 +507,36 @@ pub fn create_sale(
 ) -> Result<(), String> {
     let caller = ic_cdk::api::caller(); // Get the caller's principal
 
-    sale_details.creator = caller; // Set the creator as the current caller automatically
+    // Set the creator as the current caller automatically
+    sale_details.creator = caller;
 
     // Validate the project_video URL
     if !is_valid_url(&sale_details.project_video) {
         return Err("Invalid URL for project video.".into());
     }
 
+    // Validate sale parameters
+    if sale_details.hardcap == 0 {
+        return Err("Hardcap must be greater than zero.".into());
+    }
+
+    if sale_details.tokens_for_fairlaunch == 0 {
+        return Err("Tokens for fairlaunch must be greater than zero.".into());
+    }
+
+    if sale_details.liquidity_percentage > 100 {
+        return Err("Liquidity percentage must be between 0 and 100.".into());
+    }
+
+    if sale_details.tokens_for_liquidity == 0 {
+        return Err("Tokens for liquidity must be greater than zero.".into());
+    }
+
+    if sale_details.start_time_utc >= sale_details.end_time_utc {
+        return Err("Start time must be before end time.".into());
+    }
+
+    // Save the sale details in the state
     mutate_state(|state| {
         if state
             .sale_details
@@ -529,6 +552,7 @@ pub fn create_sale(
         }
     })
 }
+
 
 #[ic_cdk::update]
 pub fn update_sale_params(
@@ -576,6 +600,28 @@ pub fn update_sale_params(
         }
     })
 }
+
+#[ic_cdk::update]
+pub fn insert_funds_raised(ledger_canister_id: Principal, amount: u64) -> Result<(), String> {
+    mutate_state(|state| {
+        let new_amount = U64Wrapper(amount);
+
+        // Update or insert the funds
+        if let Some(existing) = state.funds_raised.get(&ledger_canister_id) {
+            state
+                .funds_raised
+                .insert(ledger_canister_id, U64Wrapper(existing.0 + new_amount.0));
+        } else {
+            state
+                .funds_raised
+                .insert(ledger_canister_id, new_amount);
+        }
+
+        Ok(())
+    })
+}
+
+
 
 // #[ic_cdk::update]
 // async fn convert_icp_to_cycles(amount: u64) -> Result<Nat, String> {

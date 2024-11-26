@@ -232,6 +232,9 @@ pub struct TokenCreationResult {
     pub index_canister_id: Principal,
 }
 
+#[derive(CandidType, Deserialize, Serialize, Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
+pub struct U64Wrapper(pub u64);
+
 #[derive(CandidType, Serialize, Deserialize, Debug)]
 pub enum IndexArg {
     Init(IndexInitArgs),
@@ -292,7 +295,10 @@ pub struct State {
     pub sale_details: SaleDetailsMap,
     pub user_accounts: UserAccountsMap,
     pub cover_image_ids: CoverImageIdsMap,
+    pub funds_raised: FundsRaisedMap,
+    pub contributions: ContributionsMap, 
 }
+
 
 #[derive(CandidType, Deserialize, Debug, Clone)]
 pub struct CanisterIdWrapper {
@@ -332,17 +338,23 @@ pub struct CoverImageIdWrapper {
 
 #[derive(CandidType, Deserialize, Serialize, Debug, Clone)]
 pub struct SaleDetails {
-    pub creator: Principal, // Principal of the user who created the token and sale
-    pub listing_rate: f64,  // Price of 1 token in ICP
-    pub min_buy: u64,
-    pub max_buy: u64,
-    pub start_time_utc: u64,
-    pub end_time_utc: u64,
-    pub website: String,
-    pub social_links: Vec<String>, // Vector of URLs for the social links
-    pub description: String,
-    pub project_video: String, // URL or string identifier for the project video
+    pub creator: Principal,           // Principal of the user who created the sale
+    pub start_time_utc: u64,          // Start time of the sale (UTC timestamp)
+    pub end_time_utc: u64,            // End time of the sale (UTC timestamp)
+    pub hardcap: u64,                 // Maximum funds to be raised (in ICP or other base currency)
+    pub softcap: u64,                 // Minimum funds to be raised (in ICP or other base currency)
+    pub min_contribution: u64,                 // Minimum contribution per user (in ICP or other base currency)
+    pub max_contribution: u64,                 // Maximum contribution per user (in ICP or other base currency)
+    pub tokens_for_fairlaunch: u64,   // Total tokens allocated for the fairlaunch
+    pub liquidity_percentage: u8,     // Percentage of funds allocated to DEX liquidity
+    pub tokens_for_liquidity: u64,    // Tokens reserved for DEX liquidity
+    pub website: String,              // Project website URL
+    pub social_links: Vec<String>,    // List of social media links
+    pub description: String,          // Project description
+    pub project_video: String,        // URL or string identifier for the project video
 }
+
+
 
 
 #[derive(CandidType, Deserialize, Serialize, Debug, Clone)]
@@ -369,4 +381,9 @@ pub enum TransferFromError {
 pub enum TransferFromResult {
     Ok(Nat), // Icrc1BlockIndex is a nat
     Err(TransferFromError),
+}
+
+#[derive(CandidType, Deserialize, Serialize, Debug)]
+pub struct RefundParams {
+    pub ledger_canister_id: Principal, // The sale's ledger ID
 }
