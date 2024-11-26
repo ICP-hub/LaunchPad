@@ -170,7 +170,7 @@ const ProjectCard = ({ isUserToken, projectData, initial_Total_supply, saleType,
           </div>
           <div className="mt-[70px] text-center text-white space-y-5">
             <div className="text-[24px] font-semibold">{projectData?.token_name || tokenInfo?.token_name}</div>
-            <div className="text-[16px] text-[#FFFFFFA6] font-medium">  {` Presale - Max Buy ${Number( projectData?.sale_details?.max_buy || tokenInfo?.sale_Params?.max_buy)} ICP`} </div>
+            <div className="text-[16px] text-[#FFFFFFA6] font-medium"> Fair Launch </div>
 
             <div className="text-[#FFC145] text-[18px] font-normal"> {tokenPhase} </div>
           </div>
@@ -215,11 +215,15 @@ const ProjectCard = ({ isUserToken, projectData, initial_Total_supply, saleType,
           <div className="mt-6 w-[40%] flex flex-col justify-around">
             <div className="flex flex-col">
               <span className="text-sm text-gray-400">HARD</span>
-              <span className="text-lg font-semibold bg-gradient-to-r from-[#f09787] to-[#CACCF5] text-transparent bg-clip-text">{"200 ETH"}</span>
+              <span className="text-lg font-semibold bg-gradient-to-r from-[#f09787] to-[#CACCF5] text-transparent bg-clip-text">{
+                `${Number( projectData?.sale_details?.hardcap || tokenInfo?.sale_Params?.hardcap)} ICP`  
+              }</span>
             </div>
             <div className="flex flex-col">
               <span className="text-sm text-gray-400">Liquidity</span>
-              <span className="text-lg font-semibold">{"51%"}</span>
+              <span className="text-lg font-semibold">{
+                `${Number( projectData?.sale_details?.liquidity_percentage || tokenInfo?.sale_Params?.liquidity_percentage)}%`  
+              }</span>
             </div>
             <div className="flex flex-col">
               <span className="text-sm text-gray-400">Lock Time</span>

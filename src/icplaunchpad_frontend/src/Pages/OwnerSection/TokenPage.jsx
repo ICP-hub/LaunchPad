@@ -222,11 +222,11 @@ const TokenPage = () => {
 
   ];
 
-  const progress = 35.1;
-  const raised = 30;
-  const unsoldTokens = 368484;
-  const currentRaised = 36;
-  const saleType = "PUBLIC";
+  // const progress = 35.1;
+  // const raised = 30;
+  // const unsoldTokens = 368484;
+  // const currentRaised = 36;
+  // const saleType = "PUBLIC";
 
   useEffect(() => {
     const handleResize = () => {
@@ -268,7 +268,7 @@ const TokenPage = () => {
               <div className="content-div flex font-posterama justify-between w-[90%] m-auto mt-7 ">
                 <div className="left flex flex-col gap-5">
                   <div className="text-[25px]"> {tokenData ? tokenData.token_name : "PUPPO"}</div>
-                  <div className="font-extralight"> {` Presale - Max Buy ${Number(presaleData?.max_buy)} ICP`} </div>
+                  <div className="font-extralight"> Fair Launch </div>
                   <div className="logos flex  gap-11">
                     {
                       (presaleData && presaleData.social_links.length > 0) ?
@@ -320,7 +320,7 @@ const TokenPage = () => {
 
                 </div>
                 <div className="righttext-[16px] font-medium">
-                {` Presale - Max Buy ${Number(presaleData?.max_buy)} ICP`}
+                Fair Launch
                 </div>
                 <div className="text-[#FFC145] text-[18px] font-semibold">
                   Upcoming
@@ -497,7 +497,7 @@ const TokenPage = () => {
               <div className="mt-6 w-[40%] flex flex-col justify-around ">
                 <div className="flex flex-col">
                   <span className="text-sm text-gray-400">SALE TYPE</span>
-                  <span className="text-lg font-semibold">{saleType}</span>
+                  <span className="text-lg font-semibold"> PUBLIC </span>
                 </div>
                 <div className="flex flex-col">
                   <span className="text-sm text-gray-400">UNSOLD TOKENS</span>
@@ -594,7 +594,7 @@ const TokenPage = () => {
               <div className="mt-6 w-[40%] flex flex-col justify-around ">
                 <div className="flex flex-col">
                   <span className="text-sm text-gray-400">SALE TYPE</span>
-                  <span className="text-lg font-semibold">{saleType}</span>
+                  <span className="text-lg font-semibold"> PUBLIC </span>
                 </div>
                 <div className="flex flex-col">
                   <span className="text-sm text-gray-400">UNSOLD TOKENS</span>

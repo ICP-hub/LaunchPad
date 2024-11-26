@@ -243,7 +243,7 @@ console.log("ledger actor ", ledgerActor)
               <div className="content-div font-posterama flex justify-between w-[90%] m-auto mt-7 ">
                 <div className="left flex flex-col gap-5">
                   <div> {projectData && projectData?.token_name} </div>
-                  <div> {` Presale - Max Buy ${Number(saleParams?.max_buy)} ICP`} </div>
+                  <div>Fair Launch</div>
                   <div className="logos flex  gap-11">
                     {
                       (saleParams && saleParams.social_links.length > 0) ?
