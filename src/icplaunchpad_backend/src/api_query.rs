@@ -323,7 +323,17 @@ pub fn get_active_sales() -> Vec<SaleDetailsWithID> {
     read_state(|state| {
         state.sale_details.iter()
             .filter_map(|(key, wrapper)| {
-                if wrapper.sale_details.start_time_utc <= current_time && wrapper.sale_details.end_time_utc > current_time {
+                // Clone `key` here to prevent it from being moved
+                let funds_raised = state
+                    .funds_raised
+                    .get(&Principal::from_text(key.clone()).unwrap())
+                    .map(|wrapper| wrapper.0)
+                    .unwrap_or(0);
+
+                if wrapper.sale_details.start_time_utc <= current_time 
+                    && wrapper.sale_details.end_time_utc > current_time 
+                    && funds_raised < wrapper.sale_details.hardcap 
+                {
                     Some(SaleDetailsWithID {
                         ledger_canister_id: key.clone(),
                         sale_details: wrapper.sale_details.clone(),
@@ -335,6 +345,8 @@ pub fn get_active_sales() -> Vec<SaleDetailsWithID> {
             .collect()
     })
 }
+
+
 
 
 #[ic_cdk::query]
@@ -361,18 +373,31 @@ pub fn get_upcoming_sales() -> Vec<(SaleDetailsWithID, Nat)> {
 
 #[ic_cdk::query]
 pub fn get_successful_sales() -> Vec<(SaleDetailsWithID, Nat)> {
-    let current_time_ns = ic_cdk::api::time();
+    let current_time_ns = ic_cdk::api::time(); // Current time in nanoseconds
     let current_time = current_time_ns / 1_000_000_000; // Convert to seconds
 
     read_state(|state| {
         state.sale_details.iter()
             .filter_map(|(key, wrapper)| {
-                if wrapper.sale_details.end_time_utc < current_time {
-                    let total_supply = state.canister_ids.get(&key).map(|info| info.total_supply.clone()).unwrap_or_default();
-                    Some((SaleDetailsWithID {
-                        ledger_canister_id: key.clone(),
-                        sale_details: wrapper.sale_details.clone(),
-                    }, total_supply))
+                // Clone `key` here to avoid moving it
+                let funds_raised = state
+                    .funds_raised
+                    .get(&Principal::from_text(key.clone()).unwrap()) // Clone the key for `from_text`
+                    .map(|wrapper| wrapper.0)
+                    .unwrap_or(0);
+
+                if wrapper.sale_details.end_time_utc < current_time || funds_raised >= wrapper.sale_details.hardcap {
+                    let total_supply = state.canister_ids.get(&key) // Borrow `key` here directly
+                        .map(|info| info.total_supply.clone())
+                        .unwrap_or_default();
+
+                    Some((
+                        SaleDetailsWithID {
+                            ledger_canister_id: key.clone(), // Clone the key for the result
+                            sale_details: wrapper.sale_details.clone(),
+                        },
+                        total_supply,
+                    ))
                 } else {
                     None
                 }
@@ -380,6 +405,8 @@ pub fn get_successful_sales() -> Vec<(SaleDetailsWithID, Nat)> {
             .collect()
     })
 }
+
+
 
 
 #[ic_cdk::query]
@@ -410,6 +437,17 @@ pub fn get_all_sales() -> Vec<(SaleDetailsWithID, String)> {
     });
 
     all_sales
+}
+
+#[ic_cdk::query]
+pub fn get_funds_raised(ledger_canister_id: Principal) -> Result<u64, String> {
+    read_state(|state| {
+        if let Some(funds) = state.funds_raised.get(&ledger_canister_id) {
+            Ok(funds.0) // Unwrap the U64Wrapper to return the u64 value
+        } else {
+            Err("No funds found for the given ledger_canister_id.".into())
+        }
+    })
 }
 
 
