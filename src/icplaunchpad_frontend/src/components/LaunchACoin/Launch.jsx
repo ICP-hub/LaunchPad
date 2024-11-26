@@ -27,9 +27,7 @@ const Launch = () => {
           LAUNCH YOUR PROJECT
         </h1>
         <p className=" md:text-lg mb-4">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque
-          auctor, nunc at laoreet dapibus, felis ligula scelerisque orci, sit
-          amet efficitur mauris lacus vel ex.
+          Ready to bring your vision to life? Start today and gain the support you need to turn your idea into reality.
         </p>
         <Link to="/create-prelaunch">
         <AnimationButton text="LAUNCH NOW" />

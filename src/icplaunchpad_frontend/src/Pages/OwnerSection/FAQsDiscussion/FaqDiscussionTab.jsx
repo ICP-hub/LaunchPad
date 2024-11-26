@@ -7,29 +7,29 @@ const FaqDiscussionTab = () => {
 
   const faqs = [
     {
-      question: 'What is BlockseBlock?',
+      question: 'What is Blockchain Technology?',
       answer:
-        'This is the explanation for what BlockseBlock is. It can be a detailed answer or a simple description.',
+        'Blockchain technology is a decentralized digital ledger that securely records and verifies transactions across multiple computers, ensuring transparency, immutability, and security.',
     },
     {
-      question: 'What is BlockseBlock?',
+      question: 'What is a Token?',
       answer:
-        'This is the explanation for what BlockseBlock is. It can be a detailed answer or a simple description.',
+        'A token is a digital asset created on a blockchain, representing value, utility, or ownership. It can be fungible (like cryptocurrencies) or non-fungible (NFTs).',
     },
     {
-      question: 'What is BlockseBlock?',
+      question: 'What is a Fair Launch?',
       answer:
-        'This is the explanation for what BlockseBlock is. It can be a detailed answer or a simple description.',
+        'A fair launch is when a cryptocurrency or blockchain project is introduced publicly, allowing equal participation without private sales, pre-mining, or exclusive allocations, promoting transparency and decentralization.',
     },
     {
-      question: 'What is BlockseBlock?',
+      question: 'What is a Hard Cap in Tokens?',
       answer:
-        'This is the explanation for what BlockseBlock is. It can be a detailed answer or a simple description.',
+        'A hard cap is the maximum amount of funds or tokens a blockchain project aims to raise or issue during a token sale, ensuring a fixed supply limit.',
     },
     {
-      question: 'What is BlockseBlock?',
+      question: 'What is a Soft Cap in Tokens?',
       answer:
-        'This is the explanation for what BlockseBlock is. It can be a detailed answer or a simple description.',
+        'A soft cap is the minimum amount of funds a blockchain project aims to raise during a token sale to proceed with its development or operations.',
     },
   ];
 

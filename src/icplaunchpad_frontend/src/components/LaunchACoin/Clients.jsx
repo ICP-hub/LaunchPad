@@ -46,14 +46,14 @@ const Clients = () => {
 
   return (
     <div  className=" h-full   md:mb-[5%] lg:mb-0 sm4:mb-3 py-[5%]">
-      <div className="flex justify-between items-center px-[4%] lg:px-[6%] mb-10">
+      <div className="max-w-7xl flex justify-between items-center px-[4%] lg:px-[3.5%] mb-10 mx-auto">
         <h2 className="text-white font-bold font-posterama text-[20px] xxs1:text-3xl">CLIENT SUCCESS STORIES</h2>
         <button onClick={handleViewMoreClick} className="text-white font-posterama hidden xxs1:block underline text-[15px] xxs1:text-xl">
           View More
         </button>
       </div>
 
-    <div className="flex lg:flex-row flex-col flex-wrap items-center max-w-7xl m-auto gap-24 justify-start">
+    <div className="flex lg:flex-row flex-col flex-wrap items-center md:px-[8.5%] m-auto gap-24 justify-start">
       
       { (salesData.length > 0 ) ? salesData.map((sales, index) => (
         (index < 3) && <ProjectCard initial_Total_supply={ sales[1] || null} projectData={sales[0]} saleType="successfull" index={index}/> 
