@@ -510,6 +510,9 @@ pub fn create_sale(
     // Set the creator as the current caller automatically
     sale_details.creator = caller;
 
+    // Set the processed flag to false initially
+    sale_details.processed = false; // Ensure this field exists in SaleDetails struct
+
     // Validate the project_video URL
     if !is_valid_url(&sale_details.project_video) {
         return Err("Invalid URL for project video.".into());
@@ -554,6 +557,7 @@ pub fn create_sale(
 }
 
 
+
 #[ic_cdk::update]
 pub fn update_sale_params(
     ledger_canister_id: Principal,
@@ -589,6 +593,9 @@ pub fn update_sale_params(
                 sale_details.project_video = project_video; // Update the project video URL
             }
 
+            // Ensure `processed` remains unchanged
+            sale_details.processed = wrapper.sale_details.processed;
+
             // Reinsert the updated wrapper back into the stable map
             state.sale_details.insert(
                 ledger_canister_id.to_string(),
@@ -600,6 +607,7 @@ pub fn update_sale_params(
         }
     })
 }
+
 
 #[ic_cdk::update]
 pub fn insert_funds_raised(ledger_canister_id: Principal, amount: u64) -> Result<(), String> {
