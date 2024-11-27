@@ -266,7 +266,7 @@ console.log("ledger actor ", ledgerActor)
                 </div>
                 <div className="right flex flex-col text-[17px] mr-8 lgx:mr-0 gap-4">
                   <div className="text-[#FFC145]"> {tokenPhase} </div>
-                  <div>Soft 100 SOL</div>
+                  <div>{`Soft ${saleParams?.softcap} ICP`}</div>
                 </div>
               </div>
               <div className="bg-[#FFFFFF66] h-[2px] max-w-[90%] mx-auto mt-4"></div>
@@ -286,12 +286,12 @@ console.log("ledger actor ", ledgerActor)
               <div className="mt-[70px] font-posterama text-center text-white space-y-2">
                 <div className=" text-[24px] font-bold"> {projectData && projectData?.token_name}</div>
                 <div className=" text-[16px] font-medium">
-                {` Presale - Max Buy ${Number(saleParams?.max_buy)} ICP`}
+                 Fair Launch
                 </div>
                 <div className="text-[#FFC145] text-[18px] font-semibold">
-                  Upcoming
+                {tokenPhase}
                 </div>
-                <div className="text-[16px]">Soft 100 SOL</div>
+                <div className="text-[16px]"> {`Soft ${saleParams?.softcap} ICP`} </div>
               </div>
 
               <div className="bg-[#FFFFFF66] h-[2px] w-[100%] mx-auto mt-4"></div>
@@ -301,7 +301,7 @@ console.log("ledger actor ", ledgerActor)
                   (saleParams && saleParams.social_links.length > 0) ?
                     saleParams.social_links.map((link, index) => {
                       console.log('link=', link)
-                      return <a href={link} key={index}> {getSocialLogo(link)} </a>
+                      return <a href={link} key={index} target="blank" > {getSocialLogo(link)} </a>
                     })
                     :
                     <>
@@ -345,7 +345,7 @@ console.log("ledger actor ", ledgerActor)
               type="number"
               disabled={tokenPhase !== "ONGOING"}
               className="w-full p-2 rounded-md bg-[#333333] border-none text-white text-base mb-5"
-              placeholder={projectData && `Enter Amount of ${projectData.token_symbol} tokens`}
+              placeholder={projectData && `Enter Amount in ICP`}
               onKeyDown={(e) => {
                 if (e.key === '-' || e.key === 'e' || e.key === '+') {
                   e.preventDefault();
@@ -362,7 +362,7 @@ console.log("ledger actor ", ledgerActor)
             />
 
             {/* token amount per icp */}
-            <h1 className="mb-5 text-green-500"> {amount && ` ${amount} ICP `} </h1>
+          
 
             <button onClick={handleTransaction} className="w-[50%] p-2 rounded-2xl   font-semibold  bg-gradient-to-r from-[#f3b3a7] to-[#cac9f5] text-black text-base">
               USE ICP

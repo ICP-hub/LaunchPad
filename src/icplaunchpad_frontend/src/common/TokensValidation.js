@@ -192,14 +192,14 @@ export const getSchemaForStep = (step) => {
           )
           .url("Website must be a valid URL"),
 
-        project_video: yup
+          project_video: yup
           .string()
           .required("Project video is required")
+          .url("Project video must be a valid URL")
           .matches(
-            /^(http:\/\/|https:\/\/).+/,
-            "Project video must start with http:// or https://"
-          )
-          .url("Project video must be a valid URL"),
+            /\.(mp4|avi|mov|wmv|flv|mkv)$/i,
+            "Project video must be a valid video URL ending with .mp4, .avi, .mov, .wmv, .flv, or .mkv"
+          ),        
       });
 
     default:

@@ -54,11 +54,11 @@ const PoolInfoTab = ({ presaleData, poolData }) => {
         <div className="flex border-b justify-between py-2">
           <span className="text-gray-400">  Fairlaunch Tokens</span>
           {console.log('poolData',poolData)}
-          <span className="text-white">{`${Number(presaleData?.tokens_for_fairlaunch)|| 0 } ${poolData?.token_symbol} `}</span>
+          <span className="text-white">{`${Number(presale?.tokens_for_fairlaunch)|| 0 } ${poolData?.token_symbol} `}</span>
         </div>
         <div className="flex border-b justify-between py-2">
           <span className="text-gray-400">SoftCap</span>
-          <span className="text-white"> {`${Number(presaleData?.softcap)} ICP`}</span>
+          <span className="text-white"> {`${Number(presale?.softcap) || 0} ICP`}</span>
         </div>
         <div className="flex border-b justify-between py-2">
           <span className="text-gray-400">Start Time</span>

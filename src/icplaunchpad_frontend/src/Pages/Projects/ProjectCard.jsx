@@ -225,10 +225,10 @@ const ProjectCard = ({ isUserToken, projectData, initial_Total_supply, saleType,
                 `${Number( projectData?.sale_details?.liquidity_percentage || tokenInfo?.sale_Params?.liquidity_percentage)}%`  
               }</span>
             </div>
-            <div className="flex flex-col">
+            {/* <div className="flex flex-col">
               <span className="text-sm text-gray-400">Lock Time</span>
               <span className="text-lg font-semibold">{"365 DAYS"}</span>
-            </div>
+            </div> */}
             <div className="flex flex-col">
 
               {tokenInfo && <SaleStart style={{ text_heading: 'text-sm', text_content: 'text-lg' }} setTokenPhase={setTokenPhase} presaleData={projectData?.sale_details || tokenInfo?.sale_Params} />}

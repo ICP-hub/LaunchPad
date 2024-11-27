@@ -66,7 +66,7 @@ const AffiliateProgram = ({ poolData, presaleData }) => {
         {/* Liquidity Percent */}
         <div className="flex justify-between text-[14px] xxs1:text-[17px] border-b py-2">
           <span>Liquidity Percent</span>
-          <span>51%</span>
+          <span> {` ${presaleData?.liquidity_percentage}% `} </span>
         </div>
 
         {/* Liquidity Lockup Time */}

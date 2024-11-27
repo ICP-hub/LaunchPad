@@ -291,7 +291,7 @@ const TokenPage = () => {
                 </div>
                 <div className="right flex flex-col gap-5">
                   <FiEdit3 onClick={handleTokenEdit} className="cursor-pointer" />
-
+                
                 </div>
               </div>
 
@@ -323,10 +323,10 @@ const TokenPage = () => {
                 Fair Launch
                 </div>
                 <div className="text-[#FFC145] text-[18px] font-semibold">
-                  Upcoming
+                {tokenPhase}
                 </div>
                 <div>
-                  soft 100 sol
+                  {`Soft ${presaleData?.softcap} ICP `}
                 </div>
               </div>
 
@@ -337,7 +337,7 @@ const TokenPage = () => {
                   (presaleData && presaleData.social_links.length > 0) ?
                     presaleData.social_links.map((link, index) => {
                       console.log('link=', link)
-                      return <a href={link} key={index}> {getSocialLogo(link)} </a>
+                      return <a href={link} key={index} target="blank"   > {getSocialLogo(link)} </a>
                     })
                     :
                     <>
