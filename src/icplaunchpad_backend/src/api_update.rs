@@ -230,10 +230,10 @@ pub async fn create_token(user_params: UserInputParams) -> Result<TokenCreationR
     let init_arg: Vec<u8> = encode_one(init_args).map_err(|e| e.to_string())?;
 
     let wasm_module =
-        include_bytes!("../../../.dfx/local/canisters/token_deployer/token_deployer.wasm.gz")
+        include_bytes!("../../../.dfx/ic/canisters/token_deployer/token_deployer.wasm.gz")
             .to_vec();
     let index_wasm_module =
-        include_bytes!("../../../.dfx/local/canisters/index_canister/index_canister.wasm.gz")
+        include_bytes!("../../../.dfx/ic/canisters/index_canister/index_canister.wasm.gz")
             .to_vec();
 
     let arg1: InstallCodeArgument = InstallCodeArgument {
@@ -510,9 +510,6 @@ pub fn create_sale(
     // Set the creator as the current caller automatically
     sale_details.creator = caller;
 
-    // Set the processed flag to false initially
-    sale_details.processed = false; // Ensure this field exists in SaleDetails struct
-
     // Validate the project_video URL
     if !is_valid_url(&sale_details.project_video) {
         return Err("Invalid URL for project video.".into());
@@ -557,7 +554,6 @@ pub fn create_sale(
 }
 
 
-
 #[ic_cdk::update]
 pub fn update_sale_params(
     ledger_canister_id: Principal,
@@ -593,9 +589,6 @@ pub fn update_sale_params(
                 sale_details.project_video = project_video; // Update the project video URL
             }
 
-            // Ensure `processed` remains unchanged
-            sale_details.processed = wrapper.sale_details.processed;
-
             // Reinsert the updated wrapper back into the stable map
             state.sale_details.insert(
                 ledger_canister_id.to_string(),
@@ -607,7 +600,6 @@ pub fn update_sale_params(
         }
     })
 }
-
 
 #[ic_cdk::update]
 pub fn insert_funds_raised(ledger_canister_id: Principal, amount: u64) -> Result<(), String> {

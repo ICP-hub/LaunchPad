@@ -5,7 +5,6 @@ import CreateTokenModal from '../components/Modals/CreateTokenModal';
 import ConnectFirst from './ConnectFirst';
 import { useSelector } from 'react-redux';
 import { Principal } from '@dfinity/principal';
-import { useAuth } from '../StateManagement/useContext/useClient';
 
 const CreatePreLaunch = () => {
   const actor = useSelector((currState) => currState.actors.actor);
@@ -14,10 +13,8 @@ const CreatePreLaunch = () => {
   );
   const principal = useSelector((currState) => currState.internet.principal);
   const [modalIsOpen, setIsOpen] = useState(false);
-  const [importAddress, setImportAddress] = useState(null);
   const [error,setError]=useState(null);
   const navigate = useNavigate();
-  const {  createCustomActor } = useAuth();
   // const userToken = useSelector((state) => state.UserTokensInfo.data);
  
   const [userToken, setSalesData] = useState([])
@@ -43,31 +40,8 @@ const CreatePreLaunch = () => {
 
     fetchUserTokensInfo();
   }, [actor]);
-
-  function validateCanisterId(canisterId) {
-    // Regular expression for a valid canister ID
-    const canisterRegex = /^[a-z2-7]{5}(-[a-z2-7]{5}){3}-[a-z2-7]{3}$/;
-    // Check if the canister ID matches the regex
-    return canisterRegex.test(canisterId);
-}
-
-  const handleImportToken = async () => {
+  const handleVerifyToken = async () => {
     if ( userToken || userToken.length > 0) {
-      if(importAddress){
-        const isValidCanister= validateCanisterId(importAddress)
-        if(isValidCanister){
-            const customActor= await createCustomActor(importAddress);
-          
-            if(customActor)
-               navigate("/verify-token", {
-              state: {ledger_canister_id:importAddress },}
-             )
-        }
-        else{
-          setError("Enter correct format of Ledger ID ")
-        }
-      }
-      else{
       const missingSaleParams = await Promise.all(
         userToken.map(async (token) => {
           try {
@@ -90,7 +64,6 @@ const CreatePreLaunch = () => {
       navigate("/verify-token", {
         state: {ledger_canister_id: missingSaleParams[missingSaleParams.length-1].canister_id },}
       )
-    }
       
 
       
@@ -122,15 +95,13 @@ const CreatePreLaunch = () => {
                 <input
                   type="text"
                   className="w-full p-2 bg-[#444444] text-white rounded-md border-none outline-none"
-                   placeholder="Enter Token Address"
-                  onChange={(e)=>setImportAddress(e.target.value)}
+                  placeholder="Search"
                 />
                 <button
-                  onClick={handleImportToken}
+                  onClick={openModal}
                   className="border-1 bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5] text-black w-[100px] ss2:w-[130px] xxs1:w-[200px] md:w-[250px] h-[38px] lg:h-[38px] text-[12px] xxs1:text-[16px] md:text-[18px] font-[600] rounded-2xl"
-                 
                 >
-                  IMPORT TOKEN
+                  CREATE TOKEN
                 </button>
                 {modalIsOpen && <CreateTokenModal modalIsOpen={modalIsOpen} setIsOpen={setIsOpen} />}
               </div>
@@ -146,8 +117,8 @@ const CreatePreLaunch = () => {
 
             {/* Gradient Button */}
             <div className="flex justify-center items-center">
-              <Link onClick={openModal} >
-                <AnimationButton text="CREATE TOKEN"  isDisabled={importAddress} />
+              <Link onClick={handleVerifyToken}>
+                <AnimationButton text="VERIFY TOKEN" />
               </Link>
             </div>
             {/* error message */}

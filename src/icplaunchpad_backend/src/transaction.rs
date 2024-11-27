@@ -2,13 +2,15 @@ use candid::{CandidType, Nat, Principal};
 use ic_cdk::api;
 use ic_cdk::api::call::CallResult;
 use ic_cdk_macros::update;
+use ic_ledger_types::TransferResult;
 use icrc_ledger_types::icrc1::account::Account;
+use icrc_ledger_types::icrc1::transfer::TransferArg;
 use icrc_ledger_types::icrc2::transfer_from::TransferFromArgs;
 use serde::{Deserialize, Serialize};
 
 use crate::api_query::get_sale_params;
 use crate::api_update::insert_funds_raised;
-use crate::TransferFromResult;
+use crate::{read_state, TransferFromResult};
 
 pub fn prevent_anonymous() -> Result<(), String> {
     if api::caller() == Principal::anonymous() {
@@ -120,56 +122,94 @@ async fn sell_transfer(params: SellTransferParams) -> Result<Nat, String> {
     }
 }
 
-
 #[update(guard = prevent_anonymous)]
 async fn sell_tokens(params: SellTransferParams) -> Result<Nat, String> {
     sell_transfer(params).await
 }
 
-pub async fn perform_refund(contributor: &Principal, amount: u64) -> Result<(), String> {
-    let backend_canister_id = ic_cdk::id();
-    let transfer_args = TransferFromArgs {
-        from: Account { owner: backend_canister_id, subaccount: None },
-        to: Account { owner: contributor.clone(), subaccount: None },
-        amount: Nat::from(amount),
-        fee: None,
-        memo: None,
-        created_at_time: None,
-        spender_subaccount: None,
-    };
+// REFUND LOGIC
+// after end time--if softcap didn't reach---we'll refund
 
-    let result: CallResult<(TransferFromResult,)> = ic_cdk::call(backend_canister_id, "icrc1_transfer", (transfer_args,)).await;
+#[update]
+pub async fn process_refunds(ledger_canister_id: Principal) -> Result<(), String> {
+    let current_time = ic_cdk::api::time() / 1_000_000_000; // Convert to seconds
 
-    match result {
-        Ok((TransferFromResult::Ok(_),)) => Ok(()),
-        Ok((TransferFromResult::Err(error),)) => Err(format!("Transfer error: {:?}", error)),
-        Err((code, message)) => Err(format!("Inter-canister call failed: {:?} - {}", code, message)),
+    // Read the sale details
+    let sale_details = read_state(|state| {
+        state.sale_details.get(&ledger_canister_id.to_string())
+            .map(|wrapper| wrapper.sale_details.clone())
+    }).ok_or("Sale not found")?;
+
+    // Check if the sale has ended and failed to meet the soft cap
+    if current_time < sale_details.end_time_utc {
+        return Err("Sale has not ended yet".to_string());
     }
-}
 
+    let total_raised = read_state(|state| {
+        state.funds_raised.get(&ledger_canister_id).map(|wrapper| wrapper.0)
+    }).unwrap_or(0);
 
-pub async fn send_tokens_to_contributor(contributor: &Principal, tokens: u64) -> Result<(), String> {
-    let ledger_canister_id = Principal::from_text("ryjl3-tyaaa-aaaaa-aaaba-cai")
-        .expect("Failed to parse the ICP ledger canister ID");
-
-    let transfer_args = TransferFromArgs {
-        from: Account { owner: ic_cdk::id(), subaccount: None },
-        to: Account { owner: contributor.clone(), subaccount: None },
-        amount: Nat::from(tokens),
-        fee: None,
-        memo: None,
-        created_at_time: None,
-        spender_subaccount: None,
-    };
-
-    let result: CallResult<(TransferFromResult,)> =
-        ic_cdk::call(ledger_canister_id, "icrc1_transfer", (transfer_args,)).await;
-
-    match result {
-        Ok((TransferFromResult::Ok(_),)) => Ok(()),
-        Ok((TransferFromResult::Err(error),)) => Err(format!("Transfer error: {:?}", error)),
-        Err((code, message)) => Err(format!("Inter-canister call failed: {:?} - {}", code, message)),
+    if total_raised >= sale_details.softcap {
+        return Err("Sale met or exceeded the soft cap; no refunds needed".to_string());
     }
+
+    // Iterate through all contributions for this sale
+    let contributions = read_state(|state| {
+        state.contributions.iter()
+            .filter_map(|((sale_id, contributor), amount)| {
+                if sale_id == ledger_canister_id { 
+                    Some((contributor.clone(), amount.0)) 
+                } else {
+                    None
+                }
+            })
+            .collect::<Vec<_>>()
+    });
+    
+    
+
+
+    // Refund each contributor
+    for (contributor, amount) in contributions {
+        let transfer_args = TransferArg {
+            to: Account {
+                owner: contributor,
+                subaccount: None,
+            },
+            fee: None,
+            memo: None,
+            from_subaccount: None,
+            created_at_time: None,
+            amount: Nat::from(amount),
+        };
+
+        let response: CallResult<(TransferResult,)> = ic_cdk::api::call::call(
+            ledger_canister_id,
+            "icrc1_transfer",
+            (transfer_args,),
+        )
+        .await;
+
+        match response {
+            Ok((TransferResult::Ok(_),)) => {
+                // Log success
+                ic_cdk::println!("Refunded {} ICP to {}", amount, contributor);
+            }
+            Ok((TransferResult::Err(err),)) => {
+                // Log specific error for this contributor
+                ic_cdk::println!("Failed to refund {} ICP to {}: {:?}", amount, contributor, err);
+            }
+            Err((code, message)) => {
+                // Log general error
+                ic_cdk::println!(
+                    "Error refunding {} ICP to {}: Code {:?}, Message {}",
+                    amount, contributor, code, message
+                );
+            }
+        }
+    }
+
+    Ok(())
 }
 
 
