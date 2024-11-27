@@ -510,6 +510,8 @@ pub fn create_sale(
     // Set the creator as the current caller automatically
     sale_details.creator = caller;
 
+    sale_details.processed = false;
+
     // Validate the project_video URL
     if !is_valid_url(&sale_details.project_video) {
         return Err("Invalid URL for project video.".into());
@@ -588,6 +590,8 @@ pub fn update_sale_params(
             if let Some(project_video) = updated_details.project_video {
                 sale_details.project_video = project_video; // Update the project video URL
             }
+
+            sale_details.processed = wrapper.sale_details.processed;
 
             // Reinsert the updated wrapper back into the stable map
             state.sale_details.insert(
