@@ -20,7 +20,7 @@ const FundList = () => {
               <th className="py-3 px-6 text-left">Projects</th>
               <th className="py-3 px-6 text-left">Symbol</th>
               <th className="py-3 px-6 text-left">Total Raised</th>
-              <th className="py-3 px-6 text-left">Current Price</th>
+              <th className="py-3 px-6 text-left">Fairlaunch</th>
               <th className="py-3 px-6 text-left">Type</th>
               <th className="py-3 px-6 text-left">Ended In</th>
             </tr>

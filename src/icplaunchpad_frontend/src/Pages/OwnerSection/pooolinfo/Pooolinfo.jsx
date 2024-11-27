@@ -52,13 +52,13 @@ const PoolInfoTab = ({ presaleData, poolData }) => {
           <span className="text-white">{`${poolData?.total_supply || "N/A"} ${poolData?.token_symbol || ""}`}</span>
         </div>
         <div className="flex border-b justify-between py-2">
-          <span className="text-gray-400"> Listing Rate</span>
+          <span className="text-gray-400">  Fairlaunch Tokens</span>
           {console.log('poolData',poolData)}
-          <span className="text-white">{`${Number(presaleData?.listing_rate)|| 0 } ICP `}</span>
+          <span className="text-white">{`${Number(presale?.tokens_for_fairlaunch)|| 0 } ${poolData?.token_symbol} `}</span>
         </div>
         <div className="flex border-b justify-between py-2">
           <span className="text-gray-400">SoftCap</span>
-          <span className="text-white">1 BNB</span>
+          <span className="text-white"> {`${Number(presale?.softcap) || 0} ICP`}</span>
         </div>
         <div className="flex border-b justify-between py-2">
           <span className="text-gray-400">Start Time</span>
@@ -74,7 +74,6 @@ const PoolInfoTab = ({ presaleData, poolData }) => {
 };
 
 export default PoolInfoTab;
-
 
 
 

@@ -160,7 +160,7 @@ const VerifyTokenTab = ({ register, errors, setTokenData, watch, ledger_canister
   const { createCustomActor } = useAuth();
 
   useEffect(() => {
-    console.log('ledgerhjkl',ledger_canister_id)
+    console.log('ledger-',ledger_canister_id)
     if (ledger_canister_id) {
       if(typeof ledger_canister_id != 'string'){
         const ledgerId= Principal.fromUint8Array(ledger_canister_id)
@@ -271,8 +271,8 @@ const VerifyTokenTab = ({ register, errors, setTokenData, watch, ledger_canister
           <label className="flex items-center">
             <input
               type="checkbox"
-              {...register("currencyICP")}
-              checked={currencyICP}
+              // {...register("currencyICP")}
+              checked
               onChange={(e) => setTokenData({ ...tokenData, currencyICP: e.target.checked })}
               className="hidden peer"
             />
@@ -284,7 +284,7 @@ const VerifyTokenTab = ({ register, errors, setTokenData, watch, ledger_canister
           <p className="text-gray-400 text-sm">(User will pay with ICP for your token)</p>
         </div>
 
-        <div className="mb-11">
+        {/* <div className="mb-4">
           <p className="mb-2">Fee Options</p>
           <label className="flex items-center">
             <input
@@ -298,6 +298,23 @@ const VerifyTokenTab = ({ register, errors, setTokenData, watch, ledger_canister
               <div className="w-1.5 h-1.5 bg-transparent peer-checked:bg-gradient-to-r from-[#f09787] to-[#CACCF5] rounded-full"></div>
             </div>
             5% ETH Raise Only
+          </label>
+        </div> */}
+
+        <div className="mb-11">
+          <p className="mb-2">Listing Options</p>
+          <label className="flex items-center">
+            <input
+              type="checkbox"
+              // {...register("ListingOption")}
+              checked
+              onChange={(e) => setTokenData({ ...tokenData, feeOption: e.target.checked })}
+              className="hidden peer"
+            />
+            <div className="w-4 h-4 bg-transparent border-2 border-white rounded-full peer-checked:bg-gradient-to-r from-[#f09787] to-[#CACCF5] flex items-center justify-center mr-2">
+              <div className="w-1.5 h-1.5 bg-transparent peer-checked:bg-gradient-to-r from-[#f09787] to-[#CACCF5] rounded-full"></div>
+            </div>
+           Auto Listing
           </label>
         </div>
 

@@ -55,7 +55,7 @@ const VerifyToken = () => {
     resolver: yupResolver(getSchemaForStep(currentStep)),
     mode: "all",
     defaultValues: {
-      presaleRate: presaleDetails.presaleRate || "",
+      FairlaunchTokens: presaleDetails.FairlaunchTokens || "",
       minimumBuy: presaleDetails.minimumBuy || "",
       maximumBuy: presaleDetails.maximumBuy || "",
       startTime: presaleDetails.startTime || "",
@@ -73,9 +73,13 @@ const VerifyToken = () => {
       setIsSubmitting(true);
       const {
         token_name = tokenData?.token_name,
-        presaleRate,
+        FairlaunchTokens,
+        hardcapToken,
+        softcapToken,
         minimumBuy,
         maximumBuy,
+        tokensLiquidity,
+        liquidityPercentage,
         startTime,
         endTime,
         logoURL,
@@ -98,17 +102,20 @@ const VerifyToken = () => {
       const socialLinksURLs = social_links.map((link) => link.url);
 
       const presaleData = {
-        listing_rate: parseFloat(presaleRate) || 0.4,
-        min_buy: parseInt(minimumBuy),
-        max_buy: parseInt(maximumBuy),
+        creator: creatorPrincipal,
+        tokens_for_fairlaunch: parseInt(FairlaunchTokens),
+        hardcap:parseInt(hardcapToken),
+        softcap:parseInt(softcapToken),
+        min_contribution: parseInt(minimumBuy),
+        max_contribution: parseInt(maximumBuy),
         start_time_utc,
         end_time_utc,
+        tokens_for_liquidity:parseInt(tokensLiquidity),
+        liquidity_percentage:parseFloat(liquidityPercentage),
         description,
-        creator: creatorPrincipal,
         social_links: socialLinksURLs,
         website,
         project_video,
-
       };
 
       const ledgerPrincipalId = typeof ledger_canister_id !== 'string' && ledger_canister_id
@@ -165,21 +172,44 @@ const VerifyToken = () => {
     }
   };
 
-
   const handleNext = handleSubmit((data) => {
     console.log("Step form data:", data);
+  
+    // Merge current step data into presaleDetails
     setPresaleDetails((prev) => ({
       ...prev,
       ...data,
-      ...tokenData,
+      ...tokenData, // Ensure tokenData values are also included
     }));
+  
+    // Debug logs for validation
     console.log("Moving to the next step:", currentStep);
+  
+    // Step-specific validation
+    if (currentStep === 2) {
+      const fairlaunchTokens = Number(data.FairlaunchTokens || 0);
+      const totalSupply = Number(tokenData?.total_supply || 0);
+  
+      console.log("FairlaunchTokens:", fairlaunchTokens);
+      console.log("Total Supply:", totalSupply);
+  
+      // Validate FairlaunchTokens against total supply
+      if (fairlaunchTokens > totalSupply) {
+        setError("Fairlaunch tokens should be less than or equal to the total supply.");
+        return;
+      }
+    }
+  
+    // Proceed to the next step or submit
     if (currentStep < 4) {
+      setError(""); // Clear any previous errors
       setCurrentStep((prevStep) => prevStep + 1);
     } else {
       submitPresaleDetails(data);
     }
   });
+  
+  
   const handleBack = () => {
     if (currentStep > 1) setCurrentStep((prevStep) => prevStep - 1);
   };

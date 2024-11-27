@@ -8,13 +8,60 @@ export const getSchemaForStep = (step) => {
   switch (step) {
     case 2:
       return yup.object().shape({
-        presaleRate: yup
+        FairlaunchTokens: yup
           .number()
-          .transform(emptyStringToNull) // Convert empty string to null
-          .typeError("Enter value") // Custom error message when value is not a valid number
-          .required("Presale rate is required") // Error when value is null or undefined
-          .positive("Presale rate must be positive")
-          .notOneOf([0], "Presale rate cannot be 0"),
+          .transform(emptyStringToNull)
+          .typeError("Enter value")
+          .required("Fairlaunch Tokens is required")
+          .positive("Fairlaunch Tokens must be positive")
+          .notOneOf([0], "Fairlaunch Tokens must be greater than 0"),
+
+        softcapToken: yup
+          .number()
+          .transform(emptyStringToNull)
+          .typeError("Enter value")
+          .required("Softcap token is required")
+          .positive("Softcap token must be greater than 0"),
+
+        hardcapToken: yup
+          .number()
+          .transform(emptyStringToNull)
+          .typeError("Enter value")
+          .required("Hardcap token is required")
+          .positive("Hardcap token must be positive")
+          .test(
+            "is-greater-or-equal",
+            "Hardcap token must be greater than or equal to Softcap token",
+            function (value) {
+              const { softcapToken } = this.parent;
+              return value >= softcapToken;
+            }
+          ),
+
+        liquidityPercentage: yup
+          .number()
+          .transform(emptyStringToNull)
+          .typeError("Enter value")
+          .required("Liquidity percentage is required")
+          .min(0, "Liquidity percentage cannot be less than 0")
+          .max(100, "Liquidity percentage cannot be greater than 100"),
+
+          tokensLiquidity: yup
+          .number()
+          .transform(emptyStringToNull)
+          .typeError("Enter value")
+          .required("Tokens for liquidity is required")
+          .positive("Tokens for liquidity must be positive")
+          .notOneOf([0], "Tokens for liquidity must be greater than 0")
+          .test(
+            "is-less-than-or-equal-to-fairlaunch",
+            "Tokens for liquidity must not exceed the tokens allocated for the fairlaunch",
+            function (value) {
+              const { FairlaunchTokens } = this.parent;
+              return value <= FairlaunchTokens;
+            }
+          ),
+
 
         minimumBuy: yup
           .number()
@@ -46,10 +93,7 @@ export const getSchemaForStep = (step) => {
           .date()
           .typeError("End time must be a valid date")
           .required("End time is required")
-          .min(
-            yup.ref("startTime"),
-            "End time must be after the start time"
-          )
+          .min(yup.ref("startTime"), "End time must be after the start time")
           .test(
             "is-at-least-one-minute-later",
             "End time should be at least one minute after the start time",
@@ -58,8 +102,7 @@ export const getSchemaForStep = (step) => {
               return (
                 startTime &&
                 value &&
-                new Date(value).getTime() >=
-                  new Date(startTime).getTime() + 60000
+                new Date(value).getTime() >= new Date(startTime).getTime() + 60000
               );
             }
           ),
@@ -123,41 +166,42 @@ export const getSchemaForStep = (step) => {
           .test("fileType", "Only jpeg, jpg & png file format allowed", (value) => {
             return (
               !value ||
-              (value &&
-                ["image/jpeg", "image/jpg", "image/png"].includes(value.type))
+              (value && ["image/jpeg", "image/jpg", "image/png"].includes(value.type))
             );
           })
           .nullable(true),
-
       });
-      case 3:
-        return yup.object().shape({
-          description: yup
-            .string()
-            .required("Description is required")
-            .test(
-              "wordCount",
-              "Description must be 300 words or less",
-              (value) => value && value.split(" ").length <= 300
-            ),
-            website: yup
-            .string()
-            .required("Website is required")
-            .matches(
-              /^(http:\/\/|https:\/\/).+/,
-              "Website must start with http:// or https://"
-            )
-            .url("Website must be a valid URL"),
-  
+
+    case 3:
+      return yup.object().shape({
+        description: yup
+          .string()
+          .required("Description is required")
+          .test(
+            "wordCount",
+            "Description must be 300 words or less",
+            (value) => value && value.split(" ").length <= 300
+          ),
+
+        website: yup
+          .string()
+          .required("Website is required")
+          .matches(
+            /^(http:\/\/|https:\/\/).+/,
+            "Website must start with http:// or https://"
+          )
+          .url("Website must be a valid URL"),
+
           project_video: yup
-            .string()
-            .required("Project video is required")
-            .matches(
-              /^(http:\/\/|https:\/\/).+/,
-              "Project video must start with http:// or https://"
-            )
-            .url("Project video must be a valid URL"),
-        });
+          .string()
+          .required("Project video is required")
+          .url("Project video must be a valid URL")
+          .matches(
+            /\.(mp4|avi|mov|wmv|flv|mkv)$/i,
+            "Project video must be a valid video URL ending with .mp4, .avi, .mov, .wmv, .flv, or .mkv"
+          ),        
+      });
+
     default:
       return yup.object().shape({});
   }
