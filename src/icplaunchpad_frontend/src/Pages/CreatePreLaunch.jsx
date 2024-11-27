@@ -5,6 +5,7 @@ import CreateTokenModal from '../components/Modals/CreateTokenModal';
 import ConnectFirst from './ConnectFirst';
 import { useSelector } from 'react-redux';
 import { Principal } from '@dfinity/principal';
+import { useAuth } from '../StateManagement/useContext/useClient';
 
 const CreatePreLaunch = () => {
   const actor = useSelector((currState) => currState.actors.actor);
@@ -13,8 +14,10 @@ const CreatePreLaunch = () => {
   );
   const principal = useSelector((currState) => currState.internet.principal);
   const [modalIsOpen, setIsOpen] = useState(false);
+  const [importAddress, setImportAddress] = useState(null);
   const [error,setError]=useState(null);
   const navigate = useNavigate();
+  const {  createCustomActor } = useAuth();
   // const userToken = useSelector((state) => state.UserTokensInfo.data);
  
   const [userToken, setSalesData] = useState([])
@@ -40,8 +43,31 @@ const CreatePreLaunch = () => {
 
     fetchUserTokensInfo();
   }, [actor]);
-  const handleVerifyToken = async () => {
+
+  function validateCanisterId(canisterId) {
+    // Regular expression for a valid canister ID
+    const canisterRegex = /^[a-z2-7]{5}(-[a-z2-7]{5}){3}-[a-z2-7]{3}$/;
+    // Check if the canister ID matches the regex
+    return canisterRegex.test(canisterId);
+}
+
+  const handleImportToken = async () => {
     if ( userToken || userToken.length > 0) {
+      if(importAddress){
+        const isValidCanister= validateCanisterId(importAddress)
+        if(isValidCanister){
+            const customActor= await createCustomActor(importAddress);
+          
+            if(customActor)
+               navigate("/verify-token", {
+              state: {ledger_canister_id:importAddress },}
+             )
+        }
+        else{
+          setError("Enter correct format of Ledger ID ")
+        }
+      }
+      else{
       const missingSaleParams = await Promise.all(
         userToken.map(async (token) => {
           try {
@@ -64,6 +90,7 @@ const CreatePreLaunch = () => {
       navigate("/verify-token", {
         state: {ledger_canister_id: missingSaleParams[missingSaleParams.length-1].canister_id },}
       )
+    }
       
 
       
@@ -77,7 +104,7 @@ const CreatePreLaunch = () => {
   return (
     <div className="flex justify-center items-center bg-black text-white">
       <div className="w-full max-w-[1070px] p-8 rounded-2xl">
-        <h1 className="text-3xl font-bold text-start font-posterama mb-6">Create Fair Launch</h1>
+        <h1 className="text-3xl font-bold text-start font-posterama mb-6">CREATE PRELAUNCH</h1>
 
         {!isAuthenticated ? (
           <ConnectFirst />
@@ -95,13 +122,15 @@ const CreatePreLaunch = () => {
                 <input
                   type="text"
                   className="w-full p-2 bg-[#444444] text-white rounded-md border-none outline-none"
-                  placeholder="Search"
+                   placeholder="Enter Token Address"
+                  onChange={(e)=>setImportAddress(e.target.value)}
                 />
                 <button
-                  onClick={openModal}
+                  onClick={handleImportToken}
                   className="border-1 bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5] text-black w-[100px] ss2:w-[130px] xxs1:w-[200px] md:w-[250px] h-[38px] lg:h-[38px] text-[12px] xxs1:text-[16px] md:text-[18px] font-[600] rounded-2xl"
+                 
                 >
-                  CREATE TOKEN
+                  IMPORT TOKEN
                 </button>
                 {modalIsOpen && <CreateTokenModal modalIsOpen={modalIsOpen} setIsOpen={setIsOpen} />}
               </div>
@@ -110,15 +139,15 @@ const CreatePreLaunch = () => {
             {/* Information List */}
             <div className="bg-[#F5F5F51A] text-white p-3 rounded-md mb-8">
               <ul className="text-[15px] px-2 ss2:px-7 py-4 list-disc">
-                  <li>Everyone Gets a Fair Chance: A fair launch means no one has an unfair advantage. Everyone can join in from the beginning, giving equal opportunities to all.</li>
-                  <li>Build Trust from Day One: With no private sales or special deals, a fair launch keeps things transparent, helping to earn the trust of the community right from the start..</li>
+                <li>Lorem ipsum dolor sit amet consectetur. Egestas faucibus suspendisse turpis cras sed bibendum massa arcu.</li>
+                <li>Quisque enim amet ipsum ipsum faucibus leo adipiscing molestie. Tincidunt enim dis lobortis ac gravida. Non mollis lacus convallis non sit ac sit.</li>
               </ul>
             </div>
 
             {/* Gradient Button */}
             <div className="flex justify-center items-center">
-              <Link onClick={handleVerifyToken}>
-                <AnimationButton text="VERIFY TOKEN" />
+              <Link onClick={openModal} >
+                <AnimationButton text="CREATE TOKEN"  isDisabled={importAddress} />
               </Link>
             </div>
             {/* error message */}
