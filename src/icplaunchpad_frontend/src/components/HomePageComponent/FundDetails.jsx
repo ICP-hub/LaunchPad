@@ -71,8 +71,8 @@ const FundDetails = ({ sale, index }) => {
             </td>
             <td className="py-3 px-6"> {tokenDetails ? tokenDetails.token_symbol : "" } </td>
             <td className="py-3 px-6"> {tokenDetails ? tokenDetails.owner_bal : 0 } ICP</td>
-            <td className="py-3 px-6">{` ${sale.sale_details.listing_rate} ICP `}</td>
-            <td className="py-3 px-6">Token Sale</td>
+            <td className="py-3 px-6">{` ${Number(sale.sale_details.tokens_for_fairlaunch)}`}</td>
+            <td className="py-3 px-6"> Fairlaunch</td>
             <td className="py-3 px-6">{convertTimestampToISTFormatted(sale.sale_details.end_time_utc)}</td>
         </tr>
     );

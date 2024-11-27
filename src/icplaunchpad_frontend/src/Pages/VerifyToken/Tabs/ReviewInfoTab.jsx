@@ -12,7 +12,7 @@ const ReviewInfoTab = ({ presaleDetails }) => {
             ["Token name", presaleDetails?.token_name || "N/A"],
             ["Token symbol", presaleDetails?.token_symbol || "N/A"],
             ["Token decimals", presaleDetails?.decimals || "N/A"],
-            ["Presale rate", presaleDetails?.presaleRate || "N/A"],
+            [" Fairlaunch Token", presaleDetails?.FairlaunchTokens || "N/A"],
           
             // [
             //   "Sale method",

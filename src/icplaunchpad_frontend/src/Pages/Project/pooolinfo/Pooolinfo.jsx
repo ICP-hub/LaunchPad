@@ -34,14 +34,15 @@ const AffiliateProgram = ({ poolData, presaleData }) => {
 
         {/* Initial Market Cap */}
         <div className="flex justify-between text-[14px] xxs1:text-[17px] border-b py-2">
-          <span>Initial Market Cap</span>
-          <span>{`${Number(presaleData?.listing_rate) || 0 } ICP `}</span>
+          {/* <span>Initial Market Cap</span> */}
+          <span>Fairlaunch Tokens</span>
+          <span>{`${Number(presaleData?.tokens_for_fairlaunch) || 0 } ${poolData?.token_symbol}  `}</span>
         </div>
 
         {/* SoftCap */}
         <div className="flex justify-between text-[14px] xxs1:text-[17px] border-b py-2">
           <span>SoftCap</span>
-          <span>1 BNB</span>
+          <span> {`${Number(presaleData?.softcap)} ICP`} </span>
         </div>
 
         {/* Start Time */}
@@ -65,7 +66,7 @@ const AffiliateProgram = ({ poolData, presaleData }) => {
         {/* Liquidity Percent */}
         <div className="flex justify-between text-[14px] xxs1:text-[17px] border-b py-2">
           <span>Liquidity Percent</span>
-          <span>51%</span>
+          <span> {` ${presaleData?.liquidity_percentage}% `} </span>
         </div>
 
         {/* Liquidity Lockup Time */}
