@@ -116,6 +116,7 @@ const VerifyToken = () => {
         social_links: socialLinksURLs,
         website,
         project_video,
+        processed:true
       };
 
       const ledgerPrincipalId = typeof ledger_canister_id !== 'string' && ledger_canister_id

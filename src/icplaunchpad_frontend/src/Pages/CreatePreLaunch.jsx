@@ -139,8 +139,8 @@ const CreatePreLaunch = () => {
             {/* Information List */}
             <div className="bg-[#F5F5F51A] text-white p-3 rounded-md mb-8">
               <ul className="text-[15px] px-2 ss2:px-7 py-4 list-disc">
-                <li>Lorem ipsum dolor sit amet consectetur. Egestas faucibus suspendisse turpis cras sed bibendum massa arcu.</li>
-                <li>Quisque enim amet ipsum ipsum faucibus leo adipiscing molestie. Tincidunt enim dis lobortis ac gravida. Non mollis lacus convallis non sit ac sit.</li>
+                  <li>Everyone Gets a Fair Chance: A fair launch means no one has an unfair advantage. Everyone can join in from the beginning, giving equal opportunities to all.</li>
+                  <li>Build Trust from Day One: With no private sales or special deals, a fair launch keeps things transparent, helping to earn the trust of the community right from the start..</li>
               </ul>
             </div>
 
