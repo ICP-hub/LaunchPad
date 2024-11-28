@@ -27,6 +27,7 @@ import { SaleParamsHandlerRequest } from "../../StateManagement/Redux/Reducers/S
 import SaleStart from "./SaleStart.jsx";
 import { getSocialLogo } from "../../common/getSocialLogo.jsx";
 import { useAuth } from "../../StateManagement/useContext/useClient.jsx";
+import RaisedFundProgress from "../../common/RaisedFundProgress.jsx";
 
 const TokenPage = () => {
   const [activeTab, setActiveTab] = useState("About");
@@ -56,34 +57,12 @@ const TokenPage = () => {
   console.log('project data', projectData)
   // const location = useLocation();
 
-  useEffect(() => {
-   
-      const progress = tokenData && projectData ? (100 - (Number(tokenData.total_supply) / Number(projectData.total_supply)) * 100) : 0;
-      setSaleProgress(progress.toFixed(2))
-    
-  }, [tokenPhase, tokenData]);
-
-
-
   // useEffect(() => {
-  //   if (tokenPhase === 'UPCOMING' && initial_Total_supply && Number(initial_Total_supply) > 0){
-  //     const progress = 100 - (Number(tokenInfo.total_supply) / Number(initial_Total_supply)) * 100;
-  //     setSaleProgress(progress.toFixed(2));
-
-  //   } else if (tokenPhase === 'SUCCESSFULL' && initial_Total_supply && Number(initial_Total_supply) > 0) {
-  //     const progress = 100 - (Number(tokenInfo.total_supply) / Number(initial_Total_supply)) * 100;
-  //     setSaleProgress(progress.toFixed(2));
-
-  //   } else if (tokenInfo.total_supply && projectData.total_supply && Number(projectData.total_supply) > 0) {
-  //     const progress = 100 - (Number(tokenInfo.total_supply) / Number(projectData.total_supply)) * 100;
-  //     setSaleProgress(progress.toFixed(2));
-  //   }
-  //  else if ( isUserToken && tokenInfo.total_supply && projectData.total_supply && Number(projectData.total_supply) > 0) {
-  //   const progress = 100 - (Number(tokenInfo.total_supply) / Number(projectData.total_supply)) * 100;
-  //   setSaleProgress(progress.toFixed(2));
-  // }
-  // }, [tokenPhase, tokenInfo.total_supply, projectData.total_supply]);
-
+   
+  //     const progress = tokenData && projectData ? (100 - (Number(tokenData.total_supply) / Number(projectData.total_supply)) * 100) : 0;
+  //     setSaleProgress(progress.toFixed(2))
+    
+  // }, [tokenPhase, tokenData]);
 
 
   const ledger_canister_id = projectData ? projectData.canister_id
@@ -175,7 +154,6 @@ const TokenPage = () => {
           console.error("Error fetching images:", error);
         }
       }
-
 
       // Fetch presale data if ledgerId is available
       if (ledger_canister_id && !projectData) {
@@ -444,55 +422,8 @@ const TokenPage = () => {
 
           {isMobile && (
             <div className="bg-[#FFFFFF1A] text-white p-1 rounded-lg mt-8 flex w-full h-[350px] lg:min-w-[406px]">
-              <div className="relative flex items-center  overflow-hidden w-[60%] h-72">
-                <div className="absolute left-[-120%] lg:left-[-45%] ss2:left-[-70%] dxs:left-[-47%] xxs1:left-[-30%] sm:left-[-20%] md:left-[-15%]  top-0 w-72 h-72">
-                  <svg className="transform rotate-90" viewBox="0 0 36 36">
-                    <defs>
-                      <linearGradient
-                        id="gradient"
-                        x1="0%"
-                        y1="0%"
-                        x2="100%"
-                        y2="0%"
-                      >
-                        <stop
-                          offset="0%"
-                          style={{ stopColor: "#f3b3a7", stopOpacity: 1 }}
-                        />
-                        <stop
-                          offset="100%"
-                          style={{ stopColor: "#cac9f5", stopOpacity: 1 }}
-                        />
-                      </linearGradient>
-                    </defs>
-                    <path
-                      className="text-gray-800"
-                      d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831a 15.9155 15.9155 0 0 1 0 -31.831"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="3.8"
-                    />
-                    <path
-                      className="text-purple-400"
-                      d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831a 15.9155 15.9155 0 0 1 0 -31.831"
-                      fill="none"
-                      stroke="url(#gradient)"
-                      strokeWidth="3.8"
-                      strokeDasharray={`${saleProgress}, 100`}
-                    />
-                  </svg>
-                  <div className="absolute ml-28 ss2:ml-10 inset-0 flex flex-col items-center justify-center">
-                    <span>Progress</span>
-                    <span className="text-lg font-semibold text-white">
-                      {" "}
-                      ({saleProgress}%)
-                    </span>
-                    <span className="text-sm text-gray-400 mt-1">
-                      {tokenData ? tokenData.owner_bal : 0} ICP RAISED
-                    </span>
-                  </div>
-                </div>
-              </div>
+             
+             <RaisedFundProgress ledgerId={ledger_canister_id} projectData={presaleData} />
 
               <div className="mt-6 w-[40%] flex flex-col justify-around ">
                 <div className="flex flex-col">
@@ -540,56 +471,8 @@ const TokenPage = () => {
         <div className="flex lg:flex-col flex-row gap-5 flex-wrap mt-[100px]">
           {!isMobile && (
             <div className="bg-[#FFFFFF1A] text-white p-1 rounded-lg flex w-full h-[350px] lg:min-w-[406px]">
-              <div className="relative flex items-center  overflow-hidden w-[60%] h-72">
-                <div className="absolute lg:left-[-45%] left-[-70%] dxs:left-[-47%] xxs1:left-[-30%] sm:left-[-20%] md:left-[-15%]  top-0 w-72 h-72">
-                  <svg style={{ transform: 'rotate(-90deg)' }} viewBox="0 0 36 36">
-                    <defs>
-                      <linearGradient
-                        id="gradient"
-                        x1="0%"
-                        y1="0%"
-                        x2="100%"
-                        y2="0%"
-                      >
-                        <stop
-                          offset="0%"
-                          style={{ stopColor: "#f3b3a7", stopOpacity: 1 }}
-                        />
-                        <stop
-                          offset="100%"
-                          style={{ stopColor: "#cac9f5", stopOpacity: 1 }}
-                        />
-                      </linearGradient>
-                    </defs>
-                    <path
-                      className="text-gray-800"
-                      d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831a 15.9155 15.9155 0 0 1 0 -31.831"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="3.8"
-                    />
-                    <path
-                      className="text-purple-400"
-                      d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831a 15.9155 15.9155 0 0 1 0 -31.831"
-                      fill="none"
-                      stroke="url(#gradient)"
-                      strokeWidth="3.8"
-                      strokeDasharray={`${saleProgress}, 100`}
-                      strokeDashoffset="0"
-                    />
-                  </svg>
-                  <div className="absolute ml-10 inset-0 flex flex-col items-center justify-center">
-                    <span>Progress</span>
-                    <span className="text-lg font-semibold text-white">
-                      {" "}
-                      ({saleProgress}%)
-                    </span>
-                    <span className="text-sm text-gray-400 mt-1">
-                      {tokenData ? tokenData.owner_bal : 0} ICP RAISED
-                    </span>
-                  </div>
-                </div>
-              </div>
+      
+      <RaisedFundProgress ledgerId={ledger_canister_id} projectData={presaleData} />
 
               <div className="mt-6 w-[40%] flex flex-col justify-around ">
                 <div className="flex flex-col">

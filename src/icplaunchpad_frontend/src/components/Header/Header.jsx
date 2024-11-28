@@ -860,9 +860,9 @@ const Header = () => {
             >
               <div className="bg-black h-full w-full rounded-2xl flex items-center p-1 px-3">
                 <img src={profileImg} alt="profile-img" className="h-7 w-7 rounded-full object-cover mr-2 " />
-                <div className="flex flex-col items-start w-24 h-8 lg:w-40 lg:h-full ">
+                <div className="flex flex-col items-start w-24 h-8 lg:w-32 xl:w-40 lg:h-full ">
                   <span className="text-sm">
-                    {userData ? userData?.name : ""}
+                    {userData ? userData?.username : ""}
                   </span>
                   <span className=" text-[10px] lg:text-xs text-gray-400 w-full overflow-hidden whitespace-nowrap text-ellipsis">
                     {principal}

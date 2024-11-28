@@ -127,7 +127,7 @@ const CreatePreLaunch = () => {
                 />
                 <button
                   onClick={handleImportToken}
-                  className="border-1 bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5] text-black w-[100px] ss2:w-[130px] xxs1:w-[200px] md:w-[250px] h-[38px] lg:h-[38px] text-[12px] xxs1:text-[16px] md:text-[18px] font-[600] rounded-2xl"
+                  className="border-1 bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5] text-black min-w-[100px] ss2:w-[130px] xxs1:w-[200px] md:w-[250px] h-[38px] lg:h-[38px] text-[12px] xxs1:text-[16px] md:text-[18px] font-[600] rounded-2xl"
                  
                 >
                   IMPORT TOKEN

@@ -193,14 +193,6 @@
 
 
 
-
-
-
-
-
-
-
-
 import React, { useState, useEffect } from 'react';
 import GradientText from '../../common/GradientText';
 
@@ -213,6 +205,7 @@ import MyContribution from './MyContribution/MyContribution';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../StateManagement/useContext/useClient';
 import { useSelector } from 'react-redux';
+import CopyToClipboard from '../../common/CopyToClipboard';
 
 const Profile = () => {
   const [activeTab, setActiveTab] = useState("Activities");
@@ -282,10 +275,12 @@ const Profile = () => {
         <>
           <div className="bg-black text-white  p-8 max-w-[1170px] mx-auto">
             {/* Header Section */}
-            <div className="flex flex-col items-start bg-[#FFFFFF1A] p-8  pl-[100px] rounded-2xl gap-12 mb-6">
-              <p className="text-[19px] font-inter">
-                Connect as {principal}
+            <div className="flex flex-col items-start  bg-[#FFFFFF1A] p-8  pl-[100px] rounded-2xl gap-12 mb-6">
+          
+             <p className="text-[19px] font-inter text-nowrap w-full">
+                Connect as <CopyToClipboard address={principal}  width={'90%'} />
               </p>
+             
               <div className="flex space-x-6">
                 <button className="bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5] font-semibold text-black py-2 px-4 rounded-2xl">
                   Share Your Profile
@@ -332,9 +327,9 @@ const Profile = () => {
           <div className="bg-black text-white p-2 max-w-[1170px] mx-auto">
             {/* Header Section */}
             <div className="mx-[-30px]">
-              <div className="flex flex-col min-h-[100px] items-start bg-[#111] p-4 mx-4 mb-4 w-full">
-                <p className="text-[14px] text-[#A5A5A5] font-inter">Connect as</p>
-                <p className="text-[14px] font-500">{principal}</p>
+              <div className="flex flex-col text-sm min-h-[100px] items-start bg-[#111] p-4 px-10  mb-4 w-full">
+                <p className="text-[14px] mb-2 text-[#A5A5A5] font-inter">Connect as</p>
+                <CopyToClipboard address={principal} />
               </div>
             </div>
 

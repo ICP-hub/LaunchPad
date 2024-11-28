@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { convertTimestampToIST } from '../../../utils/convertTimestampToIST';
 import { Principal } from '@dfinity/principal';
+import CopyToClipboard from '../../../common/CopyToClipboard';
 
 const PoolInfoTab = ({ presaleData, poolData }) => {
   const actor = useSelector((currState) => currState.actors.actor);
@@ -43,7 +44,9 @@ const PoolInfoTab = ({ presaleData, poolData }) => {
     <div className="text-gray-300 p-6 rounded-lg w-full max-w-full">
       <div className="flex justify-between gap-1 mb-4">
         <span>Address</span>
-        <span className="border-b-2 overflow-hidden text-right">{poolData?.canister_id || "N/A"}</span>
+        <span className="border-b-2 overflow-hidden text-right">
+        <CopyToClipboard address={poolData?.canister_id}/>
+        </span>
       </div>
 
       <div className="border-t pt-4">

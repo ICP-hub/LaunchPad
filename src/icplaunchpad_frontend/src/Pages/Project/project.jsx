@@ -21,6 +21,7 @@ import { getSocialLogo } from "../../common/getSocialLogo.jsx";
 import { useAuth } from "../../StateManagement/useContext/useClient.jsx";
 import { useAgent, useIdentityKit } from "@nfid/identitykit/react";
 import { Actor } from "@dfinity/agent";
+import RaisedFundProgress from "../../common/RaisedFundProgress.jsx";
 
 const TokenPage = () => {
   const [tokenPhase, setTokenPhase] = useState("UPCOMING");
@@ -370,43 +371,8 @@ console.log("ledger actor ", ledgerActor)
           </div>
 
           <div className="bg-[#FFFFFF1A] text-white p-1 rounded-lg flex flex-col ss2:flex-row    w-full lg:min-w-[406px]">
-            <div className="relative flex  items-center  overflow-hidden w-full ss2:w-[60%] h-72">
-              <div className="absolute left-[-33%] lg:left-[-45%] ss2:left-[-70%] dxs:left-[-47%] xxs1:left-[-30%] sm:left-[-20%] md:left-[-15%] top-0 w-72 h-72">
-                <svg style={{ transform: 'rotate(-90deg)' }} viewBox="0 0 36 36">
-                  <defs>
-                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" style={{ stopColor: "#f3b3a7", stopOpacity: 1 }} />
-                      <stop offset="100%" style={{ stopColor: "#cac9f5", stopOpacity: 1 }} />
-                    </linearGradient>
-                  </defs>
-                  <path
-                    className="text-gray-800"
-                    d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831a 15.9155 15.9155 0 0 1 0 -31.831"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="3.8"
-                  />
-                  <path
-                    className="text-purple-400"
-                    d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831a 15.9155 15.9155 0 0 1 0 -31.831"
-                    fill="none"
-                    stroke="url(#gradient)"
-                    strokeWidth="3.8"
-                    strokeDasharray={`${projectData.saleProgress ? projectData.saleProgress : 0}, 100`}
-                  />
-                </svg>
-                <div className="absolute ml-12 ss2:ml-28 dxs:ml-10 inset-0 flex flex-col items-center justify-center">
-                  <span>Progress</span>
-                  <span className="text-lg font-semibold text-white">
-                    ({projectData.saleProgress ? projectData.saleProgress : 0}%)
-                  </span>
-                  <span className="text-[11px] ss2:text-sm text-gray-400 mt-1">
-                    {tokenOwnerInfo ? tokenOwnerInfo.owner_bal : 0} ICP RAISED
-                  </span>
-                </div>
-              </div>
-
-            </div>
+            
+          <RaisedFundProgress ledgerId={projectData?.canister_id} projectData={saleParams}/>
 
             <div className="mt-6 w-[40%] gap-4 sxs3:gap-8 px-2 relative  flex ss2:flex-col  justify-around ">
               <div className="flex flex-col">

@@ -149,13 +149,11 @@
 
 
 import React, { useEffect, useRef, useState } from "react";
-import { FaRegCopy } from "react-icons/fa";
 import { Principal } from "@dfinity/principal";
 import { useAuth } from "../../../StateManagement/useContext/useClient";
+import CopyToClipboard from "../../../common/CopyToClipboard";
 
 const VerifyTokenTab = ({ register, errors, setTokenData, watch, ledger_canister_id, tokenData }) => {
-  const [copySuccess, setCopySuccess] = useState(false);
-  const inputRef = useRef(null);
   const [tokenInfo, setTokenInfo] = useState(null);
   const { createCustomActor } = useAuth();
 
@@ -200,17 +198,6 @@ const VerifyTokenTab = ({ register, errors, setTokenData, watch, ledger_canister
   const feeOption = watch("feeOption", false);
   const currencyICP = watch("currencyICP", false);
 
-  const copyToClipboard = () => {
-    if (inputRef.current) {
-      navigator.clipboard
-        .writeText(inputRef.current.value)
-        .then(() => {
-          setCopySuccess(true);
-          setTimeout(() => setCopySuccess(false), 1000);
-        })
-        .catch((err) => console.error("Failed to copy!", err));
-    }
-  };
   const onChange = (event) => {
     const updatedData = tokenData ? { ...tokenData } : {}; // Ensures tokenData is defined
     updatedData[event.target.name] = event.target.value;
@@ -224,28 +211,7 @@ const VerifyTokenTab = ({ register, errors, setTokenData, watch, ledger_canister
         </div>
 
         <h2 className="text-lg font-semibold mb-4">Canister ID</h2>
-        <div className="relative w-full">
-          <input
-            ref={inputRef}
-            type="text"
-            className="w-full py-2 pl-4 pr-10 mb-4 bg-[#333333] text-[9px] ss3:text-[10px] xxs1:text-[17px] relative rounded-md"
-            value={
-              typeof ledger_canister_id === "string"
-                ? ledger_canister_id
-                : Principal.fromUint8Array(ledger_canister_id).toText()
-            }
-            readOnly
-            onClick={copyToClipboard}
-          />
-          <button
-            onClick={copyToClipboard}
-            className="absolute right-4 top-[36%] transform -translate-y-1/2 text-white text-[15px]"
-            aria-label="Copy to clipboard"
-          >
-            <FaRegCopy />
-          </button>
-        </div>
-        {copySuccess && <p className="text-green-400 text-sm mt-2">Copy successful</p>}
+        <CopyToClipboard address={ledger_canister_id} style={true}/>
 
         <div className="mb-8 mt-8">
           <div className="flex justify-between border-b-2 py-1 border-[#FFFFFF80]">
