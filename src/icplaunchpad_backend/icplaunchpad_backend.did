@@ -50,6 +50,7 @@ type SaleDetails = record {
   end_time_utc : nat64;
   project_video : text;
   start_time_utc : nat64;
+  processed : bool;
   social_links : vec text;
 };
 type SaleDetailsUpdate = record {
@@ -63,11 +64,6 @@ type SaleDetailsUpdate = record {
 type SaleDetailsWithID = record {
   sale_details : SaleDetails;
   ledger_canister_id : text;
-};
-type SellTransferParams = record {
-  to_principal : principal;
-  token_ledger_canister_id : principal;
-  tokens : nat64;
 };
 type TokenCreationResult = record {
   index_canister_id : principal;
@@ -112,9 +108,7 @@ service : () -> {
   insert_funds_raised : (principal, nat64) -> (Result_1);
   is_account_created : () -> (text) query;
   obtain_cycles_for_canister : (nat, principal) -> (Result_4);
-  process_refunds : (principal) -> (Result_1);
   search_by_token_name_or_symbol : (text) -> (opt CanisterIndexInfo) query;
-  sell_tokens : (SellTransferParams) -> (Result_4);
   update_sale_params : (principal, SaleDetailsUpdate) -> (Result_1);
   update_user_account : (principal, UserAccount) -> (Result_1);
   upload_cover_image : (text, CoverImageData) -> (Result_8);

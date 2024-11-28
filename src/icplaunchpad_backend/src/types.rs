@@ -351,8 +351,8 @@ pub struct SaleDetails {
     pub website: String,              // Project website URL
     pub social_links: Vec<String>,    // List of social media links
     pub description: String,          // Project description
-    pub project_video: String,  // URL or string identifier for the project video
-    pub processed: bool,      
+    pub project_video: String,        // URL or string identifier for the project video
+    pub processed: bool, 
 }
 
 

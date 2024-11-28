@@ -6,7 +6,6 @@ use icrc_ledger_types::icrc1::account::Account;
 use icrc_ledger_types::icrc2::transfer_from::TransferFromArgs;
 use serde::{Deserialize, Serialize};
 
-use crate::api_query::get_sale_params;
 use crate::api_update::insert_funds_raised;
 use crate::TransferFromResult;
 
@@ -78,53 +77,53 @@ async fn buy_tokens(params: BuyTransferParams) -> Result<Nat, String> {
 }
 
 
-#[derive(CandidType, Deserialize, Serialize)]
-pub struct SellTransferParams {
-    pub tokens: u64,
-    pub to_principal: Principal,
-    pub token_ledger_canister_id: Principal,
-}
+// #[derive(CandidType, Deserialize, Serialize)]
+// pub struct SellTransferParams {
+//     pub tokens: u64,
+//     pub to_principal: Principal,
+//     pub token_ledger_canister_id: Principal,
+// }
 
-async fn sell_transfer(params: SellTransferParams) -> Result<Nat, String> {
-    // Fetch the sale parameters directly from your backend storage
-    let sale_params = get_sale_params(params.token_ledger_canister_id)?;
-    let from_principal = sale_params.creator;
+// async fn sell_transfer(params: SellTransferParams) -> Result<Nat, String> {
+//     // Fetch the sale parameters directly from your backend storage
+//     let sale_params = get_sale_params(params.token_ledger_canister_id)?;
+//     let from_principal = sale_params.creator;
 
-    let transfer_args = TransferFromArgs {
-        amount: Nat::from(params.tokens),
-        to: Account {
-            owner: params.to_principal,
-            subaccount: None,
-        },
-        fee: None,
-        memo: None,
-        created_at_time: None,
-        spender_subaccount: None,
-        from: Account {
-            owner: from_principal, // Use the creator as the sender
-            subaccount: None,
-        },
-    };
+//     let transfer_args = TransferFromArgs {
+//         amount: Nat::from(params.tokens),
+//         to: Account {
+//             owner: params.to_principal,
+//             subaccount: None,
+//         },
+//         fee: None,
+//         memo: None,
+//         created_at_time: None,
+//         spender_subaccount: None,
+//         from: Account {
+//             owner: from_principal, // Use the creator as the sender
+//             subaccount: None,
+//         },
+//     };
 
-    let response: CallResult<(TransferFromResult,)> = ic_cdk::call(
-        params.token_ledger_canister_id,
-        "icrc2_transfer_from",
-        (transfer_args,),
-    )
-    .await;
+//     let response: CallResult<(TransferFromResult,)> = ic_cdk::call(
+//         params.token_ledger_canister_id,
+//         "icrc2_transfer_from",
+//         (transfer_args,),
+//     )
+//     .await;
 
-    match response {
-        Ok((TransferFromResult::Ok(block_index),)) => Ok(block_index),
-        Ok((TransferFromResult::Err(error),)) => Err(format!("Ledger transfer error: {:?}", error)),
-        Err((code, message)) => Err(format!("Failed to call ledger: {:?} - {}", code, message)),
-    }
-}
+//     match response {
+//         Ok((TransferFromResult::Ok(block_index),)) => Ok(block_index),
+//         Ok((TransferFromResult::Err(error),)) => Err(format!("Ledger transfer error: {:?}", error)),
+//         Err((code, message)) => Err(format!("Failed to call ledger: {:?} - {}", code, message)),
+//     }
+// }
 
 
-#[update(guard = prevent_anonymous)]
-async fn sell_tokens(params: SellTransferParams) -> Result<Nat, String> {
-    sell_transfer(params).await
-}
+// #[update(guard = prevent_anonymous)]
+// async fn sell_tokens(params: SellTransferParams) -> Result<Nat, String> {
+//     sell_transfer(params).await
+// }
 
 pub async fn perform_refund(contributor: &Principal, amount: u64) -> Result<(), String> {
     let backend_canister_id = ic_cdk::id();
