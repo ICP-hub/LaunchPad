@@ -131,11 +131,9 @@ const VerifyToken = () => {
       if (response.Err) throw new Error(response.Err);
 
       if (TokenPicture) {
-        console.log('Original Token Picture Size (KB):', (TokenPicture.size / 1024).toFixed(2));
-        const compressedFile = await compressImage(TokenPicture);
-        console.log('Compressed Token Picture Size (KB):', (compressedFile.size / 1024).toFixed(2));
+       
         const imgUrl = {
-          content: [compressedFile],
+          content: [TokenPicture],
           ledger_id: ledgerPrincipalId,
         };
         const res = await actor.upload_token_image("br5f7-7uaaa-aaaaa-qaaca-cai", imgUrl);
@@ -143,11 +141,9 @@ const VerifyToken = () => {
       }
 
       if (CoverPicture) {
-        console.log('Original CoverPicture Picture Size (KB):', (CoverPicture.size / 1024).toFixed(2));
-        const compressedFile = await compressImage(CoverPicture);
-        console.log('Compressed cover Picture Size (KB):', (compressedFile.size / 1024).toFixed(2));
+       
         const imgUrl_cover = {
-          content: [compressedFile],
+          content: [CoverPicture],
           ledger_id: ledgerPrincipalId,
         };
         const res = await actor.upload_cover_image("br5f7-7uaaa-aaaaa-qaaca-cai", imgUrl_cover);

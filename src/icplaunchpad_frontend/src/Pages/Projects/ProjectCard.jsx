@@ -150,7 +150,7 @@ const ProjectCard = ({ isUserToken, projectData, initial_Total_supply, saleType,
       alt="logo"
     />
     <div className="absolute top-[20px] right-[60px] ss2:right-[100px] xxs1:right-[130px] w-10 h-10 rounded-full border-1 border-gray-300">
-      <img src={l3} alt="small" className="object-cover w-full h-full" />
+    <img src={icp} alt="small" className="object-cover w-full h-full" />
     </div>
   </div>
   <div className="mt-[70px] text-center text-white space-y-3">

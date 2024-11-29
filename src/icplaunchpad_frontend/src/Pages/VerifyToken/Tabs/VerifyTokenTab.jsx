@@ -286,8 +286,8 @@ const VerifyTokenTab = ({ register, errors, setTokenData, watch, ledger_canister
 
         <div className="bg-[#F5F5F51A] text-white p-3 rounded-md dlg:mb-8">
           <ul className="text-[12px] dxs:text-[15px] px-2 ss2:px-7 ss2:py-4 list-disc">
-            <li>Lorem ipsum dolor sit amet consectetur. Egestas faucibus suspendisse turpis cras sed bibendum massa arcu.</li>
-            <li>Quisque enim amet ipsum ipsum faucibus leo adipiscing molestie. Tincidunt enim dis lobortis ac gravida. Non mollis lacus convallis non sit ac sit.</li>
+            <li>Token verification ensures that your token meets the required standards for authenticity and compliance, giving users confidence in your project.</li>
+            <li>Verified tokens build trust and credibility among potential investors and contributors, increasing the chances of successful participation in your project.</li>
           </ul>
         </div>
       </div>
