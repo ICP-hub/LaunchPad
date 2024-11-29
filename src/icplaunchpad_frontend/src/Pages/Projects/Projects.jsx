@@ -156,7 +156,7 @@ const ProjectLists = () => {
             placeholder="Search"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-[#444444] text-white p-2 rounded-xl outline-none placeholder-gray-500"
+            className="w-full bg-[#444444] text-white p-2 pl-4 rounded-xl outline-none placeholder-gray-500"
           />
 
           <div className="flex pr-2 gap-5 md:gap-2 md:mt-0 mt-4 w-full md:w-[30%] items-center justify-center relative">
@@ -219,7 +219,7 @@ const ProjectLists = () => {
       </div>
 
       {/* Project Cards Display */}
-      <div className="flex lg:flex-row flex-col flex-wrap items-center w-[95%] m-auto gap-24 justify-start">
+      <div className="flex lg:flex-row flex-col flex-wrap items-center w-[90%] m-auto gap-12 lg:gap-24 justify-start">
         {filteredTokensData.length > 0 ?
           filteredTokensData.map((sale, index) => (
             sale && <ProjectCard initial_Total_supply={ sale[1] || null} projectData={sale[0] || sale} saleType={saleType} key={index} />

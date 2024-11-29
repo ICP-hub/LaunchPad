@@ -1,7 +1,7 @@
 import React from 'react';
 
 const StepProgressBar = ({ currentStep }) => {
-  const steps = ['Verify Token', 'Launchpad Info', 'Add Additional Information', 'Review Information'];
+  const steps = ['Verify Token', 'Launchpad Info', 'Additional Information', 'Review Information'];
 
   return (
     <div className="flex justify-between   w-full  max-w-[864px] pt-11 pb-4 relative">

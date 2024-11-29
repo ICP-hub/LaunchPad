@@ -14,10 +14,10 @@ const ReviewInfoTab = ({ presaleDetails }) => {
             ["Token decimals", presaleDetails?.decimals || "N/A"],
             [" Fairlaunch Token", presaleDetails?.FairlaunchTokens || "N/A"],
           
-            [
-              "Sale method",
-              presaleDetails?.currencyICP === true ? "ICP" : "N/A",
-            ],
+            // [
+            //   "Sale method",
+            //   presaleDetails?.currencyICP === true ? "ICP" : "N/A",
+            // ],
             ["Softcap", presaleDetails?.softcapToken || "N/A"],
             ["Hardcap", presaleDetails?.hardcapToken || "N/A"],
             ["Minimum buy", presaleDetails?.minimumBuy || "N/A"],
@@ -44,7 +44,7 @@ const ReviewInfoTab = ({ presaleDetails }) => {
                       href={link.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="block text-blue-400"
+                      className="block text-[#F3B3A7]"
                     >
                       {link.url}
                     </a>
@@ -71,13 +71,10 @@ const ReviewInfoTab = ({ presaleDetails }) => {
       <div className="bg-[#F5F5F51A] text-white p-3 rounded-md mb-8">
         <ul className="text-[13px] xxs1:text-[15px] px-3 xxs1:px-7 py-4 list-disc">
           <li>
-            Lorem ipsum dolor sit amet consectetur. Egestas faucibus suspendisse
-            turpis cras sed bibendum massa arcu.
+          Verify Token Ownership: Ensure the legitimacy of your token by verifying ownership and confirming it’s authentic before proceeding with transactions or integration.
           </li>
           <li>
-            Quisque enim amet ipsum ipsum faucibus leo adipiscing molestie.
-            Tincidunt enim dis lobortis ac gravida. Non mollis lacus convallis
-            non sit ac sit.
+          Secure and Transparent Process: Use our streamlined process to validate your token with full transparency, ensuring that it meets the required standards for security and functionality.
           </li>
         </ul>
       </div>

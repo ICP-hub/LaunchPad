@@ -247,7 +247,10 @@ const AdditionalInfoTab = ({
   };
 
   return (
-    <div className="bg-[#222222] p-3 rounded-2xl mx-3  mb-[80px] dxs:mb-[140px] xxs1:mb-[90px] sm2:mb-[70px] md:mb-[10px]">
+    <div className="bg-[#222222] p-4 xxs1:p-8 m-4 rounded-2xl mb-[80px] dxs:mb-[140px] xxs1:mb-[90px] sm2:mb-[70px]  md:mb-[15px]   ">
+           <div className="flex  mb-8 bg-[#444444] pl-6 p-2 mt-[-31px] mx-[-17px] xxs1:mx-[-31px]  rounded-2xl">
+        <span className="text-white text-[22px]"> Additional Information </span>
+      </div>
       {/* File Upload */}
       <div className="flex flex-col justify-between mb-4">
         <label className="block text-[19px] mb-1">Logo</label>
@@ -341,7 +344,7 @@ const AdditionalInfoTab = ({
             </button>
           </div>
         ))}
-        <button onClick={addLink} className="text-blue-400 mt-2">
+        <button onClick={addLink} className="text-[#F3B3A7] mt-2">
           + Add another link
         </button>
       </div>

@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { PiCopyDuotone } from 'react-icons/pi';
+import CopyToClipboard from '../../../common/CopyToClipboard';
 
 const TokenInfoTab = ({ ledger_canister_id,actor }) => {
   const [tokenData, setTokenData] = useState(null);
@@ -33,11 +35,12 @@ const TokenInfoTab = ({ ledger_canister_id,actor }) => {
       {/* Token Address */}
       <div className="flex justify-between mb-4">
         <span>Address</span>
-        <span className="border-b-2 ml-2 text-right overflow-hidden text-ellipsis whitespace-nowrap">
-         {ledger_canister_id}
+        <span className="border-b-2  ml-2 text-right overflow-hidden text-ellipsis whitespace-nowrap">
+         <CopyToClipboard address={ledger_canister_id}/>
+
         </span>
       </div>
-      <p className="text-xs mb-6">Do not send BNB to the token address</p>
+      <p className="text-xs mb-6">Do not send ICP to the token address</p>
 
       {/* Token Details */}
       <div className="border-t pt-4">

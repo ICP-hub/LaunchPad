@@ -116,6 +116,7 @@ const VerifyToken = () => {
         social_links: socialLinksURLs,
         website,
         project_video,
+        processed:true
       };
 
       const ledgerPrincipalId = typeof ledger_canister_id !== 'string' && ledger_canister_id
@@ -188,14 +189,16 @@ const VerifyToken = () => {
     // Step-specific validation
     if (currentStep === 2) {
       const fairlaunchTokens = Number(data.FairlaunchTokens || 0);
+      const tokensLiquidity = Number(data.tokensLiquidity || 0);
       const totalSupply = Number(tokenData?.total_supply || 0);
-  
-      console.log("FairlaunchTokens:", fairlaunchTokens);
-      console.log("Total Supply:", totalSupply);
   
       // Validate FairlaunchTokens against total supply
       if (fairlaunchTokens > totalSupply) {
         setError("Fairlaunch tokens should be less than or equal to the total supply.");
+        return;
+      }
+      if (tokensLiquidity > totalSupply) {
+        setError("tokens Liquidity should be less than or equal to the total supply.");
         return;
       }
     }

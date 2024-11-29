@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Hide the increment and decrement icons for number input */
+.no-spinner::-webkit-inner-spin-button,
+.no-spinner::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.no-spinner {
+  -moz-appearance: textfield; /* Hides the spinner in Firefox */
+}
+
 
 @layer utilities {
     /* Hide scrollbar for Chrome, Safari and Opera */

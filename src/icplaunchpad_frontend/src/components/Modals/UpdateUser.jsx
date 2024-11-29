@@ -152,10 +152,15 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
         ariaHideApp={false}
       >
         <div className="bg-[#222222] p-6 rounded-2xl text-white max-h-[90vh] overflow-y-auto no-scrollbar w-[786px] relative">
-          <button onClick={closeModal} className="absolute top-2 right-4 text-[30px] text-white">
-            <TfiClose />
-          </button>
-          <h2 className="text-[25px] font-semibold">Update User</h2>
+        <div className="bg-[#FFFFFF4D] px-4 py-1 mb-4 rounded-2xl relative">
+                        <button
+                            onClick={closeModal}
+                            className="absolute top-0 mt-2 right-4 text-[30px] text-white"
+                        >
+                            <TfiClose />
+                        </button>
+                        <h2 className="text-[25px] font-semibold">Update User</h2>
+                    </div>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {/* Name */}
             <div>
@@ -241,7 +246,7 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
                   </div>
                 </div>
               ))}
-              <button onClick={addLink} className="text-blue-400 mt-2">
+              <button onClick={addLink} className="text-[#F3B3A7] mt-2">
                 + Add another link
               </button>
               {errors.links?.root && (

@@ -104,7 +104,7 @@ const CreatePreLaunch = () => {
   return (
     <div className="flex justify-center items-center bg-black text-white">
       <div className="w-full max-w-[1070px] p-8 rounded-2xl">
-        <h1 className="text-3xl font-bold text-start font-posterama mb-6">CREATE PRELAUNCH</h1>
+        <h1 className="text-3xl font-bold text-start font-posterama mb-6">CREATE Token</h1>
 
         {!isAuthenticated ? (
           <ConnectFirst />
@@ -112,7 +112,7 @@ const CreatePreLaunch = () => {
           <div className="bg-[#222222] p-4 rounded-lg">
             {/* Chain Text with Gray Background */}
             <div className="flex items-center mb-8 bg-[rgb(68,68,68)] p-2 mt-[-15px] mx-[-15px] rounded-2xl">
-              <span className="text-white text-[20px]">Chain</span>
+              <span className="text-white text-[20px]">Create  or Import Token</span>
             </div>
 
             {/* Search Label with Placeholder */}
@@ -127,7 +127,7 @@ const CreatePreLaunch = () => {
                 />
                 <button
                   onClick={handleImportToken}
-                  className="border-1 bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5] text-black w-[100px] ss2:w-[130px] xxs1:w-[200px] md:w-[250px] h-[38px] lg:h-[38px] text-[12px] xxs1:text-[16px] md:text-[18px] font-[600] rounded-2xl"
+                  className="border-1 bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5] text-black min-w-[100px] ss2:w-[130px] xxs1:w-[200px] md:w-[250px] h-[38px] lg:h-[38px] text-[12px] xxs1:text-[16px] md:text-[18px] font-[600] rounded-2xl"
                  
                 >
                   IMPORT TOKEN
@@ -139,8 +139,8 @@ const CreatePreLaunch = () => {
             {/* Information List */}
             <div className="bg-[#F5F5F51A] text-white p-3 rounded-md mb-8">
               <ul className="text-[15px] px-2 ss2:px-7 py-4 list-disc">
-                <li>Lorem ipsum dolor sit amet consectetur. Egestas faucibus suspendisse turpis cras sed bibendum massa arcu.</li>
-                <li>Quisque enim amet ipsum ipsum faucibus leo adipiscing molestie. Tincidunt enim dis lobortis ac gravida. Non mollis lacus convallis non sit ac sit.</li>
+                  <li>Everyone Gets a Fair Chance: A fair launch means no one has an unfair advantage. Everyone can join in from the beginning, giving equal opportunities to all.</li>
+                  <li>Build Trust from Day One: With no private sales or special deals, a fair launch keeps things transparent, helping to earn the trust of the community right from the start..</li>
               </ul>
             </div>
 
