@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ProjectCard from "../../Pages/Projects/ProjectCard";
 import { useSelector } from "react-redux";
-
+import NoDataFound from "../../common/NoDataFound";
 const UpcomingSales = React.forwardRef((props, ref) => {
   const navigate = useNavigate();
   const actor = useSelector((currState) => currState.actors.actor);
@@ -51,7 +51,10 @@ const UpcomingSales = React.forwardRef((props, ref) => {
               />
             ))
           ) : (
-            <h1 className="text-xl mx-auto my-16">Data Not Found...</h1>
+            <div className=" mx-auto ">
+              
+              <NoDataFound message="Data Not Found..." message2="No upcoming sales are scheduled for this project yet." message3="Stay tuned for exciting opportunities to participate in future sales."/>
+              </div>
           )}
           {salesData.length > 3 && (
             <button

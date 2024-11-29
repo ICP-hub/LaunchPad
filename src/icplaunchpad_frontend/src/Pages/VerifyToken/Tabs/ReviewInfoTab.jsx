@@ -71,10 +71,10 @@ const ReviewInfoTab = ({ presaleDetails }) => {
       <div className="bg-[#F5F5F51A] text-white p-3 rounded-md mb-8">
         <ul className="text-[13px] xxs1:text-[15px] px-3 xxs1:px-7 py-4 list-disc">
           <li>
-          Verify Token Ownership: Ensure the legitimacy of your token by verifying ownership and confirming it’s authentic before proceeding with transactions or integration.
+            Verify Token Ownership: Ensure the legitimacy of your token by verifying ownership and confirming it’s authentic before proceeding with transactions or integration.
           </li>
           <li>
-          Secure and Transparent Process: Use our streamlined process to validate your token with full transparency, ensuring that it meets the required standards for security and functionality.
+            Secure and Transparent Process: Use our streamlined process to validate your token with full transparency, ensuring that it meets the required standards for security and functionality.
           </li>
         </ul>
       </div>

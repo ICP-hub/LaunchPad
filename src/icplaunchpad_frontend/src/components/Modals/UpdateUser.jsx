@@ -15,6 +15,7 @@ import { convertFileToBase64 } from '../../utils/convertToBase64';
 import { userRegisteredHandlerRequest } from '../../StateManagement/Redux/Reducers/userRegisteredData';
 import { ProfileImageIDHandlerRequest } from '../../StateManagement/Redux/Reducers/ProfileImageID';
 import { tagsOptions } from '../../utils/tagsOptions';
+import compressImage from '../../utils/CompressedImage';
 const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const actor = useSelector((currState) => currState.actors.actor);
   const isAuthenticated = useSelector(
@@ -71,8 +72,13 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const handleProfilePictureChange = async (file) => {
     if (file) {
       try {
-        setProfilePictureData(new Uint8Array(await file.arrayBuffer()));
-        const base64String = await convertFileToBase64(file);
+        console.log('Original Image Size (bytes):', file.size);
+
+        const compressedFile = await compressImage(file);
+
+        console.log('Compressed Image Size (bytes):', compressedFile.size);
+        setProfilePictureData(new Uint8Array(await compressedFile.arrayBuffer()));
+        const base64String = await convertFileToBase64(compressedFile);
         setFileName(file.name);
         setProfileImagePreview(base64String);
       } catch (error) {

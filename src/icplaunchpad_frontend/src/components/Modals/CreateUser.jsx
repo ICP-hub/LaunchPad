@@ -19,7 +19,7 @@ import AnimationButton from '../../common/AnimationButton';
 import { userRegisteredHandlerRequest } from '../../StateManagement/Redux/Reducers/userRegisteredData';
 import { ProfileImageIDHandlerRequest } from '../../StateManagement/Redux/Reducers/ProfileImageID';
 import { tagsOptions } from '../../utils/tagsOptions';
-
+import CompressedImage from '../../utils/CompressedImage';
 const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const navigate = useNavigate();
   const actor = useSelector((currState) => currState.actors.actor);
@@ -56,9 +56,17 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
 
     try {
       // Prepare user data
+      let originalFileSize = 0;
+      if (profile_picture && profile_picture[0]) {
+        originalFileSize = profile_picture[0].size;
+        console.log('Original Image Size (bytes):', originalFileSize);
+      }
       let profilePictureData = [];
       if (profile_picture) {
-        profilePictureData = await convertFileToUint8Array(profile_picture);
+        
+        const compressedFile = await CompressedImage(profile_picture);
+        console.log('Compressed Image Size (bytes):', compressedFile.size);
+        profilePictureData = await convertFileToUint8Array(compressedFile);
       }
       // const linksArray = links.map(link => link.url);
       // const linksArray = links.map(link => link.url.trim());

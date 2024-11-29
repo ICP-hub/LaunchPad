@@ -6,7 +6,7 @@ import { FaTelegram } from "react-icons/fa6";
 import { toast, Toaster } from "react-hot-toast";
 import { idlFactory  } from "../../StateManagement/useContext/ledger.did.js";
 
-import person1 from "../../../assets/images/carousel/person1.png";
+import person1 from "../../../assets/images/carousel/user.png";
 import ProjectTokenAbout from "./about/ProjectTokenAbout.jsx";
 import AffiliateProgram from "./AffiliateProgram/AffiliateProgram.jsx";
 import FAQsDiscussion from "./FAQsDiscussion/FAQsDiscussion.jsx";

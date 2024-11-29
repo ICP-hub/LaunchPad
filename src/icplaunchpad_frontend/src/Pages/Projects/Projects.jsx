@@ -10,6 +10,7 @@ import { useAuth } from "../../StateManagement/useContext/useClient.jsx";
 import { debounce } from "lodash";
 import { upcomingSalesHandlerRequest } from "../../StateManagement/Redux/Reducers/UpcomingSales.jsx";
 import { SuccessfulSalesHandlerRequest } from "../../StateManagement/Redux/Reducers/SuccessfulSales.jsx";
+import NoDataFound from "../../common/NoDataFound.jsx";
 
 const ProjectLists = () => {
   const location = useLocation();
@@ -135,13 +136,12 @@ const ProjectLists = () => {
 
         {/* Tab Selection */}
         <div className="flex space-x-8 ss2:space-x-12 my-8">
-          {["all", "advanced"].map((tab) => (
+          {["all"].map((tab) => (
             <button
               key={tab}
-              className={`cursor-pointer relative ${selectedTab === tab
-                  ? "before:absolute before:left-0 before:right-0 before:top-7 before:h-[2px] before:bg-gradient-to-r before:from-[#F3B3A7] before:to-[#CACCF5] before:rounded text-transparent bg-clip-text bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5]"
-                  : ""
-                }`}
+              className="cursor-pointer relative 
+                  before:absolute before:left-0 before:right-0 before:top-7 before:h-[2px] before:bg-gradient-to-r before:from-[#F3B3A7] before:to-[#CACCF5] before:rounded text-transparent bg-clip-text bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5]"
+                  
               onClick={() => setSelectedTab(tab)}
             >
               {tab.toUpperCase()}
@@ -225,7 +225,9 @@ const ProjectLists = () => {
             sale && <ProjectCard initial_Total_supply={ sale[1] || null} projectData={sale[0] || sale} saleType={saleType} key={index} />
           ))
           :
-      <h1 className="text-xl mx-auto my-16"> Data Not Found... </h1>
+          <div className="mx-auto py-12">
+            <NoDataFound message="Data Not Found..." message2="No data available to display at the moment." message3="Start adding information or check back later for updates." />
+          </div>
 
         }
       </div>

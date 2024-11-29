@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import FundDetails from './FundDetails';
+import NoDataFound from '../../common/NoDataFound';
 
 
 const FundList = () => {
@@ -33,7 +34,9 @@ const FundList = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="7" className="py-3 px-6 text-center">No Successful Sales Found</td>
+                <td colSpan="7" className="py-3 px-6 text-center">
+                    <NoDataFound message="No Successful Sales Found..." message2="No tokens have been successfully raised for this project yet." message3="Kickstart your fundraising journey by creating and sharing your campaign." />
+                </td>
               </tr>
             )}
           </tbody>
