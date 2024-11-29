@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import person1 from '../../../assets/images/carousel/person1.png';
+import person1 from '../../../assets/images/carousel/user.png';
 import l3 from '../../../assets/images/carousel/l3.png';
+import icp from "../../../assets/images/icp.png"
 import { useNavigate } from 'react-router-dom';
 import { Principal } from '@dfinity/principal';
 import SaleStart from '../OwnerSection/SaleStart';

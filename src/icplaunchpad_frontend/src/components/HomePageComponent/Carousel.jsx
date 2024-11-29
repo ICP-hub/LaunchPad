@@ -6,7 +6,7 @@ import l3 from '../../../assets/images/carousel/l3.png';
 import l4 from '../../../assets/images/carousel/l4.png';
 import l5 from '../../../assets/images/carousel/l5.png';
 import l6 from '../../../assets/images/carousel/l6.png';
-
+import icp from "../../../assets/images/icp.png"
 import person1 from '../../../assets/images/carousel/person1.png';
 import person2 from '../../../assets/images/carousel/person2.png';
 import person3 from '../../../assets/images/carousel/person3.png';

@@ -1,5 +1,5 @@
 import React from 'react';
-import person1 from "../../../../assets/images/carousel/person1.png";
+import person1 from "../../../../assets/images/carousel/user.png";
 
 const PreviousSaleTab = () => {
   

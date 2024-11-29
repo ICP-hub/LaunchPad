@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import person1 from "../../../assets/images/carousel/person1.png";
+import person1 from "../../../assets/images/carousel/user.png";
 import { useNavigate } from 'react-router-dom';
 import l3 from '../../../assets/images/carousel/l3.png'
 import ProjectCard from "../../Pages/Projects/ProjectCard";
 import { useSelector } from "react-redux";
+import NoDataFound from "../../common/NoDataFound";
 
   
 
@@ -58,7 +59,10 @@ const Clients = () => {
       { (salesData.length > 0 ) ? salesData.map((sales, index) => (
         (index < 3) && <ProjectCard initial_Total_supply={ sales[1] || null} projectData={sales[0]} saleType="successfull" index={index}/> 
       )) :
-      <h1 className="text-xl mx-auto my-16"> Data Not Found... </h1>
+      // <h1 className="text-xl mx-auto my-16"> Data Not Found... </h1>
+      <div className="mx-auto">
+            <NoDataFound message="No Successful Sales Found..." message2="No tokens have been successfully raised for this project yet." message3="Kickstart your fundraising journey by creating and sharing your campaign." />
+      </div>
       }
       <button onClick={handleViewMoreClick} className="text-white font-posterama  xxs1:hidden underline text-[20px] mt-6 xxs1:text-xl">
           Load More

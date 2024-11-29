@@ -9,7 +9,7 @@ import { FaTelegram } from "react-icons/fa6";
 import { FaInstagram } from "react-icons/fa";
 import { FaDiscord } from "react-icons/fa";
 
-import person1 from "../../../assets/images/carousel/person1.png"
+import person1 from "../../../assets/images/carousel/user.png"
 import ProjectTokenAbout from "./about/ProjectTokenAbout";
 import FAQsDiscussion from "./FAQsDiscussion/FaqDiscussionTab.jsx";
 import Pooolinfo from "./pooolinfo/Pooolinfo";
