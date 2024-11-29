@@ -17,10 +17,10 @@
 //     setPresaleDetails((prev) => ({ ...prev, feeOption: !feeOption }));
 //   };
 
- 
+
 
 //    const copyToClipboard = () => {
-    
+
 //      if (inputRef.current) {
 //        navigator.clipboard
 //          .writeText(inputRef.current.value)
@@ -158,16 +158,16 @@ const VerifyTokenTab = ({ register, errors, setTokenData, watch, ledger_canister
   const { createCustomActor } = useAuth();
 
   useEffect(() => {
-    console.log('ledger-',ledger_canister_id)
+    console.log('ledger-', ledger_canister_id)
     if (ledger_canister_id) {
-      if(typeof ledger_canister_id != 'string'){
-        const ledgerId= Principal.fromUint8Array(ledger_canister_id)
+      if (typeof ledger_canister_id != 'string') {
+        const ledgerId = Principal.fromUint8Array(ledger_canister_id)
         getTokenData(ledgerId);
-      }else{
-        const ledgerId= Principal.fromText(ledger_canister_id)
+      } else {
+        const ledgerId = Principal.fromText(ledger_canister_id)
         getTokenData(ledgerId);
       }
-     
+
 
     }
   }, [ledger_canister_id]);
@@ -182,7 +182,7 @@ const VerifyTokenTab = ({ register, errors, setTokenData, watch, ledger_canister
         const tokenDecimals = await actor.icrc1_decimals();
         const tokenSupply = await actor.icrc1_total_supply();
         console.log("tokenName at 186 in varify token tab", tokenName)
-        setTokenData((prev) => ({ ...prev, token_name: tokenName,token_symbol:tokenSymbol, decimals:tokenDecimals, total_supply:tokenSupply}));
+        setTokenData((prev) => ({ ...prev, token_name: tokenName, token_symbol: tokenSymbol, decimals: tokenDecimals, total_supply: tokenSupply }));
         setTokenInfo({
           token_name: tokenName,
           token_symbol: tokenSymbol,
@@ -203,15 +203,23 @@ const VerifyTokenTab = ({ register, errors, setTokenData, watch, ledger_canister
     updatedData[event.target.name] = event.target.value;
     setTokenData(updatedData);
   };
+
+  useEffect(() => {
+    if (tokenInfo?.total_supply) {
+      register('total_supply', { value: Number(tokenInfo.total_supply) });
+    }
+  }, [tokenInfo, register]);
+
+  
   return (
-    <div className="flex justify-center items-center mb-[80px] dxs:mb-[145px] xxs1:mb-[80px] sm2:mb-[70px] md:mb-[30px] dlg:mb-0 m-4 bg-black text-white">
-      <div className="bg-[#222222] w-full max-w-[1070px] h-[920px] xxs1:h-[850px] sm2:h-[780px] md:h-[730px] dlg:h-[780px] p-4 xxs1:p-8 rounded-2xl">
+    <div className="bg-[#222222] p-4 xxs1:p-8 m-4 rounded-2xl mb-[80px] dxs:mb-[140px] xxs1:mb-[90px] sm2:mb-[70px]  md:mb-[15px]">
+      <div className="bg-[#222222] w-full max-w-[1070px] h-[920px] xxs1:h-[850px] sm2:h-[780px] md:h-[800px] dlg:h-[780px] p-4 xxs1:p-8 rounded-2xl">
         <div className="flex  mb-8 bg-[rgb(68,68,68)] pl-6 p-2 mt-[-31px] mx-[-17px] xxs1:mx-[-31px] rounded-2xl">
           <span className="text-white text-[22px]"> Verify Token</span>
         </div>
 
         <h2 className="text-lg font-semibold mb-4">Canister ID</h2>
-        <CopyToClipboard address={ledger_canister_id} style={true}/>
+        <CopyToClipboard address={ledger_canister_id} style={true} />
 
         <div className="mb-8 mt-8">
           <div className="flex justify-between border-b-2 py-1 border-[#FFFFFF80]">
@@ -230,6 +238,7 @@ const VerifyTokenTab = ({ register, errors, setTokenData, watch, ledger_canister
             <p>Total Supply</p>
             <p>{Number(tokenInfo?.total_supply) || 0}</p>
           </div>
+
         </div>
 
         <div className="mb-4">
@@ -280,7 +289,7 @@ const VerifyTokenTab = ({ register, errors, setTokenData, watch, ledger_canister
             <div className="w-4 h-4 bg-transparent border-2 border-white rounded-full peer-checked:bg-gradient-to-r from-[#f09787] to-[#CACCF5] flex items-center justify-center mr-2">
               <div className="w-1.5 h-1.5 bg-transparent peer-checked:bg-gradient-to-r from-[#f09787] to-[#CACCF5] rounded-full"></div>
             </div>
-           Auto Listing
+            Auto Listing
           </label>
         </div>
 

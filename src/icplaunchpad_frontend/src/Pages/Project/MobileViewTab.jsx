@@ -20,8 +20,6 @@ const MobileViewTab = ({ledgerId,poolData,presaleData}) => {
         return <Token ledgerId={ledgerId} />;
       case "Pool Info":
         return <Pooolinfo presaleData={presaleData} poolData={poolData} />;
-      case "Affiliate Program":
-        return <AffiliateProgram />;
       case "Tokenomic":
         return <Tokenomic />;
       case "FAQs & Discussion":
@@ -35,7 +33,6 @@ const MobileViewTab = ({ledgerId,poolData,presaleData}) => {
     { name: "About", content: renderContent() },
     { name: "Token", content: renderContent() },
     { name: "Pool Info", content: renderContent() },
-    { name: "Affiliate Program", content: renderContent() },
     { name: "Tokenomic", content: renderContent() },
     { name: "FAQs & Discussion", content: renderContent() },
   ];

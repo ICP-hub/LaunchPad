@@ -43,7 +43,7 @@ const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false); // State to toggle hamburger menu
   const [isOpen, setIsOpen] = useState(false);
   const [profileModalIsOpen, setProfileModalIsOpen] = useState(false); // State for ProfileCard modal
-  
+
 
   const [activeSection, setActiveSection] = useState("home");
   const [isUserRegistered, setUserRegister] = useState(null);
@@ -57,10 +57,10 @@ const Header = () => {
   const userData = useSelector((state) => state?.userData?.data[0]);
   const navigate = useNavigate();
   const profile_ImgId = useSelector((state) => state?.ProfileImageID?.data)
-    const {
-      fetchIcpBalance,
-      icpBalance,
-    } = useIdentityKit();
+  const {
+    fetchIcpBalance,
+    icpBalance,
+  } = useIdentityKit();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -102,7 +102,7 @@ const Header = () => {
       console.log("userImg-", imageUrl);
     }
     else {
-      setProfileImg(null); 
+      setProfileImg(null);
       console.log("No profile image found, using default.");
     }
   }
@@ -133,8 +133,8 @@ const Header = () => {
         const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId[tokenImgId.length - 1]}`;
         console.log("Token Image URL:", imageUrl);
 
-        const creator=saleParams?.Ok?.creator;
-        navigate( creator == principal ? '/token-page' : '/project', { state: { projectData:{ ...data, token_image: imageUrl }} });
+        const creator = saleParams?.Ok?.creator;
+        navigate(creator == principal ? '/token-page' : '/project', { state: { projectData: { ...data, token_image: imageUrl } } });
       }
     }
   }
@@ -173,8 +173,8 @@ const Header = () => {
   };
 
 
-    const formattedIcpBalance =
-      icpBalance !== undefined ? Number(icpBalance).toFixed(5) : "Fetching...";
+  const formattedIcpBalance =
+    icpBalance !== undefined ? Number(icpBalance).toFixed(5) : "Fetching...";
 
   return (
     <div>
@@ -280,7 +280,7 @@ const Header = () => {
 
           {isSearching && (
             <div className=" -mt-8">
-              <div className="flex items-center absolute h-[35px]  lg:mr-3 rounded-lg w-[80vw] right-0 md:w-[150px] lg:w-[245px] xl:w-[380px]  bg-[#222222] sm4:right-[23px] lg:right-[-25px] dlg:right-[5px] md:py-[2px]">
+              <div className="flex items-center absolute h-[35px]  lg:mr-3 rounded-lg w-[80vw] right-0 md:w-[155px] lg:w-[220px] xl:w-[380px]  bg-[#222222] sm4:right-[10px] lg:right-[-20px] dlg:right-[0px] md:py-[2px]">
                 <input
                   type="text"
                   value={searchText}
@@ -301,7 +301,7 @@ const Header = () => {
                 />
               </div>
 
-              {tokenData && tokenData.length > 0 && <div className=" py-1 flex items-center justify-center   absolute min-h-[25px] border-2 border-[#f3b3a7] lg:mr-3 rounded-lg w-[80vw] top-10 right-0 md:w-[150px] lg:w-[245px] xl:w-[380px]  bg-[#222222] sm4:right-[23px] lg:right-[-25px] dlg:right-[5px] md:py-[2px] ">
+              {tokenData && tokenData.length > 0 && <div className=" py-1 flex items-center justify-center   absolute min-h-[25px] border-2 border-[#f3b3a7] lg:mr-3 rounded-lg w-[80vw] top-10 right-0 md:w-[155px] lg:w-[220px] xl:w-[380px]  bg-[#222222] sm4:right-[12px] lg:right-[-20px] dlg:right-[0px] md:py-[2px] ">
                 <ul className="">
                   {tokenData?.map((data, index) => <li className="my-1 cursor-pointer" key={index} onClick={() => handleSearchedToken(data)}> {data.token_name} </li>)}
                 </ul>
@@ -349,10 +349,10 @@ const Header = () => {
             {/* Dropdown menu */}
             {isOpen && (
               <div className="absolute right-0 mt-2 font-posterama w-48 bg-[#222222] rounded-md z-50">
-                <div className="py-2 px-2">
-                  <div className="hidden border-b md:block">
-                    <div className="block px-4 py-2 text-[18px] ">  {icpBalance !== undefined ? (
-                      <span className="flex gap-2"> <img src={icp} alt="" className="h-6" />${icpBalance} ICP</span>
+                <div className="py-2 px-2 text-center">
+                  <div className="hidden border-b  w-full md:block">
+                    <div className="block  py-2 text-[18px] ">  {icpBalance !== undefined ? (
+                      <span className="flex items-center justify-center gap-2 "> <img src={icp} alt="" className="h-6" />${icpBalance} ICP</span>
                     ) : (
                       "Fetching your balance..."
                     )}</div>
@@ -360,7 +360,7 @@ const Header = () => {
                   <div className="hidden border-b md:block">
                     <button
                       onClick={openProfileModal}
-                      className="block px-4 py-2 text-[18px] "
+                      className="block  px-4 py-2 w-full text-[18px] "
                     >
                       Account
                     </button>
@@ -374,7 +374,7 @@ const Header = () => {
                   <Link
                     to="/profile"
                     onClick={() => handleSectionClick("profile")}
-                    className="block px-4 py-2 text-[18px] border-b "
+                    className="block px-4 py-2  text-[18px] border-b "
                   >
                     Profile
                   </Link>
@@ -382,7 +382,7 @@ const Header = () => {
                   <div className="hidden md:block">
                     <button
                       onClick={openUserModal}
-                      className="block px-4 py-2 text-[18px] "
+                      className="block px-4 w-full py-2 text-[18px] "
                     >
                       Update User
                     </button>
@@ -437,6 +437,26 @@ const Header = () => {
               </Link>
             </>
           )}
+
+          {!isAuthenticated ? (
+            ""
+          ) : (
+            <>
+              <button
+                onClick={openUserModal}
+                className="block py-4 "
+              >
+                Update User
+              </button>
+              <UpdateUser
+                userModalIsOpen={userUpdateIsOpen}
+                setUserModalIsOpen={setUserUpdateIsOpen}
+              />
+            </>
+          )}
+
+
+
           {!isAuthenticated ? (
             <button
               onClick={openModal}

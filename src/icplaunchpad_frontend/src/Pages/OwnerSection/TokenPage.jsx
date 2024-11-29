@@ -14,7 +14,6 @@ import ProjectTokenAbout from "./about/ProjectTokenAbout";
 import FAQsDiscussion from "./FAQsDiscussion/FaqDiscussionTab.jsx";
 import Pooolinfo from "./pooolinfo/Pooolinfo";
 import Token from "./token/Token";
-import PreviousSale from "./PreviousSale/PreviousSale.jsx";
 import MobileViewTab from "./MobileViewTab";
 import { FiEdit3 } from "react-icons/fi";
 
