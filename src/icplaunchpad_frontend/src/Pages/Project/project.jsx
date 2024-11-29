@@ -8,7 +8,6 @@ import { idlFactory  } from "../../StateManagement/useContext/ledger.did.js";
 
 import person1 from "../../../assets/images/carousel/user.png";
 import ProjectTokenAbout from "./about/ProjectTokenAbout.jsx";
-import AffiliateProgram from "./AffiliateProgram/AffiliateProgram.jsx";
 import FAQsDiscussion from "./FAQsDiscussion/FAQsDiscussion.jsx";
 import Pooolinfo from "./pooolinfo/Pooolinfo.jsx";
 import Token from "./token/Token.jsx";

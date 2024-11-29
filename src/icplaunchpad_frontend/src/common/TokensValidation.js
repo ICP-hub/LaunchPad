@@ -14,7 +14,16 @@ export const getSchemaForStep = (step) => {
           .typeError("Enter value")
           .required("Fairlaunch Tokens is required")
           .positive("Fairlaunch Tokens must be positive")
-          .notOneOf([0], "Fairlaunch Tokens must be greater than 0"),
+          .notOneOf([0], "Fairlaunch Tokens must be greater than 0")
+          .test(
+            "is-less-than-or-equal-to-total_supply",
+            "Tokens for Fairlaunch must not exceed the total supply",
+            function (value) {
+              console.log('this.parent=',this.parent)
+              const {total_supply} = this.parent;
+              console.log('total_supply--',total_supply)
+              return value <= Number(total_supply || 0); // Safely handle total_supply as a number
+            }),
 
         softcapToken: yup
           .number()
@@ -53,7 +62,15 @@ export const getSchemaForStep = (step) => {
           .required("Tokens for liquidity is required") // Field is mandatory
           .positive("Tokens for liquidity must be positive") // Only positive numbers allowed
           .notOneOf([0], "Tokens for liquidity must be greater than 0") // Cannot be zero
-      ,
+          .test(
+            "is-less-than-or-equal-to-total_supply",
+            "Tokens for liquidity must not exceed the total supply",
+            function (value) {
+              console.log('this.parent=',this.parent)
+              const {total_supply} = this.parent;
+              console.log('total_supply--',total_supply)
+              return value <= Number(total_supply || 0); // Safely handle total_supply as a number
+            }),
 
         minimumBuy: yup
           .number()

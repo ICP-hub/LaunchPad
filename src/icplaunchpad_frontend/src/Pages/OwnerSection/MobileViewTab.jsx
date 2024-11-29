@@ -21,8 +21,6 @@ const MobileViewTab = ({actor , poolData, presaleData}) => {
         return <Pooolinfo poolData={poolData}/>;
       case "FAQs & DISCUSSION":
         return <FAQsDiscussion />;
-      case "PREVIOUS SALE":
-        return <PreviousSale/>;
       default:
         return <ProjectTokenAbout />;
     }
@@ -33,7 +31,6 @@ const MobileViewTab = ({actor , poolData, presaleData}) => {
     { name: "TOKEN", content: renderContent() },
     { name: "POOL INFO", content: renderContent() },
     { name: "FAQs & DISCUSSION", content: renderContent() },
-    { name: "PREVIOUS SALE", content: renderContent() },
   ];
 
   return (

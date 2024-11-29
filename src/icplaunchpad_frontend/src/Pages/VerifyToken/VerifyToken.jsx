@@ -189,23 +189,6 @@ const VerifyToken = () => {
     // Debug logs for validation
     console.log("Moving to the next step:", currentStep);
   
-    // Step-specific validation
-    if (currentStep === 2) {
-      const fairlaunchTokens = Number(data.FairlaunchTokens || 0);
-      const tokensLiquidity = Number(data.tokensLiquidity || 0);
-      const totalSupply = Number(tokenData?.total_supply || 0);
-  
-      // Validate FairlaunchTokens against total supply
-      if (fairlaunchTokens > totalSupply) {
-        setError("Fairlaunch tokens should be less than or equal to the total supply.");
-        return;
-      }
-      if (tokensLiquidity > totalSupply) {
-        setError("tokens Liquidity should be less than or equal to the total supply.");
-        return;
-      }
-    }
-  
     // Proceed to the next step or submit
     if (currentStep < 4) {
       setError(""); // Clear any previous errors
@@ -256,7 +239,7 @@ const VerifyToken = () => {
         {currentStep === 4 && <ReviewInfoTab presaleDetails={presaleDetails} />}
       </div>
 
-      <div className="flex justify-between max-w-2xl font-posterama mt-[-120px]  dxs:mt-[-190px] xxs1:mt-[-130px] sm2:mt-[-120px] md:mt-[-70px]">
+      <div className="flex justify-between max-w-2xl  font-posterama mt-[-120px]  dxs:mt-[-190px] xxs1:mt-[-130px] sm2:mt-[-120px] md:mt-[-80px] lg:mt-[-60px]">
         {currentStep > 1 && (
           <button
             className="bg-transparent font-posterama border-2 w-[80px] ss2:w-[115px] sm4:w-[210px] h-[35px] mx-2 text-[17px] font-[400] rounded-2xl"
@@ -293,7 +276,7 @@ const VerifyToken = () => {
           </button>
         )}
       </div>
-      {error && <div className="text-red-500 mt-8 px-8">{error}</div>}
+      {error && <div className= " text-red-500 mt-8 px-8">{error}</div>}
     </div>
   );
 };
