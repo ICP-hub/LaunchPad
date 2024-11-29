@@ -166,6 +166,7 @@ import Modal from 'react-modal';
 import person1 from "../../../assets/images/carousel/person1.png"
 import { useSelector } from 'react-redux';
 import { useAuth } from '../../StateManagement/useContext/useClient';
+import CopyToClipboard from '../../common/CopyToClipboard';
 
 
 
@@ -226,33 +227,34 @@ const ProfileCard = ({ profileModalIsOpen, setProfileModalIsOpen, formattedIcpBa
               {/* Modal Close Button */}
               <button
                 onClick={closeModal}
-                className="absolute right-8 top-[20px] text-[25px] text-white"
+                className="absolute lg:right-8 right-4 top-[20px] text-[25px] text-white"
               >
                 <TfiClose />
               </button>
             </div>
 
-
             {/* Profile Image */}
             <div className="flex  items-center mt-4 gap-8 ">
               <img
-                src={profileImg || person1}
+                src={ profileImg || person1 }
                 alt="Profile"
                 className="w-20 h-20 rounded-full object-cover"
               />
-              <div className='w-48'>
-                <h2 className="text-lg font-semibold mt-2">{UserData ? UserData?.username : 'ABCD'}</h2>
-                <p className="text-sm text-gray-400 overflow-hidden whitespace-nowrap text-ellipsis"> {principal} </p>
+              <div className=' w-48 lg:w-64'>
+                <h2 className="text-lg font-semibold mt-2">{UserData ? UserData?.name : 'ABCD'}</h2>
+                <p className="text-sm text-gray-400 overflow-hidden whitespace-nowrap text-ellipsis">
+                <CopyToClipboard address={principal}  width={'90%'} />
+                </p>
 
                 {/* Block Explorer Button */}
-                <button className="bg-[#3c3c3c] text-xs text-gray-400 px-3 py-1 mt-1 rounded-full">
+                <button className="bg-[#3c3c3c] mt-2 text-xs  text-gray-400 px-3 py-1  rounded-full">
                   Block Explorer
                 </button>
               </div>
             </div>
 
             {/* ICP, Activity, and Disconnect */}
-            <div className="mt-4">
+            <div className="mt-4 lg:mt-10">
               <div className="text-sm font-semibold border-b border-gray-600 py-2">
                 ICP  ${formattedIcpBalance}
               </div>

@@ -7,7 +7,7 @@ const FundList = () => {
   const SuccesFullSales = useSelector((state) => state.SuccessfulSales.data);
 
   return (
-    <div className="px-[8%] py-[5%] md:py-[6%] lg:py-[3%] bg-black">
+    <div className="px-[9%] py-[5%] md:py-[6%] lg:py-[3%] bg-black">
       <h2 className="text-[30px] font-bold text-white font-posterama mb-4">
         {/* SUCCESSFUL PROJECTS RAISE FUNDING */}
         Where Ideas Meet Funding Success
@@ -15,7 +15,7 @@ const FundList = () => {
       <div className="overflow-x-auto max-h-[400px] overflow-y-auto no-scrollbar">
         <table className="min-w-full bg-black border-b border-[#FFFFFF33]">
           <thead>
-            <tr className="bg-[#1919194D] text-white font-posterama uppercase text-sm leading-normal">
+            <tr className="bg-[#19191998] text-white font-posterama uppercase text-sm leading-normal">
               <th className="py-3 px-6 text-left">#</th>
               <th className="py-3 px-6 text-left">Projects</th>
               <th className="py-3 px-6 text-left">Symbol</th>

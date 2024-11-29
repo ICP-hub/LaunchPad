@@ -6,6 +6,7 @@ import { Principal } from '@dfinity/principal';
 import SaleStart from '../OwnerSection/SaleStart';
 import { useAuth } from '../../StateManagement/useContext/useClient';
 import { useSelector } from 'react-redux';
+import RaisedFundProgress from '../../common/RaisedFundProgress';
 
 const ProjectCard = ({ isUserToken, projectData, initial_Total_supply, saleType, index }) => {
   const navigate = useNavigate();
@@ -15,7 +16,9 @@ const ProjectCard = ({ isUserToken, projectData, initial_Total_supply, saleType,
   const [tokenInfo, setTokenInfo] = useState({});
   const [isFetchingIMG, setFetchingIMG] = useState(false);
   const [tokenPhase, setTokenPhase] = useState('UPCOMING');
-  const [saleProgress, setSaleProgress] = useState(0);
+  const [fundRaised, setfundRaised] = useState(0);
+  const [fundRaisedProgress, setfundRaisedProgress] = useState(0);
+  const [progressType,setProgressType]=useState();
   const [ledgerActor, setLedgerActor] = useState();
   const principal = useSelector((currState) => currState.internet.principal);
 
@@ -23,26 +26,6 @@ const ProjectCard = ({ isUserToken, projectData, initial_Total_supply, saleType,
   const domain = process.env.DFX_NETWORK === 'ic' ? 'raw.icp0.io' : 'localhost:4943';
   const canisterId = process.env.CANISTER_ID_IC_ASSET_HANDLER;
   const ledgerId = projectData.ledger_canister_id || projectData.canister_id;
-
-  // Calculate sale progress based on the token phase and supply
-  useEffect(() => {
-    if (tokenPhase === 'UPCOMING' && initial_Total_supply && Number(initial_Total_supply) > 0){
-      const progress = 100 - (Number(tokenInfo.total_supply) / Number(initial_Total_supply)) * 100;
-      setSaleProgress(progress.toFixed(2));
-
-    } else if (tokenPhase === 'SUCCESSFULL' && initial_Total_supply && Number(initial_Total_supply) > 0) {
-      const progress = 100 - (Number(tokenInfo.total_supply) / Number(initial_Total_supply)) * 100;
-      setSaleProgress(progress.toFixed(2));
-
-    } else if (tokenInfo.total_supply && projectData.total_supply && Number(projectData.total_supply) > 0) {
-      const progress = 100 - (Number(tokenInfo.total_supply) / Number(projectData.total_supply)) * 100;
-      setSaleProgress(progress.toFixed(2));
-    }
-   else if ( isUserToken && tokenInfo.total_supply && projectData.total_supply && Number(projectData.total_supply) > 0) {
-    const progress = 100 - (Number(tokenInfo.total_supply) / Number(projectData.total_supply)) * 100;
-    setSaleProgress(progress.toFixed(2));
-  }
-  }, [tokenPhase, tokenInfo.total_supply, projectData.total_supply]);
 
   // Fetch ledger actor and initial token owner information
   useEffect(() => {
@@ -78,7 +61,6 @@ const ProjectCard = ({ isUserToken, projectData, initial_Total_supply, saleType,
           ledgerActor.icrc1_total_supply(),
           ledgerActor.icrc1_symbol(),
         ]);
-
         setTokenInfo((prev) => ({ ...prev, token_name, total_supply, token_symbol }));
 
         const ledgerPrincipal = Principal.fromText(ledgerId);
@@ -96,6 +78,7 @@ const ProjectCard = ({ isUserToken, projectData, initial_Total_supply, saleType,
           setTokenInfo((prev) => ({ ...prev, cover_image: imageUrl }));
         }
         setFetchingIMG(true);
+
       } catch (error) {
         console.error(`Error fetching project data for ledgerId: ${ledgerId}`, error);
       }
@@ -140,7 +123,7 @@ const ProjectCard = ({ isUserToken, projectData, initial_Total_supply, saleType,
         ...(projectData.ledger_canister_id ? { canister_id: projectData.ledger_canister_id } : {}),
         ...projectData,
         ...tokenInfo,
-        saleProgress,
+        fundRaisedProgress,
       };
       console.log('routeData=>',routeData)
       const creator=routeData?.sale_details?.creator || routeData?.sale_Params?.creator;
@@ -155,87 +138,62 @@ const ProjectCard = ({ isUserToken, projectData, initial_Total_supply, saleType,
       <div
         key={index}
         onClick={handleViewMoreClick}
-        className="bg-[#FFFFFF1A] cursor-pointer text-white p-1 rounded-xl flex flex-col ss2:w-[325px] xxs1:w-[400px] mt-14 mx-2"
+        className="bg-[#FFFFFF1A] cursor-pointer text-white p-1 pb-4 rounded-xl flex flex-col w-[350px] md:w-[375px] mt-14 mx-2"
       >
-        <div className="h-[280px] rounded-lg py-5 flex flex-col">
-          <div className="relative">
-            <img
-              src={tokenInfo?.token_image || person1}
-              className="absolute top-0 left-[50%] transform -translate-x-1/2 -translate-y-[50%] rounded-full object-cover h-[100px] w-[100px] md:h-[114px] md:w-[114px]"
-              alt="logo"
-            />
-            <div className="absolute top-[20px] right-[60px] ss2:right-[100px] xxs1:right-[130px] w-10 h-10 rounded-full border-1 border-gray-300">
-              <img src={l3} alt="small" className="object-cover w-full h-full" />
-            </div>
-          </div>
-          <div className="mt-[70px] text-center text-white space-y-5">
-            <div className="text-[24px] font-semibold">{projectData?.token_name || tokenInfo?.token_name}</div>
-            <div className="text-[16px] text-[#FFFFFFA6] font-medium"> Fair Launch </div>
+  {/* Main UI */}
+<div className="h-[250px] rounded-lg py-5 flex flex-col">
+  <div className="relative">
+    <img
+      src={tokenInfo?.token_image || person1}
+      className="absolute top-0 left-[50%] transform -translate-x-1/2 -translate-y-[50%] rounded-full object-cover h-[100px] w-[100px] md:h-[114px] md:w-[114px]"
+      alt="logo"
+    />
+    <div className="absolute top-[20px] right-[60px] ss2:right-[100px] xxs1:right-[130px] w-10 h-10 rounded-full border-1 border-gray-300">
+      <img src={l3} alt="small" className="object-cover w-full h-full" />
+    </div>
+  </div>
+  <div className="mt-[70px] text-center text-white space-y-3">
+    <div className="text-[24px] font-semibold">
+      {projectData?.token_name || tokenInfo?.token_name}
+    </div>
+    <div className="text-[16px] text-[#FFFFFFA6] font-medium">Fair Launch</div>
+    <div className="text-[#FFC145] text-[18px] font-normal">{tokenPhase}</div>
+  </div>
+  <div className="bg-[#FFFFFF66] h-[2px] w-[92%] mx-auto mt-5"></div>
+</div>
 
-            <div className="text-[#FFC145] text-[18px] font-normal"> {tokenPhase} </div>
-          </div>
-          <div className="bg-[#FFFFFF66] h-[2px] w-[92%] mx-auto mt-6"></div>
-        </div>
-        <div className="flex">
-          <div className="relative flex items-center overflow-hidden w-[60%] h-72">
-            <div className="absolute left-[-110%] ss2:left-[-62%] xxs1:left-[-30%] sm:left-[-20%] md:left-[-45%] top-0 w-72 h-72">
-              <svg style={{ transform: 'rotate(-90deg)' }} viewBox="0 0 36 36">
-                <defs>
-                  <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" style={{ stopColor: '#f3b3a7', stopOpacity: 1 }} />
-                    <stop offset="100%" style={{ stopColor: '#cac9f5', stopOpacity: 1 }} />
-                  </linearGradient>
-                </defs>
-                <path
-                  className="text-gray-800"
-                  d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831a 15.9155 15.9155 0 0 1 0 -31.831"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="3.8"
-                />
-                <path
-                  className="text-purple-400"
-                  d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831a 15.9155 15.9155 0 0 1 0 -31.831"
-                  fill="none"
-                  stroke="url(#gradient)"
-                  strokeWidth="3.8"
-                  strokeDasharray={`${saleProgress}, 100`}
-                />
-              </svg>
-              <div className="absolute ml-28 ss2:ml-10 inset-0 flex flex-col items-center justify-center">
-                <span>Progress</span>
-                <span className="text-lg font-semibold text-white">
-                  {saleProgress}%
-                </span>
-                <span className="text-sm text-gray-400 mt-1">{tokenInfo ? tokenInfo.owner_bal : 0} ICP RAISED</span>
-              </div>
-            </div>
-          </div>
-          
-          <div className="mt-6 w-[40%] flex flex-col justify-around">
-            <div className="flex flex-col">
-              <span className="text-sm text-gray-400">HARD</span>
-              <span className="text-lg font-semibold bg-gradient-to-r from-[#f09787] to-[#CACCF5] text-transparent bg-clip-text">{
-                `${Number( projectData?.sale_details?.hardcap || tokenInfo?.sale_Params?.hardcap)} ICP`  
-              }</span>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-sm text-gray-400">Liquidity</span>
-              <span className="text-lg font-semibold">{
-                `${Number( projectData?.sale_details?.liquidity_percentage || tokenInfo?.sale_Params?.liquidity_percentage)}%`  
-              }</span>
-            </div>
-            {/* <div className="flex flex-col">
-              <span className="text-sm text-gray-400">Lock Time</span>
-              <span className="text-lg font-semibold">{"365 DAYS"}</span>
-            </div> */}
-            <div className="flex flex-col">
+<div className="flex">
+ 
+ <RaisedFundProgress ledgerId={ledgerId} projectData={projectData?.sale_details} tokenInfo={tokenInfo}/>
 
-              {tokenInfo && <SaleStart style={{ text_heading: 'text-sm', text_content: 'text-lg' }} setTokenPhase={setTokenPhase} presaleData={projectData?.sale_details || tokenInfo?.sale_Params} />}
-            </div>
-            <button onClick={handleViewMoreClick} className="border-b-2 border-r-gray-600 w-20 cursor-pointer">View More</button>
-          </div>
-        </div>
+  <div className="mt-6 w-[40%] flex flex-col justify-around">
+    <div className="flex flex-col">
+      <span className="text-sm text-gray-400">HARD</span>
+      <span className="text-lg font-semibold bg-gradient-to-r from-[#f09787] to-[#CACCF5] text-transparent bg-clip-text">
+        {`${Number(projectData?.sale_details?.hardcap || tokenInfo?.sale_Params?.hardcap)} ICP`}
+      </span>
+    </div>
+    <div className="flex flex-col">
+      <span className="text-sm text-gray-400">Liquidity</span>
+      <span className="text-lg font-semibold">
+        {`${Number(projectData?.sale_details?.liquidity_percentage || tokenInfo?.sale_Params?.liquidity_percentage)}%`}
+      </span>
+    </div>
+    <div className="flex flex-col">
+      {tokenInfo && (
+        <SaleStart
+          style={{ text_heading: 'text-sm', text_content: 'text-lg' }}
+          setTokenPhase={setTokenPhase}
+          presaleData={projectData?.sale_details || tokenInfo?.sale_Params}
+        />
+      )}
+    </div>
+    <button onClick={handleViewMoreClick} className="border-b-2 border-r-gray-600 w-20 cursor-pointer">
+      View More
+    </button>
+  </div>
+</div>
+
       </div>
     </div>
   );

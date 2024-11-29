@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../../StateManagement/useContext/useClient';
+import CopyToClipboard from '../../../common/CopyToClipboard';
 
 
 const TokenTab = ({ ledgerId }) => {
@@ -39,10 +40,10 @@ const TokenTab = ({ ledgerId }) => {
       <div className="flex justify-between mb-4">
         <span>Address</span>
         <span className="border-b-2 ml-2 text-right overflow-hidden text-ellipsis whitespace-nowrap">
-          {ledgerId}
+          <CopyToClipboard address={ledgerId}/>
         </span>
       </div>
-      <p className="text-xs mb-6">Do not send BNB to the token address</p>
+      <p className="text-xs mb-6">Do not send ICP to the token address</p>
 
       {/* Token Details */}
       <div className="border-t pt-4">

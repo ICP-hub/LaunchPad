@@ -44,7 +44,7 @@ const ReviewInfoTab = ({ presaleDetails }) => {
                       href={link.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="block text-blue-400"
+                      className="block text-[#F3B3A7]"
                     >
                       {link.url}
                     </a>

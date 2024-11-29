@@ -251,7 +251,7 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen, setRenderComponent, setTokenM
                                     </div>
                                 </div>
                             ))}
-                            <button onClick={addLink} type="button" className="text-blue-400 mt-2">
+                            <button onClick={addLink} type="button" className="text-[#F3B3A7] mt-2">
                                 + Add another link
                             </button>
                         </div>
