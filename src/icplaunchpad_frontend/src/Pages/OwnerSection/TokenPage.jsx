@@ -184,8 +184,6 @@ const TokenPage = () => {
         return <Pooolinfo presaleData={presaleData} poolData={tokenData ? tokenData : ''} />;
       case "FAQs & Discussion":
         return <FAQsDiscussion />;
-      case "Previous Sale":
-        return <PreviousSale />;
       default:
         return <ProjectTokenAbout presaleData={presaleData} />;
     }
@@ -196,7 +194,6 @@ const TokenPage = () => {
     "Token",
     "Pool Info",
     "FAQs & Discussion",
-    "Previous Sale",
 
   ];
 

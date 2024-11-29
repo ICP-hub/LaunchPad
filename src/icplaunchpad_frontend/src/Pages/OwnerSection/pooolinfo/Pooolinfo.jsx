@@ -42,34 +42,54 @@ const PoolInfoTab = ({ presaleData, poolData }) => {
 
   return (
     <div className="text-gray-300 p-6 rounded-lg w-full max-w-full">
-      <div className="flex justify-between gap-1 mb-4">
+      <div className="flex justify-between gap-1 mb-6">
         <span>Address</span>
         <span className="border-b-2 overflow-hidden text-right">
-        <CopyToClipboard address={poolData?.canister_id}/>
+          <CopyToClipboard address={poolData?.canister_id} />
         </span>
       </div>
-
+       {/* Total Supply  */}
       <div className="border-t pt-4">
         <div className="flex justify-between border-b py-2">
-          <span className="text-gray-400">Tokens For Presale</span>
+          <span className="text-gray-400">Total Supply</span>
           <span className="text-white">{`${poolData?.total_supply || "N/A"} ${poolData?.token_symbol || ""}`}</span>
         </div>
+          {/* Fairlaunch  Tokens*/}
         <div className="flex border-b justify-between py-2">
           <span className="text-gray-400">  Fairlaunch Tokens</span>
-          {console.log('poolData',poolData)}
-          <span className="text-white">{`${Number(presale?.tokens_for_fairlaunch)|| 0 } ${poolData?.token_symbol} `}</span>
+          {console.log('poolData', poolData)}
+          <span className="text-white">{`${Number(presale?.tokens_for_fairlaunch) || 0} ${poolData?.token_symbol} `}</span>
         </div>
+         {/* SoftCap */}
         <div className="flex border-b justify-between py-2">
           <span className="text-gray-400">SoftCap</span>
           <span className="text-white"> {`${Number(presale?.softcap) || 0} ICP`}</span>
         </div>
+        {/* hardcap */}
+        <div className="flex border-b justify-between py-2">
+          <span className="text-gray-400">Hardcap</span>
+          <span className="text-white"> {`${Number(presale?.hardcap) || 0} ICP`}</span>
+        </div>
+       {/* Start Time */}
         <div className="flex border-b justify-between py-2">
           <span className="text-gray-400">Start Time</span>
           <span className="text-white">{saleTime.start_time}</span>
         </div>
+         {/* End Time */}
         <div className="flex border-b justify-between py-2">
           <span className="text-gray-400">End Time</span>
           <span className="text-white">{saleTime.end_time}</span>
+        </div>
+        {/* Listing Platform */}
+        <div className="flex justify-between text-[14px] xxs1:text-[17px] border-b py-2">
+          <span>Listing On</span>
+          <span className="underline">Pancakeswap</span>
+        </div>
+
+        {/* Liquidity Percent */}
+        <div className="flex justify-between text-[14px] xxs1:text-[17px] border-b py-2">
+          <span>Liquidity Percent</span>
+          <span> {` ${presaleData?.liquidity_percentage}% `} </span>
         </div>
       </div>
     </div>

@@ -127,7 +127,7 @@ const ProjectCard = ({ isUserToken, projectData, initial_Total_supply, saleType,
       };
       console.log('routeData=>',routeData)
       const creator=routeData?.sale_details?.creator || routeData?.sale_Params?.creator;
-      navigate(isUserToken || creator == principal ? '/token-page' : '/project', { state: { projectData: routeData } });
+      navigate('/project', { state: { projectData: routeData } });
     }
   };
 

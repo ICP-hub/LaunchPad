@@ -905,7 +905,7 @@ const Header = () => {
                     Profile
                   </Link>
 
-                  <div className="hidden border-b md:block">
+                  <div className="hidden md:block">
                     <button
                       onClick={openUserModal}
                       className="block px-4 py-2 text-[18px] "

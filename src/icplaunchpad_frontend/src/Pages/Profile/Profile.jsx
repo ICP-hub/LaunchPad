@@ -278,7 +278,7 @@ const Profile = () => {
             <div className="flex flex-col items-start  bg-[#FFFFFF1A] p-8  pl-[100px] rounded-2xl gap-12 mb-6">
           
              <p className="text-[19px] font-inter text-nowrap w-full">
-                Connect as <CopyToClipboard address={principal}  width={'90%'} />
+                Connect as <span className='text-[16px]'> <CopyToClipboard address={principal}  width={'90%'} /> </span>
               </p>
              
               <div className="flex space-x-6">

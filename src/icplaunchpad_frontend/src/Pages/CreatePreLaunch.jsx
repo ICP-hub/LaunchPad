@@ -104,7 +104,7 @@ const CreatePreLaunch = () => {
   return (
     <div className="flex justify-center items-center bg-black text-white">
       <div className="w-full max-w-[1070px] p-8 rounded-2xl">
-        <h1 className="text-3xl font-bold text-start font-posterama mb-6">CREATE PRELAUNCH</h1>
+        <h1 className="text-3xl font-bold text-start font-posterama mb-6">CREATE Token</h1>
 
         {!isAuthenticated ? (
           <ConnectFirst />
@@ -112,7 +112,7 @@ const CreatePreLaunch = () => {
           <div className="bg-[#222222] p-4 rounded-lg">
             {/* Chain Text with Gray Background */}
             <div className="flex items-center mb-8 bg-[rgb(68,68,68)] p-2 mt-[-15px] mx-[-15px] rounded-2xl">
-              <span className="text-white text-[20px]">Chain</span>
+              <span className="text-white text-[20px]">Create  or Import Token</span>
             </div>
 
             {/* Search Label with Placeholder */}

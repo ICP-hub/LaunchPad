@@ -43,44 +43,36 @@ export const getSchemaForStep = (step) => {
           .transform(emptyStringToNull)
           .typeError("Enter value")
           .required("Liquidity percentage is required")
-          .min(0, "Liquidity percentage cannot be less than 0")
+          .min(51, "Liquidity percentage cannot be less than 51")
           .max(100, "Liquidity percentage cannot be greater than 100"),
 
           tokensLiquidity: yup
           .number()
-          .transform(emptyStringToNull)
-          .typeError("Enter value")
-          .required("Tokens for liquidity is required")
-          .positive("Tokens for liquidity must be positive")
-          .notOneOf([0], "Tokens for liquidity must be greater than 0")
-          .test(
-            "is-less-than-or-equal-to-fairlaunch",
-            "Tokens for liquidity must not exceed the tokens allocated for the fairlaunch",
-            function (value) {
-              const { FairlaunchTokens } = this.parent;
-              return value <= FairlaunchTokens;
-            }
-          ),
-
+          .transform(emptyStringToNull) // Converts empty string to null for proper validation
+          .typeError("Enter a valid number") // Handles non-number input errors
+          .required("Tokens for liquidity is required") // Field is mandatory
+          .positive("Tokens for liquidity must be positive") // Only positive numbers allowed
+          .notOneOf([0], "Tokens for liquidity must be greater than 0") // Cannot be zero
+      ,
 
         minimumBuy: yup
           .number()
           .transform(emptyStringToNull)
           .typeError("Enter value")
-          .required("Minimum buy is required")
-          .positive("Minimum buy must be positive")
-          .notOneOf([0], "Minimum buy cannot be 0"),
+          .required("Minimum contribution is required")
+          .positive("Minimum contribution must be positive")
+          .notOneOf([0], "Minimum contribution cannot be 0"),
 
         maximumBuy: yup
           .number()
           .transform(emptyStringToNull)
           .typeError("Enter value")
-          .required("Maximum buy is required")
-          .positive("Maximum buy must be positive")
-          .notOneOf([0], "Maximum buy cannot be 0")
+          .required("Maximum contribution is required")
+          .positive("Maximum contribution must be positive")
+          .notOneOf([0], "Maximum contribution cannot be 0")
           .moreThan(
             yup.ref("minimumBuy"),
-            "Maximum buy must be greater than minimum buy"
+            "Maximum contribution must be greater than minimum contribution"
           ),
 
         startTime: yup

@@ -206,8 +206,8 @@ const VerifyTokenTab = ({ register, errors, setTokenData, watch, ledger_canister
   return (
     <div className="flex justify-center items-center mb-[80px] dxs:mb-[145px] xxs1:mb-[80px] sm2:mb-[70px] md:mb-[30px] dlg:mb-0 m-4 bg-black text-white">
       <div className="bg-[#222222] w-full max-w-[1070px] h-[920px] xxs1:h-[850px] sm2:h-[780px] md:h-[730px] dlg:h-[780px] p-4 xxs1:p-8 rounded-2xl">
-        <div className="flex xxs1:hidden mb-8 bg-[rgb(68,68,68)] pl-6 p-2 mt-[-31px] mx-[-17px] xxs1:mx-[-31px] rounded-2xl">
-          <span className="text-white text-[22px]">Chain</span>
+        <div className="flex  mb-8 bg-[rgb(68,68,68)] pl-6 p-2 mt-[-31px] mx-[-17px] xxs1:mx-[-31px] rounded-2xl">
+          <span className="text-white text-[22px]"> Verify Token</span>
         </div>
 
         <h2 className="text-lg font-semibold mb-4">Canister ID</h2>

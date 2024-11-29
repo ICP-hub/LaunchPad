@@ -95,8 +95,6 @@ const TokenPage = () => {
         return <Token ledgerId={projectData?.canister_id} />;
       case "Pool Info":
         return <Pooolinfo presaleData={saleParams} poolData={projectData ? { ...projectData, total_supply: projectData?.total_supply } : {}} />;
-      case "Affiliate Program":
-        return <AffiliateProgram />;
       case "Tokenomic":
         return <Tokenomic />;
       case "FAQs & Discussion":
@@ -110,7 +108,6 @@ const TokenPage = () => {
     "About",
     "Token",
     "Pool Info",
-    "Affiliate Program",
     "Tokenomic",
     "FAQs & Discussion",
   ];
