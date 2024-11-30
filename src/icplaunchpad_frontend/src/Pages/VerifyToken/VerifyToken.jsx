@@ -239,7 +239,7 @@ const VerifyToken = () => {
         {currentStep === 4 && <ReviewInfoTab presaleDetails={presaleDetails} />}
       </div>
 
-      <div className="flex justify-between max-w-2xl  font-posterama mt-[-120px]  dxs:mt-[-190px] xxs1:mt-[-130px] sm2:mt-[-120px] md:mt-[-80px] lg:mt-[-60px]">
+      <div className="flex justify-between max-w-2xl  font-posterama mt-[-120px]  dxs:mt-[-190px] xxs1:mt-[-130px] sm2:mt-[-120px] md:mt-[-80px] lg:mt-[-80px]">
         {currentStep > 1 && (
           <button
             className="bg-transparent font-posterama border-2 w-[80px] ss2:w-[115px] sm4:w-[210px] h-[35px] mx-2 text-[17px] font-[400] rounded-2xl"
