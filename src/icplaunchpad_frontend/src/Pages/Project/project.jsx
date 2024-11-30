@@ -67,6 +67,7 @@ const TokenPage = () => {
 
       if (actor && projectData?.canister_id) {
         try {
+          console.log("ledger id >>>>", projectData.canister_id)
           const ledgerPrincipal = Principal.fromText(projectData.canister_id);
           const sale = await actor.get_sale_params(ledgerPrincipal);
           console.log('SALE=>>>', sale)
