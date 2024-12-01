@@ -11,7 +11,7 @@ pub struct UserAccount {
     pub username: String,
     pub profile_picture: Option<ByteBuf>, // Placeholder for profile picture data
     pub links: Vec<String>,               // Social media links
-    pub tag: Vec<String>,                      // User's role like block explorer, investor, etc.
+    pub tag: Vec<String>,                 // User's role like block explorer, investor, etc.
 }
 
 #[derive(CandidType, Serialize, Deserialize, Debug, Clone)]
@@ -232,7 +232,20 @@ pub struct TokenCreationResult {
     pub index_canister_id: Principal,
 }
 
-#[derive(CandidType, Deserialize, Serialize, Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
+#[derive(
+    CandidType,
+    Deserialize,
+    Serialize,
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Hash,
+    Default,
+)]
 pub struct U64Wrapper(pub u64);
 
 #[derive(CandidType, Serialize, Deserialize, Debug)]
@@ -256,11 +269,10 @@ pub struct ProfileImageData {
 
 #[derive(Clone, CandidType, Serialize, Deserialize)]
 pub struct CoverImageData {
-    pub content: Option<ByteBuf>,  // The image content for the cover image
-    pub ledger_id: Principal,      // Ledger ID associated with the cover image
-    // Additional parameters specific to cover images can be added here if needed
+    pub content: Option<ByteBuf>, // The image content for the cover image
+    pub ledger_id: Principal,     // Ledger ID associated with the cover image
+                                  // Additional parameters specific to cover images can be added here if needed
 }
-
 
 #[derive(CandidType, Clone, Debug, Default, Deserialize, Serialize)]
 pub struct CreateFileInput {
@@ -287,7 +299,6 @@ pub struct SaleDetailsUpdate {
     pub project_video: Option<String>, // Optional field to update the project video
 }
 
-
 pub struct State {
     pub canister_ids: CanisterIdsMap,
     pub index_canister_ids: IndexCanisterIdsMap,
@@ -296,9 +307,8 @@ pub struct State {
     pub user_accounts: UserAccountsMap,
     pub cover_image_ids: CoverImageIdsMap,
     pub funds_raised: FundsRaisedMap,
-    pub contributions: ContributionsMap, 
+    pub contributions: ContributionsMap,
 }
-
 
 #[derive(CandidType, Deserialize, Debug, Clone)]
 pub struct CanisterIdWrapper {
@@ -306,11 +316,10 @@ pub struct CanisterIdWrapper {
     pub token_name: String,
     pub token_symbol: String,
     pub image_id: Option<u32>,
-    pub ledger_id: Option<Principal>,  
-    pub owner: Principal,  
+    pub ledger_id: Option<Principal>,
+    pub owner: Principal,
     pub total_supply: Nat,
 }
-
 
 #[derive(CandidType, Deserialize, Debug, Clone)]
 pub struct IndexCanisterIdWrapper {
@@ -337,26 +346,77 @@ pub struct CoverImageIdWrapper {
 }
 
 #[derive(CandidType, Deserialize, Serialize, Debug, Clone)]
-pub struct SaleDetails {
-    pub creator: Principal,           // Principal of the user who created the sale
-    pub start_time_utc: u64,          // Start time of the sale (UTC timestamp)
-    pub end_time_utc: u64,            // End time of the sale (UTC timestamp)
-    pub hardcap: u64,                 // Maximum funds to be raised (in ICP or other base currency)
-    pub softcap: u64,                 // Minimum funds to be raised (in ICP or other base currency)
-    pub min_contribution: u64,                 // Minimum contribution per user (in ICP or other base currency)
-    pub max_contribution: u64,                 // Maximum contribution per user (in ICP or other base currency)
-    pub tokens_for_fairlaunch: u64,   // Total tokens allocated for the fairlaunch
-    pub liquidity_percentage: u8,     // Percentage of funds allocated to DEX liquidity
-    pub tokens_for_liquidity: u64,    // Tokens reserved for DEX liquidity
-    pub website: String,              // Project website URL
-    pub social_links: Vec<String>,    // List of social media links
-    pub description: String,          // Project description
-    pub project_video: String,        // URL or string identifier for the project video
-    pub processed: bool, 
+pub struct SaleInputParams {
+    pub tokens_for_fairlaunch: u64,  // Tokens allocated for fairlaunch
+    pub softcap: u64,                // Minimum funds to be raised
+    pub max_contribution: u64,       // Maximum contribution per user
+    pub min_contribution: u64,       // Minimum contribution per user
+    pub description: String,         // Project description
+    pub liquidity_percentage: u8,    // Percentage of funds allocated to DEX liquidity
+    pub website: String,             // Project website URL
+    pub social_links: Vec<String>,   // List of social media links
+    pub project_video: String,       // URL for project video
 }
 
 
+#[derive(CandidType, Deserialize, Serialize, Debug, Clone)]
+pub struct SaleDetails {
+    pub creator: Principal,         // Principal of the user who created the sale
+    pub start_time_utc: u64,        // Start time of the sale (UTC timestamp)
+    pub end_time_utc: u64,          // End time of the sale (UTC timestamp)
+    pub hardcap: u64,               // Maximum funds to be raised (in ICP or other base currency)
+    pub softcap: u64,               // Minimum funds to be raised (in ICP or other base currency)
+    pub min_contribution: u64,      // Minimum contribution per user (in ICP or other base currency)
+    pub max_contribution: u64,      // Maximum contribution per user (in ICP or other base currency)
+    pub tokens_for_fairlaunch: u64, // Total tokens allocated for the fairlaunch
+    pub liquidity_percentage: u8,   // Percentage of funds allocated to DEX liquidity
+    pub website: String,            // Project website URL
+    pub social_links: Vec<String>,  // List of social media links
+    pub description: String,        // Project description
+    pub project_video: String,      // URL or string identifier for the project video
+    pub processed: bool,            // Processed flag, initialized as false by default
+    pub tokens_for_liquidity_after_fee: u64, // Store the liquidity tokens after the fee
+    pub tokens_for_approval: u64,   // Amount of tokens for fairlaunch + liquidity for approval
+    pub fee_for_approval: u64,      // Amount of the 5% fee for approval
+}
 
+impl SaleDetails {
+    // Method to calculate the tokens for liquidity based on the liquidity percentage
+    pub fn calculate_tokens_for_liquidity(&self) -> u64 {
+        (self.tokens_for_fairlaunch * self.liquidity_percentage as u64) / 100
+    }
+
+    // Method to calculate and store the adjusted liquidity tokens after the fee
+    pub fn calculate_and_store_liquidity_tokens_after_fee(&mut self) {
+        let liquidity_tokens = self.calculate_tokens_for_liquidity();
+        let fee_on_tokens_for_liquidity = (liquidity_tokens * 5) / 100; // 5% fee on liquidity tokens
+        self.tokens_for_liquidity_after_fee = liquidity_tokens - fee_on_tokens_for_liquidity;
+    }
+
+    // Method to calculate the total amount of tokens to approve for the sale
+    pub fn calculate_approval_amounts(&mut self) {
+        // Calculate liquidity tokens based on liquidity percentage of fairlaunch tokens
+        let liquidity_tokens = self.calculate_tokens_for_liquidity();
+
+        // Calculate the fee on liquidity tokens (5% fee)
+        let fee_on_tokens_for_liquidity = (liquidity_tokens * 5) / 100;
+
+        // Calculate the liquidity tokens after the fee is deducted
+        let tokens_for_liquidity_after_fee = liquidity_tokens - fee_on_tokens_for_liquidity;
+
+        // Total tokens to approve is the sum of:
+        // 1. Fairlaunch tokens (no fee involved here)
+        // 2. Liquidity tokens after fee (these are the tokens the user needs to approve, already deducted the fee)
+        // 3. The fee on liquidity tokens (this will be transferred to the fee collector)
+        let total_tokens_to_approve = self.tokens_for_fairlaunch
+            + tokens_for_liquidity_after_fee
+            + fee_on_tokens_for_liquidity;
+
+        // Set the approval amounts
+        self.tokens_for_approval = total_tokens_to_approve;
+        self.fee_for_approval = fee_on_tokens_for_liquidity;
+    }
+}
 
 #[derive(CandidType, Deserialize, Serialize, Debug, Clone)]
 pub struct SaleDetailsWithID {

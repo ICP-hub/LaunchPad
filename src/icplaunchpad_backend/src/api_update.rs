@@ -8,20 +8,22 @@ use ic_cdk::api::{
 use ic_ledger_types::Subaccount;
 
 use crate::{
-    create_canister, deposit_cycles, index_install_code, install_code, mutate_state, params, read_state, Account, CanisterIdRecord, CanisterIdWrapper, CoverImageData, CoverImageIdWrapper, CreateCanisterArgument, CreateFileInput, ImageIdWrapper, IndexArg, IndexCanisterIdWrapper, IndexInitArgs, IndexInstallCodeArgument, InitArgs, InstallCodeArgument, LedgerArg, ProfileImageData, ReturnResult, SaleDetails, SaleDetailsUpdate, SaleDetailsWrapper, TokenCreationResult, TokenImageData, U64Wrapper, UserAccount, UserAccountWrapper, UserInputParams, STATE
+    create_canister, deposit_cycles, index_install_code, install_code, mutate_state, params::{self}, read_state, Account, CanisterIdRecord, CanisterIdWrapper, CoverImageData, CoverImageIdWrapper, CreateCanisterArgument, CreateFileInput, ImageIdWrapper, IndexArg, IndexCanisterIdWrapper, IndexInitArgs, IndexInstallCodeArgument, InitArgs, InstallCodeArgument, LedgerArg, ProfileImageData, ReturnResult, SaleDetails, SaleDetailsUpdate, SaleDetailsWrapper, SaleInputParams, TokenCreationResult, TokenImageData, UserAccount, UserAccountWrapper, UserInputParams, STATE
 };
 
-use canfund::{api::ledger::IcLedgerCanister, operations::{fetch::FetchCyclesBalanceFromCanisterStatus, obtain::ObtainCycles}};
+use canfund::api::cmc::IcCyclesMintingCanister;
 use canfund::operations::fetch::FetchCyclesBalance;
 use canfund::operations::obtain::MintCycles;
-use canfund::api::cmc::IcCyclesMintingCanister;
-
+use canfund::{
+    api::ledger::IcLedgerCanister,
+    operations::{fetch::FetchCyclesBalanceFromCanisterStatus, obtain::ObtainCycles},
+};
 
 #[ic_cdk::update]
 async fn fetch_canister_balance(canister_id: Principal) -> Result<u128, String> {
     // Assuming you have the permission to call 'canister_status' on this canister.
-    let fetcher = FetchCyclesBalanceFromCanisterStatus::new()
-        .with_proxy(Principal::management_canister()); // This is typically only permissible if 'canister_id' is managed by your principal.
+    let fetcher =
+        FetchCyclesBalanceFromCanisterStatus::new().with_proxy(Principal::management_canister()); // This is typically only permissible if 'canister_id' is managed by your principal.
 
     let balance_result = fetcher.fetch_cycles_balance(canister_id).await;
     balance_result.map_err(|e| format!("Failed to fetch balance: {:?}", e))
@@ -30,7 +32,7 @@ async fn fetch_canister_balance(canister_id: Principal) -> Result<u128, String> 
 #[ic_cdk::update]
 pub async fn obtain_cycles_for_canister(
     amount: u128,
-    target_canister_id: Principal
+    target_canister_id: Principal,
 ) -> Result<Nat, String> {
     let caller_principal = ic_cdk::api::caller();
 
@@ -58,7 +60,7 @@ pub async fn obtain_cycles_for_canister(
         Ok(cycles) => {
             ic_cdk::api::print(format!("Successfully obtained {} cycles", cycles));
             Ok(Nat::from(cycles))
-        },
+        }
         Err(e) => {
             let error_message = format!("Failed to obtain cycles: {}", e.details);
             ic_cdk::api::print(&error_message);
@@ -66,7 +68,6 @@ pub async fn obtain_cycles_for_canister(
         }
     }
 }
-
 
 #[ic_cdk::update]
 pub fn create_account(user_input: UserAccount) -> Result<(), String> {
@@ -108,11 +109,9 @@ pub fn create_account(user_input: UserAccount) -> Result<(), String> {
             },
         );
     });
-    
 
     Ok(())
 }
-
 
 #[ic_cdk::update]
 pub fn update_user_account(
@@ -163,8 +162,8 @@ pub fn update_user_account(
 pub async fn create_token(user_params: UserInputParams) -> Result<TokenCreationResult, String> {
     let caller = ic_cdk::api::caller();
 
+    // Ensure the user account exists before proceeding
     let account_exists = read_state(|state| state.user_accounts.contains_key(&caller));
-
     if !account_exists {
         return Err("Please create an account before creating a token.".into());
     }
@@ -210,15 +209,18 @@ pub async fn create_token(user_params: UserInputParams) -> Result<TokenCreationR
         .iter()
         .fold(Nat::from(0u64), |acc, (_, balance)| acc + balance.clone());
 
-    // Ledger Init Args
+    // Ledger Init Args with blackhole address as the minter
     let init_args = LedgerArg::Init(InitArgs {
-        minting_account: params::MINTING_ACCOUNT.clone().unwrap(), // Hardcoded minter
-        fee_collector_account: Some(Account { owner: caller, subaccount: None }), // Caller as fee collector
-        transfer_fee: params::TRANSFER_FEE.clone(),         // Hardcoded value
-        decimals: user_params.decimals,                     // User-supplied value
-        max_memo_length: Some(params::MAX_MEMO_LENGTH),     // Hardcoded value
-        token_symbol: user_params.token_symbol.clone(),     // User-supplied value
-        token_name: user_params.token_name.clone(),         // User-supplied value
+        minting_account: params::MINTING_ACCOUNT.clone().unwrap(), // Blackhole address as the minter
+        fee_collector_account: Some(Account {
+            owner: caller,
+            subaccount: None,
+        }), // Caller as fee collector
+        transfer_fee: params::TRANSFER_FEE.clone(),                // Hardcoded value
+        decimals: user_params.decimals,                            // User-supplied value
+        max_memo_length: Some(params::MAX_MEMO_LENGTH),            // Hardcoded value
+        token_symbol: user_params.token_symbol.clone(),            // User-supplied value
+        token_name: user_params.token_name.clone(),                // User-supplied value
         metadata: vec![], // Empty or pre-defined metadata if needed
         initial_balances: user_params.initial_balances.clone(), // Clone of the user-supplied value
         feature_flags: Some(params::FEATURE_FLAGS), // Hardcoded value
@@ -243,30 +245,30 @@ pub async fn create_token(user_params: UserInputParams) -> Result<TokenCreationR
         arg: init_arg.clone(),
     };
 
-        // Index Init Args
-        let index_init_args = IndexInitArgs {
-            ledger_id: canister_id_principal, // Ledger canister ID
-            retrieve_blocks_from_ledger_interval_seconds: Some(10), // 10 seconds
-        };
-    
-        // Wrap the IndexInitArgs in a variant { Init }
-        let index_arg = IndexArg::Init(index_init_args);
-    
-        // Log index init args for debugging
-        ic_cdk::println!("Index init args: {:?}", index_arg);
-    
-        // Encode the variant
-        let index_init_arg: Vec<u8> = encode_one(Some(index_arg)).map_err(|e| {
-            ic_cdk::println!("Error encoding init args for index canister: {}", e);
-            e.to_string()
-        })?;
-    
-        let arg2: IndexInstallCodeArgument = IndexInstallCodeArgument {
-            mode: CanisterInstallMode::Install,
-            canister_id: index_canister_id_principal,
-            wasm_module: WasmModule::from(index_wasm_module.clone()),
-            arg: index_init_arg, // Pass the encoded init argument
-        };
+    // Index Init Args
+    let index_init_args = IndexInitArgs {
+        ledger_id: canister_id_principal, // Ledger canister ID
+        retrieve_blocks_from_ledger_interval_seconds: Some(10), // 10 seconds
+    };
+
+    // Wrap the IndexInitArgs in a variant { Init }
+    let index_arg = IndexArg::Init(index_init_args);
+
+    // Log index init args for debugging
+    ic_cdk::println!("Index init args: {:?}", index_arg);
+
+    // Encode the variant
+    let index_init_arg: Vec<u8> = encode_one(Some(index_arg)).map_err(|e| {
+        ic_cdk::println!("Error encoding init args for index canister: {}", e);
+        e.to_string()
+    })?;
+
+    let arg2: IndexInstallCodeArgument = IndexInstallCodeArgument {
+        mode: CanisterInstallMode::Install,
+        canister_id: index_canister_id_principal,
+        wasm_module: WasmModule::from(index_wasm_module.clone()),
+        arg: index_init_arg, // Pass the encoded init argument
+    };
 
     // Install code for the ledger canister
     match install_code(arg1.clone(), wasm_module).await {
@@ -307,6 +309,7 @@ pub async fn create_token(user_params: UserInputParams) -> Result<TokenCreationR
                 )
             });
 
+            // Return result with the blackhole address info for frontend
             Ok(TokenCreationResult {
                 ledger_canister_id: canister_id_principal,
                 index_canister_id: index_canister_id_principal,
@@ -496,47 +499,42 @@ pub async fn upload_cover_image(
     }
 }
 
-fn is_valid_url(url: &str) -> bool {
-    url::Url::parse(url).is_ok()
-}
 
 #[ic_cdk::update]
 pub fn create_sale(
     ledger_canister_id: Principal,
-    mut sale_details: SaleDetails,
-) -> Result<(), String> {
+    sale_input: SaleInputParams, // Use the new struct
+) -> Result<u64, String> {
+    // Explicit return type
     let caller = ic_cdk::api::caller(); // Get the caller's principal
 
-    // Set the creator as the current caller automatically
-    sale_details.creator = caller;
+    // Populate the full SaleDetails struct
+    let mut sale_details = SaleDetails {
+        creator: caller,
+        start_time_utc: 0, // You can default this or handle it separately
+        end_time_utc: 0,   // Default or handle separately
+        hardcap: 0,        // Default or handle separately
+        softcap: sale_input.softcap,
+        min_contribution: sale_input.min_contribution,
+        max_contribution: sale_input.max_contribution,
+        tokens_for_fairlaunch: sale_input.tokens_for_fairlaunch,
+        liquidity_percentage: sale_input.liquidity_percentage,
+        website: sale_input.website,
+        social_links: sale_input.social_links,
+        description: sale_input.description,
+        project_video: sale_input.project_video,
+        processed: false, // Set processed to false by default
+        tokens_for_liquidity_after_fee: 0, // Will be calculated
+        tokens_for_approval: 0,            // Will be calculated
+        fee_for_approval: 0,               // Will be calculated
+    };
 
-    sale_details.processed = false;
+    // Auto-calculate the necessary fields
+    sale_details.calculate_and_store_liquidity_tokens_after_fee(); // Automatically calculates liquidity-related fields
+    sale_details.calculate_approval_amounts(); // Automatically calculates the approval amounts (tokens for approval, etc.)
 
-    // Validate the project_video URL
-    if !is_valid_url(&sale_details.project_video) {
-        return Err("Invalid URL for project video.".into());
-    }
-
-    // Validate sale parameters
-    if sale_details.hardcap == 0 {
-        return Err("Hardcap must be greater than zero.".into());
-    }
-
-    if sale_details.tokens_for_fairlaunch == 0 {
-        return Err("Tokens for fairlaunch must be greater than zero.".into());
-    }
-
-    if sale_details.liquidity_percentage > 100 {
-        return Err("Liquidity percentage must be between 0 and 100.".into());
-    }
-
-    if sale_details.tokens_for_liquidity == 0 {
-        return Err("Tokens for liquidity must be greater than zero.".into());
-    }
-
-    if sale_details.start_time_utc >= sale_details.end_time_utc {
-        return Err("Start time must be before end time.".into());
-    }
+    // Clone sale_details before passing into mutate_state
+    let sale_details_clone = sale_details.clone();
 
     // Save the sale details in the state
     mutate_state(|state| {
@@ -544,16 +542,24 @@ pub fn create_sale(
             .sale_details
             .insert(
                 ledger_canister_id.to_string(),
-                SaleDetailsWrapper { sale_details },
+                SaleDetailsWrapper {
+                    sale_details: sale_details_clone,
+                },
             )
             .is_none()
         {
             Ok(())
         } else {
-            Err("Sale details already exist for this ledger canister ID.".into())
+            Err("Sale details already exist for this ledger canister ID.".to_string())
+            // Explicit String conversion
         }
-    })
+    })?;
+
+    // Return the total tokens to approve (calculated automatically)
+    Ok(sale_details.tokens_for_approval)
 }
+
+
 
 
 #[ic_cdk::update]
@@ -605,28 +611,6 @@ pub fn update_sale_params(
     })
 }
 
-#[ic_cdk::update]
-pub fn insert_funds_raised(ledger_canister_id: Principal, amount: u64) -> Result<(), String> {
-    mutate_state(|state| {
-        let new_amount = U64Wrapper(amount);
-
-        // Update or insert the funds
-        if let Some(existing) = state.funds_raised.get(&ledger_canister_id) {
-            state
-                .funds_raised
-                .insert(ledger_canister_id, U64Wrapper(existing.0 + new_amount.0));
-        } else {
-            state
-                .funds_raised
-                .insert(ledger_canister_id, new_amount);
-        }
-
-        Ok(())
-    })
-}
-
-
-
 // #[ic_cdk::update]
 // async fn convert_icp_to_cycles(amount: u64) -> Result<Nat, String> {
 //     let icp_amount = Tokens::from_e8s(amount);
@@ -637,4 +621,3 @@ pub fn insert_funds_raised(ledger_canister_id: Principal, amount: u64) -> Result
 //         Err(err) => Err(format!("Failed to mint cycles: {:?}", err)),
 //     }
 // }
-    

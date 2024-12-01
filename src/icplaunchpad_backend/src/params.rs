@@ -17,7 +17,7 @@ lazy_static! {
         })
     );
 
-    pub static ref MINTING_ACCOUNT: Result<Account, String> = Principal::from_text("aoymu-gaaaa-aaaak-ak5ra-cai")
+    pub static ref MINTING_ACCOUNT: Result<Account, String> = Principal::from_text("aaaaa-aa")
         .map(|owner| Account { owner, subaccount: None })
         .map_err(|e| format!("Invalid Principal for MINTING_ACCOUNT: {:?}", e));
 
@@ -30,6 +30,4 @@ pub const MAXIMUM_NUMBER_OF_ACCOUNTS: u64 = 1_000_000;
 pub const ACCOUNTS_OVERFLOW_TRIM_QUANTITY: u64 = 100;
 
 // Feature flags as a constant
-pub const FEATURE_FLAGS: FeatureFlags = FeatureFlags {
-    icrc2: true,
-};
+pub const FEATURE_FLAGS: FeatureFlags = FeatureFlags { icrc2: true };
