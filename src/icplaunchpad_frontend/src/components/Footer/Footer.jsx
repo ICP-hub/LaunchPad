@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 const Footer = () => {
   return (
     <div>
-      <div className='bg-[#222222] mt-[5%] text-[13px] font-kumbhSans xxs1:text-[15px] py-4 px-[7%] lg:px-[9%]'>
+      <div className='bg-[#222222] mt-[10%] sm:mt-[6%] text-[13px] font-kumbhSans xxs1:text-[15px] py-4 px-[7%] lg:px-[9%]'>
         <p>The information provided on this platform is designed to support your journey and empower your projects. We are committed to offering a transparent and reliable environment, but we encourage users to conduct their own research and explore all opportunities. Your success is our priority, and we’re here to help every step of the way!.</p>
       </div>
      <div className='px-[9%]   bg-black pt-[4%] pb-6 flex flex-col md:flex-row  justify-between '>
