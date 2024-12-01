@@ -26,10 +26,10 @@ type RejectionCode = variant {
 };
 type Result = variant { Ok : nat; Err : text };
 type Result_1 = variant { Ok; Err : text };
-type Result_2 = variant { Ok : TokenCreationResult; Err : text };
-type Result_3 = variant { Ok; Err : record { RejectionCode; text } };
-type Result_4 = variant { Ok : nat; Err : text };
-type Result_5 = variant { Ok : nat64; Err : text };
+type Result_2 = variant { Ok : nat64; Err : text };
+type Result_3 = variant { Ok : TokenCreationResult; Err : text };
+type Result_4 = variant { Ok; Err : record { RejectionCode; text } };
+type Result_5 = variant { Ok : nat; Err : text };
 type Result_6 = variant { Ok : SaleDetails; Err : text };
 type Result_7 = variant {
   Ok : vec record { CanisterIndexInfo; SaleDetails };
@@ -37,15 +37,17 @@ type Result_7 = variant {
 };
 type Result_8 = variant { Ok : text; Err : text };
 type SaleDetails = record {
-  tokens_for_liquidity : nat64;
   creator : principal;
   tokens_for_fairlaunch : nat64;
   softcap : nat64;
   max_contribution : nat64;
   min_contribution : nat64;
   description : text;
+  fee_for_approval : nat64;
   liquidity_percentage : nat8;
   website : text;
+  tokens_for_approval : nat64;
+  tokens_for_liquidity_after_fee : nat64;
   hardcap : nat64;
   end_time_utc : nat64;
   project_video : text;
@@ -64,6 +66,17 @@ type SaleDetailsUpdate = record {
 type SaleDetailsWithID = record {
   sale_details : SaleDetails;
   ledger_canister_id : text;
+};
+type SaleInputParams = record {
+  tokens_for_fairlaunch : nat64;
+  softcap : nat64;
+  max_contribution : nat64;
+  min_contribution : nat64;
+  description : text;
+  liquidity_percentage : nat8;
+  website : text;
+  project_video : text;
+  social_links : vec text;
 };
 type TokenCreationResult = record {
   index_canister_id : principal;
@@ -85,14 +98,14 @@ type UserInputParams = record {
 service : () -> {
   buy_tokens : (BuyTransferParams) -> (Result);
   create_account : (UserAccount) -> (Result_1);
-  create_sale : (principal, SaleDetails) -> (Result_1);
-  create_token : (UserInputParams) -> (Result_2);
-  deposit_cycles_to_canister : (CanisterIdRecord, nat) -> (Result_3);
-  fetch_canister_balance : (principal) -> (Result_4);
+  create_sale : (principal, SaleInputParams) -> (Result_2);
+  create_token : (UserInputParams) -> (Result_3);
+  deposit_cycles_to_canister : (CanisterIdRecord, nat) -> (Result_4);
+  fetch_canister_balance : (principal) -> (Result_5);
   get_active_sales : () -> (vec SaleDetailsWithID) query;
   get_all_sales : () -> (vec record { SaleDetailsWithID; text }) query;
   get_cover_image_id : (principal) -> (opt nat32) query;
-  get_funds_raised : (principal) -> (Result_5) query;
+  get_funds_raised : (principal) -> (Result_2) query;
   get_profile_image_id : () -> (opt nat32) query;
   get_sale_params : (principal) -> (Result_6) query;
   get_successful_sales : () -> (vec record { SaleDetailsWithID; nat }) query;
@@ -105,9 +118,10 @@ service : () -> {
   get_user_sale_params : () -> (Result_7) query;
   get_user_tokens_info : () -> (vec CanisterIndexInfo) query;
   icrc28_trusted_origins : () -> (Icrc28TrustedOriginsResponse);
+  icrc_get_balance : (principal, principal) -> (Result_5);
   insert_funds_raised : (principal, nat64) -> (Result_1);
   is_account_created : () -> (text) query;
-  obtain_cycles_for_canister : (nat, principal) -> (Result_4);
+  obtain_cycles_for_canister : (nat, principal) -> (Result_5);
   search_by_token_name_or_symbol : (text) -> (opt CanisterIndexInfo) query;
   update_sale_params : (principal, SaleDetailsUpdate) -> (Result_1);
   update_user_account : (principal, UserAccount) -> (Result_1);

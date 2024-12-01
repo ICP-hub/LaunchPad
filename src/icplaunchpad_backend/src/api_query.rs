@@ -5,7 +5,10 @@ use crate::{read_state, CanisterIndexInfo, SaleDetails, SaleDetailsWithID, State
 #[ic_cdk::query]
 pub fn get_user_account(principal: Principal) -> Option<UserAccount> {
     read_state(|state| {
-        state.user_accounts.get(&principal).map(|wrapper| wrapper.user_account.clone())
+        state
+            .user_accounts
+            .get(&principal)
+            .map(|wrapper| wrapper.user_account.clone())
     })
 }
 
@@ -40,33 +43,45 @@ pub fn get_tokens_info() -> Vec<CanisterIndexInfo> {
     let current_time = current_time_ns / 1_000_000_000; // Convert to seconds
 
     read_state(|state| {
-        state.canister_ids.iter().zip(state.index_canister_ids.iter()).filter_map(|((canister_key, canister_wrapper), (index_key, _))| {
-            // Check if sale details exist and are active for this token
-            if let Some(sale_wrapper) = state.sale_details.get(&canister_key) { 
-                let sale_details = &sale_wrapper.sale_details;
+        state
+            .canister_ids
+            .iter()
+            .zip(state.index_canister_ids.iter())
+            .filter_map(|((canister_key, canister_wrapper), (index_key, _))| {
+                // Check if sale details exist and are active for this token
+                if let Some(sale_wrapper) = state.sale_details.get(&canister_key) {
+                    let sale_details = &sale_wrapper.sale_details;
 
-                // Only include tokens with ongoing/active sales
-                if sale_details.start_time_utc <= current_time && sale_details.end_time_utc > current_time {
-                    return Some(CanisterIndexInfo {
-                        canister_id: canister_key.clone(),
-                        index_canister_id: index_key.clone(),
-                        token_name: canister_wrapper.token_name.clone(),
-                        token_symbol: canister_wrapper.token_symbol.clone(),
-                        total_supply: canister_wrapper.total_supply.clone(), 
-                    });
+                    // Only include tokens with ongoing/active sales
+                    if sale_details.start_time_utc <= current_time
+                        && sale_details.end_time_utc > current_time
+                    {
+                        return Some(CanisterIndexInfo {
+                            canister_id: canister_key.clone(),
+                            index_canister_id: index_key.clone(),
+                            token_name: canister_wrapper.token_name.clone(),
+                            token_symbol: canister_wrapper.token_symbol.clone(),
+                            total_supply: canister_wrapper.total_supply.clone(),
+                        });
+                    }
                 }
-            }
-            None // Exclude tokens without sale details or inactive sales
-        }).collect()
+                None // Exclude tokens without sale details or inactive sales
+            })
+            .collect()
     })
 }
+
+// #[query]
+// pub fn get_time(){
+//     let current_time = time() / 1_000_000_000; // Convert time to seconds
+//     ic_cdk::println!("Current time: {}", current_time); // Log current time
+// }
 
 // #[ic_cdk::query]
 // pub fn get_user_tokens_upcoming_info() -> Vec<CanisterIndexInfo> {
 //     let current_time_ns = ic_cdk::api::time();
 //     let current_time = current_time_ns / 1_000_000_000; // Convert to seconds
 //     let caller = ic_cdk::caller();
-
 
 //     read_state(|state| {
 //         state.canister_ids.iter().zip(state.index_canister_ids.iter()).filter_map(|((canister_key, canister_wrapper), (index_key, _))| {
@@ -87,9 +102,6 @@ pub fn get_tokens_info() -> Vec<CanisterIndexInfo> {
 //         }).collect()
 //     })
 // }
-
-
-
 
 // #[ic_cdk::query]
 // pub fn get_user_token_successful_info() -> Vec<CanisterIndexInfo> {
@@ -118,7 +130,6 @@ pub fn get_tokens_info() -> Vec<CanisterIndexInfo> {
 //     })
 // }
 
-
 // #[ic_cdk::query]
 // pub fn get_tokens_info() -> Vec<CanisterIndexInfo> {
 //     read_state(|state| {
@@ -142,35 +153,34 @@ pub fn get_tokens_info() -> Vec<CanisterIndexInfo> {
 //     })
 // }
 
-
-
 #[ic_cdk::query]
 pub fn get_user_tokens_info() -> Vec<CanisterIndexInfo> {
     let caller = ic_cdk::caller();
 
     read_state(|state| {
-        state.canister_ids.iter()
+        state
+            .canister_ids
+            .iter()
             .zip(state.index_canister_ids.iter())
-            .filter_map(|((canister_key, canister_wrapper), (index_key, _index_wrapper))| {
-                // Only include entries where the owner matches the caller
-                if canister_wrapper.owner == caller {
-                    Some(CanisterIndexInfo {
-                        canister_id: canister_key.clone(),
-                        index_canister_id: index_key.clone(),
-                        token_name: canister_wrapper.token_name.clone(),
-                        token_symbol: canister_wrapper.token_symbol.clone(),
-                        total_supply: canister_wrapper.total_supply.clone(),
-                    })
-                } else {
-                    None
-                }
-            })
+            .filter_map(
+                |((canister_key, canister_wrapper), (index_key, _index_wrapper))| {
+                    // Only include entries where the owner matches the caller
+                    if canister_wrapper.owner == caller {
+                        Some(CanisterIndexInfo {
+                            canister_id: canister_key.clone(),
+                            index_canister_id: index_key.clone(),
+                            token_name: canister_wrapper.token_name.clone(),
+                            token_symbol: canister_wrapper.token_symbol.clone(),
+                            total_supply: canister_wrapper.total_supply.clone(),
+                        })
+                    } else {
+                        None
+                    }
+                },
+            )
             .collect()
     })
 }
-
-
-
 
 #[ic_cdk::query]
 pub fn search_by_token_name_or_symbol(token_identifier: String) -> Option<CanisterIndexInfo> {
@@ -178,9 +188,13 @@ pub fn search_by_token_name_or_symbol(token_identifier: String) -> Option<Canist
         // Iterate through the canister_ids map
         for (canister_key, canister_wrapper) in state.canister_ids.iter() {
             // Check if the token_name or token_symbol matches the token_identifier
-            if canister_wrapper.token_name == token_identifier || canister_wrapper.token_symbol == token_identifier {
+            if canister_wrapper.token_name == token_identifier
+                || canister_wrapper.token_symbol == token_identifier
+            {
                 // Find the corresponding index canister
-                let index_canister_id = state.index_canister_ids.get(&canister_key)
+                let index_canister_id = state
+                    .index_canister_ids
+                    .get(&canister_key)
                     .map(|index_wrapper| index_wrapper.index_canister_ids.to_string())
                     .unwrap_or_default();
 
@@ -198,11 +212,10 @@ pub fn search_by_token_name_or_symbol(token_identifier: String) -> Option<Canist
     })
 }
 
-
 #[ic_cdk::query]
 pub fn get_token_image_ids() -> Vec<(u32, Principal)> {
     let mut image_ledger_pairs = Vec::new();
-    
+
     read_state(|state| {
         for (_ledger_id, canister_entry) in state.canister_ids.iter() {
             if let Some(image_id) = canister_entry.image_id {
@@ -221,10 +234,13 @@ pub fn get_token_image_ids() -> Vec<(u32, Principal)> {
 pub fn get_token_image_id(ledger_id: Principal) -> Option<u32> {
     read_state(|state| {
         // Search for the given ledger_id in the canister_ids map
-        state.canister_ids.get(&ledger_id.to_string()).and_then(|canister_entry| {
-            // Return the image_id if available
-            canister_entry.image_id
-        })
+        state
+            .canister_ids
+            .get(&ledger_id.to_string())
+            .and_then(|canister_entry| {
+                // Return the image_id if available
+                canister_entry.image_id
+            })
     })
 }
 
@@ -233,7 +249,10 @@ pub fn get_profile_image_id() -> Option<u32> {
     let principal = ic_cdk::api::caller();
 
     read_state(|state| {
-        state.image_ids.get(&principal.to_string()).map(|wrapper| wrapper.image_id)
+        state
+            .image_ids
+            .get(&principal.to_string())
+            .map(|wrapper| wrapper.image_id)
     })
 }
 
@@ -241,19 +260,23 @@ pub fn get_profile_image_id() -> Option<u32> {
 pub fn get_cover_image_id(ledger_id: Principal) -> Option<u32> {
     read_state(|state| {
         // Search for the given ledger_id in the cover_image_ids map
-        state.cover_image_ids.get(&ledger_id.to_string()).map(|wrapper| wrapper.image_id)
+        state
+            .cover_image_ids
+            .get(&ledger_id.to_string())
+            .map(|wrapper| wrapper.image_id)
     })
 }
-
-
-
 
 #[ic_cdk::query]
 pub fn get_sale_params(ledger_canister_id: Principal) -> Result<SaleDetails, String> {
     // Retrieve the sale parameters from stable memory using ledger_canister_id
     let sale_details = read_state(|state| {
-        state.sale_details.get(&ledger_canister_id.to_string()).map(|wrapper| wrapper.sale_details.clone())
-    }).ok_or("Sale details not found")?;
+        state
+            .sale_details
+            .get(&ledger_canister_id.to_string())
+            .map(|wrapper| wrapper.sale_details.clone())
+    })
+    .ok_or("Sale details not found")?;
 
     // Return the sale details
     Ok(sale_details)
@@ -265,7 +288,9 @@ pub fn get_user_sale_params() -> Result<Vec<(CanisterIndexInfo, SaleDetails)>, S
 
     // Retrieve all tokens created by the user
     let tokens_info: Vec<CanisterIndexInfo> = read_state(|state: &State| {
-        state.canister_ids.iter()
+        state
+            .canister_ids
+            .iter()
             .filter_map(|(canister_key, canister_wrapper)| {
                 if canister_wrapper.owner == caller {
                     // Convert Principal to String for canister_id
@@ -273,8 +298,9 @@ pub fn get_user_sale_params() -> Result<Vec<(CanisterIndexInfo, SaleDetails)>, S
 
                     // Retrieve and convert Principal to String for index_canister_id
                     // Use a reference to canister_key when accessing the index_canister_ids map
-                    let index_canister_id = state.index_canister_ids
-                        .get(&canister_key)  // <- Here, use & to borrow canister_key
+                    let index_canister_id = state
+                        .index_canister_ids
+                        .get(&canister_key) // <- Here, use & to borrow canister_key
                         .map(|index_wrapper| index_wrapper.index_canister_ids.to_text())
                         .unwrap_or_default();
 
@@ -299,7 +325,9 @@ pub fn get_user_sale_params() -> Result<Vec<(CanisterIndexInfo, SaleDetails)>, S
             .map_err(|e| format!("Invalid canister ID: {}", e))?;
 
         let sale_details: SaleDetails = read_state(|state: &State| {
-            state.sale_details.get(&canister_id_principal.to_string())
+            state
+                .sale_details
+                .get(&canister_id_principal.to_string())
                 .map(|wrapper| wrapper.sale_details.clone())
                 .ok_or_else(|| "Sale details not found".to_string())
         })?;
@@ -310,18 +338,15 @@ pub fn get_user_sale_params() -> Result<Vec<(CanisterIndexInfo, SaleDetails)>, S
     Ok(sale_params)
 }
 
-
-
-
-
-
 #[ic_cdk::query]
 pub fn get_active_sales() -> Vec<SaleDetailsWithID> {
     let current_time_ns = ic_cdk::api::time(); // Current time in nanoseconds
     let current_time = current_time_ns / 1_000_000_000; // Convert to seconds
 
     read_state(|state| {
-        state.sale_details.iter()
+        state
+            .sale_details
+            .iter()
             .filter_map(|(key, wrapper)| {
                 // Clone `key` here to prevent it from being moved
                 let funds_raised = state
@@ -330,9 +355,9 @@ pub fn get_active_sales() -> Vec<SaleDetailsWithID> {
                     .map(|wrapper| wrapper.0)
                     .unwrap_or(0);
 
-                if wrapper.sale_details.start_time_utc <= current_time 
-                    && wrapper.sale_details.end_time_utc > current_time 
-                    && funds_raised < wrapper.sale_details.hardcap 
+                if wrapper.sale_details.start_time_utc <= current_time
+                    && wrapper.sale_details.end_time_utc > current_time
+                    && funds_raised < wrapper.sale_details.hardcap
                 {
                     Some(SaleDetailsWithID {
                         ledger_canister_id: key.clone(),
@@ -346,23 +371,29 @@ pub fn get_active_sales() -> Vec<SaleDetailsWithID> {
     })
 }
 
-
-
-
 #[ic_cdk::query]
 pub fn get_upcoming_sales() -> Vec<(SaleDetailsWithID, Nat)> {
     let current_time_ns = ic_cdk::api::time();
     let current_time = current_time_ns / 1_000_000_000; // Convert to seconds
 
     read_state(|state| {
-        state.sale_details.iter()
+        state
+            .sale_details
+            .iter()
             .filter_map(|(key, wrapper)| {
                 if wrapper.sale_details.start_time_utc > current_time {
-                    let total_supply = state.canister_ids.get(&key).map(|info| info.total_supply.clone()).unwrap_or_default();
-                    Some((SaleDetailsWithID {
-                        ledger_canister_id: key.clone(),
-                        sale_details: wrapper.sale_details.clone(),
-                    }, total_supply))
+                    let total_supply = state
+                        .canister_ids
+                        .get(&key)
+                        .map(|info| info.total_supply.clone())
+                        .unwrap_or_default();
+                    Some((
+                        SaleDetailsWithID {
+                            ledger_canister_id: key.clone(),
+                            sale_details: wrapper.sale_details.clone(),
+                        },
+                        total_supply,
+                    ))
                 } else {
                     None
                 }
@@ -377,7 +408,9 @@ pub fn get_successful_sales() -> Vec<(SaleDetailsWithID, Nat)> {
     let current_time = current_time_ns / 1_000_000_000; // Convert to seconds
 
     read_state(|state| {
-        state.sale_details.iter()
+        state
+            .sale_details
+            .iter()
             .filter_map(|(key, wrapper)| {
                 // Clone `key` here to avoid moving it
                 let funds_raised = state
@@ -386,8 +419,12 @@ pub fn get_successful_sales() -> Vec<(SaleDetailsWithID, Nat)> {
                     .map(|wrapper| wrapper.0)
                     .unwrap_or(0);
 
-                if wrapper.sale_details.end_time_utc < current_time || funds_raised >= wrapper.sale_details.hardcap {
-                    let total_supply = state.canister_ids.get(&key) // Borrow `key` here directly
+                if wrapper.sale_details.end_time_utc < current_time
+                    || funds_raised >= wrapper.sale_details.hardcap
+                {
+                    let total_supply = state
+                        .canister_ids
+                        .get(&key) // Borrow `key` here directly
                         .map(|info| info.total_supply.clone())
                         .unwrap_or_default();
 
@@ -406,9 +443,6 @@ pub fn get_successful_sales() -> Vec<(SaleDetailsWithID, Nat)> {
     })
 }
 
-
-
-
 #[ic_cdk::query]
 pub fn get_all_sales() -> Vec<(SaleDetailsWithID, String)> {
     let current_time_ns = ic_cdk::api::time();
@@ -418,7 +452,9 @@ pub fn get_all_sales() -> Vec<(SaleDetailsWithID, String)> {
 
     read_state(|state| {
         for (key, wrapper) in state.sale_details.iter() {
-            let sale_status = if wrapper.sale_details.start_time_utc <= current_time && wrapper.sale_details.end_time_utc > current_time {
+            let sale_status = if wrapper.sale_details.start_time_utc <= current_time
+                && wrapper.sale_details.end_time_utc > current_time
+            {
                 "active"
             } else if wrapper.sale_details.start_time_utc > current_time {
                 "upcoming"
@@ -431,7 +467,7 @@ pub fn get_all_sales() -> Vec<(SaleDetailsWithID, String)> {
                     ledger_canister_id: key.clone(),
                     sale_details: wrapper.sale_details.clone(),
                 },
-                sale_status.to_string()
+                sale_status.to_string(),
             ));
         }
     });
@@ -449,16 +485,3 @@ pub fn get_funds_raised(ledger_canister_id: Principal) -> Result<u64, String> {
         }
     })
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

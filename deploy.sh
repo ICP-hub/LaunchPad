@@ -43,6 +43,7 @@ dfx deploy token_deployer --argument '(
 
 dfx identity use controller 
 
+
 dfx deploy index_canister --argument '(opt variant { Init = record { ledger_id = principal "aaaaa-aa"; retrieve_blocks_from_ledger_interval_seconds = opt 10 } })'
 
 dfx identity new minter
@@ -83,11 +84,18 @@ dfx identity use controller
 dfx deploy icplaunchpad_frontend
 
 
+
 cargo build --release --target wasm32-unknown-unknown --package icplaunchpad_backend
 candid-extractor target/wasm32-unknown-unknown/release/icplaunchpad_backend.wasm > src/icplaunchpad_backend/icplaunchpad_backend.did
 
 # Deploy canister_creater_backend
 dfx deploy icplaunchpad_backend
+
+dfx ledger fabricate-cycles --canister bkyz2-fmaaa-aaaaa-qaaaq-cai
+dfx ledger fabricate-cycles --canister be2us-64aaa-aaaaa-qaabq-cai
+dfx ledger fabricate-cycles --canister bw4dl-smaaa-aaaaa-qaacq-cai
+dfx ledger fabricate-cycles --canister ryjl3-tyaaa-aaaaa-aaaba-cai
+dfx ledger fabricate-cycles --canister br5f7-7uaaa-aaaaa-qaaca-cai
 
 echo "Deployment complete. Please use the Candid UI to call the 'create_token' function with your parameters."
 echo "Or run ./tokendeploy.sh to run example token parameters"

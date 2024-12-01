@@ -1,14 +1,15 @@
+use candid::{Decode, Encode, Principal};
 use ic_cdk::init;
 use ic_stable_structures::memory_manager::{MemoryId, MemoryManager, VirtualMemory};
 use ic_stable_structures::DefaultMemoryImpl;
 use ic_stable_structures::StableBTreeMap;
 use ic_stable_structures::{storable::Bound, Storable};
-use candid::{Decode, Encode, Principal};
-use std::cell::RefCell;
 use std::borrow::Cow;
+use std::cell::RefCell;
 
 use crate::{
-    CanisterIdWrapper, CoverImageIdWrapper, ImageIdWrapper, IndexCanisterIdWrapper, SaleDetailsWrapper, State, U64Wrapper, UserAccountWrapper
+    CanisterIdWrapper, CoverImageIdWrapper, ImageIdWrapper, IndexCanisterIdWrapper,
+    SaleDetailsWrapper, State, U64Wrapper, UserAccountWrapper,
 };
 
 pub type Memory = VirtualMemory<DefaultMemoryImpl>;
@@ -20,7 +21,6 @@ pub type UserAccountsMap = StableBTreeMap<Principal, UserAccountWrapper, Memory>
 pub type CoverImageIdsMap = StableBTreeMap<String, CoverImageIdWrapper, Memory>;
 pub type FundsRaisedMap = StableBTreeMap<Principal, U64Wrapper, Memory>;
 pub type ContributionsMap = StableBTreeMap<(Principal, Principal), U64Wrapper, Memory>;
-
 
 const CANISTER_IDS_MEMORY: MemoryId = MemoryId::new(0);
 const INDEX_CANISTER_IDS_MEMORY: MemoryId = MemoryId::new(1);
@@ -149,7 +149,6 @@ pub fn init_funds_raised_map() -> FundsRaisedMap {
 pub fn init_contributions() -> ContributionsMap {
     ContributionsMap::init(get_contributions_memory())
 }
-
 
 impl Storable for U64Wrapper {
     fn to_bytes(&self) -> Cow<[u8]> {
