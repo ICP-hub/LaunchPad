@@ -174,7 +174,7 @@ const LaunchpadInfoTab = ({
 
       {/* Presale Rate */}
       <div className="mb-4">
-        <label className="block text-[19px] mb-2">Fairlaunch Token</label>
+        <label className="block text-[19px] mb-2">Fairlaunch Total Supply</label>
         <input
           type="number"
           placeholder={' Total tokens for the Fairlaunch'}
@@ -196,7 +196,7 @@ const LaunchpadInfoTab = ({
 
       {/* Hardcap Token */}
       <div className="mb-4">
-        <label className="block text-[19px] mb-2">Hardcap Token</label>
+        <label className="block text-[19px] mb-2">Hardcap</label>
         <input
           type="number"
           {...register("hardcapToken")} // Register input field
@@ -218,12 +218,12 @@ const LaunchpadInfoTab = ({
 
       {/* Softcap Token */}
       <div className="mb-8">
-        <label className="block text-[19px] mb-2">Softcap Token</label>
+        <label className="block text-[19px] mb-2">Softcap</label>
         <input
           type="number"
           {...register("softcapToken")} // Register input field
            placeholder=" Minimum funds to be raised "
-          className={`w-full p-2 bg-[#333333] text-white rounded-md ${errors.softcapToken ? "border-red-500" : "border-white no-spinner"
+          className={` no-spinner w-full p-2 bg-[#333333] text-white rounded-md ${errors.softcapToken ? "border-red-500" : "border-white "
             }  border-b-2`}
           aria-label="Softcap Token"
           onKeyDown={(e) => {
@@ -277,35 +277,14 @@ const LaunchpadInfoTab = ({
         <p className="text-xs">Toggle whitelist on/off anytime.</p>
       </div>  */}
 
-   {/* Liquidity tokens and liquidity percentage */}
-<div className="flex flex-col xxs1:flex-row justify-between mb-4">
-        <div className="xxs1:w-1/2 pr-2 mb-6">
-          <label className="block text-[19px] mb-1"> Tokens Liquidity</label>
-          <input
-            type="number"
-            {...register("tokensLiquidity")} // Register input field
-             placeholder=" Tokens reserved for DEX liquidity"
-            className={`w-full p-2 bg-[#333333] text-white rounded-md ${errors.tokensLiquidity ? "border-red-500" : "border-white no-spinner"
-              }  border-b-2`}
-            aria-label="Liquidity Tokens"
-            onKeyDown={(e) => {
-              if (e.key === '-' || e.key === 'e' || e.key === '+') {
-                e.preventDefault();
-              }
-            }}
-             min="0"
-          />
-          {errors.tokensLiquidity && (
-            <p className="text-red-500 text-[15px]">{errors.tokensLiquidity.message}</p>
-          )}
-        </div>
-        <div className="xxs1:w-1/2 xxs1:pl-2 mb-6">
+   {/*  liquidity percentage */}
+        <div className=" mb-4">
           <label className="block text-[19px] mb-1">Liquidity Percentage</label>
           <input
             type="number"
             {...register("liquidityPercentage")} // Register input field
             placeholder=" Percentage of funds allocated to DEX liquidity"
-            className={`w-full p-2 bg-[#333333] text-white rounded-md ${errors.maximumBuy ? "border-red-500" : "border-white no-spinner"
+            className={`  no-spinner w-full p-2 bg-[#333333] text-white rounded-md ${errors.maximumBuy ? "border-red-500" : "border-white"
               }  border-b-2`}
             aria-label="Liquidity Percentage"
             onKeyDown={(e) => {
@@ -319,7 +298,6 @@ const LaunchpadInfoTab = ({
             <p className="text-red-500 text-[15px]">{errors.liquidityPercentage.message}</p>
           )}
         </div>
-      </div>
 
       {/* Minimum Buy and Maximum Buy */}
       <div className="flex flex-col xxs1:flex-row justify-between mb-4">
@@ -329,7 +307,7 @@ const LaunchpadInfoTab = ({
             type="number"
             {...register("minimumBuy")} // Register input field
              placeholder=" Minimum contribution per user"
-            className={`w-full p-2 bg-[#333333] text-white rounded-md ${errors.minimumBuy ? "border-red-500" : "border-white no-spinner"
+            className={` no-spinner w-full p-2 bg-[#333333] text-white rounded-md ${errors.minimumBuy ? "border-red-500" : "border-white"
               }  border-b-2`}
             aria-label="Minimum Buy"
             onKeyDown={(e) => {
@@ -349,7 +327,7 @@ const LaunchpadInfoTab = ({
             type="number"
             {...register("maximumBuy")} // Register input field
             placeholder=" Maximum contribution per user"
-            className={`w-full p-2 bg-[#333333] text-white rounded-md ${errors.maximumBuy ? "border-red-500" : "border-white no-spinner"
+            className={`no-spinner w-full p-2 bg-[#333333] text-white rounded-md ${errors.maximumBuy ? "border-red-500" : "border-white "
               }  border-b-2`}
             aria-label="Maximum Buy"
             onKeyDown={(e) => {

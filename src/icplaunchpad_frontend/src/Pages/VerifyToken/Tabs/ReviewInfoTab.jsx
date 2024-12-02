@@ -8,20 +8,20 @@ const ReviewInfoTab = ({ presaleDetails }) => {
       <table className="w-full text-left text-[8px]  sxs3:text-[10px] xxs1:text-[13px] pr-2 mb-4">
         <tbody>
           {[
-            ["Total token", presaleDetails?.total_supply || "N/A"],
+            ["Total Supply", Number(presaleDetails?.total_supply) || "N/A"],
             ["Token name", presaleDetails?.token_name || "N/A"],
             ["Token symbol", presaleDetails?.token_symbol || "N/A"],
-            ["Token decimals", presaleDetails?.decimals || "N/A"],
-            [" Fairlaunch Token", presaleDetails?.FairlaunchTokens || "N/A"],
+            ["Token decimals", Number(presaleDetails?.decimals) || "N/A"],
+            [" Fairlaunch Supply",  Number(presaleDetails?.FairlaunchTokens) || "N/A"],
           
             // [
             //   "Sale method",
             //   presaleDetails?.currencyICP === true ? "ICP" : "N/A",
             // ],
-            ["Softcap", presaleDetails?.softcapToken || "N/A"],
-            ["Hardcap", presaleDetails?.hardcapToken || "N/A"],
-            ["Minimum buy", presaleDetails?.minimumBuy || "N/A"],
-            ["Maximum buy", presaleDetails?.maximumBuy || "N/A"],
+            ["Softcap",  Number(presaleDetails?.softcapToken) || "N/A"],
+            ["Hardcap",  Number(presaleDetails?.hardcapToken) || "N/A"],
+            ["Minimum buy",  Number(presaleDetails?.minimumBuy) || "N/A"],
+            ["Maximum buy",  Number(presaleDetails?.maximumBuy) || "N/A"],
             ["Start time", presaleDetails?.startTime || "N/A"],
             ["End time", presaleDetails?.endTime || "N/A"],
             ["Website", presaleDetails?.website || "N/A"],

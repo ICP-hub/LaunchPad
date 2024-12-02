@@ -117,7 +117,6 @@ const VerifyToken = () => {
         social_links: socialLinksURLs,
         website,
         project_video,
-        processed:true
       };
 
       const ledgerPrincipalId = typeof ledger_canister_id !== 'string' && ledger_canister_id
@@ -169,7 +168,7 @@ const VerifyToken = () => {
     } catch (error) {
       console.error("Submission failed with error:", error);
       setError(
-        "An error occurred while submitting the presale details. Please try again."
+        error + '' 
       );
     } finally {
       setIsSubmitting(false);
@@ -276,7 +275,7 @@ const VerifyToken = () => {
           </button>
         )}
       </div>
-      {error && <div className= " text-red-500 mt-8 px-8">{error}</div>}
+      {error && <div className= " text-red-500 mt-10 px-8">{error}</div>}
     </div>
   );
 };

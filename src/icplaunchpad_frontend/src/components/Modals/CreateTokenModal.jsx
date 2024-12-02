@@ -205,7 +205,7 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
                 <input
                   type="number"
                   {...register("decimals")}
-                  className={`w-full p-2 bg-[#444444] text-white rounded-3xl outline-none 
+                  className={`w-full p-2 bg-[#444444] text-white rounded-3xl outline-none no-spinner
                     ${errors.decimals ? "border-red-500" : "border-white"
                     } border-b-2`}
                 />
@@ -220,7 +220,7 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
                 <input
                   type="number"
                   {...register("total_supply")}
-                  className={`w-full p-2 bg-[#444444] text-white rounded-3xl outline-none 
+                  className={`w-full p-2 bg-[#444444] text-white rounded-3xl outline-none no-spinner
                     ${errors.total_supply ? "border-red-500" : "border-white"
                     } border-b-2`}
                 />

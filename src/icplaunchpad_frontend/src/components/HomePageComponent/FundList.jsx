@@ -16,14 +16,14 @@ const FundList = () => {
       <div className="overflow-x-auto max-h-[400px] overflow-y-auto no-scrollbar">
         <table className="min-w-full bg-black border-b border-[#FFFFFF33]">
           <thead>
-            <tr className="bg-[#19191998] text-white font-posterama uppercase text-sm leading-normal">
-              <th className="py-3 px-6 text-left">#</th>
-              <th className="py-3 px-6 text-left">Projects</th>
-              <th className="py-3 px-6 text-left">Symbol</th>
-              <th className="py-3 px-6 text-left">Total Raised</th>
-              <th className="py-3 px-6 text-left">Fairlaunch</th>
-              <th className="py-3 px-6 text-left">Type</th>
-              <th className="py-3 px-6 text-left">Ended In</th>
+            <tr className="bg-[#19191998] text-center text-white font-posterama uppercase text-sm leading-normal">
+              <th className="py-3 px-6 ">#</th>
+              <th className="py-3 px-6 ">Projects</th>
+              <th className="py-3 px-6 ">Symbol</th>
+              <th className="py-3 px-6 ">Total Raised</th>
+              <th className="py-3 px-6 ">Fairlaunch</th>
+              <th className="py-3 px-6 ">Type</th>
+              <th className="py-3 px-6 ">Ended In</th>
             </tr>
           </thead>
           {console.log('SuccesFullSales=',SuccesFullSales)}

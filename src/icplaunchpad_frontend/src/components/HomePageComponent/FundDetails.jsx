@@ -62,18 +62,19 @@ const FundDetails = ({ sale, index }) => {
 
     return (
         <tr key={index} className="text-base">
-            <td className="py-3 px-6">{index + 1}</td>
+            <td className="py-3 px-6 text-center">{index + 1}</td>
            <td className=" py-3 px-6">
-           <span className='flex'>
+           <span className='flex text-center justify-center
+           '>
             <img src={tokenDetails.token_image || ""} alt="Logo" className="object-cover h-6 w-6  rounded-full  mr-2" />
             {tokenDetails.token_name || "N/A"}
             </span> 
             </td>
-            <td className="py-3 px-6"> {tokenDetails ? tokenDetails.token_symbol : "" } </td>
-            <td className="py-3 px-6"> {tokenDetails ? tokenDetails.owner_bal : 0 } ICP</td>
-            <td className="py-3 px-6">{` ${Number(sale.sale_details.tokens_for_fairlaunch)}`}</td>
-            <td className="py-3 px-6"> Fairlaunch</td>
-            <td className="py-3 px-6">{convertTimestampToISTFormatted(sale.sale_details.end_time_utc)}</td>
+            <td className="py-3 px-6 text-center"> {tokenDetails ? tokenDetails.token_symbol : "" } </td>
+            <td className="py-3 px-6 text-center"> {tokenDetails ? tokenDetails.owner_bal : 0 } ICP</td>
+            <td className="py-3 px-6 text-center">{` ${Number(sale.sale_details.tokens_for_fairlaunch)}`}</td>
+            <td className="py-3 px-6 text-center"> Fairlaunch</td>
+            <td className="py-3 px-6 text-center">{convertTimestampToISTFormatted(sale.sale_details.end_time_utc)}</td>
         </tr>
     );
 };
