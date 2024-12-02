@@ -116,7 +116,7 @@ const VerifyToken = () => {
         description,
         social_links: socialLinksURLs,
         website,
-        project_video,
+        
       };
 
       const ledgerPrincipalId = typeof ledger_canister_id !== 'string' && ledger_canister_id
@@ -275,7 +275,7 @@ const VerifyToken = () => {
           </button>
         )}
       </div>
-      {error && <div className= " text-red-500 mt-10 px-8">{error}</div>}
+      {error && <div className= " text-red-500 mt-6 sm:mt-12 sm:text-xl px-8">{error}</div>}
     </div>
   );
 };
