@@ -55,23 +55,6 @@ export const getSchemaForStep = (step) => {
           .min(51, "Liquidity percentage cannot be less than 51")
           .max(100, "Liquidity percentage cannot be greater than 100"),
 
-          tokensLiquidity: yup
-          .number()
-          .transform(emptyStringToNull) // Converts empty string to null for proper validation
-          .typeError("Enter a valid number") // Handles non-number input errors
-          .required("Tokens for liquidity is required") // Field is mandatory
-          .positive("Tokens for liquidity must be positive") // Only positive numbers allowed
-          .notOneOf([0], "Tokens for liquidity must be greater than 0") // Cannot be zero
-          .test(
-            "is-less-than-or-equal-to-total_supply",
-            "Tokens for liquidity must not exceed the total supply",
-            function (value) {
-              console.log('this.parent=',this.parent)
-              const {total_supply} = this.parent;
-              console.log('total_supply--',total_supply)
-              return value <= Number(total_supply || 0); // Safely handle total_supply as a number
-            }),
-
         minimumBuy: yup
           .number()
           .transform(emptyStringToNull)
