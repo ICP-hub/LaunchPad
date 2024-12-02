@@ -356,7 +356,13 @@ pub struct SaleInputParams {
     pub website: String,             // Project website URL
     pub social_links: Vec<String>,   // List of social media links
     pub project_video: String,       // URL for project video
+    pub creator: Principal,          // Creator of the sale (user input)
+    pub start_time_utc: u64,         // Start time of the sale (user input)
+    pub end_time_utc: u64,           // End time of the sale (user input)
+    pub hardcap: u64,                // Hardcap for the sale (user input)
 }
+
+
 
 
 #[derive(CandidType, Deserialize, Serialize, Debug, Clone)]
