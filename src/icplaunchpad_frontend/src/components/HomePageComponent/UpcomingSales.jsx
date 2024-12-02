@@ -38,7 +38,7 @@ const UpcomingSales = React.forwardRef((props, ref) => {
 
         {/* <div className="flex lg:flex-row flex-col flex-wrap items-center  m-auto gap-12 justify-start"> */}
       <div
-        className={`flex lg:flex-row flex-col  flex-wrap items-center md:px-[8.5%] m-auto gap-12 justify-start`}
+        className={`flex lg:flex-row flex-col  flex-wrap items-center md:px-[8.5%] m-auto gap-12 justify-start `}
       >
           {salesData.length > 0 ? (
             salesData.slice(0, 3).map((sale, index) => (
