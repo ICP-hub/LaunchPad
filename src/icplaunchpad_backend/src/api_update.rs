@@ -503,17 +503,16 @@ pub async fn upload_cover_image(
 #[ic_cdk::update]
 pub fn create_sale(
     ledger_canister_id: Principal,
-    sale_input: SaleInputParams, // Use the new struct
+    sale_input: SaleInputParams, // Use the updated struct with hardcap included
 ) -> Result<u64, String> {
-    // Explicit return type
     let caller = ic_cdk::api::caller(); // Get the caller's principal
 
     // Populate the full SaleDetails struct
     let mut sale_details = SaleDetails {
-        creator: caller,
-        start_time_utc: 0, // You can default this or handle it separately
-        end_time_utc: 0,   // Default or handle separately
-        hardcap: 0,        // Default or handle separately
+        creator: caller, // Now we take the creator from user input
+        start_time_utc: sale_input.start_time_utc,
+        end_time_utc: sale_input.end_time_utc,
+        hardcap: sale_input.hardcap, // Take hardcap from user input
         softcap: sale_input.softcap,
         min_contribution: sale_input.min_contribution,
         max_contribution: sale_input.max_contribution,
@@ -560,8 +559,6 @@ pub fn create_sale(
 }
 
 
-
-
 #[ic_cdk::update]
 pub fn update_sale_params(
     ledger_canister_id: Principal,
@@ -597,6 +594,7 @@ pub fn update_sale_params(
                 sale_details.project_video = project_video; // Update the project video URL
             }
 
+            // Don't modify processed or other calculated fields
             sale_details.processed = wrapper.sale_details.processed;
 
             // Reinsert the updated wrapper back into the stable map
@@ -610,6 +608,7 @@ pub fn update_sale_params(
         }
     })
 }
+
 
 // #[ic_cdk::update]
 // async fn convert_icp_to_cycles(amount: u64) -> Result<Nat, String> {

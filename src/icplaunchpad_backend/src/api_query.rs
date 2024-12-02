@@ -282,6 +282,7 @@ pub fn get_sale_params(ledger_canister_id: Principal) -> Result<SaleDetails, Str
     Ok(sale_details)
 }
 
+
 #[ic_cdk::query]
 pub fn get_user_sale_params() -> Result<Vec<(CanisterIndexInfo, SaleDetails)>, String> {
     let caller = ic_cdk::caller();
@@ -337,6 +338,7 @@ pub fn get_user_sale_params() -> Result<Vec<(CanisterIndexInfo, SaleDetails)>, S
 
     Ok(sale_params)
 }
+
 
 #[ic_cdk::query]
 pub fn get_active_sales() -> Vec<SaleDetailsWithID> {

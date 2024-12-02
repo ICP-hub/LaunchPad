@@ -68,6 +68,7 @@ type SaleDetailsWithID = record {
   ledger_canister_id : text;
 };
 type SaleInputParams = record {
+  creator : principal;
   tokens_for_fairlaunch : nat64;
   softcap : nat64;
   max_contribution : nat64;
@@ -75,7 +76,10 @@ type SaleInputParams = record {
   description : text;
   liquidity_percentage : nat8;
   website : text;
+  hardcap : nat64;
+  end_time_utc : nat64;
   project_video : text;
+  start_time_utc : nat64;
   social_links : vec text;
 };
 type TokenCreationResult = record {
