@@ -151,7 +151,7 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
         onRequestClose={closeModal}
         contentLabel="Create Token Modal"
         className="fixed inset-0 flex items-center justify-center lg:mb-[60%] lgx:mb-[10%] bg-transparent"
-        overlayClassName="fixed z-[100] inset-0 bg-opacity-50"
+        overlayClassName="fixed inset-0 z-50 bg-black bg-opacity-50"
         ariaHideApp={false}
       >
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

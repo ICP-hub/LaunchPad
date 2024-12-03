@@ -58,7 +58,7 @@ const ProfileCard = ({ profileModalIsOpen, setProfileModalIsOpen, formattedIcpBa
         onRequestClose={closeModal}
         contentLabel="Example Modal"
         className="fixed inset-0 flex items-center justify-center bg-transparent"
-        overlayClassName="fixed z-[100] inset-0 bg-gray-800 bg-opacity-50"
+        overlayClassName="fixed inset-0 z-50 bg-black bg-opacity-50"
       >
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-[#222222] p-6 rounded-xl font-posterama text-white  relative">
