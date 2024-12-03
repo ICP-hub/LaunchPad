@@ -21,6 +21,7 @@ import { useAuth } from "../../StateManagement/useContext/useClient.jsx";
 import { useAgent, useIdentityKit } from "@nfid/identitykit/react";
 import { Actor } from "@dfinity/agent";
 import RaisedFundProgress from "../../common/RaisedFundProgress.jsx";
+import ApproveOrRejectModal from "../../common/ApproveOrRejectModal.jsx";
 
 const TokenPage = () => {
   const [tokenPhase, setTokenPhase] = useState("UPCOMING");
@@ -32,6 +33,7 @@ const TokenPage = () => {
   const [saleParams, setSaleParams] = useState(null);
   const [ledgerActor, setLedgerActor] = useState(null);
   const [tokenOwnerInfo, setTokenOwnerInfo] = useState(null);
+  const [ModalIsOpen, setModalIsOpen] = useState(false);
   console.log("baclance at 35",tokenOwnerInfo)
   const [amount, setAmount] = useState(0);
   console.log("amount")
@@ -127,11 +129,12 @@ const TokenPage = () => {
   const handleAmount = (e) => {
     if (saleParams) {
       const val = e.target.value;
-      setAmount(saleParams.listing_rate * val);
+      setAmount(val);
     }
   };
 
 console.log("ledger actor ", ledgerActor)
+
   const handleTransaction = async () => {
     if (!amount || amount <= 0) {
       toast.error("Invalid amount. Please enter a valid value.");
@@ -142,13 +145,8 @@ console.log("ledger actor ", ledgerActor)
       toast.error("Missing required data to process the transaction.");
       console.log(" authenticprojectData?.canister_idatedAgent 188", projectData?.canister_id)
       return;
-    }
-    // const actor = Actor.createActor(idlFactory, {
-    //   agent: authenticatedAgent,
-    //   canisterId: "bw4dl-smaaa-aaaaa-qaacq-cai",
-    // });
+    }   
     setIsLoading(true);
-  
 
     const acc = {
       owner: Principal.fromText(process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND),
@@ -175,10 +173,10 @@ console.log("ledger actor ", ledgerActor)
       console.log("Response from payment approve", response);
 
       if (response.Ok) {
-       const byer ={
+       const byer = {
          buyer_principal: Principal.fromText(principal),
          tokens: totalamount,
-         icrc1_ledger_canister_id: projectData?.canister_id,
+         icrc1_ledger_canister_id: Principal.fromText(projectData?.canister_id),
        }
         const finalOrderResponse = await actor.buy_tokens(byer);
         console.log("Final Order Response", finalOrderResponse);
@@ -217,9 +215,9 @@ console.log("ledger actor ", ledgerActor)
     } finally {
       setIsLoading(false); 
     }
+  
   };
 
-  
   return (
     <>
       <div className="flex flex-col  gap-5 max-w-[90%] mx-auto lg:flex-row">
@@ -342,7 +340,7 @@ console.log("ledger actor ", ledgerActor)
             <input
               type="number"
               disabled={tokenPhase !== "ONGOING"}
-              className="w-full p-2 rounded-md bg-[#333333] border-none text-white text-base mb-5"
+              className=" no-spinner w-full p-2 rounded-md bg-[#333333] border-none text-white text-base mb-5"
               placeholder={projectData && `Enter Amount in ICP`}
               onKeyDown={(e) => {
                 if (e.key === '-' || e.key === 'e' || e.key === '+') {
@@ -362,9 +360,13 @@ console.log("ledger actor ", ledgerActor)
             {/* token amount per icp */}
           
 
-            <button onClick={handleTransaction} className="w-[50%] p-2 rounded-2xl   font-semibold  bg-gradient-to-r from-[#f3b3a7] to-[#cac9f5] text-black text-base">
+            <button onClick={()=>(amount > 0) && setModalIsOpen(true)} className="w-[50%] p-2 rounded-2xl   font-semibold  bg-gradient-to-r from-[#f3b3a7] to-[#cac9f5] text-black text-base">
               USE ICP
             </button>
+            <div>
+           {ModalIsOpen && <ApproveOrRejectModal handleAction={handleTransaction} ModalIsOpen={ModalIsOpen} setModalIsOpen={setModalIsOpen} amount={amount} ledgerPrincipal={projectData.canister_id} /> }
+            </div>
+            
           </div>
 
           <div className="bg-[#FFFFFF1A] text-white p-1 rounded-lg flex flex-col ss2:flex-row    w-full lg:min-w-[406px]">

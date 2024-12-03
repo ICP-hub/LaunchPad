@@ -21,7 +21,7 @@ const UpcomingSales = React.forwardRef((props, ref) => {
       ref={ref}
       className="upcoming-sales h-full mt-8 md:mb-[5%] lg:mb-0 sm4:mb-3 py-[5%]"
     >
-      <div className="flex justify-between items-center px-[4%] md:px-[9%] mb-10   
+      <div className="flex justify-between items-center px-[4%] md:px-[9%] mb-10 mx-auto  
       ">
         <h2 className="text-white font-bold font-posterama text-[24px] xxs1:text-3xl">
           UPCOMING SALES
@@ -38,7 +38,7 @@ const UpcomingSales = React.forwardRef((props, ref) => {
 
         {/* <div className="flex lg:flex-row flex-col flex-wrap items-center  m-auto gap-12 justify-start"> */}
       <div
-        className={`flex lg:flex-row flex-col  items-center md:px-[8.5%] m-auto gap-4  justify-start`}
+        className={`flex lg:flex-row flex-col  flex-wrap items-center md:px-[8.5%] m-auto gap-12 justify-start `}
       >
           {salesData.length > 0 ? (
             salesData.slice(0, 3).map((sale, index) => (
