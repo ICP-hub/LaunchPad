@@ -136,6 +136,10 @@ const Header = () => {
         const creator = saleParams?.Ok?.creator;
         navigate(creator == principal ? '/token-page' : '/project', { state: { projectData: { ...data, token_image: imageUrl } } });
       }
+      else{
+        const creator = saleParams?.Ok?.creator;
+        navigate(creator == principal ? '/token-page' : '/project', { state: { projectData: { ...data } } });
+      }
     }
   }
 

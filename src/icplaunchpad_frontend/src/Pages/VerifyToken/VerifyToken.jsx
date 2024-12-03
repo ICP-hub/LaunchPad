@@ -18,6 +18,7 @@ import { SuccessfulSalesHandlerRequest } from "../../StateManagement/Redux/Reduc
 import { SaleParamsHandlerRequest } from "../../StateManagement/Redux/Reducers/SaleParams";
 import { getSchemaForStep } from "../../common/TokensValidation";
 import compressImage from "../../utils/CompressedImage";
+import { toast, Toaster } from "react-hot-toast";
 
 
 const convertFileToBytes = async (file) => {
@@ -170,6 +171,7 @@ const VerifyToken = () => {
       setError(
         error + '' 
       );
+      toast.error( error + '' );
     } finally {
       setIsSubmitting(false);
     }
@@ -276,6 +278,7 @@ const VerifyToken = () => {
         )}
       </div>
       {error && <div className= " text-red-500 mt-6 sm:mt-12 sm:text-xl px-8">{error}</div>}
+      <Toaster />
     </div>
   );
 };
