@@ -20,6 +20,7 @@ const ProfileCard = ({ profileModalIsOpen, setProfileModalIsOpen, formattedIcpBa
   const UserData = useSelector((state) => state?.userData?.data[0])
   const profile_ImgId = useSelector((state) => state?.ProfileImageID?.data)
 
+
   useEffect(() => {
     getProfileIMG();
   }, [profile_ImgId])
@@ -83,13 +84,24 @@ const ProfileCard = ({ profileModalIsOpen, setProfileModalIsOpen, formattedIcpBa
               <div className=' w-48 lg:w-64'>
                 <h2 className="text-lg font-semibold mt-2">{UserData ? UserData?.name : 'ABCD'}</h2>
                 <p className="text-sm text-gray-400 overflow-hidden whitespace-nowrap text-ellipsis">
-                <CopyToClipboard address={principal}  width={'90%'} />
+                  <CopyToClipboard address={principal} width={'90%'} />
                 </p>
 
                 {/* Block Explorer Button */}
-                <button className="bg-[#3c3c3c] mt-2 text-xs  text-gray-400 px-3 py-1  rounded-full">
-                  Block Explorer
-                </button>
+                <div className='flex flex-wrap'>
+                  {
+                    UserData ? UserData?.tag?.map((tag, index) => {
+                     return <button key={index} className="bg-[#3c3c3c] mt-2 text-xs mx-1  text-gray-400  px-3 py-1  rounded-full">
+                        {tag}
+                        {console.log(tag)}
+                      </button>
+                    })
+                      :
+                      <button className="bg-[#3c3c3c] mt-2 text-xs  text-gray-400 px-3 py-1  rounded-full">
+                        Block Explorer
+                      </button>
+                  }
+                </div>
               </div>
             </div>
 
