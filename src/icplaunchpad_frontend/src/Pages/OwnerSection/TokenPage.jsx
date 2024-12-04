@@ -63,111 +63,109 @@ const TokenPage = () => {
     
   // }, [tokenPhase, tokenData]);
 
-
-  const ledger_canister_id = projectData ? projectData.canister_id
-    : useSelector((state) => state?.LedgerId?.data?.ledger_canister_id)
-  console.log("ledgerCanister-", ledger_canister_id)
-
+  
   function handleTokenEdit() {
     setTokenModalIsOpen(true)
   }
+  const ledgerSelect = useSelector((state) => state?.LedgerId?.data?.ledger_canister_id);
+  const ledger_canister_id = projectData?.canister_id ?? ledgerSelect;
+  console.log("ledgerCanister:", ledger_canister_id);
+  
 
-  useEffect(() => {
-    async function getSaleParms() {
+// Fetch Sale Parameters
+const getSaleParams = async () => {
+  console.log('useEffect 1 enter')
+  try {
+    if ( ledger_canister_id) {
+      const ledgerId = Principal.fromText(ledger_canister_id);
+      const presale = await actor.get_sale_params(ledgerId);
 
-      if (projectData) {
-        console.log('projectData.canister_id=>', projectData.canister_id)
-        const ledgerId = Principal.fromText(projectData.canister_id)
-        const presale = await actor.get_sale_params(ledgerId)
-        console.log('presale', presale)
-        setPresaleData(presale.Ok)
+      if (presale?.Ok) {
+        setPresaleData(presale.Ok);
       } else {
-        console.log('ledger_canister_id=>', ledger_canister_id)
-        const ledgerId = Principal.fromText(ledger_canister_id)
-        const presale = await actor.get_sale_params(ledgerId)
-        console.log('presale', presale)
-        setPresaleData(presale.Ok)
+        console.warn("Sale parameters not found:", presale);
       }
     }
-    getSaleParms()
-  }, [projectData, ledger_canister_id, actor, renderComponent])
+  } catch (error) {
+    console.error("Error fetching sale parameters:", error);
+  }
+};
 
-  const fetchData = async () => {
-    try {
-      // Check if ledger_canister_id exists
-      if (ledger_canister_id) {
+console.log('useEffect 1')
+useEffect(() => {
+  if (ledger_canister_id) {
+    getSaleParams();
+  }
+}, [ledger_canister_id]);
 
-        // Create a custom actor for the ledger and set it in state
-        const ledgerActor = await createCustomActor(ledger_canister_id);
-        setLedgerActor(ledgerActor);
-        console.log("Ledger Actor =", ledgerActor);
+// Fetch Token Data
+const fetchData = async () => {
+  console.log('useEffect 2 enter')
+  try {
+    if (ledger_canister_id) {
+      const ledgerActor = await createCustomActor(ledger_canister_id);
+      setLedgerActor(ledgerActor);
 
-        //fetching token info with ledgerActor
-        const tokenName = await ledgerActor.icrc1_name();
-        const tokenSymbol = await ledgerActor.icrc1_symbol();
-        const totalSupply = await ledgerActor.icrc1_total_supply();
-        setTokenData({ canister_id: ledger_canister_id, token_name: tokenName, token_symbol: tokenSymbol, total_supply: totalSupply })
+      // Fetch Token Details
+      const tokenName = await ledgerActor.icrc1_name();
+      const tokenSymbol = await ledgerActor.icrc1_symbol();
+      const totalSupply = await ledgerActor.icrc1_total_supply();
 
-        // Fetching the owner of the token
-        const owner = await ledgerActor.icrc1_minting_account();
-        if (owner) {
-          const ownerBalance = await ledgerActor.icrc1_balance_of(owner[0]);
-          setTokenData((prevData) => ({
-            ...prevData,
-            owner_bal: ownerBalance.toString(),
-            owner: owner[0].owner.toString(),
-          }));
-        }
+      setTokenData({
+        canister_id: ledger_canister_id,
+        token_name: tokenName,
+        token_symbol: tokenSymbol,
+        total_supply: totalSupply,
+      });
 
+      // Fetch Owner Details
+      const owner = await ledgerActor.icrc1_minting_account();
+      if (owner?.[0]?.owner) {
+        const ownerBalance = await ledgerActor.icrc1_balance_of(owner[0]);
+        setTokenData((prevData) => ({
+          ...prevData,
+          owner_bal: ownerBalance?.toString() || '0',
+          owner: owner[0].owner.toString(),
+        }));
       }
 
-      // Fetch token image if ledgerId is available
-      if (ledger_canister_id) {
-        try {
-          const ledgerPrincipal = Principal.fromText(ledger_canister_id);
+      const ledgerPrincipal = Principal.fromText(ledger_canister_id);
 
-          // Fetch token image ID
-          const tokenImgId = await actor.get_token_image_id(ledgerPrincipal);
-          console.log("Fetched token image ID:", tokenImgId);
-
-          if (Array.isArray(tokenImgId) && tokenImgId.length > 0) {
-            const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId[tokenImgId.length - 1]}`;
-            setTokenImg(imageUrl);
-            console.log("Token Image URL:", imageUrl);
-          } else {
-            console.warn("No valid token image ID found.");
-          }
-
-          // Fetch cover image ID
-          const coverImgId = await actor.get_cover_image_id(ledgerPrincipal);
-          console.log("Fetched cover image ID:", coverImgId);
-
-          if (Array.isArray(coverImgId) && coverImgId.length > 0) {
-            const imageUrl = `${protocol}://${canisterId}.${domain}/f/${coverImgId[coverImgId.length - 1]}`;
-            setCoverImg(imageUrl);
-            console.log("Cover Image URL:", imageUrl);
-          } else {
-            console.warn("No valid cover image ID found.");
-          }
-        } catch (error) {
-          console.error("Error fetching images:", error);
-        }
+      // Fetch Token Image
+      const tokenImgId = await actor.get_token_image_id(ledgerPrincipal);
+      if (Array.isArray(tokenImgId) && tokenImgId.length > 0) {
+        const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId.at(-1)}`;
+        setTokenImg(imageUrl);
+      } else {
+        console.warn("Token image ID not found:", tokenImgId);
       }
 
-      // Fetch presale data if ledgerId is available
-      if (ledger_canister_id && !projectData) {
-        dispatch(SaleParamsHandlerRequest())
+      // Fetch Cover Image
+      const coverImgId = await actor.get_cover_image_id(ledgerPrincipal);
+      if (Array.isArray(coverImgId) && coverImgId.length > 0) {
+        const imageUrl = `${protocol}://${canisterId}.${domain}/f/${coverImgId.at(-1)}`;
+        setCoverImg(imageUrl);
+      } else {
+        console.warn("Cover image ID not found:", coverImgId);
       }
-    } catch (error) {
-      console.error("Error fetching data:", error);
+
+      // Fetch Presale Data
+      if (!projectData) {
+        dispatch(SaleParamsHandlerRequest());
+      }
     }
-  };
+  } catch (error) {
+    console.error("Error fetching token data:", error);
+  }
+};
 
-  useEffect(() => {
-    if (isAuthenticated && actor) {
-      fetchData();
-    }
-  }, [isAuthenticated, actor, ledger_canister_id, renderComponent]);
+console.log('useEffect 2')
+useEffect(() => {
+  if (isAuthenticated && actor && ledger_canister_id) {
+    fetchData();
+  }
+}, [isAuthenticated, actor, ledger_canister_id, renderComponent]);
+
 
   const openModal = () => {
     setIsOpen(true);

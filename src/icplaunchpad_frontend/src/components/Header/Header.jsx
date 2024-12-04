@@ -333,7 +333,7 @@ const Header = () => {
         {isAuthenticated && (
           <div className=" hidden md:inline-block relative  rounded-2xl bg-gradient-to-r  from-[#f09787] to-[#CACCF5] text-left p-[1.5px]">
             <button
-              onClick={toggleDropdown}
+              onClick={ userData && toggleDropdown}
               className="flex items-center text-white rounded-full"
             >
               <div className="bg-black h-full w-full rounded-2xl flex items-center p-1 px-3">
