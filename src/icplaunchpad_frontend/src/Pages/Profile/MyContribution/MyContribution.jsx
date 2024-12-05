@@ -50,7 +50,7 @@ const ProjectLists = () => {
 
   return (
     <div  className="    md:mb-[5%] lg:mb-0 sm4:mb-3 py-[5%]">
-    <div className="flex lg:flex-row flex-wrap gap-6 items-center w-[95%]  m-auto justify-around">
+    <div className="flex lg:flex-row flex-wrap gap-6 items-center sm:w-[95%]  m-auto justify-around">
       
       {/* {tokens && tokens.map((sale, index) => (
     

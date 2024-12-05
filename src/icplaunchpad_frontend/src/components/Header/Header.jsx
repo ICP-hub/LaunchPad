@@ -364,7 +364,7 @@ const Header = () => {
                   <div className="hidden border-b md:block">
                     <button
                       onClick={openProfileModal}
-                      className="block  px-4 py-2 w-full text-[18px] "
+                      className="block hover:text-[#ebe8e898] px-4 py-2 w-full text-[18px] "
                     >
                       Account
                     </button>
@@ -378,7 +378,7 @@ const Header = () => {
                   <Link
                     to="/profile"
                     onClick={() => handleSectionClick("profile")}
-                    className="block px-4 py-2  text-[18px] border-b "
+                    className="block hover:text-[#ebe8e898] px-4 py-2  text-[18px] border-b "
                   >
                     Profile
                   </Link>
@@ -386,7 +386,7 @@ const Header = () => {
                   <div className="hidden md:block">
                     <button
                       onClick={openUserModal}
-                      className="block px-4 w-full py-2 text-[18px] "
+                      className="block hover:text-[#ebe8e898] px-4 w-full py-2 text-[18px] "
                     >
                       Update User
                     </button>

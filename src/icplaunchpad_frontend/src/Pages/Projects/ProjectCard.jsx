@@ -139,7 +139,7 @@ const ProjectCard = ({ isUserToken, projectData, initial_Total_supply, saleType,
       <div
         key={index}
         onClick={handleViewMoreClick}
-        className="bg-[#FFFFFF1A] cursor-pointer text-white p-1 pb-4 rounded-xl flex flex-col w-[350px] md:w-[375px] mt-14 mx-2"
+        className="bg-[#FFFFFF1A] cursor-pointer text-white p-1 pb-4 rounded-xl flex flex-col w-[340px] md:w-[375px] mt-14 mx-0 sm:mx-2"
       >
   {/* Main UI */}
 <div className="h-[250px] rounded-lg py-5 flex flex-col">
@@ -165,7 +165,7 @@ const ProjectCard = ({ isUserToken, projectData, initial_Total_supply, saleType,
 
 <div className="flex">
  
- <RaisedFundProgress ledgerId={ledgerId} projectData={projectData?.sale_details} tokenInfo={tokenInfo}/>
+ <RaisedFundProgress comp='card' ledgerId={ledgerId} projectData={projectData?.sale_details} tokenInfo={tokenInfo}/>
 
   <div className="mt-6 w-[40%] flex flex-col justify-around">
     <div className="flex flex-col">
