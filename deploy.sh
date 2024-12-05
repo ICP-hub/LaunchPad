@@ -1,5 +1,8 @@
 #!/bin/bash
 
+set -a
+source .env
+set +a
 
 dfx identity new controller
 dfx identity use controller 
