@@ -82,7 +82,7 @@ const Profile = () => {
         <>
           <div className="bg-black text-white  p-8 max-w-[1170px] mx-auto">
             {/* Header Section */}
-            <div className="flex flex-col items-start  bg-[#FFFFFF1A] p-8  pl-[100px] rounded-2xl gap-12 mb-6">
+            <div className="flex flex-col items-start  bg-[#FFFFFF1A] p-8  px-[100px] rounded-2xl gap-12 mb-6">
           
              <p className="text-[19px] font-inter text-nowrap w-full">
                 Connect as <span className='text-[16px]'> <CopyToClipboard address={principal}  width={'90%'} /> </span>
@@ -90,7 +90,7 @@ const Profile = () => {
              
               <div className="flex space-x-6">
                 <button className="bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5] font-semibold text-black py-2 px-4 rounded-2xl">
-                  Share Your Profile
+                  SHARE YOUR PROFILE
                 </button>
                 <button
                   onClick={handleLogout}
@@ -105,7 +105,7 @@ const Profile = () => {
             {/* Body Section */}
             <div className="bg-[#FFFFFF1A] p-6 rounded-2xl">
               <div className="max-w-[90%] mx-auto mt-6">
-                <div className="flex ml-28 max-w-[80%] gap-8 dlg:gap-11 text-[11px] lg:text-[14px] font-posterama">
+                <div className="flex ml-6 max-w-[80%] gap-8 dlg:gap-11 text-[11px] lg:text-[14px] font-posterama">
                   {tabNames.map((tab) => (
                     <div
                       key={tab}

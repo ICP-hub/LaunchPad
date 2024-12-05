@@ -28,6 +28,7 @@
     "@hookform/resolvers": "^3.9.0",
     "@nfid/embed": "^0.10.3",
     "@nfid/identitykit": "^1.0.1",
+    "@react-spring/web": "^9.7.5",
     "@reduxjs/toolkit": "^2.2.7",
     "browser-image-compression": "^2.0.2",
     "buffer": "^6.0.3",

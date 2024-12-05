@@ -129,6 +129,8 @@ const ProjectLists = () => {
     [tokensData, getTokenName]
   );
 
+  const SaleType=["Upcoming", "Active", "Successful"]
+
   return (
     <div className="upcoming-sales h-full md:mb-[5%] lg:mb-0 sm4:mb-3 py-[5%]">
       <div className="bg-black text-white px-4 xxs1:px-16">
@@ -171,10 +173,11 @@ const ProjectLists = () => {
             </button>
             {showFilterDropdown && (
               <div className="absolute text-[15px] top-[110%] left-0  min-w-[100px]  bg-[#333333] font-posterama text-white rounded-lg p-1 z-10 shadow-lg">
-                {["Upcoming", "Active", "Successful"].map((type) => (
+                {SaleType.map((type, index) => (
                   <p
                     key={type}
-                    className="cursor-pointer border-b-2 px-2 text-center  py-2"
+                    className={`cursor-pointer  mx-2 hover:text-[#ebe8e898] text-center py-2 ${index === (SaleType.length - 1) ? 'border-b-0' : ' border-b-2 '}`}
+
                     onClick={() => {
                       type == 'Upcoming' ? dispatch(upcomingSalesHandlerRequest()) 
                       : type == 'Successful' ?  dispatch(SuccessfulSalesHandlerRequest())
@@ -201,13 +204,13 @@ const ProjectLists = () => {
             {showSortDropdown && (
                <div className="absolute text-[15px] top-[110%] right-2 text-center min-w-[100px]  bg-[#333333] font-posterama text-white rounded-lg p-2 z-10 shadow-lg">
                 <p
-                  className="cursor-pointer border-b-2 py-2"
+                  className="cursor-pointer hover:text-[#ebe8e898] border-b-2 py-2"
                   onClick={() => handleSort("A to Z")}
                 >
                   A to Z
                 </p>
                 <p
-                  className="cursor-pointer border-b-2 py-2"
+                  className="cursor-pointer hover:text-[#ebe8e898] pt-2 pb-1"
                   onClick={() => handleSort("Z to A")}
                 >
                   Z to A
@@ -222,7 +225,8 @@ const ProjectLists = () => {
       <div className="flex lg:flex-row flex-col flex-wrap items-center w-[90%] m-auto gap-12 lg:gap-[3.8rem] justify-start">
         {filteredTokensData.length > 0 ?
           filteredTokensData.map((sale, index) => (
-            sale && <ProjectCard initial_Total_supply={ sale[1] || null} projectData={sale[0] || sale} saleType={saleType} key={index} />
+            sale && <ProjectCard  initial_Total_supply={ sale[1] || null} projectData={sale[0] || sale} saleType={saleType} key={index} />
+
           ))
           :
           <div className="mx-auto py-12">
