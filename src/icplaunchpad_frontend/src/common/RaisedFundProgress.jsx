@@ -6,7 +6,7 @@ const RaisedFundProgress = ({ ledgerId, projectData, tokenInfo, comp }) => {
     const [fundRaised, setFundRaised] = useState(0);
     const [progressType, setProgressType] = useState('');
     const [progress, setProgress] = useState(0);
-    const fundRaise =13;
+    // const fundRaise =13;
     const actor = useSelector((currState) => currState.actors.actor);
 
     const softcap = Number(projectData?.softcap ?? tokenInfo?.sale_Params?.softcap);
@@ -16,19 +16,19 @@ const RaisedFundProgress = ({ ledgerId, projectData, tokenInfo, comp }) => {
         let calculatedProgress = 0;
         let type = '';
         if (softcap > 0 && hardcap > 0) {
-            if (fundRaise <= softcap) {
+            if (fundRaised <= softcap) {
                 type = 'softcap';
-                calculatedProgress = (fundRaise / softcap) * 100;
-            } else if (fundRaise <= hardcap) {
+                calculatedProgress = (fundRaised / softcap) * 100;
+            } else if (fundRaised <= hardcap) {
                 type = 'hardcap';
-                calculatedProgress = (fundRaise / hardcap) * 100;
+                calculatedProgress = (fundRaised / hardcap) * 100;
             } else {
                 type = 'beyond';
                 calculatedProgress = 100; // Beyond hardcap
             }
         }
         return { calculatedProgress, type };
-    }, [fundRaise, softcap, hardcap]);
+    }, [fundRaised, softcap, hardcap]);
 
     useEffect(() => {
         setProgressType(type);
