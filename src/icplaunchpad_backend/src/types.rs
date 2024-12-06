@@ -5,6 +5,20 @@ use serde_bytes::ByteBuf;
 
 use crate::state_handler::*;
 
+
+pub struct State {
+    pub canister_ids: CanisterIdsMap,
+    pub index_canister_ids: IndexCanisterIdsMap,
+    pub image_ids: ImageIdsMap,
+    pub sale_details: SaleDetailsMap,
+    pub user_accounts: UserAccountsMap,
+    pub cover_image_ids: CoverImageIdsMap,
+    pub funds_raised: FundsRaisedMap,
+    pub contributions: ContributionsMap,
+    pub imported_canister_ids: ImportedCanisterIdsMap
+}
+
+
 #[derive(Serialize, Deserialize, Clone, CandidType, Debug)]
 pub struct UserAccount {
     pub name: String,
@@ -299,16 +313,7 @@ pub struct SaleDetailsUpdate {
     pub project_video: Option<String>, // Optional field to update the project video
 }
 
-pub struct State {
-    pub canister_ids: CanisterIdsMap,
-    pub index_canister_ids: IndexCanisterIdsMap,
-    pub image_ids: ImageIdsMap,
-    pub sale_details: SaleDetailsMap,
-    pub user_accounts: UserAccountsMap,
-    pub cover_image_ids: CoverImageIdsMap,
-    pub funds_raised: FundsRaisedMap,
-    pub contributions: ContributionsMap,
-}
+
 
 #[derive(CandidType, Deserialize, Debug, Clone)]
 pub struct CanisterIdWrapper {
@@ -320,6 +325,13 @@ pub struct CanisterIdWrapper {
     pub owner: Principal,
     pub total_supply: Nat,
 }
+
+#[derive(CandidType, Deserialize, Debug, Clone)]
+pub struct ImportedCanisterIdWrapper {
+    pub caller: Principal,
+    pub ledger_canister_id: Principal,
+}
+
 
 #[derive(CandidType, Deserialize, Debug, Clone)]
 pub struct IndexCanisterIdWrapper {

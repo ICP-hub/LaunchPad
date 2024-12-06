@@ -1,4 +1,5 @@
 use candid::{Nat, Principal};
+use ic_cdk::query;
 
 use crate::{read_state, CanisterIndexInfo, SaleDetails, SaleDetailsWithID, State, UserAccount};
 
@@ -486,4 +487,30 @@ pub fn get_funds_raised(ledger_canister_id: Principal) -> Result<u64, String> {
             Err("No funds found for the given ledger_canister_id.".into())
         }
     })
+}
+
+
+#[query]
+pub fn get_user_ledger_ids(user_principal: Principal) -> Vec<Principal> {
+    let mut ledger_ids: Vec<Principal> = Vec::new();
+
+    // Read the ledger IDs created with `create_token`
+    read_state(|state| {
+        for (_, canister_wrapper) in state.canister_ids.iter() {
+            if canister_wrapper.owner == user_principal {
+                if let Some(ledger_id) = canister_wrapper.ledger_id {
+                    ledger_ids.push(ledger_id);
+                }
+            }
+        }
+
+        // Read the ledger IDs imported with `import_token`
+        for (_, imported_canister_wrapper) in state.imported_canister_ids.iter() {
+            if imported_canister_wrapper.caller == user_principal {
+                ledger_ids.push(imported_canister_wrapper.ledger_canister_id);
+            }
+        }
+    });
+
+    ledger_ids
 }
