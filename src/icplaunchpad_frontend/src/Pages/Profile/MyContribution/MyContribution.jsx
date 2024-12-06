@@ -13,34 +13,11 @@ const ProjectLists = () => {
     (currState) => currState.internet.isAuthenticated
   );
   const principal = useSelector((currState) => currState.internet.principal);
-  const [tokens, setTokens] = useState([])
+ 
+  const tokens= useSelector((state)=>state?.UserTokensInfo?.data)
   console.log("Fetched tokens in ProjectLists:", tokens);
 
-  useEffect(() => {
-    const fetchUserTokensInfo = async () => {
-      try {
-        if (actor) {
-          const response = await actor.get_user_tokens_info();
 
-          if (response && response.length > 0) {
-            setTokens(response);
-          } else {
-            console.log("No tokens data available or empty response.");
-          }
-        } else {
-          console.log("User account has not been created yet.");
-        }
-      } catch (error) {
-        console.error("Error fetching user tokens info:", error.message);
-      }
-    };
-
-    fetchUserTokensInfo();
-  }, [actor]);
-  // Handle navigation to the projects page
-  // const handleViewMoreClick2 = () => {
-  //   navigate('/project');
-  // };
   
 
   return (
