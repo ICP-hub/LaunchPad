@@ -99,56 +99,6 @@ export const getSchemaForStep = (step) => {
             }
           ),
 
-        social_links: yup
-          .array()
-          .of(
-            yup.object().shape({
-              link: yup
-                .string()
-                .test(
-                  "no-leading-trailing-spaces",
-                  "URL should not have leading or trailing spaces",
-                  (value) => value === value?.trim()
-                )
-                .test(
-                  "no-invalid-extensions",
-                  "URL should not end with .php, .js, or .txt",
-                  (value) => {
-                    const invalidExtensions = [".php", ".js", ".txt"];
-                    return value
-                      ? !invalidExtensions.some((ext) => value.endsWith(ext))
-                      : true;
-                  }
-                )
-                .test("is-website", "Only website links are allowed", (value) => {
-                  if (value) {
-                    try {
-                      const url = new URL(value);
-                      const hostname = url.hostname.toLowerCase();
-                      const validExtensions = [
-                        ".com",
-                        ".org",
-                        ".net",
-                        ".in",
-                        ".co",
-                        ".io",
-                        ".gov",
-                      ];
-                      return validExtensions.some((ext) =>
-                        hostname.endsWith(ext)
-                      );
-                    } catch (err) {
-                      return false;
-                    }
-                  }
-                  return true;
-                })
-                .url("Invalid URL")
-                .nullable(true),
-            })
-          )
-          .max(10, "You can only add up to 10 links")
-          .optional(),
 
         logoURL: yup
           .mixed()
@@ -191,7 +141,20 @@ export const getSchemaForStep = (step) => {
           .matches(
             /\.(mp4|avi|mov|wmv|flv|mkv)$/i,
             "Project video must be a valid video URL ending with .mp4, .avi, .mov, .wmv, .flv, or .mkv"
-          ),        
+          ),
+          social_links: yup
+          .array()
+          .of(
+            yup
+              .string()
+              .url("Each link must be a valid URL.") // Ensure the string is a valid URL
+              .min(10, "Each link must be at least 10 characters long.") // Enforce minimum length
+              .max(100, "Each link can be at most 100 characters long.") // Enforce maximum length
+          )
+          .min(1, "You must provide at least 1 link.") // Require at least one link
+          .max(5, "You can provide up to 5 links.") // Restrict to 5 links maximum
+          .nullable(), // Allow the array itself to be null
+                
       });
 
     default:

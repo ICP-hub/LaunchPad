@@ -50,6 +50,8 @@ const VerifyToken = () => {
 
   const {
     register,
+    unregister,
+    control,
     handleSubmit,
     watch,
     formState: { errors },
@@ -101,7 +103,6 @@ const VerifyToken = () => {
           ? Principal.fromText(principal)
           : principal;
 
-      const socialLinksURLs = social_links.map((link) => link.url);
 
       const presaleData = {
         creator: creatorPrincipal,
@@ -115,7 +116,7 @@ const VerifyToken = () => {
         tokens_for_liquidity:parseInt(tokensLiquidity),
         liquidity_percentage:parseFloat(liquidityPercentage),
         description,
-        social_links: socialLinksURLs,
+        social_links,
         website,
         project_video,
       };
@@ -232,6 +233,8 @@ const VerifyToken = () => {
         {currentStep === 3 && (
           <AdditionalInfoTab
             register={register}
+            unregister={unregister}
+            control={control}
             presaleDetails={presaleDetails}
             setPresaleDetails={setPresaleDetails}
             errors={errors}
@@ -277,7 +280,7 @@ const VerifyToken = () => {
           </button>
         )}
       </div>
-      {error && <div className= " text-red-500 mt-6 sm:mt-12 sm:text-xl px-8">{error}</div>}
+
       <Toaster />
     </div>
   );

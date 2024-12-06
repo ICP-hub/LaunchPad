@@ -27,6 +27,7 @@ import SaleStart from "./SaleStart.jsx";
 import { getSocialLogo } from "../../common/getSocialLogo.jsx";
 import { useAuth } from "../../StateManagement/useContext/useClient.jsx";
 import RaisedFundProgress from "../../common/RaisedFundProgress.jsx";
+import Tokenomic from "./Tokenomics/Tokenomics.jsx";
 
 const TokenPage = () => {
   const [activeTab, setActiveTab] = useState("About");
@@ -57,114 +58,114 @@ const TokenPage = () => {
   // const location = useLocation();
 
   // useEffect(() => {
-   
+
   //     const progress = tokenData && projectData ? (100 - (Number(tokenData.total_supply) / Number(projectData.total_supply)) * 100) : 0;
   //     setSaleProgress(progress.toFixed(2))
-    
+
   // }, [tokenPhase, tokenData]);
 
-  
+
   function handleTokenEdit() {
     setTokenModalIsOpen(true)
   }
   const ledgerSelect = useSelector((state) => state?.LedgerId?.data?.ledger_canister_id);
   const ledger_canister_id = projectData?.canister_id ?? ledgerSelect;
   console.log("ledgerCanister:", ledger_canister_id);
-  
 
-// Fetch Sale Parameters
-const getSaleParams = async () => {
-  console.log('useEffect 1 enter')
-  try {
-    if ( ledger_canister_id) {
-      const ledgerId = Principal.fromText(ledger_canister_id);
-      const presale = await actor.get_sale_params(ledgerId);
 
-      if (presale?.Ok) {
-        setPresaleData(presale.Ok);
-      } else {
-        console.warn("Sale parameters not found:", presale);
+  // Fetch Sale Parameters
+  const getSaleParams = async () => {
+    console.log('useEffect 1 enter')
+    try {
+      if (ledger_canister_id) {
+        const ledgerId = Principal.fromText(ledger_canister_id);
+        const presale = await actor.get_sale_params(ledgerId);
+
+        if (presale?.Ok) {
+          setPresaleData(presale.Ok);
+        } else {
+          console.warn("Sale parameters not found:", presale);
+        }
       }
+    } catch (error) {
+      console.error("Error fetching sale parameters:", error);
     }
-  } catch (error) {
-    console.error("Error fetching sale parameters:", error);
-  }
-};
+  };
 
-console.log('useEffect 1')
-useEffect(() => {
-  if (ledger_canister_id) {
-    getSaleParams();
-  }
-}, [ledger_canister_id]);
-
-// Fetch Token Data
-const fetchData = async () => {
-  console.log('useEffect 2 enter')
-  try {
+  console.log('useEffect 1')
+  useEffect(() => {
     if (ledger_canister_id) {
-      const ledgerActor = await createCustomActor(ledger_canister_id);
-      setLedgerActor(ledgerActor);
-
-      // Fetch Token Details
-      const tokenName = await ledgerActor.icrc1_name();
-      const tokenSymbol = await ledgerActor.icrc1_symbol();
-      const totalSupply = await ledgerActor.icrc1_total_supply();
-
-      setTokenData({
-        canister_id: ledger_canister_id,
-        token_name: tokenName,
-        token_symbol: tokenSymbol,
-        total_supply: totalSupply,
-      });
-
-      // Fetch Owner Details
-      const owner = await ledgerActor.icrc1_minting_account();
-      if (owner?.[0]?.owner) {
-        const ownerBalance = await ledgerActor.icrc1_balance_of(owner[0]);
-        setTokenData((prevData) => ({
-          ...prevData,
-          owner_bal: ownerBalance?.toString() || '0',
-          owner: owner[0].owner.toString(),
-        }));
-      }
-
-      const ledgerPrincipal = Principal.fromText(ledger_canister_id);
-
-      // Fetch Token Image
-      const tokenImgId = await actor.get_token_image_id(ledgerPrincipal);
-      if (Array.isArray(tokenImgId) && tokenImgId.length > 0) {
-        const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId.at(-1)}`;
-        setTokenImg(imageUrl);
-      } else {
-        console.warn("Token image ID not found:", tokenImgId);
-      }
-
-      // Fetch Cover Image
-      const coverImgId = await actor.get_cover_image_id(ledgerPrincipal);
-      if (Array.isArray(coverImgId) && coverImgId.length > 0) {
-        const imageUrl = `${protocol}://${canisterId}.${domain}/f/${coverImgId.at(-1)}`;
-        setCoverImg(imageUrl);
-      } else {
-        console.warn("Cover image ID not found:", coverImgId);
-      }
-
-      // Fetch Presale Data
-      if (!projectData) {
-        dispatch(SaleParamsHandlerRequest());
-      }
+      getSaleParams();
     }
-  } catch (error) {
-    console.error("Error fetching token data:", error);
-  }
-};
+  }, [ledger_canister_id]);
 
-console.log('useEffect 2')
-useEffect(() => {
-  if (isAuthenticated && actor && ledger_canister_id) {
-    fetchData();
-  }
-}, [isAuthenticated, actor, ledger_canister_id, renderComponent]);
+  // Fetch Token Data
+  const fetchData = async () => {
+    console.log('useEffect 2 enter')
+    try {
+      if (ledger_canister_id) {
+        const ledgerActor = await createCustomActor(ledger_canister_id);
+        setLedgerActor(ledgerActor);
+
+        // Fetch Token Details
+        const tokenName = await ledgerActor.icrc1_name();
+        const tokenSymbol = await ledgerActor.icrc1_symbol();
+        const totalSupply = await ledgerActor.icrc1_total_supply();
+
+        setTokenData({
+          canister_id: ledger_canister_id,
+          token_name: tokenName,
+          token_symbol: tokenSymbol,
+          total_supply: totalSupply,
+        });
+
+        // Fetch Owner Details
+        const owner = await ledgerActor.icrc1_minting_account();
+        if (owner?.[0]?.owner) {
+          const ownerBalance = await ledgerActor.icrc1_balance_of(owner[0]);
+          setTokenData((prevData) => ({
+            ...prevData,
+            owner_bal: ownerBalance?.toString() || '0',
+            owner: owner[0].owner.toString(),
+          }));
+        }
+
+        const ledgerPrincipal = Principal.fromText(ledger_canister_id);
+
+        // Fetch Token Image
+        const tokenImgId = await actor.get_token_image_id(ledgerPrincipal);
+        if (Array.isArray(tokenImgId) && tokenImgId.length > 0) {
+          const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId.at(-1)}`;
+          setTokenImg(imageUrl);
+        } else {
+          console.warn("Token image ID not found:", tokenImgId);
+        }
+
+        // Fetch Cover Image
+        const coverImgId = await actor.get_cover_image_id(ledgerPrincipal);
+        if (Array.isArray(coverImgId) && coverImgId.length > 0) {
+          const imageUrl = `${protocol}://${canisterId}.${domain}/f/${coverImgId.at(-1)}`;
+          setCoverImg(imageUrl);
+        } else {
+          console.warn("Cover image ID not found:", coverImgId);
+        }
+
+        // Fetch Presale Data
+        if (!projectData) {
+          dispatch(SaleParamsHandlerRequest());
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching token data:", error);
+    }
+  };
+
+  console.log('useEffect 2')
+  useEffect(() => {
+    if (isAuthenticated && actor && ledger_canister_id) {
+      fetchData();
+    }
+  }, [isAuthenticated, actor, ledger_canister_id, renderComponent]);
 
 
   const openModal = () => {
@@ -181,6 +182,8 @@ useEffect(() => {
         return <Pooolinfo presaleData={presaleData} poolData={tokenData ? tokenData : ''} />;
       case "FAQs & Discussion":
         return <FAQsDiscussion />;
+      case "Tokenomic":
+        return <Tokenomic/>;
       default:
         return <ProjectTokenAbout presaleData={presaleData} />;
     }
@@ -190,6 +193,7 @@ useEffect(() => {
     "About",
     "Token",
     "Pool Info",
+    "Tokenomic",
     "FAQs & Discussion",
 
   ];
@@ -263,7 +267,7 @@ useEffect(() => {
                 </div>
                 <div className="right flex flex-col gap-5">
                   <FiEdit3 onClick={handleTokenEdit} className="cursor-pointer" />
-                
+
                 </div>
               </div>
 
@@ -292,10 +296,10 @@ useEffect(() => {
 
                 </div>
                 <div className="righttext-[16px] font-medium">
-                Fair Launch
+                  Fair Launch
                 </div>
                 <div className="text-[#FFC145] text-[18px] font-semibold">
-                {tokenPhase}
+                  {tokenPhase}
                 </div>
                 <div>
                   {`Soft ${presaleData?.softcap} ICP `}
@@ -416,8 +420,8 @@ useEffect(() => {
 
           {isMobile && (
             <div className="bg-[#FFFFFF1A] text-white p-1 rounded-lg mt-8 flex w-full h-[350px] lg:min-w-[406px]">
-             
-             <RaisedFundProgress ledgerId={ledger_canister_id} projectData={presaleData} />
+
+              <RaisedFundProgress ledgerId={ledger_canister_id} projectData={presaleData} />
 
               <div className="mt-6 w-[40%] flex flex-col justify-around ">
                 <div className="flex flex-col">
@@ -465,8 +469,8 @@ useEffect(() => {
         <div className="flex lg:flex-col flex-row gap-5 flex-wrap mt-[100px]">
           {!isMobile && (
             <div className="bg-[#FFFFFF1A] text-white p-1 rounded-lg flex w-full h-[350px] lg:min-w-[406px]">
-      
-      <RaisedFundProgress ledgerId={ledger_canister_id} projectData={presaleData} />
+
+              <RaisedFundProgress ledgerId={ledger_canister_id} projectData={presaleData} />
 
               <div className="mt-6 w-[40%] flex flex-col justify-around ">
                 <div className="flex flex-col">
@@ -475,7 +479,7 @@ useEffect(() => {
                 </div>
                 <div className="flex flex-col">
                   <span className="text-sm text-gray-400">UNSOLD TOKENS</span>
-                  <span className="text-lg font-semibold">
+                  <span className="text-lg mr-2 font-semibold">
                     {tokenData ? `${tokenData.total_supply.toString()} ${tokenData.token_symbol}` : '0'}
                   </span>
                 </div>

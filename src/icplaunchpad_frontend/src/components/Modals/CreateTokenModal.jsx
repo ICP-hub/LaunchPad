@@ -59,7 +59,7 @@ const tokenSchema = yup.object().shape({
     .typeError("Total supply must be a number")
     .required("Total supply is required")
     .positive("Total supply must be positive")
-    .max(100000, "Total supply cannot exceed 100,000"),
+    
 });
 
 const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {

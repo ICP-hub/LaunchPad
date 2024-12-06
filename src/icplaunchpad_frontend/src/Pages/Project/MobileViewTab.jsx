@@ -14,15 +14,15 @@ const MobileViewTab = ({ledgerId,poolData,presaleData}) => {
     const [activeTab, setActiveTab] = useState("About");
   const renderContent = () => {
     switch (activeTab) {
-      case "About":
+      case "ABOUT":
         return <ProjectTokenAbout presaleData={presaleData} />;
-      case "Token":
+      case "TOKEN":
         return <Token ledgerId={ledgerId} />;
-      case "Pool Info":
+      case "POOL INFO":
         return <Pooolinfo presaleData={presaleData} poolData={poolData} />;
-      case "Tokenomic":
+      case "TOKENOMIC":
         return <Tokenomic />;
-      case "FAQs & Discussion":
+      case "FAQs & DISCUSSION":
         return <FAQsDiscussion />;
       default:
         return <ProjectTokenAbout />;
@@ -30,11 +30,11 @@ const MobileViewTab = ({ledgerId,poolData,presaleData}) => {
   };
 
   const mobileTabs = [
-    { name: "About", content: renderContent() },
-    { name: "Token", content: renderContent() },
-    { name: "Pool Info", content: renderContent() },
-    { name: "Tokenomic", content: renderContent() },
-    { name: "FAQs & Discussion", content: renderContent() },
+    { name: "ABOUT", content: renderContent() },
+    { name: "TOKEN", content: renderContent() },
+    { name: "POOL INFO", content: renderContent() },
+    { name: "TOKENOMIC", content: renderContent() },
+    { name: "FAQs & DISCUSSION", content: renderContent() },
   ];
 
   return (

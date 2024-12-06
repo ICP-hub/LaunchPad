@@ -4,39 +4,41 @@ import { useSelector } from 'react-redux';
 
 const RaisedFundProgress = ({ ledgerId, projectData, tokenInfo, comp }) => {
     const [fundRaised, setFundRaised] = useState(0);
-    const [animatedProgress, setAnimatedProgress] = useState(0);
     const [progressType, setProgressType] = useState('');
-
+    const [progress, setProgress] = useState(0);
+    const fundRaise =13;
     const actor = useSelector((currState) => currState.actors.actor);
 
     const softcap = Number(projectData?.softcap ?? tokenInfo?.sale_Params?.softcap);
     const hardcap = Number(projectData?.hardcap ?? tokenInfo?.sale_Params?.hardcap);
 
-    // Memoize the fundRaisedProgress and progressType calculations
-    const { progress, type } = useMemo(() => {
-        let progress = 0;
+    const { calculatedProgress, type } = useMemo(() => {
+        let calculatedProgress = 0;
         let type = '';
         if (softcap > 0 && hardcap > 0) {
-            if (fundRaised <= softcap) {
+            if (fundRaise <= softcap) {
                 type = 'softcap';
-                progress = (fundRaised / softcap) * 100;
-            } else if (fundRaised <= hardcap) {
+                calculatedProgress = (fundRaise / softcap) * 100;
+            } else if (fundRaise <= hardcap) {
                 type = 'hardcap';
-                progress = (fundRaised / hardcap) * 100;
+                calculatedProgress = (fundRaise / hardcap) * 100;
             } else {
                 type = 'beyond';
-                progress = 100; // Beyond hardcap
+                calculatedProgress = 100; // Beyond hardcap
             }
         }
-        return { progress, type };
-    }, [fundRaised, softcap, hardcap]);
+        return { calculatedProgress, type };
+    }, [fundRaise, softcap, hardcap]);
 
-    // Update progressType state based on memoized value
     useEffect(() => {
         setProgressType(type);
-    }, [type]);
+        // Delay updating progress to ensure smoother transitions
+        const timeout = setTimeout(() => {
+            setProgress(calculatedProgress);
+        }, 200); // Adjust delay (200ms) as needed
+        return () => clearTimeout(timeout);
+    }, [calculatedProgress, type]);
 
-    // Fetch fundRaised from the actor
     useEffect(() => {
         async function fetchAndSetFunds() {
             try {
@@ -52,28 +54,6 @@ const RaisedFundProgress = ({ ledgerId, projectData, tokenInfo, comp }) => {
         fetchAndSetFunds();
     }, [ledgerId, actor]);
 
-    // Handle animated progress
-    useEffect(() => {
-        let timeout;
-        const frameDuration = 100; // Frame duration in ms for smoother progress
-
-        const animateProgress = () => {
-            setAnimatedProgress((prev) => {
-                const next = Math.min(prev + 0.5, progress); // Increment by a smaller value
-                if (next < progress) {
-                    timeout = setTimeout(animateProgress, frameDuration);
-                }
-                return next;
-            });
-        };
-
-        setAnimatedProgress(0); // Reset animation
-        animateProgress();
-
-        return () => clearTimeout(timeout); // Cleanup
-    }, [progress]);
-
-    // Define gradient colors dynamically
     const gradientColors = useMemo(() => {
         const colors = {
             softcap: ['#00C6FF', '#0072FF'],
@@ -83,25 +63,20 @@ const RaisedFundProgress = ({ ledgerId, projectData, tokenInfo, comp }) => {
         return colors[progressType] || ['#ccc', '#ccc'];
     }, [progressType]);
 
-    const gradientId = `gradient-${progressType}`; // Unique gradient ID for each progress type
+    const gradientId = `gradient-${progressType}`;
 
     return (
         <div className="relative flex items-center overflow-hidden w-[65%] h-72">
             <div
-                className={`absolute top-0 w-72 h-72 ${
-                    comp === 'card'
-                        ? '-left-[50%] md:-left-[45%]'
-                        : 'left-[-33%] lg:left-[-45%] ss2:left-[-70%] dxs:left-[-47%] xxs1:left-[-30%] sm:left-[-20%] md:left-[-15%]'
-                }`}
+                className='absolute top-0 w-72 h-72 -left-28'
             >
-                <svg className="rotate-[-90deg]" viewBox="0 0 36 36">
+                <svg className="rotate-[-17deg]" viewBox="0 0 36 36">
                     <defs>
                         <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="0%">
                             <stop offset="0%" stopColor={gradientColors[0]} />
                             <stop offset="100%" stopColor={gradientColors[1]} />
                         </linearGradient>
                     </defs>
-
                     <path
                         className="text-gray-800"
                         d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831a 15.9155 15.9155 0 0 1 0 -31.831"
@@ -115,13 +90,15 @@ const RaisedFundProgress = ({ ledgerId, projectData, tokenInfo, comp }) => {
                         fill="none"
                         stroke={`url(#${gradientId})`}
                         strokeWidth="3.8"
-                        strokeDasharray={`${animatedProgress}, 100`}
+                        strokeDasharray={`${(progress / 1.66)}, 60`} // Scale progress to fit the half-circle
+                        style={{ transition: 'stroke-dasharray 1s ease-in-out' }}
                     />
+
                 </svg>
                 <div className="absolute ml-28 ss2:ml-10 inset-0 flex flex-col items-center justify-center">
                     <span>Progress</span>
                     <span className="text-lg font-semibold text-white">
-                        {animatedProgress.toFixed(2)}%
+                        {progress.toFixed(2)}%
                     </span>
                     <span className="text-sm text-gray-400 mt-1">
                         {fundRaised} ICP RAISED

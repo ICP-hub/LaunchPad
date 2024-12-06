@@ -25,7 +25,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const actor = useSelector((currState) => currState.actors.actor);
 
   const principal = useSelector((currState) => currState.internet.principal);
-  const { register, handleSubmit, formState: { errors }, control, reset, setValue, clearErrors, setError } = useForm({
+  const { register,unregister, handleSubmit, formState: { errors }, control, reset, setValue, clearErrors, setError } = useForm({
     resolver: yupResolver(validationSchema),
   });
 
@@ -63,7 +63,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
       }
       let profilePictureData = [];
       if (profile_picture) {
-        
+
         const compressedFile = await CompressedImage(profile_picture);
         console.log('Compressed Image Size (bytes):', compressedFile.size);
         profilePictureData = await convertFileToUint8Array(compressedFile);
@@ -154,7 +154,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   //     return null;
   //   }
   // };
-  
+
 
 
   // Function to handle field touch
@@ -169,6 +169,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
     setLinks(prev => prev.filter((_, i) => i !== index));
     clearErrors(`links.${index}`);
     clearErrors("links");
+    unregister(`links.${index}`);
   };
   const updateLink = (index, value) => {
     const updatedLinks = [...links];
@@ -246,31 +247,31 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               </div>
               {errors.profile_picture && <p className="text-red-500">{errors.profile_picture.message}</p>}
             </div>
-
             {/* Social Links */}
             <div className="mb-4">
               <h2 className="block text-[19px] mb-1">Social Links</h2>
+
               {links.map((item, index) => (
-                <div key={index} className='flex flex-col'>
-                  <div className='flex items-center mb-2 pb-1'>
+                <div key={index} className="flex flex-col">
+                  <div className="flex items-center mb-2 pb-1">
                     <Controller
-                      name={`links.${index}`}
+                      name={`links.${index}`} // Reference each link correctly
                       control={control}
-                      defaultValue={item.url || ''}
+                      defaultValue={item.url || ''} // Ensure defaultValue fallback
                       render={({ field }) => (
-                        <div className='flex items-center w-full'>
-                          <div className='flex items-center space-x-2 w-full'>
-                            <div className='flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full'>
-                              {field.value && getSocialLogo(field.value)}
+                        <div className="flex items-center w-full">
+                          <div className="flex items-center space-x-2 w-full">
+                            <div className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full">
+                              {field.value && getSocialLogo(field.value)} {/* Display social icon */}
                             </div>
                             <input
-                              type='text'
-                              placeholder='Enter your social media URL'
+                              type="text"
+                              placeholder="Enter your social media URL"
                               className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
-                              {...field}
+                              {...field} // Spread field props
                               onChange={(e) => {
-                                field.onChange(e);
-                                updateLink(index, e.target.value);
+                                field.onChange(e); // React-hook-form onChange
+                                updateLink(index, e.target.value); // Call your updateLink logic
                               }}
                             />
                           </div>
@@ -278,19 +279,29 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
                       )}
                     />
                     <button
-                      type='button'
-                      onClick={() => removeLink(index)}
-                      className='ml-2 text-red-500 hover:text-red-700'
+                      type="button"
+                      onClick={() => removeLink(index)} // Remove the link
+                      className="ml-2 text-red-500 hover:text-red-700"
                     >
                       <FaTrash />
                     </button>
                   </div>
+                  {errors.links?.[index] && (
+                    <p className="text-red-500">{errors.links[index].message}</p>
+                  )}
                 </div>
               ))}
-              <button onClick={addLink} className="text-blue-400 mt-2">
+              <button
+                onClick={addLink}
+                className="text-[#F3B3A7] mt-2"
+                disabled={links.length >= 5} // Limit to 5 links
+              >
                 + Add another link
               </button>
-              {errors.links && <p className="text-red-500">{errors.links.message}</p>}
+              {/* Limit Message */}
+              {links.length >= 5 && (
+                <p className="text-gray-500 text-sm mt-1">You can add up to 5 links only.</p>
+              )}
             </div>
 
             {/* Tags */}

@@ -57,19 +57,18 @@ export const updatevalidationSchema = yup
             .min(1, "You must provide at least 1 tag.")
             .max(5, "You can provide up to 5 tags.")
             .required("Tags are required."),
-            
-        // Social links (if needed, uncomment)
-        // links: yup
-        // .array()
-        // .of(
-        //   yup
-        //     .string()
-        //     .url("Each link must be a valid URL.") // Validate as a proper URL
-        //     .min(10, "Each link must be at least 10 characters long.") // Adjusted message
-        //     .max(100, "Each link can be at most 100 characters long.") // Adjusted max length
-        // )
-        // .min(1, "You must provide at least 1 link.") // At least one link required
-        // .max(10, "You can provide up to 10 links.") // Limit to 10 links
-        // .notRequired(),
-      
+
+        links: yup
+            .array()
+            .of(
+                yup
+                    .string()
+                    .url("Each link must be a valid URL.") // Validate as a proper URL
+                    .min(10, "Each link must be at least 10 characters long.") // Minimum length validation
+                    .max(100, "Each link can be at most 100 characters long.") // Maximum length validation
+            )
+            .min(1, "You must provide at least 1 link.") // Require at least 1 link
+            .max(5, "You can provide up to 5 links.") // Limit to 5 links
+            .notRequired(), // Links array is optional
+
     });

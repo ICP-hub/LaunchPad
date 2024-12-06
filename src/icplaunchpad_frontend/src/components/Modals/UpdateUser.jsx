@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { TfiClose } from 'react-icons/tfi';
 import Modal from 'react-modal';
 import AnimationButton from '../../common/AnimationButton';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { Principal } from '@dfinity/principal';
@@ -38,7 +38,7 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
 
   const userPrincipal = Principal.fromText(principal);
 
-  const { register, handleSubmit, formState: { errors }, reset, control, setValue, clearErrors, setError } = useForm({
+  const { register, unregister, handleSubmit, formState: { errors }, reset, control, setValue, clearErrors, setError } = useForm({
     resolver: yupResolver(updatevalidationSchema),
   });
 
@@ -136,6 +136,7 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
     setLinks(prev => prev.filter((_, i) => i !== index));
     clearErrors(`links.${index}`);
     clearErrors("links");
+    unregister(`links.${index}`);
   };
 
   const updateLink = (index, value) => {
@@ -158,15 +159,15 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
         ariaHideApp={false}
       >
         <div className="bg-[#222222] p-6 rounded-2xl text-white max-h-[90vh] overflow-y-auto no-scrollbar w-[786px] relative">
-        <div className="bg-[#FFFFFF4D] px-4 py-1 mb-4 rounded-2xl relative">
-                        <button
-                            onClick={closeModal}
-                            className="absolute top-0 mt-2 right-4 text-[30px] text-white"
-                        >
-                            <TfiClose />
-                        </button>
-                        <h2 className="text-[25px] font-semibold">Update User</h2>
-                    </div>
+          <div className="bg-[#FFFFFF4D] px-4 py-1 mb-4 rounded-2xl relative">
+            <button
+              onClick={closeModal}
+              className="absolute top-0 mt-2 right-4 text-[30px] text-white"
+            >
+              <TfiClose />
+            </button>
+            <h2 className="text-[25px] font-semibold">Update User</h2>
+          </div>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {/* Name */}
             <div>
@@ -216,26 +217,26 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               <h2 className="block text-[19px] mb-1">Social Links</h2>
 
               {links.map((item, index) => (
-                <div key={index} className='flex flex-col'>
-                  <div className='flex items-center mb-2 pb-1'>
+                <div key={index} className="flex flex-col">
+                  <div className="flex items-center mb-2 pb-1">
                     <Controller
-                      name={`links.${index}`}
+                      name={`links.${index}`} // Reference each link correctly
                       control={control}
-                      defaultValue={item.url || ''}
+                      defaultValue={item.url || ''} // Ensure defaultValue fallback
                       render={({ field }) => (
-                        <div className='flex items-center w-full'>
-                          <div className='flex items-center space-x-2 w-full'>
-                            <div className='flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full'>
-                              {field.value && getSocialLogo(field.value)}
+                        <div className="flex items-center w-full">
+                          <div className="flex items-center space-x-2 w-full">
+                            <div className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full">
+                              {field.value && getSocialLogo(field.value)} {/* Display social icon */}
                             </div>
                             <input
-                              type='text'
-                              placeholder='Enter your social media URL'
+                              type="text"
+                              placeholder="Enter your social media URL"
                               className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
-                              {...field}
+                              {...field} // Spread field props
                               onChange={(e) => {
-                                field.onChange(e);
-                                updateLink(index, e.target.value);
+                                field.onChange(e); // React-hook-form onChange
+                                updateLink(index, e.target.value); // Call your updateLink logic
                               }}
                             />
                           </div>
@@ -243,22 +244,31 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
                       )}
                     />
                     <button
-                      type='button'
-                      onClick={() => removeLink(index)}
-                      className='ml-2 text-red-500 hover:text-red-700'
+                      type="button"
+                      onClick={() => removeLink(index)} // Remove the link
+                      className="ml-2 text-red-500 hover:text-red-700"
                     >
                       <FaTrash />
                     </button>
                   </div>
+                  {errors.links?.[index] && (
+                    <p className="text-red-500">{errors.links[index].message}</p>
+                  )}
                 </div>
               ))}
-              <button onClick={addLink} className="text-[#F3B3A7] mt-2">
-                + Add another link
-              </button>
-              {errors.links?.root && (
-                <p className="text-red-500 mt-2">{errors.links.root.message}</p>
-              )}
+            <button
+    onClick={addLink}
+    className="text-[#F3B3A7] mt-2"
+    disabled={links.length >= 5} // Limit to 5 links
+  >
+    + Add another link
+  </button>
+  {/* Limit Message */}
+  {links.length >= 5 && (
+    <p className="text-gray-500 text-sm mt-1">You can add up to 5 links only.</p>
+  )}
             </div>
+
 
             {/* Tags */}
             <div>

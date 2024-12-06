@@ -37,16 +37,17 @@ const ReviewInfoTab = ({ presaleDetails }) => {
           <tr className="border-b border-gray-600">
             <td className="py-2">Social Links</td>
             <td className="py-2 text-right text-gray-200">
+              {console.log(presaleDetails?.social_links)}
               {presaleDetails?.social_links?.length > 0
-                ? presaleDetails.social_links.map((link, idx) => (
-                    <a
+                ? presaleDetails?.social_links?.map((link, idx) => (
+                     <a
                       key={idx}
                       href={link.url}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="block text-[#F3B3A7]"
                     >
-                      {link.url}
+                      {link}
                     </a>
                   ))
                 : "N/A"}
