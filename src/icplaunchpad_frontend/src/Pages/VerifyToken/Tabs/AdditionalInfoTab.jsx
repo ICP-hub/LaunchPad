@@ -3,8 +3,11 @@ import React, { useRef, useState } from "react";
 import { FaTrash } from "react-icons/fa";
 import CompressedImage from '../../../common/ImageCompressed/CompressedImage';
 import { getSocialLogo } from "../../../common/getSocialLogo";
+import { Controller } from "react-hook-form";
 const AdditionalInfoTab = ({
   register,
+  unregister,
+  control,
   errors,
   presaleDetails,
   setPresaleDetails,
@@ -94,28 +97,59 @@ const AdditionalInfoTab = ({
   };
 
   
-  const addLink = () => {
-    setPresaleDetails((prev) => ({
-      ...prev,
-      social_links: [...prev.social_links, { type: "", url: "" }],
-    }));
-  };
+// Add a new link
+const addLink = () => {
+  setPresaleDetails((prev) => ({
+    ...prev,
+    social_links: [
+      ...(prev.social_links || []), // Ensure social_links is always defined
+      { type: "", url: "" }, // Default new link structure
+    ],
+  }));
+};
 
-  const removeLink = (index) => {
-    setPresaleDetails((prev) => ({
-      ...prev,
-      social_links: prev.social_links.filter((_, i) => i !== index),
-    }));
-  };
+// Remove a link at the specified index
+const removeLink = (index) => {
+  // Unregister the field from react-hook-form
+  unregister(`social_links.${index}`);
 
-  const updateLink = (index, field, value) => {
-    const updatedsocial_links = [...presaleDetails.social_links];
-    updatedsocial_links[index][field] = value;
-    setPresaleDetails((prev) => ({
+  // Remove the link from presaleDetails
+  setPresaleDetails((prev) => {
+    const updatedLinks = prev.social_links.filter((_, i) => i !== index);
+    return {
       ...prev,
-      social_links: updatedsocial_links,
-    }));
-  };
+      social_links: updatedLinks,
+    };
+  });
+
+  // Re-index remaining fields in react-hook-form to maintain proper state
+  setPresaleDetails((prev) => {
+    const updatedLinks = prev.social_links.filter((_, i) => i !== index);
+    updatedLinks.forEach((link, i) => {
+      // Update the key for each remaining item
+      register(`social_links.${i}`, { value: link.url || "" });
+    });
+    return {
+      ...prev,
+      social_links: updatedLinks,
+    };
+  });
+};
+
+
+// Update a specific field of a link at the specified index
+const updateLink = (index, value) => {
+  setPresaleDetails((prev) => {
+    const updatedLinks = prev.social_links.map((link, i) =>
+      i === index ? { ...link, url: value } : link // Update only the specific link
+    );
+    return {
+      ...prev,
+      social_links: updatedLinks,
+    };
+  });
+};
+
 
   return (
     <div className="bg-[#222222] p-4 xxs1:p-8 m-4 rounded-2xl mb-[80px] dxs:mb-[140px] xxs1:mb-[90px] sm2:mb-[70px]  md:mb-[15px]   ">
@@ -192,33 +226,69 @@ const AdditionalInfoTab = ({
       </div>
       
 
-      {/* Social Links */}
-      <div className="mb-4">
-        <h2 className="block text-[19px] mb-1">Social Links</h2>
-        {presaleDetails.social_links.map((link, index) => (
-          <div key={index} className="flex gap-2 items-center mb-2">
-            {getSocialLogo(link.url)}
-
-            <input
-              type="url"
-              className={`w-full p-2 bg-[#333333] text-white rounded-md${errors.link ? "border-red-500" : "border-white"
-                }  border-b-2`}
-              placeholder="Enter URL"
-              value={link.url}
-              onChange={(e) => updateLink(index, "url", e.target.value)}
-            />
-            <button
-              onClick={() => removeLink(index)}
-              className="ml-2 text-red-500"
-            >
-              <FaTrash />
-            </button>
-          </div>
-        ))}
-        <button onClick={addLink} className="text-[#F3B3A7] mt-2">
-          + Add another link
+{/* Social Links */}
+<div className="mb-4">
+  <h2 className="block text-[19px] mb-1">Social Links</h2>
+  {presaleDetails.social_links.map((link, index) => (
+    <div key={index} className="flex flex-col">
+      <div className="flex items-center mb-2 pb-1">
+        <Controller
+          name={`social_links.${index}`} // Reference each social link URL
+          control={control} // react-hook-form control object
+          defaultValue={link.url || ''} // Fallback to empty string if no value
+          render={({ field }) => (
+            <div className="flex items-center w-full">
+              <div className="flex items-center space-x-2 w-full">
+                {/* Social Media Icon */}
+                <div className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full">
+                  {field.value && getSocialLogo(field.value)} {/* Show the social logo */}
+                </div>
+                {/* URL Input */}
+                <input
+                  type="url"
+                  placeholder="Enter your social media URL"
+                  className={`w-full p-2 bg-[#333333] text-white rounded-md border-b-2 ${errors.social_links?.[index]?.url ? "border-red-500" : "border-white"}`}
+                  {...field} // Spread field properties
+                  onChange={(e) => {
+                    field.onChange(e); // Update react-hook-form state
+                    updateLink(index, e.target.value); // Update in `presaleDetails`
+                  }}
+                />
+              </div>
+            </div>
+          )}
+        />
+        {/* Remove Link Button */}
+        <button
+          type="button"
+          onClick={() => removeLink(index)}
+          className="ml-2 text-red-500 hover:text-red-700"
+        >
+          <FaTrash />
         </button>
       </div>
+      {/* Display Field-Specific Errors */}
+      {console.log('err',errors)}
+      {errors.social_links?.[index] && (
+        <p className="text-red-500">{errors.social_links[index].message}</p>
+      )}
+    </div>
+  ))}
+  {/* Add Another Link Button */}
+  <button
+    onClick={addLink}
+    className="text-[#F3B3A7] mt-2"
+    disabled={presaleDetails.social_links.length >= 5} // Limit to 5 links
+  >
+    + Add another link
+  </button>
+  {/* Limit Message */}
+  {presaleDetails.social_links.length >= 5 && (
+    <p className="text-gray-500 text-sm mt-1">You can add up to 5 links only.</p>
+  )}
+</div>
+
+
 
       {/* Description */}
       <div className="flex flex-col mb-24">

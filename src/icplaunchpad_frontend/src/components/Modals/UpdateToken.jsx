@@ -17,6 +17,7 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen, setRenderComponent, setTokenM
 
     const {
         register,
+        unregister,
         handleSubmit,
         formState: { errors },
         reset,
@@ -138,6 +139,7 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen, setRenderComponent, setTokenM
         setLinks((prev) => prev.filter((_, i) => i !== index));
         clearErrors(`links.${index}`);
         clearErrors('links');
+        unregister(`links.${index}`);
     };
 
     const updateLink = (index, value) => {
@@ -154,7 +156,7 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen, setRenderComponent, setTokenM
                 onRequestClose={closeModal}
                 contentLabel="Update Token Modal"
                 className="fixed inset-0 flex items-center justify-center bg-transparent"
-                 overlayClassName="fixed inset-0 z-50 bg-black bg-opacity-50"
+                overlayClassName="fixed inset-0 z-50 bg-black bg-opacity-50"
                 ariaHideApp={false}
             >
                 <div className="bg-[#222222]  p-6 rounded-2xl text-white max-h-[90vh] overflow-y-auto no-scrollbar w-[786px] relative">
@@ -214,46 +216,61 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen, setRenderComponent, setTokenM
                             )}
                         </div>
 
+                        {/* Social Links */}
                         <div className="mb-4">
                             <h2 className="block text-[19px] mb-1">Social Links</h2>
+
                             {links.map((item, index) => (
                                 <div key={index} className="flex flex-col">
                                     <div className="flex items-center mb-2 pb-1">
-                                        <div className="flex items-center w-full space-x-2">
-                                            <div className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full">
-                                                {getSocialLogo(item.url)}
-                                            </div>
-                                            <Controller
-                                                name={`links.${index}`}
-                                                control={control}
-                                                defaultValue={item.url || ''}
-                                                render={({ field }) => (
-                                                    <input
-                                                        type="text"
-                                                        placeholder="Enter your social media URL"
-                                                        className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
-                                                        {...field}
-                                                        onChange={(e) => {
-                                                            field.onChange(e);
-                                                            updateLink(index, e.target.value);
-                                                        }}
-                                                    />
-                                                )}
-                                            />
-                                            <button
-                                                type="button"
-                                                onClick={() => removeLink(index)}
-                                                className="ml-2 text-red-500 hover:text-red-700"
-                                            >
-                                                <FaTrash />
-                                            </button>
-                                        </div>
+                                        <Controller
+                                            name={`links.${index}`} // Reference each link correctly
+                                            control={control}
+                                            defaultValue={item.url || ''} // Ensure defaultValue fallback
+                                            render={({ field }) => (
+                                                <div className="flex items-center w-full">
+                                                    <div className="flex items-center space-x-2 w-full">
+                                                        <div className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full">
+                                                            {field.value && getSocialLogo(field.value)} {/* Display social icon */}
+                                                        </div>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Enter your social media URL"
+                                                            className="w-full p-2 bg-[#333333] text-white rounded-md border-b-2"
+                                                            {...field} // Spread field props
+                                                            onChange={(e) => {
+                                                                field.onChange(e); // React-hook-form onChange
+                                                                updateLink(index, e.target.value); // Call your updateLink logic
+                                                            }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            )}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => removeLink(index)} // Remove the link
+                                            className="ml-2 text-red-500 hover:text-red-700"
+                                        >
+                                            <FaTrash />
+                                        </button>
                                     </div>
+                                    {errors.links?.[index] && (
+                                        <p className="text-red-500">{errors.links[index].message}</p>
+                                    )}
                                 </div>
                             ))}
-                            <button onClick={addLink} type="button" className="text-[#F3B3A7] mt-2">
+                            <button
+                                onClick={addLink}
+                                className="text-[#F3B3A7] mt-2"
+                                disabled={links.length >= 5} // Limit to 5 links
+                            >
                                 + Add another link
                             </button>
+                            {/* Limit Message */}
+                            {links.length >= 5 && (
+                                <p className="text-gray-500 text-sm mt-1">You can add up to 5 links only.</p>
+                            )}
                         </div>
 
                         <div className="mb-6">
