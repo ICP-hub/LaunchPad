@@ -122,7 +122,7 @@ service : () -> {
   get_user_sale_params : () -> (Result_7) query;
   get_user_tokens_info : () -> (vec CanisterIndexInfo) query;
   icrc28_trusted_origins : () -> (Icrc28TrustedOriginsResponse);
-  icrc_get_balance : (principal, principal) -> (Result_5);
+  icrc_get_balance : (principal) -> (Result_5);
   insert_funds_raised : (principal, nat64) -> (Result_1);
   is_account_created : () -> (text) query;
   obtain_cycles_for_canister : (nat, principal) -> (Result_5);

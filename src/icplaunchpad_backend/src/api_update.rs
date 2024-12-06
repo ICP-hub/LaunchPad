@@ -8,7 +8,7 @@ use ic_cdk::api::{
 use ic_ledger_types::Subaccount;
 
 use crate::{
-    create_canister, deposit_cycles, index_install_code, install_code, mutate_state, params::{self}, read_state, Account, CanisterIdRecord, CanisterIdWrapper, CoverImageData, CoverImageIdWrapper, CreateCanisterArgument, CreateFileInput, ImageIdWrapper, IndexArg, IndexCanisterIdWrapper, IndexInitArgs, IndexInstallCodeArgument, InitArgs, InstallCodeArgument, LedgerArg, ProfileImageData, ReturnResult, SaleDetails, SaleDetailsUpdate, SaleDetailsWrapper, SaleInputParams, TokenCreationResult, TokenImageData, UserAccount, UserAccountWrapper, UserInputParams, STATE
+    create_canister, deposit_cycles, index_install_code, install_code, mutate_state, params::{self}, read_state, Account, CanisterIdRecord, CanisterIdWrapper, CoverImageData, CoverImageIdWrapper, CreateCanisterArgument, CreateFileInput, ImageIdWrapper, IndexArg, IndexCanisterIdWrapper, IndexInitArgs, IndexInstallCodeArgument, InitArgs, InstallCodeArgument, LedgerArg, ProfileImageData, ReturnResult, SaleDetails, SaleDetailsUpdate, SaleDetailsWrapper, SaleInputParams, TokenCreationResult, TokenImageData, U64Wrapper, UserAccount, UserAccountWrapper, UserInputParams, STATE
 };
 
 use canfund::api::cmc::IcCyclesMintingCanister;
@@ -609,6 +609,23 @@ pub fn update_sale_params(
     })
 }
 
+#[ic_cdk::update]
+pub fn insert_funds_raised(ledger_canister_id: Principal, amount: u64) -> Result<(), String> {
+    mutate_state(|state| {
+        let new_amount = U64Wrapper(amount);
+
+        // Update or insert the funds
+        if let Some(existing) = state.funds_raised.get(&ledger_canister_id) {
+            state
+                .funds_raised
+                .insert(ledger_canister_id, U64Wrapper(existing.0 + new_amount.0));
+        } else {
+            state.funds_raised.insert(ledger_canister_id, new_amount);
+        }
+
+        Ok(())
+    })
+}
 
 // #[ic_cdk::update]
 // async fn convert_icp_to_cycles(amount: u64) -> Result<Nat, String> {

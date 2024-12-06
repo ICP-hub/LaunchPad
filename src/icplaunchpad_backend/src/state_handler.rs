@@ -7,6 +7,7 @@ use ic_stable_structures::{storable::Bound, Storable};
 use std::borrow::Cow;
 use std::cell::RefCell;
 
+use crate::heartbeat::process_sales;
 use crate::{
     CanisterIdWrapper, CoverImageIdWrapper, ImageIdWrapper, IndexCanisterIdWrapper,
     SaleDetailsWrapper, State, U64Wrapper, UserAccountWrapper,
@@ -94,6 +95,10 @@ pub fn get_contributions_memory() -> Memory {
 fn init() {
     STATE.with(|state| {
         *state.borrow_mut() = State::new();
+    });
+
+    ic_cdk::spawn(async {
+        process_sales().await;
     });
 }
 
