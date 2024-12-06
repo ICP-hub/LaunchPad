@@ -1,9 +1,9 @@
 import React,{useEffect, useState} from "react";
 import { useNavigate } from 'react-router-dom';
-import ProjectCard from "../../Projects/ProjectCard";
 import { useSelector } from "react-redux";
 import NoDataFound from "../../../common/NoDataFound";
-
+import { Principal } from "@dfinity/principal";
+import ProjectCard from "./ProjectCard";
 
 
 const ProjectLists = () => {
@@ -13,17 +13,19 @@ const ProjectLists = () => {
     (currState) => currState.internet.isAuthenticated
   );
   const principal = useSelector((currState) => currState.internet.principal);
-  const [tokens, setTokens] = useState([])
-  console.log("Fetched tokens in ProjectLists:", tokens);
+  
+  const [tokensLedger, setTokensLedger] = useState([])
+  console.log("Fetched tokens in ProjectLists:", tokensLedger);
 
   useEffect(() => {
     const fetchUserTokensInfo = async () => {
+        const userPrincipal= Principal.fromText(principal)
       try {
         if (actor) {
-          const response = await actor.get_user_tokens_info();
+          const response = await actor.get_user_ledger_ids(userPrincipal);
 
           if (response && response.length > 0) {
-            setTokens(response);
+            setTokensLedger(response);
           } else {
             console.log("No tokens data available or empty response.");
           }
@@ -52,9 +54,9 @@ const ProjectLists = () => {
         <ProjectCard isUserToken={true} projectData={sale} key={index} />
         
       ))} */}
-        {tokens && tokens.length > 0 ? (
-          tokens.map((sale, index) => (
-            <ProjectCard isUserToken={true} projectData={sale} key={index} />
+        {tokensLedger && tokensLedger.length > 0 ? (
+          tokensLedger.map((ledger, index) => (
+            <ProjectCard ledgerID={ledger} key={index} />
           ))
         ) : (
             <NoDataFound

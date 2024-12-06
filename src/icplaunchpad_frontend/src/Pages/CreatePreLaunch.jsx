@@ -1,99 +1,50 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import AnimationButton from '../common/AnimationButton';
 import { Link, useNavigate } from 'react-router-dom';
 import CreateTokenModal from '../components/Modals/CreateTokenModal';
 import ConnectFirst from './ConnectFirst';
 import { useSelector } from 'react-redux';
-import { Principal } from '@dfinity/principal';
 import { useAuth } from '../StateManagement/useContext/useClient';
+import { Principal } from '@dfinity/principal';
 
 const CreatePreLaunch = () => {
-  const actor = useSelector((currState) => currState.actors.actor);
-  const isAuthenticated = useSelector(
-    (currState) => currState.internet.isAuthenticated
-  );
-  const principal = useSelector((currState) => currState.internet.principal);
+  const actor = useSelector((state) => state.actors.actor);
+  const isAuthenticated = useSelector((state) => state.internet.isAuthenticated);
+  const principal = useSelector((state) => state.internet.principal);
+
   const [modalIsOpen, setIsOpen] = useState(false);
-  const [importAddress, setImportAddress] = useState(null);
-  const [error,setError]=useState(null);
+  const [importAddress, setImportAddress] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
-  const {  createCustomActor } = useAuth();
-  // const userToken = useSelector((state) => state.UserTokensInfo.data);
- 
-  const [userToken, setSalesData] = useState([])
-  console.log("Fetched tokens in ProjectLists:", userToken);
+  const { createCustomActor } = useAuth();
 
-  useEffect(() => {
-    const fetchUserTokensInfo = async () => {
-      try {
-        if (actor) {
-          const response = await actor.get_user_tokens_info();
-          if (response && response.length > 0) {
-            setSalesData(response);
-          } else {
-            console.log("No tokens data available or empty response.");
-          }
-        } else {
-          console.log("User account has not been created yet.");
-        }
-      } catch (error) {
-        console.error("Error fetching user tokens info:", error.message);
-      }
-    };
-
-    fetchUserTokensInfo();
-  }, [actor]);
-
-  function validateCanisterId(canisterId) {
-    // Regular expression for a valid canister ID
+  const validateCanisterId = (canisterId) => {
     const canisterRegex = /^[a-z2-7]{5}(-[a-z2-7]{5}){3}-[a-z2-7]{3}$/;
-    // Check if the canister ID matches the regex
     return canisterRegex.test(canisterId);
-}
+  };
 
   const handleImportToken = async () => {
-    if ( userToken || userToken.length > 0) {
-      if(importAddress){
-        const isValidCanister= validateCanisterId(importAddress)
-        if(isValidCanister){
-            const customActor= await createCustomActor(importAddress);
-          
-            if(customActor)
-               navigate("/verify-token", {
-              state: {ledger_canister_id:importAddress },}
-             )
-        }
-        else{
-          setError("Enter correct format of Ledger ID ")
-        }
-      }
-      else{
-      const missingSaleParams = await Promise.all(
-        userToken.map(async (token) => {
-          try {
-            const ledgerPrincipal = Principal.fromText(token.canister_id);
-            const response = await actor.get_sale_params(ledgerPrincipal);
-            console.log(response)
-            if (response.Err)
-               return token;
-
-          } catch (error) {
-            console.error('Error fetching sale params:', error);
+    try {
+      if (importAddress) {
+        const isValidCanister = validateCanisterId(importAddress);
+        if (isValidCanister) {
+          const customActor = await createCustomActor(importAddress);
+          console.log(customActor)
+          if (customActor) {
+            const ledgerPrincipal=Principal.fromText(importAddress)
+           const response= await actor.import_token(ledgerPrincipal);
+           console.log('import response= ',response)
+            navigate('/verify-token', {
+              state: { ledger_canister_id: importAddress },
+            });
           }
-          return null;
-        })
-      ).then((results) => results.filter((token) => token !== null));
-     
-      if( missingSaleParams.length == 0 ){
-          setError("There is no unverified token available. Please create a new token")
+        } else {
+          setError('Please enter a valid Ledger Canister ID.');
+        }
       }
-      navigate("/verify-token", {
-        state: {ledger_canister_id: missingSaleParams[missingSaleParams.length-1].canister_id },}
-      )
-    }
-      
-
-      
+    } catch (err) {
+      console.error('Error importing token:', err);
+      setError('Failed to import token. Please try again later.');
     }
   };
 
