@@ -1,14 +1,14 @@
 use std::sync::Arc;
 
 use candid::{encode_one, Nat, Principal};
-use ic_cdk::api::{
+use ic_cdk::{api::{
     call::{call_with_payment128, CallResult, RejectionCode},
     management_canister::main::{CanisterInstallMode, WasmModule},
-};
+}, caller, update};
 use ic_ledger_types::Subaccount;
 
 use crate::{
-    create_canister, deposit_cycles, index_install_code, install_code, mutate_state, params::{self}, read_state, Account, CanisterIdRecord, CanisterIdWrapper, CoverImageData, CoverImageIdWrapper, CreateCanisterArgument, CreateFileInput, ImageIdWrapper, IndexArg, IndexCanisterIdWrapper, IndexInitArgs, IndexInstallCodeArgument, InitArgs, InstallCodeArgument, LedgerArg, ProfileImageData, ReturnResult, SaleDetails, SaleDetailsUpdate, SaleDetailsWrapper, SaleInputParams, TokenCreationResult, TokenImageData, U64Wrapper, UserAccount, UserAccountWrapper, UserInputParams, STATE
+    create_canister, deposit_cycles, index_install_code, install_code, mutate_state, params::{self}, read_state, Account, CanisterIdRecord, CanisterIdWrapper, CoverImageData, CoverImageIdWrapper, CreateCanisterArgument, CreateFileInput, ImageIdWrapper, ImportedCanisterIdWrapper, IndexArg, IndexCanisterIdWrapper, IndexInitArgs, IndexInstallCodeArgument, InitArgs, InstallCodeArgument, LedgerArg, ProfileImageData, ReturnResult, SaleDetails, SaleDetailsUpdate, SaleDetailsWrapper, SaleInputParams, TokenCreationResult, TokenImageData, U64Wrapper, UserAccount, UserAccountWrapper, UserInputParams, STATE
 };
 
 use canfund::api::cmc::IcCyclesMintingCanister;
@@ -323,6 +323,24 @@ pub async fn create_token(user_params: UserInputParams) -> Result<TokenCreationR
             ));
         }
     }
+}
+
+#[update]
+pub fn import_token(ledger_canister_id: Principal) {
+    let user_principal = caller();  // Get the Principal of the caller (user)
+    
+    // Create an ImportedCanisterIdWrapper with the user principal and ledger canister ID
+    let wrapper = ImportedCanisterIdWrapper {
+        caller: user_principal,
+        ledger_canister_id,
+    };
+
+    // Store the user's principal and the corresponding ledger canister ID wrapper in stable memory
+    mutate_state(|state| {
+        state.imported_canister_ids.insert(user_principal.to_string(), wrapper);
+    });
+
+    ic_cdk::println!("Token ledger canister ID imported successfully by {:?}", user_principal);
 }
 
 #[ic_cdk::update]
