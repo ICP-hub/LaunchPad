@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import GradientText from '../../common/GradientText';
 
 
-import Activities from './Activities/Activities';
+import AllTokens from './AllTokens/AllTokens';
 import Affiliate from './Affiliate/Affiliate';
 import Favorited from './Favorited/Favorited';
 import RecentlyViewed from './RecentlyViewed/RecentlyViewed';
@@ -15,7 +15,7 @@ import { useSelector } from 'react-redux';
 import CopyToClipboard from '../../common/CopyToClipboard';
 
 const Profile = () => {
-  const [activeTab, setActiveTab] = useState("Activities");
+  const [activeTab, setActiveTab] = useState("All Tokens");
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const { logout } = useAuth();
   const actor = useSelector((currState) => currState.actors.actor);
@@ -52,27 +52,27 @@ const Profile = () => {
 
   const renderContent = () => {
     switch (activeTab) {
-      case "Activities":
-        return <Activities />;
+      case "All Tokens":
+        return <AllTokens />;
       // case "Affiliate":
       //   return <Affiliate />;
       // case "Favorited":
       //   return <Favorited />;
       // case "Recently Viewed":
       //   return <RecentlyViewed />;
-      case "My Contribution":
+      case "Fairlaunches":
         return <MyContribution />;
       default:
-        return <Activities />;
+        return <AllTokens />;
     }
   };
 
   const tabNames = [
-    "Activities",
+    "All Tokens",
     // "Affiliate",
     // "Favorited",
     // "Recently Viewed",
-    "My Contribution",
+    "Fairlaunches",
   ];
 
   return (
