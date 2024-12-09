@@ -29,6 +29,13 @@ const ProjectCard = ({ ledgerID, index }) => {
       navigate("/verify-token", {
         state: {ledger_canister_id: ledgerID.toText() },}
       )
+    else{
+      const routeData = {
+        ...({canister_id: ledgerID.toText() }),
+        ...tokenInfo,
+      };
+      navigate('/token-page', { state: { projectData: routeData } });
+    }  
 
   } catch (error) {
     console.error('Error fetching sale params:', error);
