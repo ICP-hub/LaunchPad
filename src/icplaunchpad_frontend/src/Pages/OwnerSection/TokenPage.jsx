@@ -301,7 +301,7 @@ const TokenPage = () => {
                   <FiEdit3 onClick={handleTokenEdit} className="cursor-pointer ml-32 xl:ml-32" />
                   </div>
                  
-                <div className=" flex justify-end items-center ">
+                <div className=" flex justify-end items-center">
                  <input className=" text-black w-24 xl:w-28 px-2  outline-none" readOnly value={balance} />
                  <PiHandDepositFill onClick={handleTopUp}  className="ml-2 h-7 w-7 cursor-pointer " />   
                  </div>
