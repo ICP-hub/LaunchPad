@@ -17,7 +17,7 @@ mod api_query;
 use crate::transaction::*;
 use candid::Nat;
 use types::*;
-mod heartbeat;
+mod task_scheduler;
 
 // create canister
 async fn create_canister(
