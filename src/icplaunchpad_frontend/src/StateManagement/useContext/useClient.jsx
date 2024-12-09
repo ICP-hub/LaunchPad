@@ -305,6 +305,7 @@ export const useAuthClient = () => {
             return ledgerActor;
         } catch (err) {
             console.error("Error creating ledger actor:", err);
+            return err;
         }
     };
     const principal = user && user.principal ? user.principal.toText() : null;

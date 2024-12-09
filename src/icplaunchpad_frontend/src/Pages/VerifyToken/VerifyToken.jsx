@@ -19,6 +19,7 @@ import { SaleParamsHandlerRequest } from "../../StateManagement/Redux/Reducers/S
 import { getSchemaForStep } from "../../common/TokensValidation";
 import compressImage from "../../utils/CompressedImage";
 import { toast, Toaster } from "react-hot-toast";
+import { UserTokensInfoHandlerRequest } from "../../StateManagement/Redux/Reducers/UserTokensInfo";
 
 
 const convertFileToBytes = async (file) => {
@@ -165,6 +166,7 @@ const VerifyToken = () => {
       // SaleParamsHandlerRequest()
       dispatch(upcomingSalesHandlerRequest());
       dispatch(SuccessfulSalesHandlerRequest());
+      dispatch(UserTokensInfoHandlerRequest());
 
       navigate("/token-page", { state: { ledger_canister_id } });
     } catch (error) {
