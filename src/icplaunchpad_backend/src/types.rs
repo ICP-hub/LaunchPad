@@ -5,7 +5,6 @@ use serde_bytes::ByteBuf;
 
 use crate::state_handler::*;
 
-
 pub struct State {
     pub canister_ids: CanisterIdsMap,
     pub index_canister_ids: IndexCanisterIdsMap,
@@ -15,9 +14,8 @@ pub struct State {
     pub cover_image_ids: CoverImageIdsMap,
     pub funds_raised: FundsRaisedMap,
     pub contributions: ContributionsMap,
-    pub imported_canister_ids: ImportedCanisterIdsMap
+    pub imported_canister_ids: ImportedCanisterIdsMap,
 }
-
 
 #[derive(Serialize, Deserialize, Clone, CandidType, Debug)]
 pub struct UserAccount {
@@ -313,8 +311,6 @@ pub struct SaleDetailsUpdate {
     pub project_video: Option<String>, // Optional field to update the project video
 }
 
-
-
 #[derive(CandidType, Deserialize, Debug, Clone)]
 pub struct CanisterIdWrapper {
     pub canister_ids: Principal,
@@ -331,7 +327,6 @@ pub struct ImportedCanisterIdWrapper {
     pub caller: Principal,
     pub ledger_canister_id: Principal,
 }
-
 
 #[derive(CandidType, Deserialize, Debug, Clone)]
 pub struct IndexCanisterIdWrapper {
@@ -359,23 +354,20 @@ pub struct CoverImageIdWrapper {
 
 #[derive(CandidType, Deserialize, Serialize, Debug, Clone)]
 pub struct SaleInputParams {
-    pub tokens_for_fairlaunch: u64,  // Tokens allocated for fairlaunch
-    pub softcap: u64,                // Minimum funds to be raised
-    pub max_contribution: u64,       // Maximum contribution per user
-    pub min_contribution: u64,       // Minimum contribution per user
-    pub description: String,         // Project description
-    pub liquidity_percentage: u8,    // Percentage of funds allocated to DEX liquidity
-    pub website: String,             // Project website URL
-    pub social_links: Vec<String>,   // List of social media links
-    pub project_video: String,       // URL for project video
-    pub creator: Principal,          // Creator of the sale (user input)
-    pub start_time_utc: u64,         // Start time of the sale (user input)
-    pub end_time_utc: u64,           // End time of the sale (user input)
-    pub hardcap: u64,                // Hardcap for the sale (user input)
+    pub tokens_for_fairlaunch: u64, // Tokens allocated for fairlaunch
+    pub softcap: u64,               // Minimum funds to be raised
+    pub max_contribution: u64,      // Maximum contribution per user
+    pub min_contribution: u64,      // Minimum contribution per user
+    pub description: String,        // Project description
+    pub liquidity_percentage: u8,   // Percentage of funds allocated to DEX liquidity
+    pub website: String,            // Project website URL
+    pub social_links: Vec<String>,  // List of social media links
+    pub project_video: String,      // URL for project video
+    pub creator: Principal,         // Creator of the sale (user input)
+    pub start_time_utc: u64,        // Start time of the sale (user input)
+    pub end_time_utc: u64,          // End time of the sale (user input)
+    pub hardcap: u64,               // Hardcap for the sale (user input)
 }
-
-
-
 
 #[derive(CandidType, Deserialize, Serialize, Debug, Clone)]
 pub struct SaleDetails {

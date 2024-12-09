@@ -7,7 +7,7 @@ use ic_stable_structures::{storable::Bound, Storable};
 use std::borrow::Cow;
 use std::cell::RefCell;
 
-use crate::heartbeat::process_sales;
+use crate::task_scheduler::process_sales;
 use crate::{
     CanisterIdWrapper, CoverImageIdWrapper, ImageIdWrapper, ImportedCanisterIdWrapper, IndexCanisterIdWrapper, SaleDetailsWrapper, State, U64Wrapper, UserAccountWrapper
 };
