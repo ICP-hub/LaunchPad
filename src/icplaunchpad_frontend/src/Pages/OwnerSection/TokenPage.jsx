@@ -297,10 +297,12 @@ const TokenPage = () => {
                   </div>
                 </div>
                 <div className="right w-48 xl:w-40 flex flex-col gap-5">
+                <div className=" flex justify-end items-center">
                   <FiEdit3 onClick={handleTokenEdit} className="cursor-pointer ml-32 xl:ml-32" />
+                  </div>
                  
-                <div className=" flex justify-center items-center">
-                 <input className=" text-black w-24 xl:w-28 px-2 outline-none" readOnly value={balance} />
+                <div className=" flex justify-end items-center ">
+                 <input className=" text-black w-24 xl:w-28 px-2  outline-none" readOnly value={balance} />
                  <PiHandDepositFill onClick={handleTopUp}  className="ml-2 h-7 w-7 cursor-pointer " />   
                  </div>
                
