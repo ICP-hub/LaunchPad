@@ -4,6 +4,7 @@ import icp from '../../../../assets/images/icp.png';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../StateManagement/useContext/useClient';
 import { useSelector } from 'react-redux';
+import { Principal } from '@dfinity/principal';
 
 const ProjectCard = ({ ledgerID, index }) => {
   const navigate = useNavigate();
@@ -16,6 +17,24 @@ const ProjectCard = ({ ledgerID, index }) => {
   const protocol = process.env.DFX_NETWORK === 'ic' ? 'https' : 'http';
   const domain = process.env.DFX_NETWORK === 'ic' ? 'raw.icp0.io' : 'localhost:4943';
   const canisterId = process.env.CANISTER_ID_IC_ASSET_HANDLER;
+
+  const handleExportNavigate = async ()=>{
+    console.log('hii',ledgerID)
+    try{
+    const ledgerPrincipal = Principal.fromUint8Array(ledgerID);
+    console.log(ledgerID.toText())
+    const response = await actor.get_sale_params(ledgerID);
+    console.log(response)
+    if (response.Err)
+      navigate("/verify-token", {
+        state: {ledger_canister_id: ledgerID.toText() },}
+      )
+
+  } catch (error) {
+    console.error('Error fetching sale params:', error);
+  }
+
+  }
 
   // Fetch project data if ledger canister ID is available
   useEffect(() => {
@@ -79,7 +98,7 @@ const ProjectCard = ({ ledgerID, index }) => {
   }, [actor, ledgerID, canisterId, domain, protocol]);
 
   return (
-    <div>
+    <div onClick={handleExportNavigate}>
       <div
         key={index}
         className="bg-[#FFFFFF1A]  text-white p-1 pb-4 rounded-xl flex flex-col w-[340px] md:w-[375px] mt-14 mx-0 sm:mx-2"
