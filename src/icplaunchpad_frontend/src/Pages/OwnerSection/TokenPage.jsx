@@ -16,6 +16,7 @@ import Pooolinfo from "./pooolinfo/Pooolinfo";
 import Token from "./token/Token";
 import MobileViewTab from "./MobileViewTab";
 import { FiEdit3 } from "react-icons/fi";
+import { PiHandDepositFill } from "react-icons/pi";
 
 import AddToWhitelist from "../../components/Modals/AddToWhitelist.jsx";
 import { Principal } from '@dfinity/principal';
@@ -28,6 +29,9 @@ import { getSocialLogo } from "../../common/getSocialLogo.jsx";
 import { useAuth } from "../../StateManagement/useContext/useClient.jsx";
 import RaisedFundProgress from "../../common/RaisedFundProgress.jsx";
 import Tokenomic from "./Tokenomics/Tokenomics.jsx";
+import ICP_TopUp1 from "../../components/Modals/ICP_TopUp1.jsx";
+import ICP_TopUp2 from "../../components/Modals/ICP_TopUp2.jsx";
+// import ICP_TopUp2 from "../../components/Modals/ICP_TopUp2.jsx";
 
 const TokenPage = () => {
   const [activeTab, setActiveTab] = useState("About");
@@ -35,8 +39,10 @@ const TokenPage = () => {
   const [sellType, setSellType] = useState('public');
   const [modalIsOpen, setIsOpen] = useState(false);
   const [tokenModalIsOpen, setTokenModalIsOpen] = useState(false)
+  const [isTopUpModal1,setTopUpModal1] = useState(false)
+  const [isTopUpModal2,setTopUpModal2] = useState(false)
   const [tokenPhase, setTokenPhase] = useState("UPCOMING");
-
+  const [topUpCansiter,setTopUpCansiter] = useState('')
   const location = useLocation();
   const { projectData } = location.state || {};
   const { actor, createCustomActor, isAuthenticated, principal } = useAuth();
@@ -50,6 +56,7 @@ const TokenPage = () => {
   const [presaleData, setPresaleData] = useState(null);
   const [renderComponent, setRenderComponent] = useState(false);
   const [saleProgress, setSaleProgress] = useState(0);
+  const [balance, setBalance]=useState(0);
 
   // const presale = useSelector((state) => state.SaleParams.data.Ok);
   const dispatch = useDispatch()
@@ -68,6 +75,11 @@ const TokenPage = () => {
   function handleTokenEdit() {
     setTokenModalIsOpen(true)
   }
+
+  function handleTopUp() {
+    setTopUpModal1(true)
+  }
+
   const ledgerSelect = useSelector((state) => state?.LedgerId?.data?.ledger_canister_id);
   const ledger_canister_id = projectData?.canister_id ?? ledgerSelect;
   console.log("ledgerCanister:", ledger_canister_id);
@@ -75,13 +87,17 @@ const TokenPage = () => {
 
   // Fetch Sale Parameters
   const getSaleParams = async () => {
-    console.log('useEffect 1 enter')
+    console.log('useEffect 1 enter',ledger_canister_id)
     try {
       if (ledger_canister_id) {
-        const ledgerId = Principal.fromText(ledger_canister_id);
-        const presale = await actor.get_sale_params(ledgerId);
+        const ledgerId = typeof ledger_canister_id !== 'string'
+        ? Principal.fromUint8Array(ledger_canister_id)
+        : Principal.fromText(ledger_canister_id);
 
+        const presale = await actor.get_sale_params(ledgerId);
+         console.log('presale-->',presale)
         if (presale?.Ok) {
+
           setPresaleData(presale.Ok);
         } else {
           console.warn("Sale parameters not found:", presale);
@@ -92,10 +108,23 @@ const TokenPage = () => {
     }
   };
 
+  const getBalance= async()=>{
+    if (ledger_canister_id) {
+      const ledgerId = typeof ledger_canister_id !== 'string'
+      ? Principal.fromUint8Array(ledger_canister_id)
+      : Principal.fromText(ledger_canister_id);
+
+      const balance= await actor.fetch_canister_balance(ledgerId);
+      setBalance(Number(balance.Ok))
+      console.log('balance==',balance)
+  }
+  }
+
   console.log('useEffect 1')
   useEffect(() => {
     if (ledger_canister_id) {
       getSaleParams();
+      getBalance();
     }
   }, [ledger_canister_id]);
 
@@ -104,7 +133,11 @@ const TokenPage = () => {
     console.log('useEffect 2 enter')
     try {
       if (ledger_canister_id) {
-        const ledgerActor = await createCustomActor(ledger_canister_id);
+       const ledgerId = typeof ledger_canister_id !== 'string'
+        ? Principal.fromUint8Array(ledger_canister_id)
+        : Principal.fromText(ledger_canister_id);
+
+        const ledgerActor = await createCustomActor(ledgerId);
         setLedgerActor(ledgerActor);
 
         // Fetch Token Details
@@ -130,10 +163,8 @@ const TokenPage = () => {
           }));
         }
 
-        const ledgerPrincipal = Principal.fromText(ledger_canister_id);
-
         // Fetch Token Image
-        const tokenImgId = await actor.get_token_image_id(ledgerPrincipal);
+        const tokenImgId = await actor.get_token_image_id(ledgerId);
         if (Array.isArray(tokenImgId) && tokenImgId.length > 0) {
           const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId.at(-1)}`;
           setTokenImg(imageUrl);
@@ -142,7 +173,7 @@ const TokenPage = () => {
         }
 
         // Fetch Cover Image
-        const coverImgId = await actor.get_cover_image_id(ledgerPrincipal);
+        const coverImgId = await actor.get_cover_image_id(ledgerId);
         if (Array.isArray(coverImgId) && coverImgId.length > 0) {
           const imageUrl = `${protocol}://${canisterId}.${domain}/f/${coverImgId.at(-1)}`;
           setCoverImg(imageUrl);
@@ -265,9 +296,14 @@ const TokenPage = () => {
                     }
                   </div>
                 </div>
-                <div className="right flex flex-col gap-5">
-                  <FiEdit3 onClick={handleTokenEdit} className="cursor-pointer" />
-
+                <div className="right w-48 xl:w-40 flex flex-col gap-5">
+                  <FiEdit3 onClick={handleTokenEdit} className="cursor-pointer ml-32 xl:ml-32" />
+                 
+                <div className=" flex justify-center items-center">
+                 <input className=" text-black w-24 xl:w-28 px-2 outline-none" readOnly value={balance} />
+                 <PiHandDepositFill onClick={handleTopUp}  className="ml-2 h-7 w-7 cursor-pointer " />   
+                 </div>
+               
                 </div>
               </div>
 
@@ -275,11 +311,15 @@ const TokenPage = () => {
             </div>
           )}
 
-
+           {/* UpdateModal*/}
           {tokenData && <UpdateToken ledgerId={tokenData.canister_id} setRenderComponent={setRenderComponent} tokenModalIsOpen={tokenModalIsOpen} setTokenModalIsOpen={setTokenModalIsOpen} />}
 
+          {/* TopUpModal*/}
+          { balance ? <ICP_TopUp1 isTopUpModal1={isTopUpModal1} setTopUpModal1={setTopUpModal1} setTopUpModal2={setTopUpModal2} topUpCansiter={topUpCansiter} setTopUpCansiter={setTopUpCansiter}/>  : ''}
+          <ICP_TopUp2 isTopUpModal2={isTopUpModal2}  setTopUpModal2={setTopUpModal2} setTopUpModal1={setTopUpModal1} topUpCansiter={topUpCansiter}/>
+
           {isMobile && (
-            <div className="h-[314px] relative bg-[#181818] rounded-2xl py-5 flex flex-col">
+            <div className="h-[345px] relative bg-[#181818] rounded-2xl py-5 flex flex-col">
               <div className="relative">
                 <img
                   src={tokenImg || person1}
@@ -293,8 +333,9 @@ const TokenPage = () => {
                 <div className=" ">
                   <div className="text-[24px] font-bold"> {tokenData ? tokenData.token_name : "PUPPO"} </div>
                   <FiEdit3 onClick={handleTokenEdit} className="cursor-pointer absolute right-5 top-4 " />
-
+                  
                 </div>
+             
                 <div className="righttext-[16px] font-medium">
                   Fair Launch
                 </div>
@@ -304,6 +345,10 @@ const TokenPage = () => {
                 <div>
                   {`Soft ${presaleData?.softcap} ICP `}
                 </div>
+                <div className=" flex justify-center mx-auto items-center">
+                 <input className=" text-black w-28 px-2 outline-none" readOnly value={balance} />
+                 <PiHandDepositFill onClick={handleTopUp}  className="ml-2 h-7 w-7 cursor-pointer " />   
+                 </div>
               </div>
 
               <div className="bg-[#FFFFFF66] h-[2px] w-[100%] mx-auto mt-4 "></div>

@@ -14,7 +14,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 const UpdateToken = ({ ledgerId, tokenModalIsOpen, setRenderComponent, setTokenModalIsOpen }) => {
     const actor = useSelector((currState) => currState.actors.actor);
     const isAuthenticated = useSelector((currState) => currState.internet.isAuthenticated);
-
+   console.log('ledgerId==',ledgerId)
     const {
         register,
         unregister,
@@ -41,7 +41,7 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen, setRenderComponent, setTokenM
     const [tokenData, setTokenData] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const ledgerPrincipal = Principal.fromText(ledgerId);
+    const ledgerPrincipal = typeof(ledgerId) == 'string' ? Principal.fromText(ledgerId) : Principal.fromUint8Array(ledgerId) ;
     const [links, setLinks] = useState([{ url: '' }]);
 
     useEffect(() => {
@@ -131,23 +131,28 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen, setRenderComponent, setTokenM
         setTokenModalIsOpen(false);
     };
 
-    const addLink = () => {
-        setLinks((prev) => [...prev, { url: '' }]);
-    };
+const addLink = () => {
+    if (links.length < 5) { // Ensure you don't exceed the max limit
+        setLinks((prev) => [...prev, { url: '' }]); // Add a new blank link
+    }
+};
 
-    const removeLink = (index) => {
-        setLinks((prev) => prev.filter((_, i) => i !== index));
-        clearErrors(`links.${index}`);
-        clearErrors('links');
-        unregister(`links.${index}`);
-    };
+const removeLink = (index) => {
+    setLinks((prev) => prev.filter((_, i) => i !== index)); // Remove the selected link
+    unregister(`links.${index}`); // Unregister the specific field
+    setValue(
+        'links',
+        links.filter((_, i) => i !== index).map((item) => item.url) // Update the `links` array in form
+    );
+};
 
-    const updateLink = (index, value) => {
-        const updatedLinks = [...links];
-        updatedLinks[index].url = value;
-        setLinks(updatedLinks);
-        setValue(`links.${index}`, value);
-    };
+const updateLink = (index, value) => {
+    const updatedLinks = [...links];
+    updatedLinks[index].url = value;
+    setLinks(updatedLinks); // Update the state
+    setValue(`links.${index}`, value); // Update the form state
+};
+
 
     return (
         <div className="absolute">

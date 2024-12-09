@@ -21,7 +21,7 @@ const CreatePreLaunch = () => {
   const userTokenInfo = useSelector((state) => state?.UserTokensInfo?.data);
 
   const validateCanisterId = (canisterId) => {
-    const canisterRegex = /^[a-z2-7]{5}(-[a-z2-7]{5}){3}-[a-z2-7]{3}$/;
+    const canisterRegex = /^[a-z2-7]{5}(-[a-z2-7]{5}){3}-cai$/;
   
     if (!canisterRegex.test(canisterId)) {
       setError('Invalid Canister ID.');

@@ -169,7 +169,7 @@ const VerifyToken = () => {
       dispatch(UserTokensInfoHandlerRequest());
 
       console.log('ledger_canister_id===',ledger_canister_id)
-      navigate("/token-page", { state: { ledger_canister_id } });
+      navigate("/token-page", { state: { projectData: {canister_id: ledger_canister_id } } });
     } catch (error) {
       console.error("Submission failed with error:", error);
       setError(

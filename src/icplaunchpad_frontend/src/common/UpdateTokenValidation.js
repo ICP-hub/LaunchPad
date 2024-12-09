@@ -42,14 +42,17 @@ export const UpdateTokenValidationSchema = yup.object().shape({
       links: yup
       .array()
       .of(
-          yup
-              .string()
-              .url("Each link must be a valid URL.") // Validate as a proper URL
-              .min(10, "Each link must be at least 10 characters long.") // Minimum length validation
-              .max(100, "Each link can be at most 100 characters long.") // Maximum length validation
+        yup
+          .string()
+          .url("Each link must be a valid URL.") // Validate as a proper URL
+          .min(10, "Each link must be at least 10 characters long.") // Minimum length validation
+          .max(100, "Each link can be at most 100 characters long.") // Maximum length validation
+          .required("Each link must be filled in.") // Ensure no empty strings
       )
       .min(1, "You must provide at least 1 link.") // Require at least 1 link
       .max(5, "You can provide up to 5 links.") // Limit to 5 links
-      .notRequired(), // Links array is optional
+      .optional(), // Allow the entire field to be optional
+    
+  
       
   });
