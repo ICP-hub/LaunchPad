@@ -326,9 +326,24 @@ pub async fn create_token(user_params: UserInputParams) -> Result<TokenCreationR
 }
 
 #[update]
-pub fn import_token(ledger_canister_id: Principal) {
-    let user_principal = caller();  // Get the Principal of the caller (user)
-    
+pub fn import_token(ledger_canister_id: Principal) -> Result<(), String> {
+    let user_principal = caller(); // Get the Principal of the caller (user)
+
+    // Check if the ledger_canister_id is already imported
+    let already_exists = read_state(|state| {
+        state
+            .imported_canister_ids
+            .values()
+            .any(|wrapper| wrapper.ledger_canister_id == ledger_canister_id)
+    });
+
+    if already_exists {
+        return Err(format!(
+            "Ledger canister ID {:?} has already been imported.",
+            ledger_canister_id
+        ));
+    }
+
     // Create an ImportedCanisterIdWrapper with the user principal and ledger canister ID
     let wrapper = ImportedCanisterIdWrapper {
         caller: user_principal,
@@ -337,11 +352,21 @@ pub fn import_token(ledger_canister_id: Principal) {
 
     // Store the user's principal and the corresponding ledger canister ID wrapper in stable memory
     mutate_state(|state| {
-        state.imported_canister_ids.insert(user_principal.to_string(), wrapper);
+        state
+            .imported_canister_ids
+            .insert(user_principal.to_string(), wrapper);
     });
 
-    ic_cdk::println!("Token ledger canister ID imported successfully by {:?}", user_principal);
+    ic_cdk::println!(
+        "Token ledger canister ID imported successfully by {:?}",
+        user_principal
+    );
+
+    Ok(())
 }
+
+
+
 
 #[ic_cdk::update]
 async fn deposit_cycles_to_canister(arg: CanisterIdRecord, cycles: u128) -> CallResult<()> {
