@@ -104,7 +104,7 @@ const ICP_TopUp2 = ({
           </button>
 
           {/* Header */}
-          <h1 className="text-xl font-semibold mb-6 text-center">
+          <h1 className="text-xl font-semibold mt-5 mb-6 text-center">
             How many cycles do you want to send?
           </h1>
 
@@ -183,8 +183,8 @@ const ICP_TopUp2 = ({
           {loading ? (
           <ThreeDots
 
-            height="40"
-            width="40"
+            height="25"
+            width="25"
             color="white"
             ariaLabel="loading-indicator"
           />

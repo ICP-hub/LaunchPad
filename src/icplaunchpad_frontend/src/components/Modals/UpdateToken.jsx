@@ -32,7 +32,7 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen, setRenderComponent, setTokenM
             project_video: '',
             start_time_utc: '',
             end_time_utc: '',
-            links: [''],
+            links: [],
         },
     });
 
