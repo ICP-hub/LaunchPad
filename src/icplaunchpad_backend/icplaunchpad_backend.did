@@ -128,7 +128,7 @@ service : () -> {
   icrc10_supported_standards : () -> (vec SupportedStandard) query;
   icrc28_trusted_origins : () -> (Icrc28TrustedOriginsResponse);
   icrc_get_balance : (principal) -> (Result_5);
-  import_token : (principal) -> ();
+  import_token : (principal) -> (Result_1);
   insert_funds_raised : (principal, nat64) -> (Result_1);
   is_account_created : () -> (text) query;
   obtain_cycles_for_canister : (nat, principal) -> (Result_5);
