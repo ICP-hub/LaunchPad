@@ -6,3 +6,15 @@
 .transform-image:hover {
     transform: scale(1.05) rotate(15deg);
 }
+/* Hide scrollbars for all elements */
+* {
+    scrollbar-width: none; /* For Firefox */
+    -ms-overflow-style: none; /* For Internet Explorer 10+ */
+}
+
+
+
+/* Hide scrollbars for Webkit browsers (Chrome, Safari, Edge) */
+*::-webkit-scrollbar {
+    display: none;
+}

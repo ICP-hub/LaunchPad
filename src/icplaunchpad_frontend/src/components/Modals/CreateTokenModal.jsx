@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState ,useEffect, useLayoutEffect} from "react";
 import { TfiClose } from "react-icons/tfi";
 import Modal from "react-modal";
 import AnimationButton from "../../common/AnimationButton";
@@ -12,6 +12,11 @@ import * as yup from "yup";
 import { SetLedgerIdHandler } from "../../StateManagement/Redux/Reducers/LedgerId";
 import { TokensInfoHandlerRequest } from "../../StateManagement/Redux/Reducers/TokensInfo";
 import { UserTokensInfoHandlerRequest } from "../../StateManagement/Redux/Reducers/UserTokensInfo";
+
+import { useAccounts, useAgent, useIdentity } from "@nfid/identitykit/react";
+import { Actor, HttpAgent } from "@dfinity/agent";
+import { idlFactory as ledgerIDL } from "../../StateManagement/useContext/ledger.did";
+import timestampAgo, { getExpirationTimeInMicroseconds } from "../../utils/timeStampAgo";
 
 // Define the validation schema using Yup
 const tokenSchema = yup.object().shape({
@@ -64,6 +69,8 @@ const tokenSchema = yup.object().shape({
 
 const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
   const actor = useSelector((currState) => currState.actors.actor);
+
+
   const isAuthenticated = useSelector(
     (currState) => currState.internet.isAuthenticated
   );
@@ -73,6 +80,13 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [validationError, setValidationError] = useState('');
+
+  const agent = useAgent()
+  const accounts = useAccounts()
+
+  console.log('accounts',accounts)
+
+
   // React Hook Form setup
   const {
     register,
@@ -89,61 +103,156 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
     setIsOpen(false);
     reset();
   };
+  console.log('BigInt(1 * 10 ** 18)',BigInt(1 * 10 ** 18))
+
+  const [fee, setFee] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchFee = async () => {
+      try {
+          const response = await actor.fee_for_creation_token();
+          if (!response) {
+              throw new Error('Network response was not ok');
+          }
+          const data = await response.json();
+          setFee(data.fee);
+
+      } catch (error) {
+          setError(error.message);
+      } finally {
+          setLoading(false);
+      }
+  };
+
+  useEffect(() => {
+      fetchFee();
+  }, []);
 
   // Form submission handler
   const onSubmit = async (formData) => {
-    setValidationError('')
+    setValidationError('');
     setIsSubmitting(true);
-    try {
-      if (!termsAccepted) {
+
+    // Ensure terms are accepted first
+    if (!termsAccepted) {
         setValidationError("Please accept the terms and conditions.");
-        throw ("Please accept the terms and conditions")
-      }
-
-
-      const { token_name, token_symbol, decimals, total_supply } = formData;
-
-      const ownerPrincipal = Principal.fromText(principal);
-
-
-      const tokenData = {
-        token_name: token_name.toLowerCase(),
-        token_symbol,
-        decimals: [parseInt(decimals)],
-        initial_balances: [
-          [
-            {
-              owner: ownerPrincipal,
-              subaccount: [],
-            },
-            BigInt(total_supply),
-          ],
-        ],
-      };
-
-      console.log("Token data:", tokenData);
-      const response = await actor.create_token(tokenData);
-      console.log("Token created:", response);
-
-      if (response.Ok) {
-        dispatch(TokensInfoHandlerRequest());
-        dispatch(UserTokensInfoHandlerRequest());
-
-        const { ledger_canister_id, index_canister_id } = response.Ok;
-        console.log("ledger_canister_id---", ledger_canister_id, "  ", index_canister_id)
-
-        navigate("/verify-token", {
-          state: { formData, ledger_canister_id: ledger_canister_id._arr, index_canister_id },
-        });
-      }
-    } catch (err) {
-      console.error("Error creating token:", err);
+        setIsSubmitting(false);
+        throw new Error("Terms and conditions not accepted.");
     }
-    finally {
-      setIsSubmitting(false);
+
+    try {
+        const { token_name, token_symbol, decimals, total_supply } = formData;
+        const ownerPrincipal = Principal.fromText(principal);
+
+        // Construct token data
+        const tokenData = {
+            token_name: token_name.toLowerCase(),
+            token_symbol,
+            decimals: [parseInt(decimals, 10)],
+            initial_balances: [
+                [
+                    {
+                        owner: ownerPrincipal,
+                        subaccount: [],
+                    },
+                    BigInt(total_supply),
+                ],
+            ],
+        };
+
+        console.log("Token data:", tokenData);
+        // Handle local network
+        if (process.env.DFX_NETWORK !== 'ic') {
+            const response = await actor.create_token(tokenData);
+            console.log("Token creation response:", response);
+
+            if (response.Ok) {
+                dispatch(TokensInfoHandlerRequest());
+                dispatch(UserTokensInfoHandlerRequest());
+                const { ledger_canister_id, index_canister_id } = response.Ok;
+                navigate("/verify-token", {
+                    state: {
+                        formData,
+                        ledger_canister_id: ledger_canister_id._arr,
+                        index_canister_id,
+                    },
+                });
+            } else {
+                setValidationError("Token creation failed.");
+            }
+
+        } else {
+            // Handle non-local network with ICRC2 approval
+            const ledgerActor = Actor.createActor(ledgerIDL, {
+                agent,
+                canisterId: "ryjl3-tyaaa-aaaaa-aaaba-cai",  // Ledger canister ID
+            });
+
+            const spenderAccount = {
+                owner: Principal.fromText(process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND),
+                subaccount: [],
+            };
+
+            const expiresAtTimeInMicroseconds = getExpirationTimeInMicroseconds(10);
+            const creationTimeInMicroseconds = timestampAgo(BigInt(Date.now()) * 1000n);  // Ensure BigInt here
+            const Amount = BigInt(Math.round(fee * 10 ** 8) + 10000); 
+            const feeAmount = BigInt(Math.round(0.0001 * 10 ** 8) + 10000); 
+
+            const icrc2ApproveArgs = {
+                from_subaccount: [],
+                spender: spenderAccount,
+                fee: [Amount],
+                memo: [], 
+                amount: feeAmount, 
+                created_at_time: [creationTimeInMicroseconds], 
+                expected_allowance: [feeAmount], 
+                expires_at: [expiresAtTimeInMicroseconds], 
+            };
+
+            const approveResponse = await ledgerActor.icrc2_approve(icrc2ApproveArgs);
+            console.log("ICRC2 approve response:", approveResponse);
+
+            if (approveResponse.Ok) {
+                const response = await actor.create_token(tokenData);
+                console.log("Token creation response:", response);
+
+                if (response.Ok) {
+                    dispatch(TokensInfoHandlerRequest());
+                    dispatch(UserTokensInfoHandlerRequest());
+                    const { ledger_canister_id, index_canister_id } = response.Ok;
+                    navigate("/verify-token", {
+                        state: {
+                            formData,
+                            ledger_canister_id: ledger_canister_id._arr,
+                            index_canister_id,
+                        },
+                    });
+                } else {
+                    setValidationError("Token creation failed.");
+                }
+            } else {
+                throw new Error(`ICRC2 approval failed: ${approveResponse.Err}`);
+            }
+        }
+    } catch (error) {
+        console.error("Error during token creation or approval:", error);
+        setValidationError(error.message || "An unexpected error occurred.");
+    } finally {
+        setIsSubmitting(false);
     }
+};
+
+useLayoutEffect(() => {
+  if (modalIsOpen) {
+    document.body.classList.add("overflow-hidden"); 
+  } else {
+    document.body.classList.remove("overflow-hidden");
+  }
+  return () => {
+    document.body.classList.remove("overflow-hidden");
   };
-
+}, [modalIsOpen]);
   return (
     <div className="mx-[50px]">
       <Modal
@@ -151,7 +260,7 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
         onRequestClose={closeModal}
         contentLabel="Create Token Modal"
         className="fixed inset-0 flex items-center justify-center lg:mb-[60%] lgx:mb-[10%] bg-transparent"
-        overlayClassName="fixed inset-0 z-50 bg-black bg-opacity-50"
+        overlayClassName="fixed inset-0 z-50 bg-black bg-opacity-60"
         ariaHideApp={false}
       >
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -249,9 +358,9 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
                     {termsAccepted && <span className="text-[#F3B3A7]">✓</span>}
                   </label>
                 </div>
-                <p className="text-[15px] text-[#cccccc]">
+                <label className="text-[15px] text-[#cccccc]" htmlFor="termsCheckbox">
                   By creating this token, I agree to the terms and conditions.
-                </p>
+                </label>
               </div>
 
               {/* Validation Error Message */}

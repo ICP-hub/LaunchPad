@@ -10,24 +10,18 @@ const selectActor = (currState) => currState.actors.actor;
 const selectPrincipal = (currState) => currState.internet.principal;
 
 function* fetchUserHandler() {
-  console.log("Calling fetchUserHandler");
-
   try {
     const actor = yield select(selectActor);
+    console.log('actor', actor);
     const principalString = yield select(selectPrincipal);
 
     if (actor && principalString) {
-      console.log("Actor and principalString are available, proceeding...");
-
       // Check if the principalString is valid before converting it to Principal
       if (principalString) {
         const principal = Principal.fromText(principalString);
-        console.log("Converted Principal:", principal);
-
         // Call the actor's method to get the user data
         const userData = yield call([actor, actor.get_user_account], principal);
         console.log("UserData in saga:", userData);
-
         // Dispatch success action with the user data
         yield put(userRegisteredHandlerSuccess(userData));
       } else {

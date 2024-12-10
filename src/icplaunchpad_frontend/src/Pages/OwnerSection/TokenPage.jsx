@@ -26,7 +26,7 @@ import UpdateToken from "../../components/Modals/UpdateToken.jsx";
 import { SaleParamsHandlerRequest } from "../../StateManagement/Redux/Reducers/SaleParams.jsx";
 import SaleStart from "./SaleStart.jsx";
 import { getSocialLogo } from "../../common/getSocialLogo.jsx";
-import { useAuth } from "../../StateManagement/useContext/useClient.jsx";
+import { useAuths } from "../../StateManagement/useContext/useClient.jsx";
 import RaisedFundProgress from "../../common/RaisedFundProgress.jsx";
 import Tokenomic from "./Tokenomics/Tokenomics.jsx";
 import ICP_TopUp1 from "../../components/Modals/ICP_TopUp1.jsx";
@@ -45,7 +45,7 @@ const TokenPage = () => {
   const [topUpCansiter,setTopUpCansiter] = useState('')
   const location = useLocation();
   const { projectData } = location.state || {};
-  const { actor, createCustomActor, isAuthenticated, principal } = useAuth();
+  const { actor, createCustomActor, isAuthenticated, principal } = useAuths();
   const [tokenData, setTokenData] = useState(null);
   const [tokenImg, setTokenImg] = useState();
   const [coverImg, setCoverImg] = useState();

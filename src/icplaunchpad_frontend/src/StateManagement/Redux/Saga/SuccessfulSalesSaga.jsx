@@ -8,7 +8,7 @@ import {
 const selectActor = (currState) => currState.actors.actor;
 
 function* fetchSuccessfulSales() {
-  console.log("calling fetchSuccessfulSales");
+  // console.log("calling fetchSuccessfulSales");
   try {
     const actor = yield select(selectActor);
     let SuccessfulSalesData = yield call([actor, actor.get_successful_sales]);

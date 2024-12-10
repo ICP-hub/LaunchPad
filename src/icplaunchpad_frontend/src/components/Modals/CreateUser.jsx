@@ -1,6 +1,6 @@
 
 
-import React, { useState } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import { TfiClose } from "react-icons/tfi";
 import Modal from 'react-modal';
 import { useNavigate } from 'react-router-dom';
@@ -177,51 +177,65 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
     setLinks(updatedLinks);
     setValue(`links.${index}`, value);
   };
+
+    useLayoutEffect(() => {
+    if (userModalIsOpen) {
+      document.body.classList.add("overflow-hidden"); 
+    } else {
+      document.body.classList.remove("overflow-hidden");
+    }
+    return () => {
+      document.body.classList.remove("overflow-hidden");
+    };
+  }, [userModalIsOpen]);
   return (
     <div className="absolute">
-      <Modal
-        isOpen={userModalIsOpen}
-        onRequestClose={closeModal}
-        contentLabel="Create User Modal"
-        className="fixed inset-0 flex items-center justify-center bg-transparent"
-        overlayClassName="fixed inset-0 z-50 bg-black bg-opacity-50"
-        ariaHideApp={false}
-      >
-        <div className="bg-[#222222] p-6 rounded-2xl text-white mx-6 max-h-[90vh] overflow-y-auto no-scrollbar w-[786px] relative">
-          {/* Modal Header */}
-          <div className="bg-[#FFFFFF4D] px-4 py-1 mb-4 rounded-2xl relative">
-            <button onClick={closeModal} className="absolute top-2 right-4 text-[20px] xxs1:text-[30px] text-white">
-              <TfiClose />
-            </button>
-            <h2 className="xxs1:text-[20px] text-[17px] font-medium md:text-[25px] md:font-semibold">
-              Create User
-            </h2>
+  <Modal
+    isOpen={userModalIsOpen}
+    onRequestClose={closeModal}
+    contentLabel="Create User Modal"
+    className="fixed inset-0 flex items-center justify-center bg-transparent outline-none"
+    overlayClassName="fixed inset-0 z-50 bg-black bg-opacity-60"
+    ariaHideApp={false}
+  >
+    <form onSubmit={handleSubmit(onSubmit)}>
+    <div className="bg-[#222222] p-6 rounded-2xl text-white mx-6 max-h-[90vh] w-[786px] relative">
+      {/* Modal Header */}
+      <div className="bg-[#FFFFFF4D] px-4 py-1 mb-4 rounded-2xl relative">
+        <button onClick={closeModal} className="absolute top-2 right-4 text-[20px] font-bold text-white">
+          <TfiClose />
+        </button>
+        <h2 className="xxs1:text-[20px] text-[17px] font-medium md:text-[25px] md:font-semibold">
+          Create User
+        </h2>
+      </div>
+
+      {/* Scrollable Form Content */}
+      <div style={{ maxHeight: "calc(90vh - 150px)", overflowY: "auto" }}>
+        <div  className="space-y-4">
+          {/* Name */}
+          <div>
+            <label className="block mb-2 text-[16px]">Name</label>
+            <input
+              type="text"
+              {...register("name")}
+              className="w-full p-1 pl-2 bg-[#333333] text-white rounded-md border-b-2 outline-none"
+            />
+            {errors.name && <p className="text-red-500">{errors.name.message}</p>}
           </div>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            {/* Name */}
-            <div>
-              <label className="block mb-2 text-[16px]">Name</label>
-              <input
-                type="text"
-                {...register("name")}
-                className="w-full p-1 pl-2 bg-[#333333] text-white rounded-md border-b-2 outline-none"
-              />
-              {errors.name && <p className="text-red-500">{errors.name.message}</p>}
-            </div>
-
-            {/* Username */}
-            <div>
-              <label className="block mb-2 text-[16px]">Username</label>
-              <input
-                type="text"
-                {...register("username")}
-                className={`w-full p-1 pl-2 bg-[#333333] text-white rounded-md outline-none ${errors.user_name ? "border-red-500" : "border-white"
-                  } border-b-2`}
-              />
-              {errors.username && <p className="text-red-500">{errors.username.message}</p>}
-            </div>
+          {/* Username */}
+          <div>
+            <label className="block mb-2 text-[16px]">Username</label>
+            <input
+              type="text"
+              {...register("username")}
+              className={`w-full p-1 pl-2 bg-[#333333] text-white rounded-md outline-none ${
+                errors.user_name ? "border-red-500" : "border-white"
+              } border-b-2`}
+            />
+            {errors.username && <p className="text-red-500">{errors.username.message}</p>}
+          </div>
 
             {/* Profile Picture */}
             <div>
@@ -241,15 +255,15 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
                   />
                 )}
               />
-              <div onClick={handleFileUploadClick} className="cursor-pointer flex items-center p-2 bg-[#333333] text-white rounded-md border-b-2">
-                <span className="text-xl font-bold mr-2">+</span>
+              <div onClick={handleFileUploadClick} className="cursor-pointer flex items-center p-1 bg-[#333333] text-white rounded-md border-b-2">
+                <span className="text-xl font-bold mx-2">+</span>
                 <span>{fileName || "Upload Image"}</span>
               </div>
               {errors.profile_picture && <p className="text-red-500">{errors.profile_picture.message}</p>}
             </div>
             {/* Social Links */}
             <div className="mb-4">
-              <h2 className="block text-[19px] mb-1">Social Links</h2>
+              <h2 className="block text-[16px] mb-1">Social Links</h2>
 
               {links.map((item, index) => (
                 <div key={index} className="flex flex-col">
@@ -293,7 +307,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
               ))}
               <button
                 onClick={addLink}
-                className="text-[#F3B3A7] mt-2"
+                className="text-[#F3B3A7]"
                 disabled={links.length >= 5} // Limit to 5 links
               >
                 + Add another link
@@ -305,7 +319,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
             </div>
 
             {/* Tags */}
-            <div>
+            <div className='mt-2'>
               <label className="block mb-2 text-[16px]">Tags</label>
               <Controller
                 name="tags"
@@ -320,7 +334,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
                     value={tagsOptions.filter(option => (field.value || []).includes(option.value))}
                     options={tagsOptions}
                     classNamePrefix='select'
-                    className='w-full p-2 text-white rounded-md'
+                    className='w-full text-white rounded-md'
                     placeholder='Select your tags'
                     onChange={(selectedOptions) => {
                       const selectedValues = selectedOptions.map(option => option.value);
@@ -357,27 +371,25 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
                   {termsAccepted && <span className="text-[#F3B3A7]">✓</span>}
                 </label>
               </div>
-              <p className="text-[15px] text-[#cccccc]">
+              <label htmlFor="termsCheckbox"  className="text-[15px] text-[#cccccc]">
                 By creating an account, I agree to the terms and conditions.
-              </p>
+              </label>
             </div>
 
-            {/* Validation Error */}
-            {validationError && <p className="text-red-500 mb-4">{validationError}</p>}
-
-            {/* Submit Button */}
-            <div className="flex justify-center items-center">
-              <AnimationButton
-                text="Submit"
-
-                loading={isSubmitting}
-                isDisabled={isSubmitting}
-              />
-            </div>
-          </form>
+          {/* Validation Error */}
+          {validationError && <p className="text-red-500 mb-4">{validationError}</p>}
         </div>
-      </Modal>
+      </div>
+
+      {/* Submit Button */}
+      <div className="flex justify-center items-center mt-4">
+        <AnimationButton text="Submit" loading={isSubmitting} isDisabled={isSubmitting}  />
+      </div>
     </div>
+    </form>
+  </Modal>
+</div>
+
   );
 };
 

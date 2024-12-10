@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import ProjectCard from "./ProjectCard.jsx";
 import { TokensInfoHandlerRequest } from "../../StateManagement/Redux/Reducers/TokensInfo.jsx";
-import { useAuth } from "../../StateManagement/useContext/useClient.jsx";
+import { useAuths } from "../../StateManagement/useContext/useClient.jsx";
 import { debounce } from "lodash";
 import { upcomingSalesHandlerRequest } from "../../StateManagement/Redux/Reducers/UpcomingSales.jsx";
 import { SuccessfulSalesHandlerRequest } from "../../StateManagement/Redux/Reducers/SuccessfulSales.jsx";
@@ -28,7 +28,7 @@ const ProjectLists = () => {
   const projectsData = useSelector((state) => state?.TokensInfo?.data || []);
   const upcomingSales = useSelector((state) => state?.upcomingSales?.data || []);
   const successfulSales = useSelector((state) => state?.SuccessfulSales?.data || []);
-  const { createCustomActor } = useAuth();
+  const { createCustomActor } = useAuths();
 
   // Fetch tokens data on mount
   useEffect(() => {

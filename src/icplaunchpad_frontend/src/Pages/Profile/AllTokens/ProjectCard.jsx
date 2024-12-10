@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import person1 from '../../../../assets/images/carousel/user.png';
 import icp from '../../../../assets/images/icp.png';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../../StateManagement/useContext/useClient';
+import { useAuths } from '../../../StateManagement/useContext/useClient';
 import { useSelector } from 'react-redux';
 import { Principal } from '@dfinity/principal';
 
 const ProjectCard = ({ ledgerID, index }) => {
   const navigate = useNavigate();
-  const { createCustomActor } = useAuth();
+  const { createCustomActor } = useAuths();
   const actor = useSelector((currState) => currState.actors.actor);
 
   const [tokenInfo, setTokenInfo] = useState({});

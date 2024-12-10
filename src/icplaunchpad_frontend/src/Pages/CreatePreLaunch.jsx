@@ -4,8 +4,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import CreateTokenModal from '../components/Modals/CreateTokenModal';
 import ConnectFirst from './ConnectFirst';
 import { useSelector } from 'react-redux';
-import { useAuth } from '../StateManagement/useContext/useClient';
 import { Principal } from '@dfinity/principal';
+import { useAuths } from '../StateManagement/useContext/useClient';
+import { ThreeDots } from 'react-loader-spinner';
 
 const CreatePreLaunch = () => {
   const actor = useSelector((state) => state.actors.actor);
@@ -15,8 +16,10 @@ const CreatePreLaunch = () => {
   const [modalIsOpen, setIsOpen] = useState(false);
   const [importAddress, setImportAddress] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState('');
+
   const navigate = useNavigate();
-  const { createCustomActor } = useAuth();
+  const { createCustomActor } = useAuths();
 
   const userTokenInfo = useSelector((state) => state?.UserTokensInfo?.data);
 
@@ -28,42 +31,57 @@ const CreatePreLaunch = () => {
       return false;
     }
   
-    if (Array.isArray(userTokenInfo)) {
-      const existingToken = userTokenInfo.find((token) => token?.canister_id === canisterId);
-      if (existingToken) {
-        setError('Token already exists.');
-        return false;
-      }
-    }
+    // if (Array.isArray(userTokenInfo)) {
+    //   const existingToken = userTokenInfo.find((token) => token?.canister_id === canisterId);
+    //   if (existingToken) {
+    //     setError('Token already exists.');
+    //     return false;
+    //   }
+    // }
   
     return true;
   };
-  
+
+
   const handleImportToken = async () => {
     setError(''); // Clear existing errors
+    setLoading(true); // Start loading
     if (!importAddress) {
       setError('Please enter a Ledger Canister ID.');
+      setLoading(false); // Stop loading
       return;
     }
-
+  
     const isValidCanister = validateCanisterId(importAddress);
-    if (!isValidCanister) return;
-
+    if (!isValidCanister) {
+      setLoading(false); // Stop loading
+      return;
+    }
+  
     try {
+      if (importAddress){
       const customActor = await createCustomActor(importAddress);
       if (customActor) {
         const ledgerPrincipal = Principal.fromText(importAddress);
         const response = await actor.import_token(ledgerPrincipal);
         console.log('Import response: ', response);
+        if(response){
         navigate('/verify-token', {
           state: { ledger_canister_id: importAddress },
         });
+      }else{
+      setError('Failed to import token. Please try again later.');
       }
+      }
+    }
     } catch (err) {
       console.error('Error importing token:', err);
       setError('Failed to import token. Please try again later.');
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
+  
 
   const openModal = () => {
     setIsOpen(true);
@@ -99,9 +117,26 @@ const CreatePreLaunch = () => {
                 />
                 <button
                   onClick={handleImportToken}
-                  className="border-1 bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5] text-black min-w-[100px] ss2:w-[130px] xxs1:w-[200px] md:w-[250px] h-[38px] lg:h-[38px] text-[12px] xxs1:text-[16px] md:text-[18px] font-[600] rounded-2xl"
+                  className={`border-1 font-posterama bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5]
+                    text-black flex justify-center items-center w-[130px] md:w-[250px] h-[35px] md:h-[40px]
+                    text-[16px] md:text-[18px] font-[600] rounded-3xl
+                    ${
+                     loading
+                        ? "opacity-50 cursor-not-allowed"
+                        : "hover:opacity-80"
+                    }`}
                 >
-                  IMPORT TOKEN
+                   {loading ? (
+          <ThreeDots
+            height="40"
+            width="40"
+            color="white"
+            ariaLabel="loading-indicator"
+          />
+        ) : (
+          'IMPORT TOKEN'
+          
+        )}
                 </button>
               </div>
             </div>

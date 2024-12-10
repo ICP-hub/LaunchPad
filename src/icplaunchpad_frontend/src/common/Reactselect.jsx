@@ -40,13 +40,29 @@ export const getReactSelectStyles = (error) => ({
     backgroundColor: 'grey',
     border: '1px solid white',
     borderRadius: '7px',
-    color: 'white', 
+  }),
+  multiValueLabel: (provided) => ({
+    ...provided,
+    color: 'white', // Change text color to white
+    fontWeight:'bold'
   }),
   multiValueRemove: (provided) => ({
     ...provided,
     display: 'inline-flex',
     alignItems: 'center',
     color: 'white',
+    cursor: 'pointer',
+    ':hover': {
+      backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    },
+  }),
+  input: (provided) => ({
+    ...provided,
+    color: 'white', // Input text color
+  }),
+  singleValue: (provided, state) => ({
+    ...provided,
+    color: 'white', // Single value text color
   }),
 });
 

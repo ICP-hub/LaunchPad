@@ -10,9 +10,9 @@ import { SuccessfulSalesHandlerRequest } from "./StateManagement/Redux/Reducers/
 import { UserTokensInfoHandlerRequest } from "./StateManagement/Redux/Reducers/UserTokensInfo";
 import { loginStart } from "./StateManagement/Redux/Reducers/InternetIdentityReducer";
 import { handleActorRequest } from "./StateManagement/Redux/Reducers/actorBindReducer";
-import { useIdentityKit } from "@nfid/identitykit/react";
+import { useAgent, useBalance, useIdentity } from "@nfid/identitykit/react";
 import { Principal } from "@dfinity/principal";
-import {useAuth}  from '../src/StateManagement/useContext/useClient'
+
 function App() {
   const actor = useSelector((currState) => currState.actors.actor);
   const isAuthenticated = useSelector(
@@ -20,14 +20,14 @@ function App() {
   );
   const principal = useSelector((currState) => currState.internet.principal);
   const userData = useSelector((state) => state?.userData?.data[0]);
- console.log("is authentication", isAuthenticated)
-  console.log("is actor", actor)
-  console.log("is principal", principal)
-  console.log("is userData", userData)
+//  console.log("is authentication", isAuthenticated)
+//   console.log("is actor", actor)
+//   console.log("is principal", principal)
+//   console.log("is userData", userData)
   const dispatch = useDispatch();
-  const { identity } = useIdentityKit();
+  const identity = useIdentity()
 
-  const { fetchUserIcpBalance } = useAuth()
+  const { balance,  fetchBalance } = useBalance()
 
   const fetchDataSequentially = async () => {
     if (isAuthenticated && identity) {
@@ -51,18 +51,19 @@ function App() {
     fetchDataSequentially();
   }, [isAuthenticated, identity, dispatch]);
 
-  const fetchBalance = async () => {
+  const fetchBalanceData = async () => {
+    if (isAuthenticated && identity) {
     try {
-      const balance = await fetchUserIcpBalance();
-      console.log('fetchUserIcpBalance', balance);
+      const balance = await fetchBalance();
+      // console.log('fetchUserIcpBalance', balance);
     } catch (error) {
       console.error('Error fetching ICP balance:', error);
-    }
+    }}
   };
 
 
   useEffect(() => {
-    fetchBalance();
+    fetchBalanceData();
   }, [isAuthenticated, identity]);
   return (
    

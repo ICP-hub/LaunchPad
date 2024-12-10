@@ -9,7 +9,7 @@ import { SetLedgerIdHandler } from "../Reducers/LedgerId";
 const selectActorFromState = (currState) => currState.actors.actor;
 
 function* fetchUserTokensInfo() {
-  console.log("calling fetchUserTokensInfo");
+  // console.log("calling fetchUserTokensInfo");
   try {
     const actor = yield select(selectActorFromState);
     console.log(actor)

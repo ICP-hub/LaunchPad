@@ -1,7 +1,9 @@
 #!/bin/bash
 
-dfx identity use controller
+# Ensure the necessary identity is being used
+dfx identity use Mohit || { echo "Identity 'Mohit' does not exist. Exiting."; exit 1; }
 
+# Deploy the token_deployer canister
 dfx deploy token_deployer --ic --argument '(
   variant {
     Init = record {
@@ -38,52 +40,34 @@ dfx deploy token_deployer --ic --argument '(
   }
 )'
 
-dfx identity use controller
+# Deploy the index_canister
 dfx deploy index_canister --ic --argument '(opt variant { Init = record { ledger_id = principal "aaaaa-aa"; retrieve_blocks_from_ledger_interval_seconds = opt 10 } })'
 
-  dfx identity use minter
+# Switch to the minter identity and set the minter account ID
+dfx identity use minter || { echo "Identity 'minter' does not exist. Exiting."; exit 1; }
+if [ -z "$MINTER_ACCOUNT_ID" ]; then
   export MINTER_ACCOUNT_ID=$(dfx ledger account-id)
+fi
 
-  dfx identity use default
+# Switch to the default identity and set the default account ID
+dfx identity use default || { echo "Identity 'default' does not exist. Exiting."; exit 1; }
+if [ -z "$DEFAULT_ACCOUNT_ID" ]; then
   export DEFAULT_ACCOUNT_ID=$(dfx ledger account-id)
+fi
+# Return to the Mohit identity for further deployments
+dfx identity use Mohit
 
-dfx identity use controller
-  dfx deploy --ic --specified-id ryjl3-tyaaa-aaaaa-aaaba-cai icp_ledger_canister --argument "
-    (variant {
-      Init = record {
-        minting_account = \"$MINTER_ACCOUNT_ID\";
-        initial_values = vec {
-          record {
-            \"$DEFAULT_ACCOUNT_ID\";
-            record {
-              e8s = 10_000_000_000 : nat64;
-            };
-          };
-        };
-        send_whitelist = vec {};
-        transfer_fee = opt record {
-          e8s = 10_000 : nat64;
-        };
-        token_symbol = opt \"LICP\";
-        token_name = opt \"Local ICP\";
-        feature_flags = opt record { icrc2 = true };
-      }
-    })
-  "
-
-dfx identity use controller
+# Deploy additional canisters
 dfx deploy ic_asset_handler --ic
-
-dfx identity use controller
 dfx deploy icplaunchpad_frontend --ic
 
-
+# Build and extract Candid for the backend
 cargo build --release --target wasm32-unknown-unknown --package icplaunchpad_backend
 candid-extractor target/wasm32-unknown-unknown/release/icplaunchpad_backend.wasm > src/icplaunchpad_backend/icplaunchpad_backend.did
 
-# Deploy canister_creater_backend
-dfx identity use controller
+# Deploy the backend
 dfx deploy icplaunchpad_backend --ic
 
+# Final message
 echo "Deployment complete. Please use the Candid UI to call the 'create_token' function with your parameters."
-echo "Or run ./tokendeploy.sh to run example token parameters"
+echo "Or run ./tokendeploy.sh to run example token parameters."

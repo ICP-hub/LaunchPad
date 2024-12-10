@@ -8,7 +8,7 @@ import {
 const selectActor = (currState) => currState.actors.actor;
 
 function* fetchTokenImageID() {
-  console.log("calling fetchTokenImageID");
+  // console.log("calling fetchTokenImageID");
   try {
     const actor = yield select(selectActor);
     let TokenImageID = yield call([actor, actor.get_token_image_id]);
