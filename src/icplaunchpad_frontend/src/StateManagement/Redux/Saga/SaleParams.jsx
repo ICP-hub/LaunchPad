@@ -10,7 +10,7 @@ const selectActor = (state) => state.actors.actor; // Selector returning actor f
 const selectLedgerId = (state) => state.LedgerId.data.ledger_canister_id; // Correct selector for ledgerId
 
 function* fetchSaleParams() {
-  console.log("Calling fetchSaleParams saga...");
+  // console.log("Calling fetchSaleParams saga...");
   
   try {
     const actor = yield select(selectActor); // Select actor from state

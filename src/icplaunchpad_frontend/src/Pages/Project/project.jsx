@@ -17,7 +17,7 @@ import { useLocation } from "react-router-dom";
 import { Principal } from "@dfinity/principal";
 import SaleStart from "../OwnerSection/SaleStart.jsx";
 import { getSocialLogo } from "../../common/getSocialLogo.jsx";
-import { useAuth } from "../../StateManagement/useContext/useClient.jsx";
+import { useAuths } from "../../StateManagement/useContext/useClient.jsx";
 import { useAgent, useIdentityKit } from "@nfid/identitykit/react";
 import { Actor } from "@dfinity/agent";
 import RaisedFundProgress from "../../common/RaisedFundProgress.jsx";
@@ -29,7 +29,7 @@ const TokenPage = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 640);
   const location = useLocation();
   const { projectData } = location.state || {};
-  const { actor, createCustomActor, principal } = useAuth();
+  const { actor, createCustomActor, principal } = useAuths();
   const [saleParams, setSaleParams] = useState(null);
   const [ledgerActor, setLedgerActor] = useState(null);
   const [tokenOwnerInfo, setTokenOwnerInfo] = useState(null);

@@ -5,13 +5,13 @@ import icp from "../../../assets/images/icp.png"
 import { useNavigate } from 'react-router-dom';
 import { Principal } from '@dfinity/principal';
 import SaleStart from '../OwnerSection/SaleStart';
-import { useAuth } from '../../StateManagement/useContext/useClient';
+import { useAuths } from '../../StateManagement/useContext/useClient';
 import { useSelector } from 'react-redux';
 import RaisedFundProgress from '../../common/RaisedFundProgress';
 
 const ProjectCard = ({ isUserToken, projectData, initial_Total_supply, saleType, index }) => {
   const navigate = useNavigate();
-  const { createCustomActor } = useAuth();
+  const { createCustomActor } = useAuths();
   const actor = useSelector((currState) => currState.actors.actor);
 
   const [tokenInfo, setTokenInfo] = useState({});

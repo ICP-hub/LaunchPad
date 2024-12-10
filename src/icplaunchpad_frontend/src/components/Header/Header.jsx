@@ -16,8 +16,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { addUserData } from "../../Redux-Config/ReduxSlices/UserSlice";
 import UpdateUser from "../Modals/UpdateUser";
 import { userRegisteredHandlerRequest } from "../../StateManagement/Redux/Reducers/userRegisteredData";
-import { useAuth } from "../../StateManagement/useContext/useClient";
-import { ConnectWallet, useIdentityKit } from "@nfid/identitykit/react";
+import { useAuths } from "../../StateManagement/useContext/useClient";
+import { ConnectWallet, useBalance, useIdentityKit } from "@nfid/identitykit/react";
 import person1 from "../../../assets/images/carousel/user.png"
 const ConnectBtn = ({ onClick }) => (
 
@@ -53,14 +53,12 @@ const Header = () => {
   const canisterId = process.env.CANISTER_ID_IC_ASSET_HANDLER;
   const [profileImg, setProfileImg] = useState();
 
-  const { isAuthenticated, principal, actor } = useAuth();
+  const { isAuthenticated, principal, actor } = useAuths();
   const userData = useSelector((state) => state?.userData?.data[0]);
   const navigate = useNavigate();
   const profile_ImgId = useSelector((state) => state?.ProfileImageID?.data)
-  const {
-    fetchIcpBalance,
-    icpBalance,
-  } = useIdentityKit();
+  const { balance, fetchBalance } = useBalance()
+
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -96,10 +94,10 @@ const Header = () => {
 
   async function getProfileIMG() {
     if (profile_ImgId) {
-      console.log('profile_iMGId', profile_ImgId)
+      // console.log('profile_iMGId', profile_ImgId)
       const imageUrl = `${protocol}://${canisterId}.${domain}/f/${profile_ImgId[0]}`;
       setProfileImg(imageUrl);
-      console.log("userImg-", imageUrl);
+      // console.log("userImg-", imageUrl);
     }
     else {
       setProfileImg(null);
@@ -119,7 +117,7 @@ const Header = () => {
   }
 
   const handleSearchedToken = async (data) => {
-    console.log('searched data', data)
+    // console.log('searched data', data)
 
     if (data.canister_id) {
       const ledgerPrincipal = Principal.fromText(data.canister_id);
@@ -178,7 +176,7 @@ const Header = () => {
 
 
   const formattedIcpBalance =
-    icpBalance !== undefined ? Number(icpBalance).toFixed(5) : "Fetching...";
+  balance !== undefined ? Number(balance).toFixed(5) : "Fetching...";
 
   return (
     <div>
@@ -355,8 +353,8 @@ const Header = () => {
               <div className="absolute right-0 mt-2 font-posterama w-48 bg-[#222222] rounded-md z-50">
                 <div className="py-2 px-2 text-center">
                   <div className="hidden border-b  w-full md:block">
-                    <div className="block  py-2 text-[18px] ">  {icpBalance !== undefined ? (
-                      <span className="flex items-center justify-center gap-2 "> <img src={icp} alt="" className="h-6" />${icpBalance} ICP</span>
+                    <div className="block  py-2 text-[18px] ">  {balance !== undefined ? (
+                      <span className="flex items-center justify-center gap-2 "> <img src={icp} alt="" className="h-6" />${balance} ICP</span>
                     ) : (
                       "Fetching your balance..."
                     )}</div>

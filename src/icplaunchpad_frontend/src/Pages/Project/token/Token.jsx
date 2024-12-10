@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '../../../StateManagement/useContext/useClient';
+import { useAuths } from '../../../StateManagement/useContext/useClient';
 import CopyToClipboard from '../../../common/CopyToClipboard';
 
 
 const TokenTab = ({ ledgerId }) => {
-  const {createCustomActor}=useAuth();
+  const {createCustomActor}=useAuths();
   const [tokenData, setTokenData] = useState(null);
    console.log('ledgerId->', ledgerId)
   const fetchTokenData = async () => {

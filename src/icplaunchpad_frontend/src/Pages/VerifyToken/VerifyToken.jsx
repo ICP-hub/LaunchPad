@@ -43,6 +43,7 @@ const VerifyToken = () => {
   const isAuthenticated = useSelector(
     (currState) => currState.internet.isAuthenticated
   );
+  // console.log('ledger_canister_id verify', Principal.fromUint8Array(ledger_canister_id))
   const principal = useSelector((currState) => currState.internet.principal);
   useEffect(() => {
     if (formData)
@@ -69,11 +70,12 @@ const VerifyToken = () => {
     },
   });
 
-  console.log("Form validation errors:", errors);
+  // console.log("Form validation errors:", errors);
 
   // Function to submit presale details
   const submitPresaleDetails = async (data) => {
     console.log("Submitting presale details with data:", data);
+    
     try {
       setIsSubmitting(true);
       const {
@@ -129,6 +131,7 @@ const VerifyToken = () => {
       if (!ledgerPrincipalId) throw new Error("Invalid ledger canister ID");
 
       const response = await actor.create_sale(ledgerPrincipalId, presaleData);
+      console.log('response',response)
 
       if (response.Err) throw new Error(response.Err);
 
@@ -152,7 +155,7 @@ const VerifyToken = () => {
         console.log("uploaded cover img response ", res)
       }
 
-      console.log("Submission successful");
+      // console.log("Submission successful");
 
       // adding ledger_canister_id and index_canister_id in redux store   
       dispatch(
@@ -262,8 +265,9 @@ const VerifyToken = () => {
             className="border-1 flex justify-center items-center bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5] text-black w-[80px] ss2:w-[115px] sm4:w-[210px]  h-[35px] text-[17px] font-[600] rounded-2xl"
             onClick={() => {
               handleNext();
-              disabled = { isSubmitting }
             }}
+            disabled = { isSubmitting }
+
           >
             {/* {currentStep === 4 ? "Submit" : "Next"} */}
             {isSubmitting ? (

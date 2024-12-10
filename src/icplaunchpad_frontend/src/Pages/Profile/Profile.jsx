@@ -10,14 +10,14 @@ import Favorited from './Favorited/Favorited';
 import RecentlyViewed from './RecentlyViewed/RecentlyViewed';
 import MyContribution from './MyContribution/MyContribution';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../StateManagement/useContext/useClient';
+import { useAuths} from '../../StateManagement/useContext/useClient';
 import { useSelector } from 'react-redux';
 import CopyToClipboard from '../../common/CopyToClipboard';
 
 const Profile = () => {
   const [activeTab, setActiveTab] = useState("All Tokens");
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const { logout } = useAuth();
+  const { logout } = useAuths();
   const actor = useSelector((currState) => currState.actors.actor);
   const isAuthenticated = useSelector(
     (currState) => currState.internet.isAuthenticated

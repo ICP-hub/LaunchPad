@@ -5,23 +5,27 @@ import {
   TokensInfoHandlerFailure,
 } from "../Reducers/TokensInfo";
 
-
 const selectActorFromState = (currState) => currState.actors.actor;
 
 function* fetchTokensInfo() {
-  console.log("calling fetchTokensInfo");
   try {
     const actor = yield select(selectActorFromState);
+    if (!actor) {
+      throw new Error("Actor not found in state");
+    }
+
     const TokensData = yield call([actor, actor.get_tokens_info]);
 
-    if (TokensData && TokensData.length > 0) {
+    console.log("Fetched TokensData:", TokensData);
+
+    if (Array.isArray(TokensData) && TokensData.length > 0) {
       const lastTokenData = TokensData[TokensData.length - 1];
       console.log("canisterid in saga", lastTokenData.canister_id);
-
+    
       yield put(TokensInfoHandlerSuccess(TokensData));
     } else {
-      console.warn("Empty TokensData received");
-      yield put(TokensInfoHandlerSuccess([]));
+      console.warn("Empty or invalid TokensData received");
+      yield put(TokensInfoHandlerSuccess([])); // Handle empty data as a valid state
     }
   } catch (error) {
     console.error("Error in fetchTokensInfo saga:", error);
@@ -29,7 +33,6 @@ function* fetchTokensInfo() {
       TokensInfoHandlerFailure(`Failed to fetch Tokens data: ${error.message}`)
     );
   }
- 
 }
 
 export function* fetchTokensInfoSaga() {

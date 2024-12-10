@@ -6,15 +6,12 @@ import {
   logoutStart,
   logoutSuccess,
 } from '../Reducers/InternetIdentityReducer';
-import { useIdentityKit } from '@nfid/identitykit/react';
+import { useAuth, useIdentity } from '@nfid/identitykit/react';
 
 function* handleLogin() {
   try {
-    const { connect, identity, user } = yield call(useIdentityKit);
-
-    console.log('user', user);
-    console.log('identity', identity);
-
+    const { connect, user } = yield call(useAuth);
+    const {  identity } = yield call(useIdentity);
     yield call(connect);
 
     const principal = identity.getPrincipal().toText();
@@ -33,7 +30,7 @@ function* handleLogin() {
 
 function* handleLogout() {
   try {
-    const { disconnect } = yield call(useIdentityKit);
+    const { disconnect } = yield call(useAuth);
     yield call(disconnect);
 
     yield put(logoutSuccess());

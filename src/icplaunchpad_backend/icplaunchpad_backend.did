@@ -82,6 +82,7 @@ type SaleInputParams = record {
   start_time_utc : nat64;
   social_links : vec text;
 };
+type SupportedStandard = record { url : text; name : text };
 type TokenCreationResult = record {
   index_canister_id : principal;
   ledger_canister_id : principal;
@@ -99,12 +100,13 @@ type UserInputParams = record {
   initial_balances : vec record { Account; nat };
   token_name : text;
 };
-service : () -> {
+service : {
   buy_tokens : (BuyTransferParams) -> (Result);
   create_account : (UserAccount) -> (Result_1);
   create_sale : (principal, SaleInputParams) -> (Result_2);
   create_token : (UserInputParams) -> (Result_3);
   deposit_cycles_to_canister : (CanisterIdRecord, nat) -> (Result_4);
+  fee_for_creation_token : () -> (float64) query;
   fetch_canister_balance : (principal) -> (Result_5);
   get_active_sales : () -> (vec SaleDetailsWithID) query;
   get_all_sales : () -> (vec record { SaleDetailsWithID; text }) query;
@@ -122,6 +124,7 @@ service : () -> {
   get_user_ledger_ids : (principal) -> (vec principal) query;
   get_user_sale_params : () -> (Result_7) query;
   get_user_tokens_info : () -> (vec CanisterIndexInfo) query;
+  icrc10_supported_standards : () -> (vec SupportedStandard) query;
   icrc28_trusted_origins : () -> (Icrc28TrustedOriginsResponse);
   icrc_get_balance : (principal) -> (Result_5);
   import_token : (principal) -> ();

@@ -150,51 +150,91 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { Principal } from "@dfinity/principal";
-import { useAuth } from "../../../StateManagement/useContext/useClient";
+import { useAuths } from "../../../StateManagement/useContext/useClient";
 import CopyToClipboard from "../../../common/CopyToClipboard";
+import { useAgent } from "@nfid/identitykit/react";
 
 const VerifyTokenTab = ({ register, errors, setTokenData, watch, ledger_canister_id, tokenData }) => {
   const [tokenInfo, setTokenInfo] = useState(null);
-  const { createCustomActor } = useAuth();
+  const { createCustomActor } = useAuths();
+  const agent = useAgent()
 
+  // console.log('ledger_canister_id',ledgerPrincipalId.toText()); 
   useEffect(() => {
-    console.log('ledger-', ledger_canister_id)
     if (ledger_canister_id) {
       if (typeof ledger_canister_id != 'string') {
         const ledgerId = Principal.fromUint8Array(ledger_canister_id)
-        getTokenData(ledgerId);
+        getTokenData(ledgerId.toText());
       } else {
         const ledgerId = Principal.fromText(ledger_canister_id)
         getTokenData(ledgerId);
       }
-
-
     }
-  }, [ledger_canister_id]);
 
+  }, [ledger_canister_id]);
   const getTokenData = async (ledger_canister_id) => {
     try {
-      console.log("ledger_canister_id at 179 in varify token tab", ledger_canister_id)
-      const actor = await createCustomActor(ledger_canister_id);
-      if (actor) {
-        const tokenName = await actor.icrc1_name();
-        const tokenSymbol = await actor.icrc1_symbol();
-        const tokenDecimals = await actor.icrc1_decimals();
-        const tokenSupply = await actor.icrc1_total_supply();
-        console.log("tokenName at 186 in varify token tab", tokenName)
-        setTokenData((prev) => ({ ...prev, token_name: tokenName, token_symbol: tokenSymbol, decimals: tokenDecimals, total_supply: tokenSupply }));
-        setTokenInfo({
-          token_name: tokenName,
-          token_symbol: tokenSymbol,
-          decimals: tokenDecimals,
-          total_supply: tokenSupply,
-        });
-      }
-    } catch (err) {
-      console.error("Error fetching token data:", err);
-    }
-  };
+        console.log("Fetching token data for canister ID:", ledger_canister_id);
+        const actor = await createCustomActor(ledger_canister_id);
 
+        if (!actor) {
+            console.error("Actor creation failed.");
+            return;
+        }
+        console.log("Actor created successfully:", actor);
+
+        const tokenDataResults = await Promise.all([
+            actor?.icrc1_name?.().catch((err) => {
+                console.error("Error fetching icrc1_name:", err);
+                return null;
+            }),
+            actor?.icrc1_symbol?.().catch((err) => {
+                console.error("Error fetching icrc1_symbol:", err);
+                return null;
+            }),
+            actor?.icrc1_decimals?.().catch((err) => {
+                console.error("Error fetching icrc1_decimals:", err);
+                return null;
+            }),
+            actor?.icrc1_total_supply?.().catch((err) => {
+                console.error("Error fetching icrc1_total_supply:", err);
+                return null;
+            }),
+        ]);
+
+        console.log("Token Data Results:", tokenDataResults);
+
+        const [tokenName, tokenSymbol, tokenDecimals, tokenSupply] = tokenDataResults;
+
+        if (!tokenName || !tokenSymbol || !tokenDecimals || !tokenSupply) {
+            console.error("Error: Some token data could not be fetched.");
+            return;
+        }
+
+        setTokenInfo({
+            token_name: tokenName,
+            token_symbol: tokenSymbol,
+            decimals: tokenDecimals,
+            total_supply: tokenSupply,
+        });
+    } catch (err) {
+        console.error("Error fetching token data:", err);
+    }
+};
+
+
+
+const fetchWithRetry = async (fn, retries = 1, delay = 1000) => {
+    try {
+        return await fn();
+    } catch (err) {
+        if (retries === 0) throw err;
+        console.warn(`Retrying... Attempts left: ${retries}`);
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        return fetchWithRetry(fn, retries - 1, delay);
+    }
+};
+  
   const feeOption = watch("feeOption", false);
   const currencyICP = watch("currencyICP", false);
 

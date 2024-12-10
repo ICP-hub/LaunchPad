@@ -8,7 +8,7 @@ import {
 const selectActor = (currState) => currState.actors.actor;
 
 function* fetchProfileImageID() {
-  console.log("calling fetchProfileImageID");
+  // console.log("calling fetchProfileImageID");
   try {
     const actor = yield select(selectActor);
     let ProfileImageID = yield call([actor, actor.get_profile_image_id]);

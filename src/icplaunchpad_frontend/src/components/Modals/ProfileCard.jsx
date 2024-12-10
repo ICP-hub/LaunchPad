@@ -5,13 +5,13 @@ import { TfiClose } from "react-icons/tfi";
 import Modal from 'react-modal';
 import person1 from "../../../assets/images/carousel/user.png"
 import { useSelector } from 'react-redux';
-import { useAuth } from '../../StateManagement/useContext/useClient';
+import { useAuths } from '../../StateManagement/useContext/useClient';
 import CopyToClipboard from '../../common/CopyToClipboard';
 
 
 
 const ProfileCard = ({ profileModalIsOpen, setProfileModalIsOpen, formattedIcpBalance }) => {
-  const { logout } = useAuth();
+  const { logout } = useAuths();
   const principal = useSelector((currState) => currState.internet.principal);
   const protocol = process.env.DFX_NETWORK === "ic" ? "https" : "http";
   const domain = process.env.DFX_NETWORK === "ic" ? "raw.icp0.io" : "localhost:4943";

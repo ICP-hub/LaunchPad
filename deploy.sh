@@ -1,13 +1,12 @@
 #!/bin/bash
 
-set -a
-source .env
-set +a
+# Check if the controller identity exists, if not, create it
+if ! dfx identity list | grep -q "controller"; then
+  dfx identity new controller
+fi
+dfx identity use controller
 
-dfx identity new controller
-dfx identity use controller 
-
-
+# Deploy the token_deployer canister with specified arguments
 dfx deploy token_deployer --argument '(
   variant {
     Init = record {
@@ -44,20 +43,31 @@ dfx deploy token_deployer --argument '(
   }
 )'
 
-dfx identity use controller 
-
-
+# Deploy the index canister with specified arguments
 dfx deploy index_canister --argument '(opt variant { Init = record { ledger_id = principal "aaaaa-aa"; retrieve_blocks_from_ledger_interval_seconds = opt 10 } })'
 
-dfx identity new minter
-  dfx identity use minter
+# Check if the minter identity exists, if not, create it
+if ! dfx identity list | grep -q "minter"; then
+  dfx identity new minter
+fi
+dfx identity use minter
+
+# Set MINTER_ACCOUNT_ID only if not already set
+if [ -z "$MINTER_ACCOUNT_ID" ]; then
   export MINTER_ACCOUNT_ID=$(dfx ledger account-id)
+fi
 
-  dfx identity use default
+# Switch back to the default identity and set DEFAULT_ACCOUNT_ID only if not already set
+dfx identity use default
+if [ -z "$DEFAULT_ACCOUNT_ID" ]; then
   export DEFAULT_ACCOUNT_ID=$(dfx ledger account-id)
+fi
 
-dfx identity use controller 
-  dfx deploy --specified-id ryjl3-tyaaa-aaaaa-aaaba-cai icp_ledger_canister --argument "
+# Switch back to the controller identity
+dfx identity use controller
+
+# Deploy the ICP ledger canister with specified arguments
+dfx deploy --specified-id ryjl3-tyaaa-aaaaa-aaaba-cai icp_ledger_canister --argument "
     (variant {
       Init = record {
         minting_account = \"$MINTER_ACCOUNT_ID\";
@@ -80,25 +90,35 @@ dfx identity use controller
     })
   "
 
-dfx identity use controller 
+# Deploy additional canisters
 dfx deploy ic_asset_handler
-
-dfx identity use controller 
 dfx deploy icplaunchpad_frontend
 
-
-
+# Build and extract the candid interface for the backend
 cargo build --release --target wasm32-unknown-unknown --package icplaunchpad_backend
 candid-extractor target/wasm32-unknown-unknown/release/icplaunchpad_backend.wasm > src/icplaunchpad_backend/icplaunchpad_backend.did
 
-# Deploy canister_creater_backend
+# Deploy the backend
 dfx deploy icplaunchpad_backend
 
-dfx ledger fabricate-cycles --canister bkyz2-fmaaa-aaaaa-qaaaq-cai
-dfx ledger fabricate-cycles --canister be2us-64aaa-aaaaa-qaabq-cai
-dfx ledger fabricate-cycles --canister bw4dl-smaaa-aaaaa-qaacq-cai
-dfx ledger fabricate-cycles --canister ryjl3-tyaaa-aaaaa-aaaba-cai
-dfx ledger fabricate-cycles --canister br5f7-7uaaa-aaaaa-qaaca-cai
+# Fabricate cycles for all local canisters
+CANISTER_IDS_FILE=".dfx/local/canister_ids.json"
 
+# Check if the file exists
+if [ ! -f "$CANISTER_IDS_FILE" ]; then
+  echo "Error: Canister IDs file not found at $CANISTER_IDS_FILE. Make sure dfx is initialized and canisters are deployed."
+  exit 1
+fi
+
+# Extract and fabricate cycles for all canister IDs
+canister_ids=$(jq -r '.[].local' "$CANISTER_IDS_FILE")
+for canister_id in $canister_ids; do
+  echo "Fabricating cycles for canister: $canister_id"
+  dfx ledger fabricate-cycles --canister "$canister_id"
+done
+
+echo "Cycle fabrication completed for all local canisters."
+
+# Final deployment message
 echo "Deployment complete. Please use the Candid UI to call the 'create_token' function with your parameters."
-echo "Or run ./tokendeploy.sh to run example token parameters"
+echo "Or run ./tokendeploy.sh to run example token parameters."

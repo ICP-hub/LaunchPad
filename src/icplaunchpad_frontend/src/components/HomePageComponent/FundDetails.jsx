@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Principal } from '@dfinity/principal';
 import { convertTimestampToISTFormatted } from '../../utils/convertTimestampToIST';
-import { useAuth } from '../../StateManagement/useContext/useClient';
+import { useAuths } from '../../StateManagement/useContext/useClient';
 import { useSelector } from 'react-redux';
 
 const FundDetails = ({ sale, index }) => {
     const [tokenDetails, setTokenDetails] = useState({});
-    const {  createCustomActor } = useAuth();
+    const {  createCustomActor } = useAuths();
     const actor = useSelector((currState) => currState.actors.actor);
  
     const protocol = process.env.DFX_NETWORK === 'ic' ? 'https' : 'http';

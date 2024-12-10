@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { useAuth } from "../../auth/useAuthClient";
 import { Principal } from "@dfinity/principal";
 import { useSelector } from "react-redux";
+import { useAuths } from "../../StateManagement/useContext/useClient";
 const FormModal = () => {
-  const {  createCustomActor } = useAuth();
+  const {  createCustomActor } = useAuths();
   const actor = useSelector((currState) => currState.actors.actor);
 
   const [formData, setFormData] = useState({
