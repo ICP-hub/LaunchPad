@@ -432,6 +432,30 @@ impl SaleDetails {
 }
 
 
+impl Default for SaleDetails {
+    fn default() -> Self {
+        Self {
+            creator: Principal::anonymous(),
+            start_time_utc: 0,
+            end_time_utc: 0,
+            hardcap: 0,
+            softcap: 0,
+            min_contribution: 0,
+            max_contribution: 0,
+            tokens_for_fairlaunch: 0,
+            liquidity_percentage: 0,
+            website: String::new(),
+            social_links: vec![],
+            description: String::new(),
+            project_video: String::new(),
+            processed: false,
+            tokens_for_liquidity_after_fee: 0,
+            tokens_for_approval: 0,
+            fee_for_approval: 0,
+            is_ended: false, // Default value
+        }
+    }
+}
 
 #[derive(CandidType, Deserialize, Serialize, Debug, Clone)]
 pub struct SaleDetailsWithID {
