@@ -2,13 +2,13 @@ use candid::{CandidType, Nat, Principal};
 use ic_cdk::api;
 use ic_cdk::api::call::{CallResult, RejectionCode};
 use ic_cdk_macros::update;
+use ic_ledger_types::TransferError;
 use icrc_ledger_types::icrc1::account::Account;
 use icrc_ledger_types::icrc1::transfer::TransferArg;
 use icrc_ledger_types::icrc2::transfer_from::TransferFromArgs;
 use serde::{Deserialize, Serialize};
 
-use crate::api_update::insert_funds_raised;
-use crate::TransferFromResult;
+use crate::{TransferFromResult, U64Wrapper, STATE};
 
 pub fn prevent_anonymous() -> Result<(), String> {
     if api::caller() == Principal::anonymous() {
@@ -25,101 +25,144 @@ pub struct BuyTransferParams {
 }
 
 async fn buy_transfer(params: BuyTransferParams) -> Result<Nat, String> {
-    let icp_ledger_canister_id = option_env!("CANISTER_ID_ICP_LEDGER_CANISTER")
-        .ok_or("Environment variable `CANISTER_ID_ICP_LEDGER_CANISTER` not set")?;
-    let backend_canister_id = option_env!("CANISTER_ID_ICPLAUNCHPAD_BACKEND")
-        .ok_or("Environment variable `CANISTER_ID_ICPLAUNCHPAD_BACKEND` not set")?; // Use the backend canister's principal as the recipient
-    ic_cdk::println!("{}", backend_canister_id);
+    let sale_id = params.icrc1_ledger_canister_id.to_text(); // Assuming the sale_id is the ledger canister ID
+    let hardcap = STATE.with(|s| {
+        s.borrow()
+            .sale_details
+            .get(&sale_id)
+            .map(|wrapper| wrapper.sale_details.hardcap)
+            .unwrap_or(0)
+    });
 
-    // Define the transfer arguments for the ICP Ledger canister
-    let transfer_args = TransferFromArgs {
-        amount: Nat::from(params.tokens),
+    // Check how much funds have already been raised
+    let funds_raised = STATE.with(|s| {
+        s.borrow()
+            .funds_raised
+            .get(&Principal::from_text(&sale_id).unwrap())
+            .map(|wrapper| wrapper.0)
+            .unwrap_or(0)
+    });
+
+    let remaining_cap = if hardcap > funds_raised {
+        hardcap - funds_raised
+    } else {
+        0
+    };
+
+    if remaining_cap == 0 {
+        return Err("Hardcap already reached, contributions are closed.".to_string());
+    }
+
+    let accepted_amount = if params.tokens > remaining_cap {
+        remaining_cap // Accept only the remaining cap
+    } else {
+        params.tokens
+    };
+
+    // Update funds_raised atomically using StableBTreeMap
+    let updated_funds_raised = STATE.with(|s| {
+        let mut state = s.borrow_mut();
+        let sale_principal = Principal::from_text(&sale_id).unwrap();
+
+        if let Some(wrapper) = state.funds_raised.get(&sale_principal) {
+            let new_amount = wrapper.0 + accepted_amount;
+            state.funds_raised.insert(sale_principal.clone(), U64Wrapper(new_amount));
+            Ok(new_amount)
+        } else {
+            Err("Sale ID not found in funds_raised.".to_string())
+        }
+    })?;
+
+    // Perform the transfer
+    let transfer_result = perform_transfer(BuyTransferParams {
+        tokens: accepted_amount,
+        buyer_principal: params.buyer_principal.clone(),
+        icrc1_ledger_canister_id: params.icrc1_ledger_canister_id.clone(),
+    })
+    .await;
+
+    match transfer_result {
+        Ok(block_index) => {
+            if updated_funds_raised >= hardcap {
+                mark_sale_as_ended(&sale_id)?; // Mark the sale as ended
+            }
+            Ok(block_index)
+        }
+        Err(e) => Err(e),
+    }
+}
+
+
+
+async fn perform_transfer(params: BuyTransferParams) -> Result<Nat, String> {
+    let ledger_canister_id = params.icrc1_ledger_canister_id;
+
+    let transfer_args = TransferArg {
+        from_subaccount: None,
         to: Account {
-            owner: Principal::from_text(backend_canister_id).unwrap(), // Send ICP to the backend canister
+            owner: ic_cdk::id(), // Assuming the canister is receiving the tokens
             subaccount: None,
         },
         fee: None,
         memo: None,
         created_at_time: None,
-        spender_subaccount: None,
-        from: Account {
-            owner: params.buyer_principal,
-            subaccount: None,
-        },
+        amount: Nat::from(params.tokens),
     };
 
-    // Call the ICP ledger to transfer ICP to the backend
-    let response: CallResult<(TransferFromResult,)> = ic_cdk::call(
-        Principal::from_text(icp_ledger_canister_id).unwrap(),
-        "icrc2_transfer_from",
+    let result: CallResult<(Result<Nat, TransferError>,)> = ic_cdk::call(
+        ledger_canister_id,
+        "icrc1_transfer",
         (transfer_args,),
     )
     .await;
 
-    match response {
-        Ok((TransferFromResult::Ok(block_index),)) => {
-            // Update funds raised for the sale
-            let amount_u64 = params.tokens;
-            insert_funds_raised(params.icrc1_ledger_canister_id, amount_u64)?;
-
-            Ok(block_index)
-        }
-        Ok((TransferFromResult::Err(error),)) => Err(format!("Ledger transfer error: {:?}", error)),
-        Err((code, message)) => Err(format!("Failed to call ledger: {:?} - {}", code, message)),
+    match result {
+        Ok((Ok(block_index),)) => Ok(block_index),
+        Ok((Err(error),)) => Err(format!("Transfer error: {:?}", error)),
+        Err((code, message)) => Err(format!(
+            "Inter-canister call failed: {:?} - {}",
+            code, message
+        )),
     }
 }
+
+
+
 
 #[update(guard = prevent_anonymous)]
 async fn buy_tokens(params: BuyTransferParams) -> Result<Nat, String> {
     buy_transfer(params).await
 }
 
-// #[derive(CandidType, Deserialize, Serialize)]
-// pub struct SellTransferParams {
-//     pub tokens: u64,
-//     pub to_principal: Principal,
-//     pub token_ledger_canister_id: Principal,
-// }
+pub fn mark_sale_as_ended(sale_id: &str) -> Result<(), String> {
+    STATE.with(|s| {
+        let mut state = s.borrow_mut();
 
-// async fn sell_transfer(params: SellTransferParams) -> Result<Nat, String> {
-//     // Fetch the sale parameters directly from your backend storage
-//     let sale_params = get_sale_params(params.token_ledger_canister_id)?;
-//     let from_principal = sale_params.creator;
+        if let Some(mut sale_wrapper) = state.sale_details.get(&sale_id.to_string()) {
+            let current_time_utc = get_current_time(); // Now it fetches current time
+            
+            // Check if the sale has ended based on the end_time_utc
+            if current_time_utc > sale_wrapper.sale_details.end_time_utc {
+                // Mark the sale as ended (you could add some other status tracking)
+                sale_wrapper.sale_details.is_ended = true; // Mark as ended
+            }
 
-//     let transfer_args = TransferFromArgs {
-//         amount: Nat::from(params.tokens),
-//         to: Account {
-//             owner: params.to_principal,
-//             subaccount: None,
-//         },
-//         fee: None,
-//         memo: None,
-//         created_at_time: None,
-//         spender_subaccount: None,
-//         from: Account {
-//             owner: from_principal, // Use the creator as the sender
-//             subaccount: None,
-//         },
-//     };
+            // Reinsert the modified sale_wrapper back into the map
+            state.sale_details.insert(sale_id.to_string(), sale_wrapper);
+            Ok(())
+        } else {
+            Err(format!("Sale with ID {} not found", sale_id))
+        }
+    })
+}
 
-//     let response: CallResult<(TransferFromResult,)> = ic_cdk::call(
-//         params.token_ledger_canister_id,
-//         "icrc2_transfer_from",
-//         (transfer_args,),
-//     )
-//     .await;
 
-//     match response {
-//         Ok((TransferFromResult::Ok(block_index),)) => Ok(block_index),
-//         Ok((TransferFromResult::Err(error),)) => Err(format!("Ledger transfer error: {:?}", error)),
-//         Err((code, message)) => Err(format!("Failed to call ledger: {:?} - {}", code, message)),
-//     }
-// }
+fn get_current_time() -> u64 {
+    ic_cdk::api::time() // Returns the current time in nanoseconds since UNIX epoch
+}
 
-// #[update(guard = prevent_anonymous)]
-// async fn sell_tokens(params: SellTransferParams) -> Result<Nat, String> {
-//     sell_transfer(params).await
-// }
+
+
 
 pub async fn perform_refund(contributor: &Principal, amount: u64) -> Result<(), String> {
     let ledger_canister_id = option_env!("CANISTER_ID_ICP_LEDGER_CANISTER")

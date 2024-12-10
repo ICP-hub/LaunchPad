@@ -388,6 +388,7 @@ pub struct SaleDetails {
     pub tokens_for_liquidity_after_fee: u64, // Store the liquidity tokens after the fee
     pub tokens_for_approval: u64,   // Amount of tokens for fairlaunch + liquidity for approval
     pub fee_for_approval: u64,      // Amount of the 5% fee for approval
+    pub is_ended: bool,
 }
 
 impl SaleDetails {
@@ -426,7 +427,11 @@ impl SaleDetails {
         self.tokens_for_approval = total_tokens_to_approve;
         self.fee_for_approval = fee_on_tokens_for_liquidity;
     }
+
+
 }
+
+
 
 #[derive(CandidType, Deserialize, Serialize, Debug, Clone)]
 pub struct SaleDetailsWithID {
