@@ -48,6 +48,7 @@ type SaleDetails = record {
   website : text;
   tokens_for_approval : nat64;
   tokens_for_liquidity_after_fee : nat64;
+  is_ended : bool;
   hardcap : nat64;
   end_time_utc : nat64;
   project_video : text;
@@ -100,7 +101,7 @@ type UserInputParams = record {
   initial_balances : vec record { Account; nat };
   token_name : text;
 };
-service : {
+service : () -> {
   buy_tokens : (BuyTransferParams) -> (Result);
   create_account : (UserAccount) -> (Result_1);
   create_sale : (principal, SaleInputParams) -> (Result_2);

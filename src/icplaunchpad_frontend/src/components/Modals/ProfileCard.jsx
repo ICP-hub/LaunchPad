@@ -82,13 +82,13 @@ const ProfileCard = ({ profileModalIsOpen, setProfileModalIsOpen, formattedIcpBa
                 className="w-20 h-20 rounded-full object-cover"
               />
               <div className=' w-48 lg:w-64'>
-                <h2 className="text-lg font-semibold mt-2">{UserData ? UserData?.name : 'ABCD'}</h2>
+                <h2 className="text-lg font-semibold mt-2 mb-[1px]">{UserData ? UserData?.name : 'ABCD'}</h2>
                 <p className="text-sm text-gray-400 overflow-hidden whitespace-nowrap text-ellipsis">
                   <CopyToClipboard address={principal} width={'90%'} />
                 </p>
 
                 {/* Block Explorer Button */}
-                <div className='flex flex-wrap'>
+                <div className='flex w-full overflow-x-scroll'>
                   {
                     UserData ? UserData?.tag?.map((tag, index) => {
                      return <button key={index} className="bg-[#3c3c3c] mt-2 text-xs mx-1  text-gray-400  px-3 py-1  rounded-full">
