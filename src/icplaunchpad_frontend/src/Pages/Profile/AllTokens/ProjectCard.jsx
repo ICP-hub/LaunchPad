@@ -18,28 +18,29 @@ const ProjectCard = ({ ledgerID, index }) => {
   const domain = process.env.DFX_NETWORK === 'ic' ? 'raw.icp0.io' : 'localhost:4943';
   const canisterId = process.env.CANISTER_ID_IC_ASSET_HANDLER;
 
-  const handleExportNavigate = async ()=>{
-    console.log('hii',ledgerID)
-    try{
-    const ledgerPrincipal = Principal.fromUint8Array(ledgerID);
-    console.log(ledgerID.toText())
-    const response = await actor.get_sale_params(ledgerID);
-    console.log(response)
-    if (response.Err)
-      navigate("/verify-token", {
-        state: {ledger_canister_id: ledgerID.toText() },}
-      )
-    else{
-      const routeData = {
-        ...({canister_id: ledgerID.toText() }),
-        ...tokenInfo,
-      };
-      navigate('/token-page', { state: { projectData: routeData } });
-    }  
+  const handleExportNavigate = async () => {
+    console.log('hii', ledgerID)
+    try {
+      const ledgerPrincipal = Principal.fromUint8Array(ledgerID);
+      console.log(ledgerID.toText())
+      const response = await actor.get_sale_params(ledgerID);
+      console.log(response)
+      if (response.Err)
+        navigate("/verify-token", {
+          state: { ledger_canister_id: ledgerID.toText() },
+        }
+        )
+      else {
+        const routeData = {
+          ...({ canister_id: ledgerID.toText() }),
+          ...tokenInfo,
+        };
+        navigate('/token-page', { state: { projectData: routeData } });
+      }
 
-  } catch (error) {
-    console.error('Error fetching sale params:', error);
-  }
+    } catch (error) {
+      console.error('Error fetching sale params:', error);
+    }
 
   }
 
@@ -48,7 +49,7 @@ const ProjectCard = ({ ledgerID, index }) => {
     const fetchProjectData = async () => {
       try {
         const ledgerActor = await createCustomActor(ledgerID);
-        console.log('ledgerActor',ledgerActor)
+        console.log('ledgerActor', ledgerActor)
         if (!ledgerActor) {
           console.error(`Unable to create ledger actor for ledgerID: ${ledgerID}`);
           return;
@@ -58,10 +59,10 @@ const ProjectCard = ({ ledgerID, index }) => {
           ledgerActor.icrc1_name(),
           ledgerActor.icrc1_symbol(),
           ledgerActor.icrc1_decimals(),
-          ledgerActor.icrc1_total_supply() ,
+          ledgerActor.icrc1_total_supply(),
         ]);
-        
-        console.log('total_supply',total_supply)
+
+        console.log('total_supply', total_supply)
         setTokenInfo((prev) => ({ ...prev, token_name, token_symbol, decimals, total_supply }));
       } catch (error) {
         console.error(`Error fetching project data for ledgerId: ${ledgerID}`, error);
@@ -108,10 +109,10 @@ const ProjectCard = ({ ledgerID, index }) => {
     <div onClick={handleExportNavigate}>
       <div
         key={index}
-        className="bg-[#FFFFFF1A]  text-white p-1 pb-4 rounded-xl flex flex-col w-[340px] md:w-[375px] mt-14 mx-0 sm:mx-2"
+        className="bg-[#FFFFFF1A] cursor-pointer text-white p-1 pb-4 rounded-xl flex flex-col w-[340px] md:w-[375px] mt-14 mx-0 sm:mx-2"
       >
         {/* Main UI */}
-        <div className="h-[250px] rounded-lg py-5 flex flex-col">
+        <div className="h-[240px] rounded-lg py-5 flex flex-col">
           <div className="relative">
             <img
               src={tokenInfo?.token_image || person1}
@@ -129,27 +130,27 @@ const ProjectCard = ({ ledgerID, index }) => {
           <div className="bg-[#FFFFFF66] h-[2px] w-[92%] mx-auto mt-5"></div>
         </div>
 
-{/* secondary UI */}
-<div className="mb-3 flex flex-wrap gap-4 justify-center">
-  <div className="flex flex-col items-center bg-gradient-to-r from-[#1d1e22] via-[#25282d] to-[#1d1e22] rounded-lg p-4 shadow-lg w-[45%]">
-    <span className="text-xs text-gray-300 tracking-wide">TOKEN SYMBOL</span>
-    <span className="text-lg font-bold text-gradient bg-gradient-to-r from-[#f09787] to-[#CACCF5] text-transparent bg-clip-text">
-      {tokenInfo?.token_symbol || 'N/A'}
-    </span>
-  </div>
-  <div className="flex flex-col items-center bg-gradient-to-r from-[#1d1e22] via-[#25282d] to-[#1d1e22] rounded-lg p-4 shadow-lg w-[45%]">
-    <span className="text-xs text-gray-300 tracking-wide">DECIMALS</span>
-    <span className="text-lg font-bold text-white">
-      {tokenInfo?.decimals || 'N/A'}
-    </span>
-  </div>
-  <div className="flex flex-col items-center bg-gradient-to-r from-[#1d1e22] via-[#25282d] to-[#1d1e22] rounded-lg p-4 shadow-lg w-[90%]">
-    <span className="text-xs text-gray-300 tracking-wide">TOTAL SUPPLY</span>
-    <span className="text-lg font-bold text-white">
-      {Number(tokenInfo?.total_supply) || 'N/A'}
-    </span>
-  </div>
-</div>
+        {/* secondary UI */}
+        <div className="mb-3 flex flex-wrap gap-4 justify-center">
+          <div className="flex flex-col items-center bg-gradient-to-r from-[#1d1e22] via-[#25282d] to-[#1d1e22] rounded-lg p-4 shadow-lg w-[45%]">
+            <span className="text-xs text-gray-300 tracking-wide">TOKEN SYMBOL</span>
+            <span className="text-lg font-bold text-gradient bg-gradient-to-r from-[#f09787] to-[#CACCF5] text-transparent bg-clip-text">
+              {tokenInfo?.token_symbol || 'N/A'}
+            </span>
+          </div>
+          <div className="flex flex-col items-center bg-gradient-to-r from-[#1d1e22] via-[#25282d] to-[#1d1e22] rounded-lg p-4 shadow-lg w-[45%]">
+            <span className="text-xs text-gray-300 tracking-wide">DECIMALS</span>
+            <span className="text-lg font-bold text-white">
+              {tokenInfo?.decimals || 'N/A'}
+            </span>
+          </div>
+          <div className="flex flex-col items-center bg-gradient-to-r from-[#1d1e22] via-[#25282d] to-[#1d1e22] rounded-lg p-4 shadow-lg w-[90%]">
+            <span className="text-xs text-gray-300 tracking-wide">TOTAL SUPPLY</span>
+            <span className="text-lg font-bold text-white">
+              {Number(tokenInfo?.total_supply) || 'N/A'}
+            </span>
+          </div>
+        </div>
 
 
       </div>

@@ -38,20 +38,18 @@ export const UpdateTokenValidationSchema = yup.object().shape({
       .typeError("End time must be a valid date")
       .required("End time is required")
       .min(new Date(), "end time must be in the future"),
-
+   
       links: yup
       .array()
       .of(
-        yup
-          .string()
-          .url("Each link must be a valid URL.") // Validate as a proper URL
-          .min(10, "Each link must be at least 10 characters long.") // Minimum length validation
-          .max(100, "Each link can be at most 100 characters long.") // Maximum length validation
-          .required("Each link must be filled in.") // Ensure no empty strings
+          yup
+              .string()
+              .url('Each link must be a valid URL.')
+              .min(10, 'Each link must be at least 10 characters long.')
+              .max(100, 'Each link can be at most 100 characters long.')
       )
-      .min(1, "You must provide at least 1 link.") // Require at least 1 link
-      .max(5, "You can provide up to 5 links.") // Limit to 5 links
-      .optional(), // Allow the entire field to be optional
+      .max(5, 'You can provide up to 5 links.') // Limit to 5 links
+      .optional(), // Make the array optional
     
   
       
