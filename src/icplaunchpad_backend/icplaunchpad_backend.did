@@ -101,7 +101,7 @@ type UserInputParams = record {
   initial_balances : vec record { Account; nat };
   token_name : text;
 };
-service : {
+service : () -> {
   buy_tokens : (BuyTransferParams) -> (Result);
   create_account : (UserAccount) -> (Result_1);
   create_sale : (principal, SaleInputParams) -> (Result_2);
