@@ -3,20 +3,7 @@ use std::time::Duration;
 use candid::Principal;
 use ic_cdk::api::time;
 use ic_cdk_timers::set_timer_interval;
-use crate::{perform_refund, send_tokens_to_contributor, STATE};
-
-// use std::{sync::Mutex, time::Duration};
-// lazy_static::lazy_static! {
-//     static ref HEARTBEAT_LOCK: Mutex<()> = Mutex::new(());
-// }
-
-// #[ic_cdk_macros::heartbeat]
-// async fn canister_heartbeat() {
-//     let _lock = HEARTBEAT_LOCK.lock().unwrap(); // Lock the heartbeat to prevent concurrency
-//     ic_cdk::println!("Starting heartbeat...");
-//     process_sales_end().await;
-//     ic_cdk::println!("Heartbeat finished.");
-// }
+use crate::{perform_refund, send_tokens_to_contributor, U64Wrapper, STATE};
 
 
 async fn process_sales_end() {
@@ -28,42 +15,38 @@ async fn process_sales_end() {
             .sale_details
             .iter()
             .filter_map(|(sale_id, sale_wrapper)| {
-                let sale_id_clone = sale_id.clone(); // Clone the sale_id here to avoid moving it
+                let sale_id_clone = sale_id.clone();
 
-                // Retrieve the funds_raised from the map using the sale_id (principal)
-                let funds_raised = STATE.with(|s| {
-                    s.borrow()
+                // Retrieve the funds_raised from the map
+                let funds_raised = STATE.with(|state| {
+                    state
+                        .borrow()
                         .funds_raised
                         .get(&Principal::from_text(&sale_id_clone).unwrap())
                         .map(|wrapper| wrapper.0)
                         .unwrap_or(0)
                 });
 
-                if sale_wrapper.sale_details.end_time_utc <= current_time || funds_raised >= sale_wrapper.sale_details.hardcap {
-                    let principal_result = Principal::from_text(sale_id_clone.clone());
+                let sale_details = &sale_wrapper.sale_details;
 
-                    let softcap_reached = match principal_result {
-                        Ok(principal) => s
-                            .borrow()
-                            .funds_raised
-                            .get(&principal)
-                            .map(|raised| raised.0 >= sale_wrapper.sale_details.softcap)
-                            .unwrap_or(false),
-                        Err(_) => false,
-                    };
+                // Determine if the sale has ended
+                if sale_details.end_time_utc <= current_time || funds_raised >= sale_details.hardcap {
+                    let softcap_reached = funds_raised >= sale_details.softcap;
 
                     ic_cdk::println!(
-                        "Checking Sale ID: {}, Softcap reached: {}, Hardcap reached: {}, End time passed: {}",
+                        "Sale ID: {}, Softcap reached: {}, Hardcap reached: {}, End time passed: {}",
                         sale_id,
                         softcap_reached,
-                        funds_raised >= sale_wrapper.sale_details.hardcap,
-                        sale_wrapper.sale_details.end_time_utc <= current_time
+                        funds_raised >= sale_details.hardcap,
+                        sale_details.end_time_utc <= current_time
                     );
 
                     Some((sale_id.clone(), softcap_reached))
                 } else {
-                    ic_cdk::println!("Sale ID: {} is still active. Funds raised: {}, End time: {}", 
-                                     sale_id, funds_raised, sale_wrapper.sale_details.end_time_utc);
+                    ic_cdk::println!(
+                        "Sale ID: {} is still active. Funds raised: {}, End time: {}",
+                        sale_id, funds_raised, sale_details.end_time_utc
+                    );
                     None
                 }
             })
@@ -82,6 +65,7 @@ async fn process_sales_end() {
     }
 }
 
+
 async fn process_sale(sale_id: String, softcap_reached: bool) {
     ic_cdk::println!("Starting processing for Sale ID: {}", sale_id);
 
@@ -93,56 +77,50 @@ async fn process_sale(sale_id: String, softcap_reached: bool) {
     });
 
     if let Some(details) = sale_details {
-        // Retrieve funds_raised from the map
-        let funds_raised = STATE.with(|s| {
-            s.borrow()
-                .funds_raised
-                .get(&Principal::from_text(&sale_id).unwrap())
-                .map(|wrapper| wrapper.0)
-                .unwrap_or(0)
-        });
-
         ic_cdk::println!(
-            "Sale ID: {}, Funds raised: {}, Hardcap: {}, End time: {}",
-            sale_id, funds_raised, details.hardcap, details.end_time_utc
+            "Processing Sale ID: {}, Softcap reached: {}, Hardcap: {}, End time: {}",
+            sale_id, softcap_reached, details.hardcap, details.end_time_utc
         );
 
-        // Check if hardcap or end time reached
-        if funds_raised >= details.hardcap || details.end_time_utc <= time() / 1_000_000_000 {
-            ic_cdk::println!(
-                "Sale ID: {} has ended. Processing sale with softcap_reached: {}",
-                sale_id, softcap_reached
-            );
+        if details.processed {
+            ic_cdk::println!("Sale ID: {} has already been processed.", sale_id);
+            return; // Skip already processed sales
+        }
 
-            if softcap_reached {
-                ic_cdk::println!("Distributing tokens for Sale ID: {}", sale_id);
-                if let Err(error) = distribute_tokens(&sale_id).await {
-                    ic_cdk::println!("Error distributing tokens for sale {}: {}", sale_id, error);
-                }
-            } else {
-                ic_cdk::println!("Refunding contributors for Sale ID: {}", sale_id);
-                if let Err(error) = process_refunds(&sale_id).await {
-                    ic_cdk::println!("Error processing refunds for sale {}: {}", sale_id, error);
-                }
-            }
-
-            // Mark sale as processed
-            STATE.with(|s| {
-                let mut state = s.borrow_mut();
-                if let Some(sale_wrapper) = state.sale_details.get(&sale_id) {
-                    let mut updated_sale = sale_wrapper.clone();
-                    updated_sale.sale_details.processed = true;
-                    state.sale_details.insert(sale_id.clone(), updated_sale); // Clone the sale_id here
-                    ic_cdk::println!("Sale ID: {} marked as processed.", sale_id);
-                } else {
-                    ic_cdk::println!(
-                        "Failed to mark sale as processed; sale ID not found: {}",
-                        sale_id
-                    );
-                }
-            });
+        // Process the sale based on whether the softcap was reached
+        let result = if softcap_reached {
+            ic_cdk::println!("Distributing tokens for Sale ID: {}", sale_id);
+            distribute_tokens(&sale_id).await
         } else {
-            ic_cdk::println!("Sale ID: {} has not ended yet.", sale_id);
+            ic_cdk::println!("Refunding contributors for Sale ID: {}", sale_id);
+            process_refunds(&sale_id).await
+        };
+
+        match result {
+            Ok(_) => {
+                // Mark the sale as processed
+                STATE.with(|s| {
+                    let mut state = s.borrow_mut();
+                    if let Some(wrapper) = state.sale_details.get(&sale_id) {
+                        let mut updated_sale = wrapper.clone();
+                        updated_sale.sale_details.processed = true;
+                        state.sale_details.insert(sale_id.clone(), updated_sale);
+                        ic_cdk::println!("Sale ID: {} marked as processed.", sale_id);
+                    } else {
+                        ic_cdk::println!(
+                            "Failed to mark sale as processed; Sale ID not found: {}",
+                            sale_id
+                        );
+                    }
+                });
+            }
+            Err(error) => {
+                ic_cdk::println!(
+                    "Error processing sale ID {}: {}. Retrying later.",
+                    sale_id, error
+                );
+                // Optionally: Schedule a retry for failed operations
+            }
         }
     } else {
         ic_cdk::println!("Sale details not found for Sale ID: {}", sale_id);
@@ -156,15 +134,10 @@ async fn process_refunds(sale_id: &str) -> Result<(), String> {
             .contributions
             .iter()
             .filter_map(|((sale, contributor), amount)| {
-                match Principal::from_text(sale_id) {
-                    Ok(sale_principal) => {
-                        if sale == sale_principal {
-                            Some((contributor.clone(), amount.0)) // Collect contributors and amounts
-                        } else {
-                            None
-                        }
-                    }
-                    Err(_) => None, // Handle invalid principal conversion gracefully
+                if sale == Principal::from_text(sale_id).unwrap() {
+                    Some((contributor.clone(), amount.0)) // Collect contributors and amounts
+                } else {
+                    None
                 }
             })
             .collect()
@@ -172,21 +145,51 @@ async fn process_refunds(sale_id: &str) -> Result<(), String> {
 
     ic_cdk::println!("Refunding contributors for Sale ID: {}", sale_id);
 
-    for (contributor, amount) in refunds {
-        let transfer_result = perform_refund(&contributor, amount).await;
-        if let Err(error) = transfer_result {
-            ic_cdk::println!(
-                "Failed to refund {} for sale {}: {}",
-                contributor,
-                sale_id,
-                error
-            );
+    let mut failed_refunds: Vec<(Principal, u64)> = Vec::new();
+
+    // Batch size for processing refunds
+    let batch_size = 10;
+    for chunk in refunds.chunks(batch_size) {
+        for (contributor, amount) in chunk {
+            let transfer_result = perform_refund(contributor, *amount).await;
+            if let Err(error) = transfer_result {
+                ic_cdk::println!(
+                    "Failed to refund {} ICP to contributor {} for sale {}: {}",
+                    amount,
+                    contributor,
+                    sale_id,
+                    error
+                );
+                failed_refunds.push((contributor.clone(), *amount)); // Record failed refund
+            }
         }
     }
 
-    // Explicitly return Ok(()) at the end
-    Ok(())
+    // Log and track failed refunds
+    if !failed_refunds.is_empty() {
+        ic_cdk::println!(
+            "Refunding process for Sale ID {} completed with {} failed refunds.",
+            sale_id,
+            failed_refunds.len()
+        );
+
+        STATE.with(|s| {
+            let mut state = s.borrow_mut();
+            for (contributor, amount) in failed_refunds {
+                state.contributions.insert(
+                    (Principal::from_text(sale_id).unwrap(), contributor),
+                    U64Wrapper(amount),
+                );
+            }
+        });
+
+        Err("Some refunds failed. They will be retried.".to_string())
+    } else {
+        ic_cdk::println!("All refunds processed successfully for Sale ID: {}", sale_id);
+        Ok(())
+    }
 }
+
 
 async fn distribute_tokens(sale_id: &str) -> Result<(), String> {
     let sale_id_string = sale_id.to_string();
@@ -210,13 +213,15 @@ async fn distribute_tokens(sale_id: &str) -> Result<(), String> {
                 .unwrap_or(0)
         });
 
-        let listing_rate = if funds_raised > 0 {
-            total_tokens as f64 / funds_raised as f64
-        } else {
-            0.0
-        };
+        if funds_raised == 0 {
+            ic_cdk::println!("No funds raised for Sale ID {}. No tokens to distribute.", sale_id);
+            return Ok(());
+        }
 
-        ic_cdk::println!("Listing rate for Sale ID {}: {}", sale_id, listing_rate);
+        // Correct listing rate calculation
+        let listing_rate = total_tokens as u128 / funds_raised as u128;
+
+        ic_cdk::println!("Listing rate for Sale ID {}: {} tokens per 1 ICP", sale_id, listing_rate);
 
         // Distribute tokens to contributors
         let contributions: Vec<(Principal, u64)> = STATE.with(|s| {
@@ -233,29 +238,59 @@ async fn distribute_tokens(sale_id: &str) -> Result<(), String> {
                 .collect()
         });
 
-        for (contributor, contribution) in contributions {
-            let tokens_to_send = (contribution as f64 * listing_rate).floor() as u64;
-            ic_cdk::println!(
-                "Distributing {} tokens to contributor {} for sale {}",
-                tokens_to_send,
-                contributor,
-                sale_id
-            );
-            let transfer_result = send_tokens_to_contributor(&contributor, tokens_to_send).await;
-            if let Err(error) = transfer_result {
+        let mut failed_transfers: Vec<(Principal, u64)> = Vec::new();
+
+        // Batch size for processing distributions
+        let batch_size = 10;
+        for chunk in contributions.chunks(batch_size) {
+            for (contributor, contribution) in chunk {
+                let tokens_to_send = ((*contribution as u128 * listing_rate) / 1) as u64; // Remove fixed-point scaling
+
                 ic_cdk::println!(
-                    "Failed to send {} tokens to {} for sale {}: {}",
-                    tokens_to_send,
-                    contributor,
-                    sale_id,
-                    error
+                    "Distributing {} tokens to contributor {} for sale {}",
+                    tokens_to_send, contributor, sale_id
                 );
+
+                let transfer_result = send_tokens_to_contributor(contributor, tokens_to_send).await;
+                if let Err(error) = transfer_result {
+                    ic_cdk::println!(
+                        "Failed to send {} tokens to {} for sale {}: {}",
+                        tokens_to_send, contributor, sale_id, error
+                    );
+                    failed_transfers.push((contributor.clone(), tokens_to_send));
+                }
             }
         }
-    }
 
-    Ok(())
+        // Log and track failed transfers
+        if !failed_transfers.is_empty() {
+            ic_cdk::println!(
+                "Token distribution for Sale ID {} completed with {} failed transfers.",
+                sale_id, failed_transfers.len()
+            );
+
+            STATE.with(|s| {
+                let mut state = s.borrow_mut();
+                for (contributor, tokens) in failed_transfers {
+                    state.contributions.insert(
+                        (Principal::from_text(&sale_id_string).unwrap(), contributor),
+                        U64Wrapper(tokens),
+                    );
+                }
+            });
+
+            Err("Some token distributions failed. They will be retried.".to_string())
+        } else {
+            ic_cdk::println!("All tokens distributed successfully for Sale ID: {}", sale_id);
+            Ok(())
+        }
+    } else {
+        ic_cdk::println!("Sale details not found for Sale ID: {}", sale_id);
+        Err("Sale details not found.".to_string())
+    }
 }
+
+
 
 
 #[ic_cdk::post_upgrade]

@@ -525,7 +525,7 @@ pub fn create_sale(
 ) -> Result<u64, String> {
     let caller = ic_cdk::api::caller(); // Get the caller's principal
 
-    // Populate the full SaleDetails struct
+    // Populate the full SaleDetails struct with auto-calculated fields
     let mut sale_details = SaleDetails {
         creator: caller, // Now we take the creator from user input
         start_time_utc: sale_input.start_time_utc,
@@ -544,6 +544,7 @@ pub fn create_sale(
         tokens_for_liquidity_after_fee: 0, // Will be calculated
         tokens_for_approval: 0,            // Will be calculated
         fee_for_approval: 0,               // Will be calculated
+        is_ended: false,                   // Add is_ended field and initialize as false
     };
 
     // Auto-calculate the necessary fields
@@ -575,6 +576,7 @@ pub fn create_sale(
     // Return the total tokens to approve (calculated automatically)
     Ok(sale_details.tokens_for_approval)
 }
+
 
 
 #[ic_cdk::update]
