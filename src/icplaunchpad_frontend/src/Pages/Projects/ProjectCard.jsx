@@ -70,12 +70,14 @@ const ProjectCard = ({ isUserToken, projectData, initial_Total_supply, saleType,
           actor.get_cover_image_id(ledgerPrincipal),
         ]);
 
-        if (tokenImgId?.length) {
-          const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId[tokenImgId.length - 1]}`;
+        console.log('tokenImgId, coverImgId',tokenImgId, coverImgId)
+
+        if (tokenImgId?.Ok) {
+          const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId?.Ok}`;
           setTokenInfo((prev) => ({ ...prev, token_image: imageUrl }));
         }
-        if (coverImgId?.length) {
-          const imageUrl = `${protocol}://${canisterId}.${domain}/f/${coverImgId[coverImgId.length - 1]}`;
+        if (coverImgId?.Ok) {
+          const imageUrl = `${protocol}://${canisterId}.${domain}/f/${coverImgId?.Ok}`;
           setTokenInfo((prev) => ({ ...prev, cover_image: imageUrl }));
         }
         setFetchingIMG(true);
@@ -101,12 +103,13 @@ const ProjectCard = ({ isUserToken, projectData, initial_Total_supply, saleType,
           actor.get_cover_image_id(ledgerPrincipal),
         ]);
 
-        if (tokenImgId?.length) {
-          const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId[tokenImgId.length - 1]}`;
+        if (tokenImgId?.Ok) {
+          const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId?.Ok}`;
           setTokenInfo((prev) => ({ ...prev, token_image: imageUrl }));
         }
-        if (coverImgId?.length) {
-          const imageUrl = `${protocol}://${canisterId}.${domain}/f/${coverImgId[coverImgId.length - 1]}`;
+        if (coverImgId?.Ok) {
+          console.log('hello',coverImgId)
+          const imageUrl = `${protocol}://${canisterId}.${domain}/f/${coverImgId?.Ok}`;
           setTokenInfo((prev) => ({ ...prev, cover_image: imageUrl }));
         }
         setFetchingIMG(true);
@@ -128,7 +131,7 @@ const ProjectCard = ({ isUserToken, projectData, initial_Total_supply, saleType,
       };
       console.log('routeData=>',routeData)
       const creator=routeData?.sale_details?.creator || routeData?.sale_Params?.creator;
-      navigate(isUserToken || creator == principal ? '/token-page' : '/project', { state: { projectData: routeData } });
+      navigate( isUserToken || creator == principal ? '/token-page' : '/project', { state: { projectData: routeData } });
     }
   };
 

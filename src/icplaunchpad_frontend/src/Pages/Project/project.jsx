@@ -217,8 +217,9 @@ console.log("ledger actor ", ledgerActor)
     }
   
   };
-
+  console.log('cover',projectData.cover_image)
   return (
+   
     <>
       <div className="flex flex-col  gap-5 max-w-[90%] mx-auto lg:flex-row">
         <div className={`bg-[#FFFFFF1A] rounded-lg  mt-24 pb-5`}>

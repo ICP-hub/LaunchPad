@@ -26,6 +26,7 @@ const ProjectLists = () => {
 
   const dispatch = useDispatch();
   const projectsData = useSelector((state) => state?.TokensInfo?.data || []);
+  console.log('projectsData',projectsData)
   const upcomingSales = useSelector((state) => state?.upcomingSales?.data || []);
   const successfulSales = useSelector((state) => state?.SuccessfulSales?.data || []);
   const { createCustomActor } = useAuths();
@@ -40,6 +41,7 @@ const ProjectLists = () => {
       try {
         const ledgerActor = await createCustomActor(ledger_canister_id);
         const tokenName = await ledgerActor.icrc1_name();
+        console.log('tokenName',tokenName)
         return tokenName;
       } catch (error) {
         console.error("Error fetching token name:", error);
@@ -164,15 +166,20 @@ const ProjectLists = () => {
           <div className="flex pr-2 gap-5 md:gap-2 md:mt-0 mt-4 w-full md:w-[30%] items-center justify-center relative">
             {/* Filter Dropdown */}
             <button
-              onClick={() => setShowFilterDropdown((prev) => !prev)}
+              onClick={() => setTimeout(() =>setShowFilterDropdown((prev) => !prev), 100)}
               className="bg-[#444444] ml-[-2%] p-2 rounded-lg text-white flex items-center w-full"
             >
               <TbFilterCheck />
               <span className="md:ml-2">Filter</span>
               <FaChevronDown className="ml-2" />
             </button>
-            {showFilterDropdown && (
-              <div className="absolute text-[15px] top-[110%] left-0  min-w-[100px]  bg-[#333333] font-posterama text-white rounded-lg p-1 z-10 shadow-lg">
+           
+                <div
+                className={`absolute text-[15px] top-[110%] left-0 min-w-[100px] bg-[#333333] font-posterama text-white rounded-lg p-1 z-10 shadow-lg transform transition-all duration-300 ${
+                  showFilterDropdown  ? "opacity-100 scale-100 translate-y-0"
+                    : "opacity-0 scale-95 -translate-y-4 pointer-events-none"
+                }`}
+              >
                 {SaleType.map((type, index) => (
                   <p
                     key={type}
@@ -190,19 +197,22 @@ const ProjectLists = () => {
                   </p>
                 ))}
               </div>
-            )}
+          
 
             {/* Sort Dropdown */}
             <button
-              onClick={() => setShowSortDropdown((prev) => !prev)}
+              onClick={() => setTimeout(() =>setShowSortDropdown((prev) => !prev), 100)}
               className="bg-[#444444] p-2 rounded-lg text-white flex items-center w-full"
             >
               <PiArrowsDownUpBold />
               <span className="ml-2">Sort</span>
               <FaChevronDown className="ml-2" />
             </button>
-            {showSortDropdown && (
-               <div className="absolute text-[15px] top-[110%] right-2 text-center min-w-[100px]  bg-[#333333] font-posterama text-white rounded-lg p-2 z-10 shadow-lg">
+        
+               <div className={`absolute text-[15px] top-[110%] right-2 text-center min-w-[100px]  bg-[#333333] font-posterama text-white rounded-lg p-2 z-10 shadow-lg transform transition-all duration-300 ${
+                  showSortDropdown  ? "opacity-100 scale-100 translate-y-0"
+                    : "opacity-0 scale-95 -translate-y-4 pointer-events-none"
+                }`}>
                 <p
                   className="cursor-pointer hover:text-[#ebe8e898] border-b-2 py-2"
                   onClick={() => handleSort("A to Z")}
@@ -216,7 +226,7 @@ const ProjectLists = () => {
                   Z to A
                 </p>
               </div>
-            )}
+          
           </div>
         </div>
       </div>

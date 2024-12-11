@@ -80,6 +80,7 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [validationError, setValidationError] = useState('');
+  const [isVisible, setIsVisible] = useState(false);
 
   const agent = useAgent()
   const accounts = useAccounts()
@@ -98,9 +99,14 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
     resolver: yupResolver(tokenSchema),
   });
 
+  useEffect(()=>{
+    setIsVisible(true)
+  },[modalIsOpen])
+
   // Close modal handler
   const closeModal = () => {
-    setIsOpen(false);
+    setIsVisible(false)
+    setTimeout(() => setIsOpen(false), 300); // Match transition duration
     reset();
   };
   console.log('BigInt(1 * 10 ** 18)',BigInt(1 * 10 ** 18))
@@ -253,6 +259,7 @@ useLayoutEffect(() => {
     document.body.classList.remove("overflow-hidden");
   };
 }, [modalIsOpen]);
+
   return (
     <div className="mx-[50px]">
       <Modal
@@ -260,10 +267,12 @@ useLayoutEffect(() => {
         onRequestClose={closeModal}
         contentLabel="Create Token Modal"
         className="fixed inset-0 flex items-center justify-center lg:mb-[60%] lgx:mb-[10%] bg-transparent"
-        overlayClassName="fixed inset-0 z-50 bg-black bg-opacity-60"
+        overlayClassName="fixed inset-0 z-50 bg-black bg-opacity-60 transition-opacity duration-300"
         ariaHideApp={false}
       >
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transform transition-all duration-300 ${
+            isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
+          }`}>
           <div className="bg-[#222222] p-6 rounded-2xl text-white m-4 w-[786px] relative">
             <div className="bg-[#FFFFFF4D] mx-[-24px] mt-[-25px] px-4 py-1 mb-4 rounded-2xl">
               <button

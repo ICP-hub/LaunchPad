@@ -47,8 +47,8 @@ const FundDetails = ({ sale, index }) => {
                     const tokenImgId = await actor.get_token_image_id(ledgerPrincipal);
                     console.log('Fetched token image ID:', tokenImgId);
 
-                    if (tokenImgId && tokenImgId.length > 0) {
-                        const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId[tokenImgId.length - 1]}`;
+                    if (tokenImgId) {
+                        const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId?.Ok}`;
                         console.log('Token Image URL:', imageUrl);
                         setTokenDetails((prev) => ({ ...prev, token_image: imageUrl }));
                     }

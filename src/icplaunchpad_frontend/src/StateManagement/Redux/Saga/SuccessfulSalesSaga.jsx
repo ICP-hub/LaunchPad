@@ -13,10 +13,10 @@ function* fetchSuccessfulSales() {
     const actor = yield select(selectActor);
     let SuccessfulSalesData = yield call([actor, actor.get_successful_sales]);
 
-    console.log("get_successful_sales in saga", SuccessfulSalesData);
+    console.log("get_successful_sales in saga", SuccessfulSalesData?.Ok);
     if (SuccessfulSalesData) {
       // Proceed with dispatching the success action
-      yield put(SuccessfulSalesHandlerSuccess(SuccessfulSalesData));
+      yield put(SuccessfulSalesHandlerSuccess(SuccessfulSalesData?.Ok));
     }else {
       throw new Error("Invalid SuccessfulSales data format");
     }

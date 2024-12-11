@@ -40,13 +40,17 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen, setRenderComponent, setTokenM
     const [termsAccepted, setTermsAccepted] = useState(false);
     const [tokenData, setTokenData] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isVisible, setIsVisible] = useState(false);
 
     const ledgerPrincipal = typeof(ledgerId) == 'string' ? Principal.fromText(ledgerId) : Principal.fromUint8Array(ledgerId) ;
     const [links, setLinks] = useState([{ url: '' }]);
 
+
     useEffect(() => {
         if (isAuthenticated && tokenModalIsOpen) {
+            setIsVisible(true)
             getTokenData();
+            
         }
     }, [isAuthenticated, tokenModalIsOpen]);
 
@@ -127,8 +131,9 @@ const UpdateToken = ({ ledgerId, tokenModalIsOpen, setRenderComponent, setTokenM
         }
     };
 
-    const closeModal = () => {
-        setTokenModalIsOpen(false);
+      const closeModal = () => {
+        setIsVisible(false);
+        setTimeout(() => setTokenModalIsOpen(false), 300); // Match duration with transition
     };
 
 const addLink = () => {
@@ -156,15 +161,20 @@ const updateLink = (index, value) => {
 
     return (
         <div className="absolute">
-            <Modal
+       <Modal
                 isOpen={tokenModalIsOpen}
                 onRequestClose={closeModal}
                 contentLabel="Update Token Modal"
-                className="fixed inset-0 flex items-center justify-center bg-transparent"
-                overlayClassName="fixed inset-0 z-50 bg-black bg-opacity-50"
+                className={`fixed inset-0 flex items-center justify-center bg-transparent`}
+                overlayClassName={`fixed inset-0 z-50 bg-black bg-opacity-50 transition-opacity duration-300 ${
+                    isVisible ? 'opacity-100' : 'opacity-0'
+                }`}
                 ariaHideApp={false}
             >
-                <div className="bg-[#222222]  p-6 rounded-2xl text-white max-h-[90vh] overflow-y-auto no-scrollbar w-[786px] relative">
+                <div
+                    className={`bg-[#222222] p-6 rounded-2xl text-white max-h-[90vh] overflow-y-auto no-scrollbar w-[786px] relative transform transition-all duration-300 ${
+                        isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+                    }`}>
                     <div className="bg-[#FFFFFF4D] px-4 py-1 mb-4 rounded-2xl relative">
                         <button
                             onClick={closeModal}
