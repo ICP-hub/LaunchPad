@@ -23,7 +23,7 @@ function* fetchUserHandler() {
         const userData = yield call([actor, actor.get_user_account], principal);
         console.log("UserData in saga:", userData);
         // Dispatch success action with the user data
-        yield put(userRegisteredHandlerSuccess(userData));
+        yield put(userRegisteredHandlerSuccess(userData?.Ok));
       } else {
         throw new Error("Principal string is invalid or undefined.");
       }

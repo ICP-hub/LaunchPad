@@ -165,8 +165,8 @@ const TokenPage = () => {
 
         // Fetch Token Image
         const tokenImgId = await actor.get_token_image_id(ledgerId);
-        if (Array.isArray(tokenImgId) && tokenImgId.length > 0) {
-          const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId.at(-1)}`;
+        if (tokenImgId?.Ok) {
+          const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId?.Ok}`;
           setTokenImg(imageUrl);
         } else {
           console.warn("Token image ID not found:", tokenImgId);
@@ -174,8 +174,8 @@ const TokenPage = () => {
 
         // Fetch Cover Image
         const coverImgId = await actor.get_cover_image_id(ledgerId);
-        if (Array.isArray(coverImgId) && coverImgId.length > 0) {
-          const imageUrl = `${protocol}://${canisterId}.${domain}/f/${coverImgId.at(-1)}`;
+        if (coverImgId?.Ok) {
+          const imageUrl = `${protocol}://${canisterId}.${domain}/f/${coverImgId?.Ok}`;
           setCoverImg(imageUrl);
         } else {
           console.warn("Cover image ID not found:", coverImgId);

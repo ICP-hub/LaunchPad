@@ -15,7 +15,7 @@ function* fetchUpcomingSales() {
     }
     let salesData = yield call([actor, actor.get_upcoming_sales]);
     if (salesData) {
-      yield put(upcomingSalesHandlerSuccess(salesData));
+      yield put(upcomingSalesHandlerSuccess(salesData?.Ok));
     } else {
       throw new Error("Invalid upcoming sales data format");
     }

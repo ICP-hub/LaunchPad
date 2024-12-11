@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Modal from "react-modal";
 import { TfiClose } from "react-icons/tfi";
 import { Principal } from "@dfinity/principal";
@@ -13,12 +13,22 @@ const ICP_TopUp2 = ({
 }) => {
   const [icpToBurn, setIcpToBurn] = useState(0);
   const [totalCycles, setTotalCycles] = useState(0);
-  const actor = useSelector((currState) => currState.actors.actor);
   const [loading, setLoading] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const actor = useSelector((currState) => currState.actors.actor);
 
   const ICP_TO_CYCLES_CONVERSION = 10.0314; // Conversion rate
 
-  const closeModal = () => setTopUpModal2(false);
+  useEffect(() => {
+    if (isTopUpModal2) {
+      setIsVisible(true);
+    }
+  }, [isTopUpModal2]);
+
+  const closeModal = () => {
+    setIsVisible(false);
+    setTimeout(() => setTopUpModal2(false), 300);
+  };
 
   const handleIncrementIcp = () => {
     setIcpToBurn((prev) => prev + 1);
@@ -38,7 +48,6 @@ const ICP_TopUp2 = ({
   };
 
   const handleDecrementCycles = () => {
-    console.log(totalCycles)
     if (totalCycles > 0.0001) {
       setIcpToBurn((prev) => prev - 1);
       setTotalCycles((prev) => prev - ICP_TO_CYCLES_CONVERSION);
@@ -46,8 +55,14 @@ const ICP_TopUp2 = ({
   };
 
   const handleBack = () => {
-    setTopUpModal2(false);
-    setTopUpModal1(true);
+    if(loading)
+      return;
+
+    setIsVisible(false);
+    setTimeout(() => {
+      setTopUpModal2(false);
+      setTopUpModal1(true);
+    }, 300);
   };
 
   const handleInputChange = (e, type) => {
@@ -93,20 +108,24 @@ const ICP_TopUp2 = ({
         onRequestClose={closeModal}
         contentLabel="ICP Top-Up Modal"
         className="fixed inset-0 flex items-center justify-center z-50"
-        overlayClassName="fixed inset-0 bg-black bg-opacity-50"
+        overlayClassName={`fixed inset-0 bg-black bg-opacity-50 transition-opacity duration-300 `}
       >
-        <div className="bg-[#222222] w-[95%] sm:w-[90%] max-w-[400px] p-6 rounded-xl font-posterama text-white relative">
+        <div
+          className={`bg-[#222222] w-[95%] sm:w-[90%] max-w-[400px] p-6 rounded-xl font-posterama text-white relative transform transition-all duration-300 ${
+            isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
+          }`}
+        >
           {/* Close Button */}
           <button
             onClick={closeModal}
-            className="absolute top-4 right-4  text-white text-2xl"
+            className="absolute top-4 right-4 text-white text-2xl"
             aria-label="Close Modal"
           >
             <TfiClose />
           </button>
 
           {/* Header */}
-          <h1 className=" text-lg font-semibold mt-6 mb-4 text-center">
+          <h1 className="text-lg font-semibold mt-6 mb-4 text-center">
             How many cycles do you want to send?
           </h1>
 
@@ -119,8 +138,8 @@ const ICP_TopUp2 = ({
           <div className="bg-[#333333] rounded-lg p-4 mb-6">
             {/* ICP to Burn Section */}
             <div className="flex items-center justify-between mb-4">
-              <span className="text-xs  sm:text-sm ">ICP to Burn</span>
-              <div className=" lg:ml-2 flex items-center space-x-1 md:space-x-2">
+              <span className="text-xs sm:text-sm">ICP to Burn</span>
+              <div className="lg:ml-2 flex items-center space-x-1 md:space-x-2">
                 <button
                   onClick={handleDecrementIcp}
                   className="w-8 h-8 bg-[#444444] text-white rounded-lg flex items-center justify-center hover:bg-[#555555]"
@@ -143,13 +162,13 @@ const ICP_TopUp2 = ({
                   +
                 </button>
               </div>
-              <span className="text-xs  md:text-sm">ICP</span>
+              <span className="text-xs md:text-sm">ICP</span>
             </div>
 
             {/* Total Cycles Section */}
             <div className="flex items-center justify-between">
-              <span className="text-xs  sm:text-sm">Total Cycles</span>
-              <div className="  mr-2 flex items-center space-x-1 md:space-x-2">
+              <span className="text-xs sm:text-sm">Total Cycles</span>
+              <div className="mr-2 flex items-center space-x-1 md:space-x-2">
                 <button
                   onClick={handleDecrementCycles}
                   className="w-8 h-8 bg-[#444444] text-white rounded-lg flex items-center justify-center hover:bg-[#555555]"
@@ -172,7 +191,7 @@ const ICP_TopUp2 = ({
                   +
                 </button>
               </div>
-              <span className=" text-xs  md:text-sm ">TC</span>
+              <span className="text-xs md:text-sm">TC</span>
             </div>
           </div>
 
@@ -196,7 +215,7 @@ const ICP_TopUp2 = ({
           {/* Back Button */}
           <button
             onClick={handleBack}
-            className="mt-4 w-full text-gray-400 text-sm hover:underline flex items-center justify-center "
+            className="mt-4 w-full text-gray-400 text-sm hover:underline flex items-center justify-center"
           >
             ← Back
           </button>

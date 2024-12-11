@@ -24,8 +24,8 @@ const ProjectLists = () => {
         if (actor) {
           const response = await actor.get_user_ledger_ids(userPrincipal);
 
-          if (response && response.length > 0) {
-            setTokensLedger(response);
+          if (response?.Ok && response?.Ok?.length > 0) {
+            setTokensLedger(response?.Ok);
           } else {
             console.log("No tokens data available or empty response.");
           }

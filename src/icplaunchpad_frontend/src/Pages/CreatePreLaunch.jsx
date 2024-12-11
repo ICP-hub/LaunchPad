@@ -31,13 +31,13 @@ const CreatePreLaunch = () => {
       return false;
     }
   
-    // if (Array.isArray(userTokenInfo)) {
-    //   const existingToken = userTokenInfo.find((token) => token?.canister_id === canisterId);
-    //   if (existingToken) {
-    //     setError('Token already exists.');
-    //     return false;
-    //   }
-    // }
+    if (Array.isArray(userTokenInfo)) {
+      const existingToken = userTokenInfo.find((token) => token?.canister_id === canisterId);
+      if (existingToken) {
+        setError('Token already exists.');
+        return false;
+      }
+    }
   
     return true;
   };
@@ -117,7 +117,7 @@ const CreatePreLaunch = () => {
                 />
                 <button
                   onClick={handleImportToken}
-                  className={`border-1 font-posterama bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5]
+                  className={`border-1 whitespace-nowrap px-2 md:px-0 text-sm sm:text-base font-posterama bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5]
                     text-black flex justify-center items-center w-[130px] md:w-[250px] h-[35px] md:h-[40px]
                     text-[16px] md:text-[18px] font-[600] rounded-3xl
                     ${

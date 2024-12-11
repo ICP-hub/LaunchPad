@@ -16,13 +16,13 @@ function* fetchUserTokensInfo() {
     const TokensData = yield call([actor, actor.get_user_tokens_info]);
 
     console.log("get_user_tokens_info in saga", TokensData);
-
-    if (TokensData && TokensData.length > 0) {
-      const lastTokenData = TokensData[TokensData.length - 1];
+    
+    if (TokensData && TokensData?.Ok?.length > 0) {
+      const lastTokenData = TokensData?.Ok?.[TokensData?.Ok?.length - 1];
       console.log("canisterid in saga", lastTokenData.canister_id);
 
       // Proceed with dispatching the success action
-      yield put(UserTokensInfoHandlerSuccess(TokensData));
+      yield put(UserTokensInfoHandlerSuccess(TokensData?.Ok));
       yield put(
         SetLedgerIdHandler({
           ledger_canister_id: lastTokenData.canister_id,

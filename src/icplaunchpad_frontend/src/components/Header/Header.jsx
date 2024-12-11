@@ -54,7 +54,7 @@ const Header = () => {
   const [profileImg, setProfileImg] = useState();
 
   const { isAuthenticated, principal, actor } = useAuths();
-  const userData = useSelector((state) => state?.userData?.data[0]);
+  const userData = useSelector((state) => state?.userData?.data);
   const navigate = useNavigate();
   const profile_ImgId = useSelector((state) => state?.ProfileImageID?.data)
   const { balance, fetchBalance } = useBalance()
@@ -95,7 +95,7 @@ const Header = () => {
   async function getProfileIMG() {
     if (profile_ImgId) {
       // console.log('profile_iMGId', profile_ImgId)
-      const imageUrl = `${protocol}://${canisterId}.${domain}/f/${profile_ImgId[0]}`;
+      const imageUrl = `${protocol}://${canisterId}.${domain}/f/${profile_ImgId.Ok}`;
       setProfileImg(imageUrl);
       // console.log("userImg-", imageUrl);
     }
@@ -105,16 +105,40 @@ const Header = () => {
     }
   }
 
-  // fetch token data by search field
-  const handleFetchToken = async () => {
-    // logic for fetching data
-    if (isAuthenticated && searchText.length > 0) {
-      const searchTextLower = searchText.toLowerCase();
+// Function to fetch token data based on the search field
+const handleFetchToken = async () => {
+  setTokenData(null); // Clear previous token data
+
+  try {
+    // Proceed only if the user is authenticated and searchText is non-empty
+    if (isAuthenticated && searchText.trim().length > 0) {
+      const searchTextLower = searchText.toLowerCase().trim();
+
+      // Fetch token data by name or symbol
       const data = await actor.search_by_token_name_or_symbol(searchTextLower);
-      console.log("token searched data=", data);
-      setTokenData(data);
+      console.log("Token searched data=", data);
+
+      if (data?.Ok) {
+        const ledgerPrincipal = Principal.fromText(data.Ok.canister_id);
+
+        // Fetch sale details for the token
+        const saleDetails = await actor.get_sale_params(ledgerPrincipal);
+        console.log("Token searched saleDetails=", saleDetails);
+
+        // Update token data if sale details are available
+        if (saleDetails?.Ok) {
+          setTokenData(data.Ok);
+        } else {
+          setTokenData(null);
+        }
+      } else {
+        setTokenData(null); // No data found
+      }
     }
+  } catch (err) {
+    console.error("Error fetching token data:", err);
   }
+};
 
   const handleSearchedToken = async (data) => {
     // console.log('searched data', data)
@@ -134,7 +158,7 @@ const Header = () => {
         const creator = saleParams?.Ok?.creator;
         navigate(creator == principal ? '/token-page' : '/project', { state: { projectData: { ...data, token_image: imageUrl } } });
       }
-      else{
+      else {
         const creator = saleParams?.Ok?.creator;
         navigate(creator == principal ? '/token-page' : '/project', { state: { projectData: { ...data } } });
       }
@@ -176,7 +200,7 @@ const Header = () => {
 
 
   const formattedIcpBalance =
-  balance !== undefined ? Number(balance).toFixed(5) : "Fetching...";
+    balance !== undefined ? Number(balance).toFixed(5) : "Fetching...";
 
   return (
     <div>
@@ -279,39 +303,38 @@ const Header = () => {
               }`}
             size={24}
           />
+          <div
+            className={`-mt-8 transition-all duration-300 transform ${isSearching
+                ? "opacity-100 scale-100"
+                : "opacity-0 scale-95 pointer-events-none"
+              }`}>
+            <div className="flex items-center absolute h-[35px]  lg:mr-3 rounded-lg w-[80vw] right-0 md:w-[155px] lg:w-[220px] xl:w-[380px]  bg-[#222222] sm4:right-[10px] lg:right-[-20px] dlg:right-[0px] md:py-[2px]">
+              <input
+                type="text"
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                placeholder="Search"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleFetchToken(); // Call the function when "Enter" is pressed
+                  }
+                }}
+                className="bg-transparent pl-3 w-full focus:outline-none text-white"
+              />
 
-          {isSearching && (
-            <div className=" -mt-8">
-              <div className="flex items-center absolute h-[35px]  lg:mr-3 rounded-lg w-[80vw] right-0 md:w-[155px] lg:w-[220px] xl:w-[380px]  bg-[#222222] sm4:right-[10px] lg:right-[-20px] dlg:right-[0px] md:py-[2px]">
-                <input
-                  type="text"
-                  value={searchText}
-                  onChange={(e) => setSearchText(e.target.value)}
-                  placeholder="Search..."
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      handleFetchToken(); // Call the function when "Enter" is pressed
-                    }
-                  }}
-                  className="bg-transparent pl-3 w-full focus:outline-none text-white"
-                />
-
-                <IoClose
-                  onClick={handleClearSearch}
-                  className="text-gray-500 mr-2 cursor-pointer"
-                  size={24}
-                />
-              </div>
-
-              {tokenData && tokenData.length > 0 && <div className=" py-1 flex items-center justify-center   absolute min-h-[25px] border-2 border-[#f3b3a7] lg:mr-3 rounded-lg w-[80vw] top-10 right-0 md:w-[155px] lg:w-[220px] xl:w-[380px]  bg-[#222222] sm4:right-[12px] lg:right-[-20px] dlg:right-[0px] md:py-[2px] ">
-                <ul className="">
-                  {tokenData?.map((data, index) => <li className="my-1 cursor-pointer" key={index} onClick={() => handleSearchedToken(data)}> {data.token_name} </li>)}
-                </ul>
-
-              </div>
-              }
+              <IoClose
+                onClick={handleClearSearch}
+                className="text-gray-500 mr-2 cursor-pointer"
+                size={24}
+              />
             </div>
-          )}
+
+            {tokenData && <div className=" py-1 flex items-center justify-center   absolute min-h-[25px] border-2 border-[#f3b3a7] lg:mr-3 rounded-lg w-[80vw] top-10 right-0 md:w-[155px] lg:w-[220px] xl:w-[380px]  bg-[#222222] sm4:right-[12px] lg:right-[-20px] dlg:right-[0px] md:py-[2px] ">
+              <h1 className="my-1 cursor-pointer" onClick={() => handleSearchedToken(tokenData)}> {tokenData.token_name} </h1>
+            </div>
+            }
+          </div>
+
         </div>
 
 
@@ -331,7 +354,7 @@ const Header = () => {
         {isAuthenticated && (
           <div className=" hidden md:inline-block relative  rounded-2xl bg-gradient-to-r  from-[#f09787] to-[#CACCF5] text-left p-[1.5px]">
             <button
-              onClick={ userData && toggleDropdown}
+              onClick={userData && toggleDropdown}
               className="flex items-center text-white rounded-full"
             >
               <div className="bg-black h-full w-full rounded-2xl flex items-center p-1 px-3">
@@ -349,54 +372,60 @@ const Header = () => {
             </button>
 
             {/* Dropdown menu */}
-            {isOpen && (
-              <div className="absolute right-0 mt-2 font-posterama w-48 bg-[#222222] rounded-md z-50">
-                <div className="py-2 px-2 text-center">
-                  <div className="hidden border-b  w-full md:block">
-                    <div className="block  py-2 text-[18px] ">  {balance !== undefined ? (
-                      <span className="flex items-center justify-center gap-2 "> <img src={icp} alt="" className="h-6" />${balance} ICP</span>
+
+            <div
+              className={`absolute right-0 mt-2 font-posterama w-48 bg-[#222222] rounded-md z-50 transform transition-all duration-300 ease-in-out ${isOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-4 pointer-events-none'
+                }`}
+            >
+              <div className="py-2 px-2 text-center">
+                <div className="hidden border-b w-full md:block">
+                  <div className="block py-2 text-[18px]">
+                    {balance !== undefined ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <img src={icp} alt="" className="h-6" />${balance} ICP
+                      </span>
                     ) : (
                       "Fetching your balance..."
-                    )}</div>
+                    )}
                   </div>
-                  <div className="hidden border-b md:block">
-                    <button
-                      onClick={openProfileModal}
-                      className="block hover:text-[#ebe8e898] px-4 py-2 w-full text-[18px] "
-                    >
-                      Account
-                    </button>
-                    <ProfileCard
-                      formattedIcpBalance={formattedIcpBalance}
-                      profileModalIsOpen={profileModalIsOpen}
-                      setProfileModalIsOpen={setProfileModalIsOpen}
-                    />
-                  </div>
-
-                  <Link
-                    to="/profile"
-                    onClick={() => handleSectionClick("profile")}
-                    className="block hover:text-[#ebe8e898] px-4 py-2  text-[18px] border-b "
+                </div>
+                <div className="hidden border-b md:block">
+                  <button
+                    onClick={openProfileModal}
+                    className="block hover:text-[#ebe8e898] px-4 py-2 w-full text-[18px]"
                   >
-                    Profile
-                  </Link>
+                    Account
+                  </button>
+                  <ProfileCard
+                    formattedIcpBalance={formattedIcpBalance}
+                    profileModalIsOpen={profileModalIsOpen}
+                    setProfileModalIsOpen={setProfileModalIsOpen}
+                  />
+                </div>
 
-                  <div className="hidden md:block">
-                    <button
-                      onClick={openUserModal}
-                      className="block hover:text-[#ebe8e898] px-4 w-full py-2 text-[18px] "
-                    >
-                      Update User
-                    </button>
-                    <UpdateUser
-                      userModalIsOpen={userUpdateIsOpen}
-                      setUserModalIsOpen={setUserUpdateIsOpen}
-                    />
-                  </div>
+                <Link
+                  to="/profile"
+                  onClick={() => handleSectionClick("profile")}
+                  className="block hover:text-[#ebe8e898] px-4 py-2 text-[18px] border-b"
+                >
+                  Profile
+                </Link>
 
+                <div className="hidden md:block">
+                  <button
+                    onClick={openUserModal}
+                    className="block hover:text-[#ebe8e898] px-4 w-full py-2 text-[18px]"
+                  >
+                    Update User
+                  </button>
+                  <UpdateUser
+                    userModalIsOpen={userUpdateIsOpen}
+                    setUserModalIsOpen={setUserUpdateIsOpen}
+                  />
                 </div>
               </div>
-            )}
+            </div>
+
           </div>
         )}
       </nav>

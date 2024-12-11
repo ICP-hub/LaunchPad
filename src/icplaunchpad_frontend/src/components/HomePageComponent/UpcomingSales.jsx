@@ -29,7 +29,7 @@ const UpcomingSales = React.forwardRef((props, ref) => {
         {salesData.length > 0 && (
           <button
             onClick={handleViewMoreClick}
-            className="text-white hidden xxs1:block font-posterama underline text-[15px] xxs1:text-xl"
+            className="text-white hidden sm:block font-posterama underline text-[15px] xxs1:text-xl"
           >
             View More
           </button>
@@ -56,14 +56,14 @@ const UpcomingSales = React.forwardRef((props, ref) => {
               <NoDataFound message="Data Not Found..." message2="No upcoming sales are scheduled for this project yet." message3="Stay tuned for exciting opportunities to participate in future sales."/>
               </div>
           )}
-          {salesData.length > 3 && (
+       
             <button
               onClick={handleViewMoreClick}
-              className="text-white mt-4 xxs1:hidden font-posterama underline text-[20px] xxs1:text-xl"
+              className="text-white mt-4 sm:hidden font-posterama underline text-[20px] xxs1:text-xl"
             >
               LOAD MORE
             </button>
-          )}
+        
         </div>
      
     </div>

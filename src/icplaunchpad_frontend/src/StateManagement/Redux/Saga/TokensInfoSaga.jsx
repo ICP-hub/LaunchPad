@@ -18,11 +18,11 @@ function* fetchTokensInfo() {
 
     console.log("Fetched TokensData:", TokensData);
 
-    if (Array.isArray(TokensData) && TokensData.length > 0) {
-      const lastTokenData = TokensData[TokensData.length - 1];
+    if (Array.isArray(TokensData?.Ok) && TokensData?.Ok?.length > 0) {
+      const lastTokenData = TokensData?.Ok[TokensData?.Ok?.length - 1];
       console.log("canisterid in saga", lastTokenData.canister_id);
     
-      yield put(TokensInfoHandlerSuccess(TokensData));
+      yield put(TokensInfoHandlerSuccess(TokensData?.Ok));
     } else {
       console.warn("Empty or invalid TokensData received");
       yield put(TokensInfoHandlerSuccess([])); // Handle empty data as a valid state

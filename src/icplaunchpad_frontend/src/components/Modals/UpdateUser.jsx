@@ -16,6 +16,7 @@ import { userRegisteredHandlerRequest } from '../../StateManagement/Redux/Reduce
 import { ProfileImageIDHandlerRequest } from '../../StateManagement/Redux/Reducers/ProfileImageID';
 import { tagsOptions } from '../../utils/tagsOptions';
 import compressImage from '../../utils/CompressedImage';
+
 const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const actor = useSelector((currState) => currState.actors.actor);
   const isAuthenticated = useSelector(
@@ -25,6 +26,7 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const dispatch = useDispatch();
   const userData = useSelector((state) => state.userData.data);
 
+
   const [validationError, setValidationError] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -33,26 +35,33 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const [profileImagePreview, setProfileImagePreview] = useState(null);
   const [profilePictureData, setProfilePictureData] = useState(null);
   const [links, setLinks] = useState([{ url: '' }]);
+  const [isVisible, setIsVisible] = useState(false);
 
   // const [tagsOptions] = useState(tagsOptions);
 
-  const userPrincipal = Principal.fromText(principal);
+  const userPrincipal = principal && Principal.fromText(principal);
 
   const { register, unregister, handleSubmit, formState: { errors }, reset, control, setValue, clearErrors, setError } = useForm({
     resolver: yupResolver(updatevalidationSchema),
   });
 
   useEffect(() => {
-    if (userData && userData.length > 0) {
-      const user = userData[0];
-      const selectedTags = user.tag?.map(tag => ({ value: tag, label: tag })) || [];
+    if (userModalIsOpen) {
+      setIsVisible(true);
+    }
+  }, [userModalIsOpen]);
+
+  useEffect(() => {
+    if (userData) {
+     
+      const selectedTags = userData.tag?.map(tag => ({ value: tag, label: tag })) || [];
       setTagSelectedOptions(selectedTags);
 
-      const linksArray = user?.links?.map(link => ({ url: link })) || [{ url: '' }];
+      const linksArray = userData?.links?.map(link => ({ url: link })) || [{ url: '' }];
       setLinks(linksArray);
 
-      if (user.profile_picture && user.profile_picture.length > 0) {
-        convertFileToBase64(user.profile_picture[0])
+      if (userData.profile_picture && userData.profile_picture.length > 0) {
+        convertFileToBase64(userData.profile_picture[0])
           .then((base64Image) => setProfileImagePreview(base64Image))
           .catch((error) => console.error("Error converting image to Base64:", error));
       } else {
@@ -60,8 +69,8 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
       }
 
       reset({
-        name: user?.name || '',
-        username: user?.username || '',
+        name: userData?.name || '',
+        username: userData?.username || '',
         profile_picture: null,
         links: linksArray.map(link => link.url),
         tags: selectedTags.map(tag => tag.value),
@@ -128,7 +137,10 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
     }
   };
 
-  const closeModal = () => setUserModalIsOpen(false);
+  const closeModal = () =>
+   { setIsVisible(false);
+    setTimeout(() => setUserModalIsOpen(false), 300); // Match transition duration
+   }
 
   const addLink = () => setLinks(prev => [...prev, { url: '' }]);
 
@@ -155,10 +167,12 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
         onRequestClose={closeModal}
         contentLabel="Update User Modal"
         className="fixed inset-0 flex items-center justify-center bg-transparent"
-        overlayClassName="fixed inset-0 z-50 bg-black bg-opacity-50"
+        overlayClassName="fixed inset-0 z-50 bg-black bg-opacity-50 transition-opacity duration-300"
         ariaHideApp={false}
       >
-        <div className="bg-[#222222] p-6 rounded-2xl text-white max-h-[90vh] overflow-y-auto no-scrollbar w-[786px] relative">
+        <div className={`bg-[#222222] p-6 rounded-2xl text-white max-h-[90vh] overflow-y-auto no-scrollbar w-[786px] relative transform transition-all duration-300 ${
+            isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
+          }`}>
           <div className="bg-[#FFFFFF4D] px-4 py-1 mb-4 rounded-2xl relative">
             <button
               onClick={closeModal}
