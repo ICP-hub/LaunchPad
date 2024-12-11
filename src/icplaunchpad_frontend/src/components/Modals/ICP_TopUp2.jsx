@@ -55,6 +55,9 @@ const ICP_TopUp2 = ({
   };
 
   const handleBack = () => {
+    if(loading)
+      return;
+
     setIsVisible(false);
     setTimeout(() => {
       setTopUpModal2(false);

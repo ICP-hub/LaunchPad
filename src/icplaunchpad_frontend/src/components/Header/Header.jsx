@@ -374,7 +374,7 @@ const handleFetchToken = async () => {
             {/* Dropdown menu */}
 
             <div
-              className={`absolute right-0 mt-2 font-posterama w-48 bg-[#222222] rounded-md z-50 transform transition-all duration-300 ease-in-out ${isOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'
+              className={`absolute right-0 mt-2 font-posterama w-48 bg-[#222222] rounded-md z-50 transform transition-all duration-300 ease-in-out ${isOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-4 pointer-events-none'
                 }`}
             >
               <div className="py-2 px-2 text-center">
