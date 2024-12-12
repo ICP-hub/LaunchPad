@@ -21,7 +21,7 @@ const ProjectCard = ({ ledgerID, index }) => {
   const handleExportNavigate = async () => {
     console.log('hii', ledgerID)
     try {
-      const ledgerPrincipal = Principal.fromUint8Array(ledgerID);
+      // const ledgerPrincipal = Principal.fromUint8Array(ledgerID);
       console.log(ledgerID.toText())
       const response = await actor.get_sale_params(ledgerID);
       console.log(response)
@@ -86,13 +86,13 @@ const ProjectCard = ({ ledgerID, index }) => {
           actor.get_cover_image_id(ledgerID),
         ]);
 
-        if (tokenImgId?.length) {
-          const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId[tokenImgId.length - 1]}`;
+        if (tokenImgId?.Ok) {
+          const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId.Ok}`;
           setTokenInfo((prev) => ({ ...prev, token_image: imageUrl }));
         }
 
-        if (coverImgId?.length) {
-          const imageUrl = `${protocol}://${canisterId}.${domain}/f/${coverImgId[coverImgId.length - 1]}`;
+        if (coverImgId?.Ok) {
+          const imageUrl = `${protocol}://${canisterId}.${domain}/f/${coverImgId?.Ok}`;
           setTokenInfo((prev) => ({ ...prev, cover_image: imageUrl }));
         }
 

@@ -65,12 +65,12 @@ const CreatePreLaunch = () => {
         const ledgerPrincipal = Principal.fromText(importAddress);
         const response = await actor.import_token(ledgerPrincipal);
         console.log('Import response: ', response);
-        if(response){
+        if(response?.Ok){
         navigate('/verify-token', {
           state: { ledger_canister_id: importAddress },
         });
       }else{
-      setError('Failed to import token. Please try again later.');
+      setError('Token has already been imported');
       }
       }
     }

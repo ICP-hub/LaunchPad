@@ -72,7 +72,7 @@ const ICP_TopUp1 = ({
               value={topUpCansiter}
               onChange={(e) => setTopUpCansiter(e.target.value)}
               className="w-full border-b-2 bg-[#333333] text-white rounded-lg p-4 text-sm placeholder-gray-400 outline-none focus:ring-2 focus:ring-yellow-500 h-32 resize-none"
-              placeholder="Paste your canister IDs here..."
+              placeholder="Paste your canister ID here..."
             />
             {/* Error Message */}
             {error && (

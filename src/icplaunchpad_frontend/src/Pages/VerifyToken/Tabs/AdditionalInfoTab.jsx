@@ -1,5 +1,5 @@
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FaTrash } from "react-icons/fa";
 import CompressedImage from '../../../common/ImageCompressed/CompressedImage';
 import { getSocialLogo } from "../../../common/getSocialLogo";
@@ -30,6 +30,17 @@ const AdditionalInfoTab = ({
   //     }));
   //   }
   // };
+
+
+    useEffect(() => {
+    if (presaleDetails.logoURL) {
+      setFileName(presaleDetails.logoURL.name || "Uploaded Logo");
+    }
+    if (presaleDetails.coverImageURL) {
+      setCoverFileName(presaleDetails.coverImageURL.name || "Uploaded Cover");
+    }
+  }, [presaleDetails.logoURL, presaleDetails.coverImageURL]);
+
   const handleFileUploadClick = () => {
     fileInputRef.current.click();
   };
