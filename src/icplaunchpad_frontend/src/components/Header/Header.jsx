@@ -330,7 +330,7 @@ const handleFetchToken = async () => {
             </div>
 
             {tokenData && <div className=" py-1 flex items-center justify-center   absolute min-h-[25px] border-2 border-[#f3b3a7] lg:mr-3 rounded-lg w-[80vw] top-10 right-0 md:w-[155px] lg:w-[220px] xl:w-[380px]  bg-[#222222] sm4:right-[12px] lg:right-[-20px] dlg:right-[0px] md:py-[2px] ">
-              <h1 className="my-1 cursor-pointer" onClick={() => handleSearchedToken(tokenData)}> {tokenData.token_name} </h1>
+              <h1 className="my-1 cursor-pointer w-full h-full text-center" onClick={() => handleSearchedToken(tokenData)}> {tokenData.token_name} </h1>
             </div>
             }
           </div>

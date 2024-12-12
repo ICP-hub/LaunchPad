@@ -26,6 +26,8 @@ const ICP_TopUp2 = ({
   }, [isTopUpModal2]);
 
   const closeModal = () => {
+    // if(loading)
+    //   return;
     setIsVisible(false);
     setTimeout(() => setTopUpModal2(false), 300);
   };
