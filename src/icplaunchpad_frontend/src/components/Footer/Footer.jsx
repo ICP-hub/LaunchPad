@@ -8,8 +8,8 @@ import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { getSocialLogo } from '../../common/getSocialLogo';
 const Footer = () => {
-  const socialLinks = useSelector((state)=>state?.userData?.data[0]?.links)
-  // console.log('socialLinks',socialLinks)
+  const socialLinks = useSelector((state)=>state?.userData?.data?.links)
+  console.log('socialLinks',socialLinks)
   return (
     <div>
       <div className='bg-[#222222] mt-[10%] sm:mt-[6%] text-[13px] font-kumbhSans xxs1:text-[15px] py-4 px-[7%] lg:px-[9%]'>

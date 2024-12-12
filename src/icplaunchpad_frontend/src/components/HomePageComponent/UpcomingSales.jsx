@@ -11,7 +11,7 @@ const UpcomingSales = React.forwardRef((props, ref) => {
 
   // Handle navigation to the projects page
   const handleViewMoreClick = () => {
-    if (salesData.length > 0) {
+    if ( salesData && salesData.length > 0) {
       navigate("/projects", { state: { salesData: salesData[0], sale_Type: "Upcoming" } });
     }
   };
@@ -26,7 +26,7 @@ const UpcomingSales = React.forwardRef((props, ref) => {
         <h2 className="text-white font-bold font-posterama text-[24px] xxs1:text-3xl">
           UPCOMING SALES
         </h2>
-        {salesData.length > 0 && (
+        {salesData && salesData.length > 0 && (
           <button
             onClick={handleViewMoreClick}
             className="text-white hidden sm:block font-posterama underline text-[15px] xxs1:text-xl"
@@ -40,7 +40,7 @@ const UpcomingSales = React.forwardRef((props, ref) => {
       <div
         className={`flex lg:flex-row flex-col  flex-wrap items-center md:px-[8.5%] m-auto gap-12 justify-start `}
       >
-          {salesData.length > 0 ? (
+          {salesData && salesData.length > 0 ? (
             salesData.slice(0, 3).map((sale, index) => (
               <ProjectCard
                 key={index}
