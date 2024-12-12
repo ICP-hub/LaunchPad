@@ -19,7 +19,8 @@ function App() {
     (currState) => currState.internet.isAuthenticated
   );
   const principal = useSelector((currState) => currState.internet.principal);
-  const userData = useSelector((state) => state?.userData?.data[0]);
+  const userData = useSelector((state) => state?.userData?.data);
+  console.log('user',userData)
 //  console.log("is authentication", isAuthenticated)
 //   console.log("is actor", actor)
 //   console.log("is principal", principal)
