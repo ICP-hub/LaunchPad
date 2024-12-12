@@ -1,5 +1,9 @@
 #!/bin/bash
 
+set -a
+source .env
+set +a
+
 # Check if the controller identity exists, if not, create it
 if ! dfx identity list | grep -q "controller"; then
   dfx identity new controller

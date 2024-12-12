@@ -632,30 +632,37 @@ pub fn create_sale(
     // Clone sale_details before saving in the state
     let sale_details_clone = sale_details.clone();
 
-    // Save the sale details in the state
+    // Save the sale details and initialize funds_raised in the state
     mutate_state(|state| {
+        // Insert sale details
         if state
             .sale_details
             .insert(
-                ledger_canister_id.to_string(),
+                ledger_canister_id,
                 SaleDetailsWrapper {
                     sale_details: sale_details_clone,
                 },
             )
-            .is_none()
+            .is_some()
         {
-            Ok(())
-        } else {
-            Err(format!(
+            return Err(format!(
                 "Sale details already exist for ledger canister ID: {}",
                 ledger_canister_id
-            ))
+            ));
         }
+
+        // Initialize funds_raised for this sale
+        state
+            .funds_raised
+            .insert(ledger_canister_id, U64Wrapper(0));
+
+        Ok(())
     })?;
 
     // Return the total tokens to approve (calculated automatically)
     Ok(sale_details.tokens_for_approval)
 }
+
 
 
 
@@ -668,7 +675,7 @@ pub fn update_sale_params(
     let caller = ic_cdk::api::caller(); // Get the caller's principal
 
     mutate_state(|state| {
-        if let Some(wrapper) = state.sale_details.get(&ledger_canister_id.to_string()) {
+        if let Some(wrapper) = state.sale_details.get(&ledger_canister_id) {
             if wrapper.sale_details.creator != caller {
                 return Err("Unauthorized: Only the creator can update the sale details.".to_string());
             }
@@ -715,7 +722,7 @@ pub fn update_sale_params(
 
             // Reinsert the updated wrapper back into the stable map
             state.sale_details.insert(
-                ledger_canister_id.to_string(),
+                ledger_canister_id,
                 SaleDetailsWrapper { sale_details },
             );
 
