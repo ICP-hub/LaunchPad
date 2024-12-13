@@ -4,7 +4,7 @@ import CopyToClipboard from '../../../common/CopyToClipboard';
 
 const TokenInfoTab = ({ ledger_canister_id,actor }) => {
   const [tokenData, setTokenData] = useState(null);
-
+  console.log(ledger_canister_id)
   const fetchTokenData = async () => {
     try {
       if (actor) {

@@ -17,7 +17,10 @@ const PoolInfoTab = ({ presaleData, poolData }) => {
     async function fetchPresale() {
       try {
         if (!presaleData && poolData?.canister_id) { // Fetch only if presaleData is missing
-          const ledgerId = Principal.fromText(poolData.canister_id);
+          const ledgerId = typeof poolData?.canister_id === 'string'
+            ? Principal.fromText(poolData?.canister_id)
+            : Principal.fromUint8Array(poolData?.canister_id);
+
           const presaleResponse = await actor.get_sale_params(ledgerId);
           if (presaleResponse && presaleResponse.Ok) {
             setPresale(presaleResponse.Ok);
@@ -48,19 +51,19 @@ const PoolInfoTab = ({ presaleData, poolData }) => {
           <CopyToClipboard address={poolData?.canister_id} />
         </span>
       </div>
-       {/* Total Supply  */}
+      {/* Total Supply  */}
       <div className="border-t pt-4">
         <div className="flex justify-between border-b py-2">
           <span className="text-gray-400">Total Supply</span>
           <span className="text-white">{`${poolData?.total_supply || "N/A"} ${poolData?.token_symbol || ""}`}</span>
         </div>
-          {/* Fairlaunch  Tokens*/}
+        {/* Fairlaunch  Tokens*/}
         <div className="flex border-b justify-between py-2">
           <span className="text-gray-400">  Fairlaunch Tokens</span>
           {console.log('poolData', poolData)}
           <span className="text-white">{`${Number(presale?.tokens_for_fairlaunch) || 0} ${poolData?.token_symbol} `}</span>
         </div>
-         {/* SoftCap */}
+        {/* SoftCap */}
         <div className="flex border-b justify-between py-2">
           <span className="text-gray-400">SoftCap</span>
           <span className="text-white"> {`${Number(presale?.softcap) || 0} ICP`}</span>
@@ -70,12 +73,12 @@ const PoolInfoTab = ({ presaleData, poolData }) => {
           <span className="text-gray-400">Hardcap</span>
           <span className="text-white"> {`${Number(presale?.hardcap) || 0} ICP`}</span>
         </div>
-       {/* Start Time */}
+        {/* Start Time */}
         <div className="flex border-b justify-between py-2">
           <span className="text-gray-400">Start Time</span>
           <span className="text-white">{saleTime.start_time}</span>
         </div>
-         {/* End Time */}
+        {/* End Time */}
         <div className="flex border-b justify-between py-2">
           <span className="text-gray-400">End Time</span>
           <span className="text-white">{saleTime.end_time}</span>

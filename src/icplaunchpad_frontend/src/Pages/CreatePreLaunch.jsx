@@ -26,15 +26,13 @@ const CreatePreLaunch = () => {
   const userTokenInfo = useSelector((state) => state?.UserTokensInfo?.data);
 
   const validateCanisterId = (ledgerCanisterId,indexCanisterId ) => {
-    const LedgercanisterRegex = /^[a-z2-7]{5}(-[a-z2-7]{5}){3}-cai$/;
-    const IndexCanisterId=/^[a-z2-7]{5}(-[a-z2-7]{5}){3}-ic$/;
+    const canisterRegex = /^[a-z2-7]{5}(-[a-z2-7]{5}){3}-cai$/;
 
-
-    if (!LedgercanisterRegex.test(ledgerCanisterId)) {
+    if (!canisterRegex.test(ledgerCanisterId)) {
       setError('Invalid Ledger Canister ID.');
       return false;
     }
-    if (showIndexInput && !IndexCanisterId.test(indexCanisterId)) {
+    if (showIndexInput && !canisterRegex.test(indexCanisterId)) {
       setError('Invalid Index Canister ID.');
       return false;
     }
