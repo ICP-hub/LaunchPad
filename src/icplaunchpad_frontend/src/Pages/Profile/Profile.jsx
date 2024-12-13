@@ -172,7 +172,7 @@ const Profile = () => {
               </div>
 
               {/* Render the selected content */}
-              <div className="p-4 bg-[#1F1F1F] rounded-2xl">
+              <div className=" bg-[#1F1F1F] rounded-2xl">
                 {renderContent()}
               </div>
             </div>

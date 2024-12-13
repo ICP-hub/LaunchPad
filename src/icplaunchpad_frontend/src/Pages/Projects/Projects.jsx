@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { TbFilterCheck } from "react-icons/tb";
 import { PiArrowsDownUpBold } from "react-icons/pi";
 import { FaChevronDown } from "react-icons/fa";
@@ -16,17 +16,14 @@ const ProjectLists = () => {
   const location = useLocation();
   const { salesData, sale_Type } = location.state || {};
 
-  const [selectedTab, setSelectedTab] = useState("all");
   const [search, setSearch] = useState("");
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
   const [showSortDropdown, setShowSortDropdown] = useState(false);
-  const [tokensData, setTokensData] = useState([]);
   const [filteredTokensData, setFilteredTokensData] = useState([]);
   const [saleType, setSaleType] = useState(sale_Type || "Active");
 
   const dispatch = useDispatch();
   const projectsData = useSelector((state) => state?.TokensInfo?.data || []);
-  console.log('projectsData',projectsData)
   const upcomingSales = useSelector((state) => state?.upcomingSales?.data || []);
   const successfulSales = useSelector((state) => state?.SuccessfulSales?.data || []);
   const { createCustomActor } = useAuths();
@@ -40,9 +37,7 @@ const ProjectLists = () => {
     async (ledger_canister_id) => {
       try {
         const ledgerActor = await createCustomActor(ledger_canister_id);
-        const tokenName = await ledgerActor.icrc1_name();
-        console.log('tokenName',tokenName)
-        return tokenName;
+        return await ledgerActor.icrc1_name();
       } catch (error) {
         console.error("Error fetching token name:", error);
         return ""; // Fallback in case of error
@@ -51,9 +46,21 @@ const ProjectLists = () => {
     [createCustomActor]
   );
 
+  // Filter and set data based on sale type
+  const tokensData = useMemo(() => {
+    switch (saleType) {
+      case "Upcoming":
+        return upcomingSales;
+      case "Successful":
+        return successfulSales;
+      default:
+        return salesData ?? projectsData;
+    }
+  }, [saleType, salesData, projectsData, upcomingSales.length > 0, successfulSales.length >0]);
+
   useEffect(() => {
-    setTokensData(salesData || projectsData);
-  }, [salesData, projectsData]);
+    setFilteredTokensData(tokensData);
+  }, [tokensData]);
 
   // Debounced filter function
   const debouncedFilterData = useCallback(
@@ -92,23 +99,6 @@ const ProjectLists = () => {
     };
   }, [search, tokensData, debouncedFilterData]);
 
-  // Update tokens based on sale type
-  useEffect(() => {
-    switch (saleType) {
-      case "Upcoming":
-        setTokensData(upcomingSales);
-        break;
-      case "Active":
-        setTokensData(projectsData);
-        break;
-      case "Successful":
-        setTokensData(successfulSales);
-        break;
-      default:
-        setTokensData(projectsData);
-    }
-  }, [saleType, projectsData, upcomingSales, successfulSales]);
-
   // Handle sorting
   const handleSort = useCallback(
     async (order) => {
@@ -131,7 +121,7 @@ const ProjectLists = () => {
     [tokensData, getTokenName]
   );
 
-  const SaleType=["Upcoming", "Active", "Successful"]
+  const SaleType = ["Upcoming", "Active", "Successful"];
 
   return (
     <div className="upcoming-sales h-full md:mb-[5%] lg:mb-0 sm4:mb-3 py-[5%]">

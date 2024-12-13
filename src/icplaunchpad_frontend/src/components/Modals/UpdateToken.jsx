@@ -186,7 +186,7 @@ const updateLink = (index, value) => {
                     </div>
 
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                        <div className="flex flex-col xxs1:flex-row justify-between mb-[50px] xxs1:mb-8">
+                        <div className="flex flex-col xxs1:flex-row justify-between ">
                             <div className="w-full xxs1:w-1/2 xxs1:px-2 mb-4">
                                 <label className="block text-[19px] mb-1">Start Time</label>
                                 <input
@@ -211,7 +211,7 @@ const updateLink = (index, value) => {
                             </div>
                         </div>
 
-                        <div className="mb-6">
+                        <div className="mb-6 xxs1:px-2">
                             <label className="block text-[19px] mb-1">Website</label>
                             <input
                                 {...register('website')}
@@ -220,7 +220,7 @@ const updateLink = (index, value) => {
                             {errors.website && <p className="text-red-500">{errors.website.message}</p>}
                         </div>
 
-                        <div className="mb-6">
+                        <div className="mb-6 xxs1:px-2">
                             <label className="block text-[19px] mb-1">Video URL</label>
                             <input
                                 {...register('project_video')}
@@ -232,7 +232,7 @@ const updateLink = (index, value) => {
                         </div>
 
                         {/* Social Links */}
-                        <div className="mb-4">
+                        <div className="mb-4 xxs1:px-2">
                             <h2 className="block text-[19px] mb-1">Social Links</h2>
 
                             {links.map((item, index) => (
@@ -288,7 +288,7 @@ const updateLink = (index, value) => {
                             )}
                         </div>
 
-                        <div className="mb-6">
+                        <div className="mb-6 xxs1:px-2">
                             <label className="block text-[19px] mb-1">Description</label>
                             <textarea
                                 {...register('description')}
@@ -299,9 +299,9 @@ const updateLink = (index, value) => {
                             )}
                         </div>
 
-                        {validationError && <p className="text-red-500 mb-4">{validationError}</p>}
+                        {validationError && <p className="text-red-500 mb-4 xxs1:px-2">{validationError}</p>}
 
-                        <div className="flex items-start xxs1:items-center mt-4 mb-6">
+                        <div className="flex items-start xxs1:items-center mt-4 mb-6 xxs1:px-2">
                             <input
                                 type="checkbox"
                                 id="termsCheckbox"
