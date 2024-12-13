@@ -270,8 +270,9 @@ pub async fn perform_refund(
 }
 
 
-
 pub async fn send_tokens_to_contributor(
+    sale_canister_id: &Principal,
+    creator: &Principal,
     contributor: &Principal,
     tokens: u64,
 ) -> Result<(), String> {
@@ -280,45 +281,39 @@ pub async fn send_tokens_to_contributor(
         return Err("Token amount must be greater than zero.".to_string());
     }
 
-    // Retrieve the ledger canister ID from the environment variable
-    let ledger_canister_id = option_env!("CANISTER_ID_ICP_LEDGER_CANISTER")
-        .ok_or("Environment variable `CANISTER_ID_ICP_LEDGER_CANISTER` not set")?;
-
-    // Parse the ledger canister ID into a Principal
-    let ledger_principal = Principal::from_text(ledger_canister_id).map_err(|_| {
-        format!(
-            "Failed to parse `CANISTER_ID_ICP_LEDGER_CANISTER`: {}",
-            ledger_canister_id
-        )
-    })?;
-
-    // Create transfer arguments
+    // Construct transfer arguments
     let transfer_args = TransferFromArgs {
-        from: Account {
-            owner: ic_cdk::id(),
-            subaccount: None,
-        },
-        to: Account {
-            owner: contributor.clone(),
-            subaccount: None,
-        },
         amount: Nat::from(tokens),
+        to: Account {
+            owner: *contributor, // Recipient is the contributor
+            subaccount: None,
+        },
         fee: None,
         memo: None,
         created_at_time: None,
         spender_subaccount: None,
+        from: Account {
+            owner: *creator, // Sender is the creator
+            subaccount: None, // Use the sale canister ID as a subaccount
+        },
     };
 
-    // Call the ledger canister's `icrc1_transfer` method
-    let result: CallResult<(TransferFromResult,)> =
-        ic_cdk::call(ledger_principal, "icrc1_transfer", (transfer_args,)).await;
+    // Perform the `icrc2_transfer_from` call
+    let result: CallResult<(TransferFromResult,)> = ic_cdk::call(
+        *sale_canister_id, // Sale canister ID acts as the ledger canister
+        "icrc2_transfer_from",
+        (transfer_args,),
+    )
+    .await;
 
     // Handle the result
     match result {
         Ok((TransferFromResult::Ok(_),)) => {
             ic_cdk::println!(
-                "Successfully transferred {} tokens to contributor {}",
+                "Successfully transferred {} tokens from creator {} (sale {}) to contributor {}",
                 tokens,
+                creator,
+                sale_canister_id,
                 contributor
             );
             Ok(())
@@ -339,6 +334,8 @@ pub async fn send_tokens_to_contributor(
         }
     }
 }
+
+
 
 
 #[update]

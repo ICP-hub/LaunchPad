@@ -197,7 +197,6 @@ async fn process_refunds(sale_id: Principal) -> Result<(), String> {
 }
 
 
-
 async fn distribute_tokens(sale_id: &Principal) -> Result<(), String> {
     // Retrieve sale details from the state
     let sale_details = STATE.with(|s| {
@@ -224,12 +223,15 @@ async fn distribute_tokens(sale_id: &Principal) -> Result<(), String> {
             return Ok(());
         }
 
-        // Correct listing rate calculation
+        // Calculate listing rate
         let listing_rate = total_tokens as u128 / funds_raised as u128;
 
         ic_cdk::println!("Listing rate for Sale ID {}: {} tokens per 1 ICP", sale_id, listing_rate);
 
-        // Distribute tokens to contributors
+        // Retrieve creator's principal
+        let creator = details.creator;
+
+        // Retrieve contributors for the sale
         let contributions: Vec<(Principal, u64)> = STATE.with(|s| {
             s.borrow()
                 .contributions
@@ -250,14 +252,16 @@ async fn distribute_tokens(sale_id: &Principal) -> Result<(), String> {
         let batch_size = 10;
         for chunk in contributions.chunks(batch_size) {
             for (contributor, contribution) in chunk {
-                let tokens_to_send = ((*contribution as u128 * listing_rate) / 1) as u64; // Remove fixed-point scaling
+                let tokens_to_send = ((*contribution as u128 * listing_rate) / 1) as u64;
 
                 ic_cdk::println!(
                     "Distributing {} tokens to contributor {} for sale {}",
                     tokens_to_send, contributor, sale_id
                 );
 
-                let transfer_result = send_tokens_to_contributor(contributor, tokens_to_send).await;
+                let transfer_result =
+                    send_tokens_to_contributor(sale_id, &creator, contributor, tokens_to_send)
+                        .await;
                 if let Err(error) = transfer_result {
                     ic_cdk::println!(
                         "Failed to send {} tokens to {} for sale {}: {}",
@@ -268,7 +272,7 @@ async fn distribute_tokens(sale_id: &Principal) -> Result<(), String> {
             }
         }
 
-        // Log and track failed transfers
+        // Handle failed transfers
         if !failed_transfers.is_empty() {
             ic_cdk::println!(
                 "Token distribution for Sale ID {} completed with {} failed transfers.",
@@ -295,6 +299,8 @@ async fn distribute_tokens(sale_id: &Principal) -> Result<(), String> {
         Err("Sale details not found.".to_string())
     }
 }
+
+
 
 
 
