@@ -59,7 +59,6 @@ pub fn is_account_created() -> String {
     }
 }
 
-
 #[ic_cdk::query]
 pub fn get_tokens_info() -> Result<Vec<CanisterIndexInfo>, String> {
     let current_time_ns = ic_cdk::api::time(); // Current time in nanoseconds
@@ -70,8 +69,11 @@ pub fn get_tokens_info() -> Result<Vec<CanisterIndexInfo>, String> {
             .canister_ids
             .iter()
             .filter_map(|(canister_key, canister_wrapper)| {
+                // Clone canister_key to avoid moving it
+                let canister_principal = Principal::from_text(canister_key.clone()).ok()?;
+
                 // Check if sale details exist for this token
-                if let Some(sale_wrapper) = state.sale_details.get(&canister_key) {
+                if let Some(sale_wrapper) = state.sale_details.get(&canister_principal) {
                     let sale_details = &sale_wrapper.sale_details;
 
                     // Include tokens with ongoing/active sales
@@ -80,7 +82,7 @@ pub fn get_tokens_info() -> Result<Vec<CanisterIndexInfo>, String> {
                     {
                         let index_canister_id = state
                             .index_canister_ids
-                            .get(&canister_key)
+                            .get(&canister_principal.to_string())
                             .map(|index_wrapper| index_wrapper.index_canister_ids.to_string())
                             .unwrap_or_else(|| {
                                 ic_cdk::println!(
@@ -91,7 +93,7 @@ pub fn get_tokens_info() -> Result<Vec<CanisterIndexInfo>, String> {
                             });
 
                         return Some(CanisterIndexInfo {
-                            canister_id: canister_key.clone(),
+                            canister_id: canister_principal.to_string(),
                             index_canister_id,
                             token_name: canister_wrapper.token_name.clone(),
                             token_symbol: canister_wrapper.token_symbol.clone(),
@@ -111,6 +113,9 @@ pub fn get_tokens_info() -> Result<Vec<CanisterIndexInfo>, String> {
         Ok(tokens_info)
     }
 }
+
+
+
 
 
 // #[query]
@@ -319,7 +324,7 @@ pub fn get_sale_params(ledger_canister_id: Principal) -> Result<SaleDetails, Str
     let sale_details = read_state(|state| {
         state
             .sale_details
-            .get(&ledger_canister_id.to_string())
+            .get(&ledger_canister_id)
             .map(|wrapper| wrapper.sale_details.clone())
     })
     .ok_or_else(|| format!("Sale details not found for ledger_canister_id: {}", ledger_canister_id))?;
@@ -389,7 +394,7 @@ pub fn get_user_sale_params() -> Result<Vec<(CanisterIndexInfo, SaleDetails)>, S
         let sale_details = read_state(|state: &State| {
             state
                 .sale_details
-                .get(&canister_id_principal.to_string())
+                .get(&canister_id_principal)
                 .map(|wrapper| wrapper.sale_details.clone())
         });
 
@@ -432,23 +437,10 @@ pub fn get_active_sales() -> Result<Vec<SaleDetailsWithID>, String> {
     // Safely read state
     read_state(|state| {
         for (key, wrapper) in state.sale_details.iter() {
-            // Safely convert key to Principal and handle potential errors
-            let principal_key = match Principal::from_text(key.clone()) {
-                Ok(principal) => principal,
-                Err(err) => {
-                    ic_cdk::println!(
-                        "Invalid Principal for ledger_canister_id '{}': {}",
-                        key,
-                        err
-                    );
-                    continue; // Skip invalid entries
-                }
-            };
-
             // Fetch funds raised safely
             let funds_raised = state
                 .funds_raised
-                .get(&principal_key)
+                .get(&key) // Directly use `key` as it's already a Principal
                 .map(|wrapper| wrapper.0)
                 .unwrap_or(0);
 
@@ -460,13 +452,13 @@ pub fn get_active_sales() -> Result<Vec<SaleDetailsWithID>, String> {
                 // Validate and push the sale details
                 if let Some(sale_details) = validate_sale_details(&wrapper.sale_details) {
                     active_sales.push(SaleDetailsWithID {
-                        ledger_canister_id: key.clone(),
+                        ledger_canister_id: key.to_text(), // Convert Principal to text
                         sale_details,
                     });
                 } else {
                     ic_cdk::println!(
                         "Invalid sale details found for ledger_canister_id: {}",
-                        key
+                        key.to_text()
                     );
                 }
             }
@@ -491,9 +483,11 @@ pub fn get_upcoming_sales() -> Result<Vec<(SaleDetailsWithID, Nat)>, String> {
             .sale_details
             .iter()
             .filter_map(|(key, wrapper)| {
-                // Error handling: Validate the presence of required fields
+                // Convert `key` (Principal) to String for `canister_ids` access
+                let key_as_string = key.to_text();
+
                 if wrapper.sale_details.start_time_utc > current_time {
-                    let total_supply = match state.canister_ids.get(&key) {
+                    let total_supply = match state.canister_ids.get(&key_as_string) {
                         Some(info) => info.total_supply.clone(),
                         None => Nat::from(0u64), // Use 0 as default, explicitly typed as u64
                     };
@@ -505,7 +499,7 @@ pub fn get_upcoming_sales() -> Result<Vec<(SaleDetailsWithID, Nat)>, String> {
 
                     Some((
                         SaleDetailsWithID {
-                            ledger_canister_id: key.clone(),
+                            ledger_canister_id: key.to_string().clone(),
                             sale_details: wrapper.sale_details.clone(),
                         },
                         total_supply,
@@ -538,18 +532,8 @@ pub fn get_successful_sales() -> Result<Vec<(SaleDetailsWithID, Nat)>, String> {
     // Safely read state
     read_state(|state| {
         for (key, wrapper) in state.sale_details.iter() {
-            // Safely convert key to Principal and handle potential errors
-            let principal_key = match Principal::from_text(key.clone()) {
-                Ok(principal) => principal,
-                Err(err) => {
-                    ic_cdk::println!(
-                        "Invalid Principal for ledger_canister_id '{}': {}",
-                        key,
-                        err
-                    );
-                    continue; // Skip invalid entries
-                }
-            };
+            // `key` is already a `Principal`; no need for `Principal::from_text`
+            let principal_key = key;
 
             // Fetch funds raised safely
             let funds_raised = state
@@ -562,10 +546,13 @@ pub fn get_successful_sales() -> Result<Vec<(SaleDetailsWithID, Nat)>, String> {
             if wrapper.sale_details.end_time_utc < current_time
                 || funds_raised >= wrapper.sale_details.hardcap
             {
+                // Convert `Principal` to `String` to access `state.canister_ids`
+                let key_as_string = key.to_text();
+
                 // Fetch total supply safely
                 let total_supply = state
                     .canister_ids
-                    .get(&key)
+                    .get(&key_as_string)
                     .map(|info| info.total_supply.clone())
                     .unwrap_or_default();
 
@@ -573,7 +560,7 @@ pub fn get_successful_sales() -> Result<Vec<(SaleDetailsWithID, Nat)>, String> {
                 if let Some(sale_details) = validate_sale_details(&wrapper.sale_details) {
                     successful_sales.push((
                         SaleDetailsWithID {
-                            ledger_canister_id: key.clone(),
+                            ledger_canister_id: key.to_string(),
                             sale_details,
                         },
                         total_supply,
@@ -581,7 +568,7 @@ pub fn get_successful_sales() -> Result<Vec<(SaleDetailsWithID, Nat)>, String> {
                 } else {
                     ic_cdk::println!(
                         "Invalid sale details found for ledger_canister_id: {}",
-                        key
+                        key.to_text()
                     );
                 }
             }
@@ -595,6 +582,7 @@ pub fn get_successful_sales() -> Result<Vec<(SaleDetailsWithID, Nat)>, String> {
         Ok(successful_sales)
     }
 }
+
 
 #[ic_cdk::query]
 pub fn get_all_sales() -> Result<Vec<(SaleDetailsWithID, String)>, String> {
@@ -624,7 +612,7 @@ pub fn get_all_sales() -> Result<Vec<(SaleDetailsWithID, String)>, String> {
             if let Some(sale_details) = validate_sale_details(&wrapper.sale_details) {
                 all_sales.push((
                     SaleDetailsWithID {
-                        ledger_canister_id: key.clone(),
+                        ledger_canister_id: key.to_string().clone(),
                         sale_details,
                     },
                     sale_status.to_string(),
