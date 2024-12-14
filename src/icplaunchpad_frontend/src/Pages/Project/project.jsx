@@ -172,7 +172,7 @@ console.log("ledger actor ", ledgerActor)
       const response = await ledgerActor.icrc2_approve(icrc2_approve_args);
       console.log("Response from payment approve", response);
 
-      if (response.Ok) {
+      if (response && response.Ok) {
        const byer = {
          buyer_principal: Principal.fromText(principal),
          tokens: totalamount,
@@ -182,7 +182,7 @@ console.log("ledger actor ", ledgerActor)
         console.log("Final Order Response", finalOrderResponse);
         toast.success("Transaction successful!");
 
-        if (finalOrderResponse?.Ok) {
+        if ( finalOrderResponse && finalOrderResponse?.Ok) {
           toast.success("Token purchase successful!");
 
           const sellArgs = {
@@ -194,7 +194,7 @@ console.log("ledger actor ", ledgerActor)
           const sellResponse = await actor.sell_tokens(sellArgs);
           console.log("Sell Tokens Response:", sellResponse);
 
-          if (sellResponse?.Ok) {
+          if ( sellResponse && sellResponse?.Ok) {
             toast.success("Sell transaction successful!");
           } else {
             console.error("Sell transaction failed:", sellResponse);

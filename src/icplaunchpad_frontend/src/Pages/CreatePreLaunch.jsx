@@ -79,7 +79,7 @@ const CreatePreLaunch = () => {
 
           const response = await actor.import_token(ledgerPrincipal, indexPrincipal)
           console.log('Import response: ', response);
-          if (response?.Ok) {
+          if (!response?.Err) {
             navigate('/verify-token', {
               state: { ledger_canister_id: ledgerCanisterId },
             });

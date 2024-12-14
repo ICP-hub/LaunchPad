@@ -173,7 +173,7 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
             const response = await actor.create_token(tokenData);
             console.log("Token creation response:", response);
 
-            if (response.Ok) {
+            if (response && response.Ok) {
                 dispatch(TokensInfoHandlerRequest());
                 dispatch(UserTokensInfoHandlerRequest());
                 const { ledger_canister_id, index_canister_id } = response.Ok;
@@ -219,11 +219,11 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
             const approveResponse = await ledgerActor.icrc2_approve(icrc2ApproveArgs);
             console.log("ICRC2 approve response:", approveResponse);
 
-            if (approveResponse.Ok) {
+            if (approveResponse && approveResponse.Ok) {
                 const response = await actor.create_token(tokenData);
                 console.log("Token creation response:", response);
 
-                if (response.Ok) {
+                if (response && response.Ok) {
                     dispatch(TokensInfoHandlerRequest());
                     dispatch(UserTokensInfoHandlerRequest());
                     const { ledger_canister_id, index_canister_id } = response.Ok;
