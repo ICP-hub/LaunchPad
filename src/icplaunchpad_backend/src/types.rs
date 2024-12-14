@@ -224,7 +224,7 @@ pub struct IndexInitArgs {
     pub retrieve_blocks_from_ledger_interval_seconds: Option<u64>, // Add this field
 }
 
-#[derive(CandidType, Serialize, Deserialize, Debug)]
+#[derive(CandidType, Serialize, Deserialize, Debug, Clone)]
 pub struct CanisterIndexInfo {
     pub canister_id: String,
     pub index_canister_id: String,
@@ -323,10 +323,25 @@ pub struct CanisterIdWrapper {
 }
 
 #[derive(CandidType, Deserialize, Debug, Clone)]
+pub enum TokenInfo {
+    UserCreated {
+        canister_id: CanisterIdWrapper,
+        index_canister_id: IndexCanisterIdWrapper, 
+    },
+    Imported {
+        ledger_canister_id: Principal,
+        index_canister_id: Principal,
+        caller: Principal,
+    },
+}
+
+#[derive(CandidType, Deserialize, Debug, Clone)]
 pub struct ImportedCanisterIdWrapper {
     pub caller: Principal,
     pub ledger_canister_id: Principal,
+    pub index_canister_id: Principal, // Add this field
 }
+
 
 #[derive(CandidType, Deserialize, Debug, Clone)]
 pub struct IndexCanisterIdWrapper {
