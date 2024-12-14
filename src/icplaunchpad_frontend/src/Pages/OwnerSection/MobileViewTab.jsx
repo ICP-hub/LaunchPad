@@ -10,6 +10,7 @@ import "./tokenpage.css";
 import Tokenomic from "./Tokenomics/Tokenomics.jsx";
 
 const MobileViewTab = ({ actor, poolData, presaleData }) => {
+  console.log('poolData',poolData)
   const [activeTab, setActiveTab] = useState("About");
   const renderContent = () => {
     switch (activeTab) {

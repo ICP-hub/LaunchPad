@@ -107,6 +107,7 @@ const ProjectCard = ({ isUserToken, projectData, initial_Total_supply, saleType,
           const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId?.Ok}`;
           setTokenInfo((prev) => ({ ...prev, token_image: imageUrl }));
         }
+        
         if (coverImgId?.Ok) {
           console.log('hello',coverImgId)
           const imageUrl = `${protocol}://${canisterId}.${domain}/f/${coverImgId?.Ok}`;

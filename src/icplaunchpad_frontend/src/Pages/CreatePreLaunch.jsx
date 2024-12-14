@@ -14,7 +14,9 @@ const CreatePreLaunch = () => {
   const principal = useSelector((state) => state.internet.principal);
 
   const [modalIsOpen, setIsOpen] = useState(false);
-  const [importAddress, setImportAddress] = useState('');
+  const [ledgerCanisterId, setLedgerCanisterId] = useState('');
+  const [indexCanisterId, setIndexCanisterId] = useState('');
+  const [showIndexInput, setShowIndexInput] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState('');
 
@@ -23,73 +25,86 @@ const CreatePreLaunch = () => {
 
   const userTokenInfo = useSelector((state) => state?.UserTokensInfo?.data);
 
-  const validateCanisterId = (canisterId) => {
+  const validateCanisterId = (ledgerCanisterId,indexCanisterId ) => {
     const canisterRegex = /^[a-z2-7]{5}(-[a-z2-7]{5}){3}-cai$/;
-  
-    if (!canisterRegex.test(canisterId)) {
-      setError('Invalid Canister ID.');
+
+    if (!canisterRegex.test(ledgerCanisterId)) {
+      setError('Invalid Ledger Canister ID.');
       return false;
     }
-  
+    if (showIndexInput && !canisterRegex.test(indexCanisterId)) {
+      setError('Invalid Index Canister ID.');
+      return false;
+    }
+
     if (Array.isArray(userTokenInfo)) {
-      const existingToken = userTokenInfo.find((token) => token?.canister_id === canisterId);
+      const existingToken = userTokenInfo.find((token) => token?.canister_id === ledgerCanisterId);
       if (existingToken) {
         setError('Token already exists.');
         return false;
       }
     }
-  
+
     return true;
   };
 
-
   const handleImportToken = async () => {
-    setError(''); // Clear existing errors
-    setLoading(true); // Start loading
-    if (!importAddress) {
+    setError('');
+    setLoading(true);
+    if (!ledgerCanisterId) {
       setError('Please enter a Ledger Canister ID.');
-      setLoading(false); // Stop loading
+      setLoading(false);
       return;
     }
-  
-    const isValidCanister = validateCanisterId(importAddress);
+
+    if ( showIndexInput && !indexCanisterId) {
+      setError('Please enter a Index Canister ID.');
+      setLoading(false);
+      return;
+    }
+
+    const isValidCanister = validateCanisterId(ledgerCanisterId,indexCanisterId );
     if (!isValidCanister) {
-      setLoading(false); // Stop loading
+      setLoading(false);
       return;
     }
-  
+
     try {
-      if (importAddress){
-      const customActor = await createCustomActor(importAddress);
-      if (customActor) {
-        const ledgerPrincipal = Principal.fromText(importAddress);
-        const response = await actor.import_token(ledgerPrincipal);
-        console.log('Import response: ', response);
-        if(response?.Ok){
-        navigate('/verify-token', {
-          state: { ledger_canister_id: importAddress },
-        });
-      }else{
-      setError('Token has already been imported');
+      if (ledgerCanisterId) {
+        const customActor = await createCustomActor(ledgerCanisterId);
+        if (customActor) {
+          const ledgerPrincipal = Principal.fromText(ledgerCanisterId);
+          const response = await actor.import_token(ledgerPrincipal);
+          console.log('Import response: ', response);
+          if (response?.Ok) {
+            navigate('/verify-token', {
+              state: { ledger_canister_id: ledgerCanisterId },
+            });
+          } else {
+            setError('Token has already been imported');
+          }
+        }
       }
-      }
-    }
     } catch (err) {
       console.error('Error importing token:', err);
       setError('Failed to import token. Please try again later.');
     } finally {
-      setLoading(false); // Stop loading
+      setLoading(false);
     }
   };
-  
 
   const openModal = () => {
     setIsOpen(true);
   };
 
   const handleAddressChange = (e) => {
-    setImportAddress(e.target.value);
-    setError(''); // Clear error when typing
+    setLedgerCanisterId(e.target.value);
+    setError('');
+  };
+
+  const handleIndexCanisterChange = (e) => {
+    setIndexCanisterId(e.target.value);
+    setError('');
   };
 
   return (
@@ -111,34 +126,97 @@ const CreatePreLaunch = () => {
                 <input
                   type="text"
                   className="w-full p-2 bg-[#444444] text-white rounded-md border-none outline-none"
-                  placeholder="Enter Token Address"
+                  placeholder="Enter Ledger Canister ID"
                   onChange={handleAddressChange}
-                  value={importAddress}
+                  value={ledgerCanisterId}
                 />
                 <button
                   onClick={handleImportToken}
                   className={`border-1 whitespace-nowrap px-2 md:px-0 text-sm sm:text-base font-posterama bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5]
                     text-black flex justify-center items-center w-[130px] md:w-[250px] h-[35px] md:h-[40px]
                     text-[16px] md:text-[18px] font-[600] rounded-3xl
-                    ${
-                     loading
-                        ? "opacity-50 cursor-not-allowed"
-                        : "hover:opacity-80"
-                    }`}
+                    ${loading
+                      ? 'opacity-50 cursor-not-allowed'
+                      : 'hover:opacity-80'
+                    }
+                    ${showIndexInput ? 'hidden' : ''}
+                    `}
                 >
-                   {loading ? (
-          <ThreeDots
-            height="40"
-            width="40"
-            color="white"
-            ariaLabel="loading-indicator"
-          />
-        ) : (
-          'IMPORT TOKEN'
-          
-        )}
+                  {loading ? (
+                    <ThreeDots
+                      height="40"
+                      width="40"
+                      color="white"
+                      ariaLabel="loading-indicator"
+                    />
+                  ) : (
+                    'IMPORT TOKEN'
+                  )}
                 </button>
               </div>
+              
+              <div
+                className={` transform transition-all duration-500 ease-in-out ${showIndexInput ? ' mt-2 translate-y-0 opacity-100' : '-translate-y-5 opacity-0 pointer-events-none'
+                  }`}
+              >
+                <input
+                  type="text"
+                  className="w-full p-2 bg-[#444444] text-white rounded-md border-none outline-none"
+                  placeholder="Enter Index Canister ID"
+                  onChange={handleIndexCanisterChange}
+                  value={indexCanisterId}
+                />
+              </div>
+
+
+              <div
+                className={`flex justify-center transition-all duration-500 ease-in-out transform ${!showIndexInput ? 'opacity-0 -mt-12 pointer-events-none' : 'opacity-100 translate-y-0 my-4'
+                  }`}
+              >
+                <button
+                  onClick={handleImportToken}
+                  className={`border-1 whitespace-nowrap px-2 md:px-0 text-sm sm:text-base font-posterama bg-gradient-to-r from-[#F3B3A7] to-[#CACCF5]
+      text-black flex justify-center items-center w-[130px] md:w-[250px] h-[35px] md:h-[40px]
+      text-[16px] md:text-[18px] font-[600] rounded-3xl
+      ${loading ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-80'}
+    `}
+                >
+                  {loading ? (
+                    <ThreeDots height="40" width="40" color="white" ariaLabel="loading-indicator" />
+                  ) : (
+                    'IMPORT TOKEN'
+                  )}
+                </button>
+              </div>
+
+
+              <div className='flex items-center'>
+                <h1 className='text-sm'>Do you have an Index Canister ID?</h1>
+
+                <div className="flex items-start xxs1:items-center mt-0 mb-0">
+                <input
+                  type="checkbox"
+                  id="indexCanister"
+                  checked={showIndexInput}
+                  onChange={() => setShowIndexInput((prev) => !prev)}
+                  className="hidden peer"
+                />
+                <div
+                  className={`w-4 h-4 ml-2 border-2 flex items-center  justify-center rounded-sm mr-2 cursor-pointer ${showIndexInput ? "" : "border-white bg-transparent"
+                    }`}
+                >
+                  <label
+                    htmlFor="indexCanister"
+                    className="cursor-pointer w-full h-full flex items-center justify-center"
+                  >
+                    {showIndexInput && <span className="text-[#F3B3A7]">✓</span>}
+                  </label>
+                </div>
+              </div>
+                
+                
+              </div>
+
             </div>
 
             <div className="bg-[#F5F5F51A] text-white p-3 rounded-md mb-8">
@@ -154,7 +232,7 @@ const CreatePreLaunch = () => {
 
             <div className="flex justify-center items-center">
               <Link onClick={openModal}>
-                <AnimationButton text="CREATE TOKEN" isDisabled={importAddress} />
+                <AnimationButton text="CREATE TOKEN" isDisabled={ledgerCanisterId} />
               </Link>
             </div>
 
@@ -167,5 +245,6 @@ const CreatePreLaunch = () => {
     </div>
   );
 };
+
 
 export default CreatePreLaunch;

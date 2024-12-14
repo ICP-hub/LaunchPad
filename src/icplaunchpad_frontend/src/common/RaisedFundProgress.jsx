@@ -43,7 +43,10 @@ const RaisedFundProgress = ({ ledgerId, projectData, tokenInfo, comp }) => {
         async function fetchAndSetFunds() {
             try {
                 if (ledgerId && actor) {
-                    const principalId = Principal.fromText(ledgerId);
+                    const principalId = typeof ledgerId === 'string'
+                        ? Principal.fromText(ledgerId)
+                        : Principal.fromUint8Array(ledgerId);
+
                     const response = await actor.get_funds_raised(principalId);
                     setFundRaised(response?.Ok || 0); // Default to 0 if response is undefined
                 }

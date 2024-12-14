@@ -49,9 +49,10 @@ const Clients = () => {
     <div  className=" h-full   md:mb-[5%] lg:mb-0 sm4:mb-3 py-[5%]">
       <div className="flex justify-between items-center px-[4%] md:px-[9%] mb-10 mx-auto">
         <h2 className="text-white font-bold font-posterama text-[20px] xxs1:text-3xl">CLIENT SUCCESS STORIES</h2>
-        <button onClick={handleViewMoreClick} className="text-white font-posterama hidden sm:block underline text-[15px] xxs1:text-xl">
+        {salesData && salesData.length > 0 && (<button onClick={handleViewMoreClick} className="text-white font-posterama hidden sm:block underline text-[15px] xxs1:text-xl">
           View More
-        </button>
+        </button>)
+        }
       </div>
 
     <div className="flex lg:flex-row flex-col flex-wrap items-center md:px-[8.5%] m-auto gap-12 justify-start">
