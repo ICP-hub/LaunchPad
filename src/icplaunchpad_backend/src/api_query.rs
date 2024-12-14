@@ -519,7 +519,7 @@ pub fn get_upcoming_sales() -> Result<Vec<(SaleDetailsWithID, Nat)>, String> {
             .iter()
             .filter_map(|(key, wrapper)| {
                 // Convert `key` (Principal) to String for `canister_ids` access
-                let key_as_string = key.to_text();
+                let key_as_string = key.to_text(); 
 
                 if wrapper.sale_details.start_time_utc > current_time {
                     let total_supply = match state.canister_ids.get(&key_as_string) {

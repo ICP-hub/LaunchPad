@@ -164,6 +164,108 @@ async fn buy_transfer(params: BuyTransferParams) -> Result<Nat, String> {
     }
 }
 
+//This is the fee function for when user creates token with create_token and we accept ICP.
+#[ic_cdk::update]
+pub async fn token_fee_transfer(
+    buyer_principal: Principal,
+    amount: u64,
+    icp_ledger_canister_id: Principal,
+) -> Result<(), String> {
+    let backend_canister_id = ic_cdk::id();
+    //change backend canister id to a fee collector principal.
+
+    // Create transfer arguments
+    let transfer_args = TransferFromArgs {
+        amount: Nat::from(amount),
+        to: Account {
+            owner: backend_canister_id,
+            subaccount: None,
+        },
+        fee: None,
+        memo: None,
+        created_at_time: None,
+        spender_subaccount: None,
+        from: Account {
+            owner: buyer_principal,
+            subaccount: None,
+        },
+    };
+
+    // Make the inter-canister call to `icrc2_transfer_from`
+    let response: CallResult<(TransferFromResult,)> = ic_cdk::call(
+        icp_ledger_canister_id,
+        "icrc2_transfer_from",
+        (transfer_args,),
+    )
+    .await;
+
+    match response {
+        Ok((TransferFromResult::Ok(block_index),)) => {
+            ic_cdk::println!("Transfer successful. Block index: {}", block_index);
+            Ok(())
+        }
+        Ok((TransferFromResult::Err(error),)) => {
+            // If there's an error in the transfer, return the error message
+            Err(format!("Transfer failed: {:?}", error))
+        }
+        Err((code, message)) => {
+            // If the inter-canister call failed, return the error code and message
+            Err(format!("Failed to call ledger: {:?} - {}", code, message))
+        }
+    }
+}
+
+
+//this is helper function which sends the tokens to backend after sale ends for auto listing on kongswap.
+#[ic_cdk::update]
+pub async fn tokens_transfer_from(
+    buyer_principal: Principal,
+    amount: u64,
+    token_ledger_canister_id: Principal,
+) -> Result<(), String> {
+    let backend_canister_id = ic_cdk::id();
+    //backend will get the liquidity after fee tokens for kongswap dex
+
+    // Create transfer arguments
+    let transfer_args = TransferFromArgs {
+        amount: Nat::from(amount),
+        to: Account {
+            owner: backend_canister_id,
+            subaccount: None,
+        },
+        fee: None,
+        memo: None,
+        created_at_time: None,
+        spender_subaccount: None,
+        from: Account {
+            owner: buyer_principal,
+            subaccount: None,
+        },
+    };
+
+    // Make the inter-canister call to `icrc2_transfer_from`
+    let response: CallResult<(TransferFromResult,)> = ic_cdk::call(
+        token_ledger_canister_id,
+        "icrc2_transfer_from",
+        (transfer_args,),
+    )
+    .await;
+
+    match response {
+        Ok((TransferFromResult::Ok(block_index),)) => {
+            ic_cdk::println!("Transfer successful. Block index: {}", block_index);
+            Ok(())
+        }
+        Ok((TransferFromResult::Err(error),)) => {
+            // If there's an error in the transfer, return the error message
+            Err(format!("Transfer failed: {:?}", error))
+        }
+        Err((code, message)) => {
+            // If the inter-canister call failed, return the error code and message
+            Err(format!("Failed to call ledger: {:?} - {}", code, message))
+        }
+    }
+}
 
 #[query]
 fn get_contributions_for_sale(sale_id: Principal) -> HashMap<Principal, u64> {
