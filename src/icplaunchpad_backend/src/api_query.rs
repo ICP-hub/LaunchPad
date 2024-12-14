@@ -64,7 +64,8 @@ pub fn get_tokens_info() -> Result<Vec<CanisterIndexInfo>, String> {
     let current_time_ns = ic_cdk::api::time(); // Current time in nanoseconds
     let current_time = current_time_ns / 1_000_000_000; // Convert to seconds
 
-    let tokens_info: Vec<CanisterIndexInfo> = read_state(|state| {
+    // Fetch user-created tokens info (from `canister_ids` and `index_canister_ids`)
+    let user_tokens_info: Vec<CanisterIndexInfo> = read_state(|state| {
         state
             .canister_ids
             .iter()
@@ -95,13 +96,45 @@ pub fn get_tokens_info() -> Result<Vec<CanisterIndexInfo>, String> {
             .collect()
     });
 
+    // Fetch imported tokens info (from `imported_canister_ids`)
+    let imported_tokens_info: Vec<CanisterIndexInfo> = read_state(|state| {
+        state
+            .imported_canister_ids
+            .iter()
+            .filter_map(|(_, wrapper)| {
+                // Check if sale details exist for this imported token
+                if let Some(sale_wrapper) = state.sale_details.get(&wrapper.ledger_canister_id) {
+                    let sale_details = &sale_wrapper.sale_details;
+
+                    // Include tokens with ongoing/active sales
+                    if sale_details.start_time_utc <= current_time
+                        && sale_details.end_time_utc > current_time
+                    {
+                        return Some(CanisterIndexInfo {
+                            canister_id: wrapper.ledger_canister_id.to_string(), // Imported token's ledger canister ID
+                            index_canister_id: wrapper.index_canister_id.to_string(), // Imported token's index canister ID
+                            token_name: "Imported".to_string(),  // Placeholder name for imported tokens
+                            token_symbol: "IMP".to_string(),    // Placeholder symbol for imported tokens
+                            total_supply: Nat::from(0u64),      // No total supply information for imported tokens
+                        });
+                    }
+                }
+                None // Exclude tokens without sale details or inactive sales
+            })
+            .collect()
+    });
+
+    // Combine both user-created and imported tokens
+    let all_tokens = [user_tokens_info, imported_tokens_info].concat();
+
     // Return an error if no tokens with active sales are found
-    if tokens_info.is_empty() {
+    if all_tokens.is_empty() {
         Err("No tokens with active sales found.".to_string())
     } else {
-        Ok(tokens_info)
+        Ok(all_tokens)
     }
 }
+
 
 
 
@@ -118,41 +151,61 @@ pub fn get_tokens_info() -> Result<Vec<CanisterIndexInfo>, String> {
 pub fn get_user_tokens_info() -> Result<Vec<CanisterIndexInfo>, String> {
     let caller = ic_cdk::caller();
 
-    // Retrieve user tokens info
+    // Retrieve user tokens info for user-created tokens (from `canister_ids` and `index_canister_ids`)
     let user_tokens_info: Vec<CanisterIndexInfo> = read_state(|state| {
         state
             .canister_ids
             .iter()
-            .zip(state.index_canister_ids.iter())
-            .filter_map(
-                |((canister_key, canister_wrapper), (index_key, _index_wrapper))| {
-                    // Only include entries where the owner matches the caller
-                    if canister_wrapper.owner == caller {
-                        Some(CanisterIndexInfo {
-                            canister_id: canister_key.clone(),
-                            index_canister_id: index_key.clone(),
-                            token_name: canister_wrapper.token_name.clone(),
-                            token_symbol: canister_wrapper.token_symbol.clone(),
-                            total_supply: canister_wrapper.total_supply.clone(),
-                        })
-                    } else {
-                        None
-                    }
-                },
-            )
+            .zip(state.index_canister_ids.iter())  // Zip both maps to retrieve related data
+            .filter_map(|((canister_key, canister_wrapper), (index_key, _index_wrapper))| {
+                // Only include entries where the owner matches the caller
+                if canister_wrapper.owner == caller {
+                    Some(CanisterIndexInfo {
+                        canister_id: canister_key.clone(),
+                        index_canister_id: index_key.clone(), // Fetch index canister id from index_canister_ids map
+                        token_name: canister_wrapper.token_name.clone(),
+                        token_symbol: canister_wrapper.token_symbol.clone(),
+                        total_supply: canister_wrapper.total_supply.clone(),
+                    })
+                } else {
+                    None
+                }
+            })
             .collect()
     });
 
+    // Retrieve imported tokens info (from `imported_canister_ids`)
+    let imported_tokens_info: Vec<CanisterIndexInfo> = read_state(|state| {
+        state
+            .imported_canister_ids
+            .iter()
+            .filter_map(|(_, wrapper)| {
+                if wrapper.caller == caller {
+                    Some(CanisterIndexInfo {
+                        canister_id: wrapper.ledger_canister_id.to_string(),
+                        index_canister_id: wrapper.index_canister_id.to_string(),  // Directly fetch from imported map
+                        token_name: "Imported".to_string(),
+                        token_symbol: "IMP".to_string(),
+                        total_supply: Nat::from(0u64), // No total supply information for imported tokens
+                    })
+                } else {
+                    None
+                }
+            })
+            .collect()
+    });
+
+    // Combine both user-created and imported tokens
+    let all_tokens = [user_tokens_info, imported_tokens_info].concat();
+
     // Return an error if no tokens are found for the caller
-    if user_tokens_info.is_empty() {
-        Err(format!(
-            "No tokens found for the caller: {}",
-            caller
-        ))
+    if all_tokens.is_empty() {
+        Err(format!("No tokens found for the caller: {}", caller))
     } else {
-        Ok(user_tokens_info)
+        Ok(all_tokens)
     }
 }
+
 
 
 
