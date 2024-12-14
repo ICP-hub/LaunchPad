@@ -15,7 +15,7 @@ const CreatePreLaunch = () => {
 
   const [modalIsOpen, setIsOpen] = useState(false);
   const [ledgerCanisterId, setLedgerCanisterId] = useState('');
-  const [indexCanisterId, setIndexCanisterId] = useState('');
+  const [indexCanisterId, setIndexCanisterId] = useState();
   const [showIndexInput, setShowIndexInput] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState('');
@@ -70,11 +70,14 @@ const CreatePreLaunch = () => {
     }
 
     try {
-      if (ledgerCanisterId) {
+      if (ledgerCanisterId ) {
         const customActor = await createCustomActor(ledgerCanisterId);
         if (customActor) {
           const ledgerPrincipal = Principal.fromText(ledgerCanisterId);
-          const response = await actor.import_token(ledgerPrincipal);
+          const indexPrincipal = (showIndexInput && indexCanisterId) ? [Principal.fromText(indexCanisterId)] : [] ;
+          console.log('ledgerPrincipal',ledgerPrincipal, '  ','indexPrincipal',indexPrincipal) 
+
+          const response = await actor.import_token(ledgerPrincipal, indexPrincipal)
           console.log('Import response: ', response);
           if (response?.Ok) {
             navigate('/verify-token', {

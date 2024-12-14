@@ -31,7 +31,7 @@ const FundList = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="7" className="py-3 px-6 text-center">
+                <td colSpan="7" className="py-3 px-6 pt-10 text-center">
                   <NoDataFound
                     message="No Successful Sales Found..."
                     message2="No tokens have been successfully raised for this project yet."

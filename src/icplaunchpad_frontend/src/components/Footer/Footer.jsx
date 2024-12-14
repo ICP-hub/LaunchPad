@@ -5,11 +5,8 @@ import { PiTelegramLogo } from "react-icons/pi";
 import { AiOutlineFacebook } from "react-icons/ai";
 import infinity from "../../../assets/images/infinity.png";
 import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { getSocialLogo } from '../../common/getSocialLogo';
 const Footer = () => {
-  const socialLinks = useSelector((state)=>state?.userData?.data?.links)
-  console.log('socialLinks',socialLinks)
+
   return (
     <div>
       <div className='bg-[#222222] mt-[10%] sm:mt-[6%] text-[13px] font-kumbhSans xxs1:text-[15px] py-4 px-[7%] lg:px-[9%]'>
@@ -35,20 +32,12 @@ const Footer = () => {
           <div className=' flex flex-col ss2:flex-row md:flex-col lg:flex-row gap-[11px] ss2:gap-[15px] md:gap-[20px] lg:gap-[85px]'>
             <p className=' font-[400] text-[14px] ss2:text-[17px] xxs1:text-[20px] text-white'>FOLLOW US</p>
             <div className='flex md:flex-col lg:flex-row flex-wrap gap-[15px] md:gap-[20px] lg:gap-[85px]'>
-              {
-                (socialLinks && socialLinks.length > 0) ?
-                    socialLinks.map((link, index) => {
-                    // console.log('link=>', link)
-                    return <a href={link} target="blank" key={index}> {getSocialLogo(link)} </a>
-                  })
-                  :
-                  <>
-                    <FaInstagram size={33} />
-                    <FaXTwitter size={33} />
-                    <PiTelegramLogo size={33} />
-                    < AiOutlineFacebook size={33} />
-                  </>
-              }
+          
+                   <a href='#' target='blank'> <FaInstagram size={33} /> </a>
+                   <a href='#' target='blank'>  <FaXTwitter size={33} />   </a>
+                   <a href='#' target='blank'>  <PiTelegramLogo size={33} />  </a>
+                   <a href='#' target='blank'>  < AiOutlineFacebook size={33} />  </a>
+                 
             </div>
           </div>
           {/* <div className=' flex flex-col ss2:flex-row md:flex-col lg:flex-row gap-[10px] ss2:gap-[15px] md:gap-[20px] lg:gap-[95px]'>
