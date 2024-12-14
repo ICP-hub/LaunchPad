@@ -4,11 +4,14 @@ use candid::{encode_one, Nat, Principal};
 use ic_cdk::{api::{
     call::{call_with_payment128, CallResult, RejectionCode},
     management_canister::main::{CanisterInstallMode, WasmModule},
-}, caller, update};
+}, update};
 use ic_ledger_types::Subaccount;
 
 use crate::{
-    create_canister, deposit_cycles, index_install_code, install_code, mutate_state, params::{self}, read_state, Account, CanisterIdRecord, CanisterIdWrapper, CoverImageData, CoverImageIdWrapper, CreateCanisterArgument, CreateFileInput, ImageIdWrapper, ImportedCanisterIdWrapper, IndexArg, IndexCanisterIdWrapper, IndexInitArgs, IndexInstallCodeArgument, InitArgs, InstallCodeArgument, LedgerArg, ProfileImageData, ReturnResult, SaleDetails, SaleDetailsUpdate, SaleDetailsWrapper, SaleInputParams, TokenCreationResult, TokenImageData, U64Wrapper, UserAccount, UserAccountWrapper, UserInputParams
+    create_canister, deposit_cycles, index_install_code, install_code, mutate_state, params::{self}, read_state, Account, CanisterIdRecord, CanisterIdWrapper, 
+    CoverImageData, CoverImageIdWrapper, CreateCanisterArgument, CreateFileInput, ImageIdWrapper, IndexArg, IndexCanisterIdWrapper, IndexInitArgs, 
+    IndexInstallCodeArgument, InitArgs, InstallCodeArgument, LedgerArg, ProfileImageData, ReturnResult, SaleDetails, SaleDetailsUpdate, SaleDetailsWrapper, 
+    SaleInputParams, TokenCreationResult, TokenImageData, U64Wrapper, UserAccount, UserAccountWrapper, UserInputParams
 };
 
 use canfund::api::cmc::IcCyclesMintingCanister;
@@ -330,17 +333,19 @@ pub async fn create_token(user_params: UserInputParams) -> Result<TokenCreationR
     })
 }
 
-
 #[update]
-pub fn import_token(ledger_canister_id: Principal) -> Result<(), String> {
-    let user_principal = caller(); // Get the Principal of the caller (user)
+pub async fn import_token(
+    ledger_canister_id: Principal,
+    optional_index_canister_id: Option<Principal>,
+) -> Result<(), String> {
+    let user_principal = ic_cdk::api::caller(); // Get the Principal of the caller (user)
 
     // Check if the ledger_canister_id is already imported
     let already_exists = read_state(|state| {
         state
-            .imported_canister_ids
+            .canister_ids
             .values()
-            .any(|wrapper| wrapper.ledger_canister_id == ledger_canister_id)
+            .any(|wrapper| wrapper.ledger_id == Some(ledger_canister_id))
     });
 
     if already_exists {
@@ -350,27 +355,91 @@ pub fn import_token(ledger_canister_id: Principal) -> Result<(), String> {
         ));
     }
 
-    // Create an ImportedCanisterIdWrapper with the user principal and ledger canister ID
-    let wrapper = ImportedCanisterIdWrapper {
-        caller: user_principal,
-        ledger_canister_id,
+    // Determine the index_canister_id
+    let index_canister_id = if let Some(provided_index_id) = optional_index_canister_id {
+        provided_index_id
+    } else {
+        // If index canister ID is not provided, create a new index canister
+        let arg = CreateCanisterArgument { settings: None };
+
+        let (created_index_canister_id,) = create_canister(arg.clone())
+            .await
+            .map_err(|(_, err_string)| {
+                ic_cdk::println!("Error creating index canister: {}", err_string);
+                format!("Error creating index canister: {}", err_string)
+            })?;
+
+        // Add cycles to the newly created index canister
+        deposit_cycles(created_index_canister_id, 100_000_000_000)
+            .await
+            .map_err(|(_, err_string)| {
+                ic_cdk::println!("Error adding cycles to index canister: {}", err_string);
+                format!("Error adding cycles to index canister: {}", err_string)
+            })?;
+
+        let index_canister_id_principal = created_index_canister_id.canister_id;
+
+        // Install the index canister with appropriate arguments
+        let index_init_args = IndexInitArgs {
+            ledger_id: ledger_canister_id,
+            retrieve_blocks_from_ledger_interval_seconds: Some(10),
+        };
+
+        let index_arg = IndexArg::Init(index_init_args);
+        let index_init_arg: Vec<u8> = encode_one(Some(index_arg)).map_err(|e| {
+            ic_cdk::println!("Error encoding init args for index canister: {}", e);
+            e.to_string()
+        })?;
+
+        let index_wasm_module = include_bytes!(
+            "../../../.dfx/local/canisters/index_canister/index_canister.wasm.gz"
+        )
+        .to_vec();
+
+        let arg = IndexInstallCodeArgument {
+            mode: CanisterInstallMode::Install,
+            canister_id: index_canister_id_principal,
+            wasm_module: WasmModule::from(index_wasm_module.clone()),
+            arg: index_init_arg,
+        };
+
+        index_install_code(arg, index_wasm_module)
+            .await
+            .map_err(|(code, msg)| {
+                ic_cdk::println!("Error installing index code: {} - {}", code as u8, msg);
+                format!("Error installing index code: {} - {}", code as u8, msg)
+            })?;
+
+        index_canister_id_principal
     };
 
-    // Store the user's principal and the corresponding ledger canister ID wrapper in stable memory
+    // Store the ledger and index canister IDs in the `canister_ids` map
     mutate_state(|state| {
-        state
-            .imported_canister_ids
-            .insert(user_principal.to_string(), wrapper);
+        state.canister_ids.insert(
+            ledger_canister_id.to_string(), // Use the ledger canister ID as the key
+            CanisterIdWrapper {
+                canister_ids: ledger_canister_id, // Store ledger canister ID
+                token_name: "Imported".to_string(), // Placeholder name for imported tokens
+                token_symbol: "IMP".to_string(),    // Placeholder symbol for imported tokens
+                image_id: None,                    // No image ID for imported tokens
+                ledger_id: Some(ledger_canister_id),
+                owner: user_principal,
+                total_supply: Nat::from(0u64), // No total supply information for imported tokens
+            },
+        );
     });
 
     ic_cdk::println!(
-        "Token ledger canister ID {:?} imported successfully by {:?}",
+        "Token ledger canister ID {:?} and index canister ID {:?} imported successfully by {:?}",
         ledger_canister_id,
+        index_canister_id,
         user_principal
     );
 
     Ok(())
 }
+
+
 
 
 

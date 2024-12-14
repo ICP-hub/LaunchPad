@@ -139,6 +139,7 @@ pub fn init_index_canister_ids() -> IndexCanisterIdsMap {
     IndexCanisterIdsMap::init(get_index_canister_ids_memory())
 }
 
+
 pub fn init_image_ids() -> ImageIdsMap {
     ImageIdsMap::init(get_image_ids_memory())
 }
