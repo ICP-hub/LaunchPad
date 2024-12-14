@@ -355,20 +355,20 @@ pub async fn import_token(
 ) -> Result<(), String> {
     let user_principal = ic_cdk::api::caller(); // Get the Principal of the caller (user)
 
-    // Check if the ledger_canister_id is already imported
-    let already_exists = read_state(|state| {
-        state
-            .imported_canister_ids
-            .values()
-            .any(|wrapper| wrapper.ledger_canister_id == ledger_canister_id)
-    });
+    // // Check if the ledger_canister_id is already imported
+    // let already_exists = read_state(|state| {
+    //     state
+    //         .imported_canister_ids
+    //         .values()
+    //         .any(|wrapper| wrapper.ledger_canister_id == ledger_canister_id)
+    // });
 
-    if already_exists {
-        return Err(format!(
-            "Ledger canister ID {:?} has already been imported.",
-            ledger_canister_id
-        ));
-    }
+    // if already_exists {
+    //     return Err(format!(
+    //         "Ledger canister ID {:?} has already been imported.",
+    //         ledger_canister_id
+    //     ));
+    // }
 
     // Determine the index_canister_id
     let index_canister_id = if let Some(provided_index_id) = optional_index_canister_id {
