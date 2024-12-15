@@ -93,6 +93,14 @@ const ProjectCard = ({ isUserToken, projectData, initial_Total_supply, saleType,
   useEffect(() => {
     const fetchTokenInfo = async () => {
       try {
+        if(ledgerActor && projectData?.token_name==="Imported"){
+          const token_name= await ledgerActor.icrc1_name();  
+          setTokenInfo((prev) => ({ ...prev, token_name}));
+        }
+        else{
+          setTokenInfo((prev) => ({...prev, token_name:projectData?.token_name}));
+        }   
+        
         const ledgerPrincipal = Principal.fromText(ledgerId);
         const saleParams = await actor.get_sale_params(ledgerPrincipal);
 
@@ -159,7 +167,7 @@ const ProjectCard = ({ isUserToken, projectData, initial_Total_supply, saleType,
   </div>
   <div className="mt-[70px] text-center text-white space-y-3">
     <div className="text-[24px] font-semibold">
-      {projectData?.token_name || tokenInfo?.token_name}
+      { tokenInfo && tokenInfo?.token_name}
     </div>
     <div className="text-[16px] text-[#FFFFFFA6] font-medium">Fair Launch</div>
     <div className="text-[#FFC145] text-[18px] font-normal">{tokenPhase}</div>
