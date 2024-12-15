@@ -9,6 +9,7 @@ use icrc_ledger_types::icrc1::transfer::{TransferArg, TransferError};
 use icrc_ledger_types::icrc2::transfer_from::TransferFromArgs;
 use serde::{Deserialize, Serialize};
 
+use crate::api_query::get_funds_raised;
 use crate::{mutate_state, TransferFromResult, U64Wrapper, STATE};
 
 pub fn prevent_anonymous() -> Result<(), String> {
@@ -164,7 +165,7 @@ async fn buy_transfer(params: BuyTransferParams) -> Result<Nat, String> {
     }
 }
 
-//This is the fee function for when user creates token with create_token and we accept ICP.
+//This is the fee function for when user creates token with create_token and we accept ICP. OR when import token is done but they don't have index canister id
 #[ic_cdk::update]
 pub async fn token_fee_transfer(
     buyer_principal: Principal,
@@ -215,57 +216,87 @@ pub async fn token_fee_transfer(
     }
 }
 
-
-//this is helper function which sends the tokens to backend after sale ends for auto listing on kongswap.
-#[ic_cdk::update]
-pub async fn tokens_transfer_from(
-    buyer_principal: Principal,
-    amount: u64,
-    token_ledger_canister_id: Principal,
+//Transfers 5% of funds raised to a fee collector principal
+pub async fn tax_transfer_on_funds_raised(
+    ledger_canister_id: Principal,
 ) -> Result<(), String> {
-    let backend_canister_id = ic_cdk::id();
-    //backend will get the liquidity after fee tokens for kongswap dex
+    // Step 1: Retrieve funds raised from the sale canister
+    let funds_raised = get_funds_raised(ledger_canister_id)?;
 
-    // Create transfer arguments
-    let transfer_args = TransferFromArgs {
-        amount: Nat::from(amount),
+    // Step 2: Calculate 5% of the funds raised as the fee
+    let fee_amount = funds_raised / 20; // This calculates 5% (i.e., funds_raised * 0.05)
+
+    ic_cdk::println!("Funds raised: {}, Fee amount (5%): {}", funds_raised, fee_amount);
+
+    // Step 3: Fee collector principal (hardcoded as per your requirement)
+    let fee_collector_principal: Principal = "s4yaz-piiqq-tbbu5-kdv4h-pirny-gfddr-qs7ti-m4353-inls6-tubud-qae".parse().unwrap();
+
+    // Step 4: Transfer the fee to the fee collector
+    let transfer_args = TransferArg {
+        from_subaccount: None,
         to: Account {
-            owner: backend_canister_id,
+            owner: fee_collector_principal,
             subaccount: None,
         },
         fee: None,
         memo: None,
         created_at_time: None,
-        spender_subaccount: None,
-        from: Account {
-            owner: buyer_principal,
-            subaccount: None,
-        },
+        amount: Nat::from(fee_amount),
     };
 
-    // Make the inter-canister call to `icrc2_transfer_from`
-    let response: CallResult<(TransferFromResult,)> = ic_cdk::call(
-        token_ledger_canister_id,
-        "icrc2_transfer_from",
-        (transfer_args,),
-    )
-    .await;
+    let transfer_result: CallResult<(Result<Nat, TransferError>,)> =
+        ic_cdk::call(ledger_canister_id, "icrc1_transfer", (transfer_args,)).await;
 
-    match response {
-        Ok((TransferFromResult::Ok(block_index),)) => {
-            ic_cdk::println!("Transfer successful. Block index: {}", block_index);
-            Ok(())
+    match transfer_result {
+        Ok((Ok(_),)) => {
+            ic_cdk::println!("Fee of {} transferred successfully to the fee collector.", fee_amount);
         }
-        Ok((TransferFromResult::Err(error),)) => {
-            // If there's an error in the transfer, return the error message
-            Err(format!("Transfer failed: {:?}", error))
+        Ok((Err(error),)) => {
+            return Err(format!("Refund transfer error: {:?}", error));
         }
         Err((code, message)) => {
-            // If the inter-canister call failed, return the error code and message
-            Err(format!("Failed to call ledger: {:?} - {}", code, message))
+            return Err(format!("Inter-canister call failed: {:?} - {}", code, message));
         }
     }
+
+    // We are no longer updating the funds raised, so we don't need to modify anything further.
+    Ok(())
 }
+
+
+
+
+
+pub async fn tax_transfer_on_tokens(
+    ledger_principal: Principal,
+    amount: u64,
+) -> Result<(), String> {
+    // Fee collector principal passed as a constant
+    let fee_collector_principal: Principal = "s4yaz-piiqq-tbbu5-kdv4h-pirny-gfddr-qs7ti-m4353-inls6-tubud-qae".parse().unwrap();
+    //default principal for now.
+
+    let args = TransferArg {
+        from_subaccount: None,
+        to: Account {
+            owner: fee_collector_principal, // Using the fee collector principal here
+            subaccount: None,
+        },
+        fee: None,
+        memo: None,
+        created_at_time: None,
+        amount: Nat::from(amount),
+    };
+
+    let result: CallResult<(Result<Nat, TransferError>,)> =
+        ic_cdk::call(ledger_principal, "icrc1_transfer", (args,)).await;
+
+    match result {
+        Ok((Ok(_),)) => Ok(()),
+        Ok((Err(error),)) => Err(format!("Refund transfer error: {:?}", error)),
+        Err((code, message)) => Err(format!("Inter-canister call failed: {:?} - {}", code, message)),
+    }
+}
+
 
 #[query]
 fn get_contributions_for_sale(sale_id: Principal) -> HashMap<Principal, u64> {

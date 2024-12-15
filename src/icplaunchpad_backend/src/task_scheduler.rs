@@ -1,9 +1,9 @@
 use std::time::Duration;
 
-use candid::Principal;
-use ic_cdk::api::time;
+use candid::{Nat, Principal};
+use ic_cdk::api::{call::CallResult, time};
 use ic_cdk_timers::set_timer_interval;
-use crate::{perform_refund, send_tokens_to_contributor, U64Wrapper, STATE};
+use crate::{api_query::get_sale_params, perform_refund, send_tokens_to_contributor, tax_transfer_on_funds_raised, tax_transfer_on_tokens, Account, TransferFromArgs, TransferFromResult, U64Wrapper, STATE};
 
 
 async fn process_sales_end() {
@@ -58,13 +58,16 @@ async fn process_sales_end() {
             sale_id,
             softcap_reached
         );
-        process_sale(sale_id, softcap_reached).await;
+        match process_sale(sale_id, softcap_reached).await {
+            Ok(_) => ic_cdk::println!("Sale processed successfully for Sale ID: {:?}", sale_id),
+            Err(e) => ic_cdk::println!("Error processing Sale ID {:?}: {}", sale_id, e),
+        }
+        
     }
 }
 
 
-
-async fn process_sale(sale_id: Principal, softcap_reached: bool) {
+async fn process_sale(sale_id: Principal, softcap_reached: bool) -> Result<(), String> {
     ic_cdk::println!("Starting processing for Sale ID: {:?}", sale_id);
 
     let sale_details = STATE.with(|s| {
@@ -82,7 +85,7 @@ async fn process_sale(sale_id: Principal, softcap_reached: bool) {
 
         if details.processed {
             ic_cdk::println!("Sale ID: {:?} has already been processed.", sale_id);
-            return; // Skip already processed sales
+            return Ok(()); // Skip already processed sales
         }
 
         // Process the sale based on whether the softcap was reached
@@ -111,6 +114,20 @@ async fn process_sale(sale_id: Principal, softcap_reached: bool) {
                         );
                     }
                 });
+
+                // Only trigger `transfer_fee_and_liquidity_to_backend` if tokens were successfully distributed (softcap_reached)
+                if softcap_reached {
+                    transfer_fee_and_liquidity_to_backend(sale_id).await?;
+
+                    // After the above transfer is successful, trigger the tax transfer (fee only)
+                    let fee_amount = details.fee_for_approval;  // The fee to send
+                    tax_transfer_on_tokens(sale_id, fee_amount).await?; // Send the fee to the fee collector
+
+                    // Now trigger the tax transfer on funds raised
+                    tax_transfer_on_funds_raised(sale_id).await?; // Transfer fee on funds raised to fee collector
+                }
+
+                Ok(()) // Return Ok after processing
             }
             Err(error) => {
                 ic_cdk::println!(
@@ -118,12 +135,15 @@ async fn process_sale(sale_id: Principal, softcap_reached: bool) {
                     sale_id, error
                 );
                 // Optionally: Schedule a retry for failed operations
+                Err(error) // Return the error if processing fails
             }
         }
     } else {
         ic_cdk::println!("Sale details not found for Sale ID: {:?}", sale_id);
+        Err(format!("Sale details not found for Sale ID: {:?}", sale_id)) // Return error if sale details are not found
     }
 }
+
 
 
 
@@ -302,6 +322,60 @@ async fn distribute_tokens(sale_id: &Principal) -> Result<(), String> {
 
 
 
+//FUNCTION WHICH SENDS LIQUIDITY+FEE TO BACKEND POST SALE.
+async fn transfer_fee_and_liquidity_to_backend(ledger_canister_id: Principal) -> Result<(), String> {
+    // Get the sale parameters using the ledger canister ID
+    let sale_details = get_sale_params(ledger_canister_id)?;
+
+    // Ensure the sale has ended and tokens were distributed
+    if !sale_details.processed || !sale_details.is_ended {
+        return Err(format!("Sale ID {:?} has not ended or processed.", ledger_canister_id));
+    }
+
+    // Retrieve the creator of the sale
+    let creator = sale_details.creator;
+    
+    // Retrieve the backend canister ID (where funds will be transferred)
+    let backend_canister_id = ic_cdk::id();
+
+    // Create transfer arguments for liquidity tokens after fee and the fee amount
+    let transfer_args = TransferFromArgs {
+        amount: Nat::from(sale_details.tokens_for_liquidity_after_fee + sale_details.fee_for_approval),
+        to: Account {
+            owner: backend_canister_id,
+            subaccount: None,
+        },
+        fee: None, // No fee for this transfer
+        memo: None,
+        created_at_time: None,
+        spender_subaccount: None,
+        from: Account {
+            owner: creator, // The creator of the sale is sending the tokens
+            subaccount: None,
+        },
+    };
+
+    // Call `icrc2_transfer_from` to transfer the tokens to the backend canister
+    let response: CallResult<(TransferFromResult,)> = ic_cdk::call(
+        ledger_canister_id,  // The ledger canister associated with the sale
+        "icrc2_transfer_from",
+        (transfer_args,),
+    )
+    .await;
+
+    match response {
+        Ok((TransferFromResult::Ok(block_index),)) => {
+            ic_cdk::println!("Transfer successful. Block index: {}", block_index);
+            Ok(())
+        }
+        Ok((TransferFromResult::Err(error),)) => {
+            Err(format!("Transfer failed: {:?}", error))
+        }
+        Err((code, message)) => {
+            Err(format!("Failed to call ledger: {:?} - {}", code, message))
+        }
+    }
+}
 
 
 

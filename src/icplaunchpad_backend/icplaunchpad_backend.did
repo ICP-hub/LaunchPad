@@ -153,7 +153,6 @@ service : () -> {
   obtain_cycles_for_canister : (nat, principal) -> (Result_5);
   search_by_token_name_or_symbol : (text) -> (Result_16) query;
   token_fee_transfer : (principal, nat64, principal) -> (Result_1);
-  tokens_transfer_from : (principal, nat64, principal) -> (Result_1);
   update_sale_params : (principal, SaleDetailsUpdate) -> (Result_1);
   update_user_account : (principal, UserAccount) -> (Result_1);
   upload_cover_image : (text, CoverImageData) -> (Result_17);
