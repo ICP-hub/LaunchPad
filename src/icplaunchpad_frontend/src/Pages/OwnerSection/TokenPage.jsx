@@ -122,11 +122,11 @@ const TokenPage = () => {
 
   console.log('useEffect 1')
   useEffect(() => {
-    if (ledger_canister_id) {
+    if (ledger_canister_id || renderComponent) {
       getSaleParams();
       getBalance();
     }
-  }, [ledger_canister_id]);
+  }, [ledger_canister_id,renderComponent ]);
 
   // Fetch Token Data
   const fetchData = async () => {
@@ -193,7 +193,7 @@ const TokenPage = () => {
 
   console.log('useEffect 2')
   useEffect(() => {
-    if (isAuthenticated && actor && ledger_canister_id) {
+    if ((isAuthenticated && actor && ledger_canister_id) || renderComponent) {
       fetchData();
     }
   }, [isAuthenticated, actor, ledger_canister_id, renderComponent]);
@@ -494,7 +494,7 @@ const TokenPage = () => {
 
           {!isMobile && (
             <div className="max-w-[90%] mx-auto mt-6 xl2:mt-11">
-              <div className="flex justify-between gap-4 font-posterama">
+              <div className="flex justify-between   text-[12px] xl:text-[15px] gap-4 font-posterama">
                 {tabNames.map((tab) => (
                   <div
                     key={tab}
