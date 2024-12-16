@@ -29,7 +29,6 @@ const ProjectLists = () => {
         <ProjectCard isUserToken={true} projectData={sale} key={index} />
         
       ))} */}
-      {console.log('tokens=',tokens)}
         {tokens && tokens.length > 0 ? (
           tokens.map((sale, index) => (
             <ProjectCard isUserToken={true} projectData={sale} key={index} />
