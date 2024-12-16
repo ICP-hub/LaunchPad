@@ -4,7 +4,7 @@
 }
 
 .transform-image:hover {
-    transform: scale(1.05) rotate(15deg);
+    transform: scale(1.05) rotate(25deg);
 }
 /* Hide scrollbars for all elements */
 * {
