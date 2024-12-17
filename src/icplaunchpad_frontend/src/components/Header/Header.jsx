@@ -19,6 +19,7 @@ import { userRegisteredHandlerRequest } from "../../StateManagement/Redux/Reduce
 import { useAuths } from "../../StateManagement/useContext/useClient";
 import { ConnectWallet, useBalance, useIdentityKit } from "@nfid/identitykit/react";
 import person1 from "../../../assets/images/carousel/user.png"
+import Skeleton from "react-loading-skeleton";
 const ConnectBtn = ({ onClick }) => (
 
   <button
@@ -361,7 +362,7 @@ const handleFetchToken = async () => {
                 <img src={profileImg || person1} onError={(e) => (e.target.src = person1)} alt="profile-img" className="h-7 w-7 rounded-full object-cover mr-2 " />
                 <div className="flex flex-col items-start w-24 h-8 lg:w-40 lg:h-full ">
                   <span className="text-sm">
-                    {userData ? userData?.username : ""}
+                    {(userData  && userData?.username) ? userData?.username : <Skeleton width={80} height={15}/> }
                   </span>
                   <span className=" text-[10px] lg:text-xs text-gray-400 w-full overflow-hidden whitespace-nowrap text-ellipsis">
                     {principal}

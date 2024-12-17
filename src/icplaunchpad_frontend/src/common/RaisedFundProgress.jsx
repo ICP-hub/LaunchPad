@@ -1,11 +1,12 @@
 import { Principal } from '@dfinity/principal';
 import React, { useEffect, useState, useMemo } from 'react';
+import Skeleton from 'react-loading-skeleton';
 import { useSelector } from 'react-redux';
 
 const RaisedFundProgress = ({ ledgerId, projectData, tokenInfo, comp }) => {
-    const [fundRaised, setFundRaised] = useState(0);
+    const [fundRaised, setFundRaised] = useState(null);
     const [progressType, setProgressType] = useState('');
-    const [progress, setProgress] = useState(0);
+    const [progress, setProgress] = useState(null);
     // const fundRaise =13;
     const actor = useSelector((currState) => currState.actors.actor);
 
@@ -101,10 +102,10 @@ const RaisedFundProgress = ({ ledgerId, projectData, tokenInfo, comp }) => {
                 <div className="absolute ml-28 ss2:ml-10 inset-0 flex flex-col items-center justify-center">
                     <span>Progress</span>
                     <span className="text-lg font-semibold text-white">
-                        {progress.toFixed(2)}%
+                        {progress!==null ?  `${progress.toFixed(2)}%` : <Skeleton width={50} height={15}/> }
                     </span>
                     <span className="text-sm text-gray-400 mt-1">
-                        {fundRaised} ICP RAISED
+                        {(fundRaised !== null) ? ` ${fundRaised} ICP RAISED` : <Skeleton width={80} height={15}/> }
                     </span>
                 </div>
             </div>

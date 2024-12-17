@@ -12,6 +12,7 @@ import { loginStart } from "./StateManagement/Redux/Reducers/InternetIdentityRed
 import { handleActorRequest } from "./StateManagement/Redux/Reducers/actorBindReducer";
 import { useAgent, useBalance, useIdentity } from "@nfid/identitykit/react";
 import { Principal } from "@dfinity/principal";
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 
 function App() {
   const actor = useSelector((currState) => currState.actors.actor);
@@ -67,11 +68,11 @@ function App() {
     fetchBalanceData();
   }, [isAuthenticated, identity]);
   return (
-   
+    <SkeletonTheme baseColor="#FFFFFF1A" highlightColor="#444">
     <div className="text-white max-w-[1700px] mx-auto container">
       <AllRoutes />
     </div>
-
+    </SkeletonTheme>
   );
 }
 

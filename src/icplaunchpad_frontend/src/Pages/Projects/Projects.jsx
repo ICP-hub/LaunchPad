@@ -11,10 +11,13 @@ import { debounce } from "lodash";
 import { upcomingSalesHandlerRequest } from "../../StateManagement/Redux/Reducers/UpcomingSales.jsx";
 import { SuccessfulSalesHandlerRequest } from "../../StateManagement/Redux/Reducers/SuccessfulSales.jsx";
 import NoDataFound from "../../common/NoDataFound.jsx";
+import ProjectCardSkeleton from "../../common/SkeletonUI/ProjectCard.jsx";
+
 
 const ProjectLists = () => {
   const location = useLocation();
   const { salesData, sale_Type } = location.state || {};
+  const [isLoading, setIsLoading]=useState(true);
 
   const [search, setSearch] = useState("");
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
@@ -59,7 +62,10 @@ const ProjectLists = () => {
   }, [saleType, salesData, projectsData, upcomingSales.length > 0, successfulSales.length >0]);
 
   useEffect(() => {
-    setFilteredTokensData(tokensData);
+    if (tokensData){
+      setFilteredTokensData(tokensData);
+      setIsLoading(false);
+      }
   }, [tokensData]);
 
   // Debounced filter function
@@ -223,7 +229,11 @@ const ProjectLists = () => {
 
       {/* Project Cards Display */}
       <div className="flex lg:flex-row flex-col flex-wrap items-center w-[90%] m-auto gap-12 lg:gap-[3.8rem] justify-start">
-        {filteredTokensData.length > 0 ?
+        {
+          isLoading ? 
+          <ProjectCardSkeleton count={6}/>
+          :
+        (filteredTokensData.length > 0) ?
           filteredTokensData.map((sale, index) => (
             sale && <ProjectCard  initial_Total_supply={ sale[1] || null} projectData={sale[0] || sale} saleType={saleType} key={index} />
 
@@ -234,6 +244,7 @@ const ProjectLists = () => {
           </div>
 
         }
+        
       </div>
     </div>
   );

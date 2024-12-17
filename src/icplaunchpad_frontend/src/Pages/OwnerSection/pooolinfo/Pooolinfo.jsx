@@ -12,7 +12,7 @@ const PoolInfoTab = ({ presaleData, poolData }) => {
   const principal = useSelector((currState) => currState.internet.principal);
   const [presale, setPresale] = useState(presaleData || null); // Set presaleData initially if available
   const [saleTime, setSaleTime] = useState({ start_time: "N/A", end_time: "N/A" });
-
+   const [isLoading, setIsLoading]=useState(true);
   useEffect(() => {
     async function fetchPresale() {
       try {
@@ -24,6 +24,7 @@ const PoolInfoTab = ({ presaleData, poolData }) => {
           const presaleResponse = await actor.get_sale_params(ledgerId);
           if (presaleResponse && presaleResponse.Ok) {
             setPresale(presaleResponse.Ok);
+           
           } else {
             console.error("Failed to fetch presale data:", presaleResponse);
           }
@@ -40,6 +41,7 @@ const PoolInfoTab = ({ presaleData, poolData }) => {
       const startTime = presale.start_time_utc ? convertTimestampToIST(presale.start_time_utc) : "N/A";
       const endTime = presale.end_time_utc ? convertTimestampToIST(presale.end_time_utc) : "N/A";
       setSaleTime({ start_time: startTime, end_time: endTime });
+      setIsLoading(false)
     }
   }, [presale]);
 
@@ -53,6 +55,8 @@ const PoolInfoTab = ({ presaleData, poolData }) => {
       </div>
       {/* Total Supply  */}
       <div className="border-t pt-4">
+      { !isLoading ? 
+      <>
         <div className="flex justify-between border-b py-2">
           <span className="text-gray-400">Total Supply</span>
           <span className="text-white">{`${poolData?.total_supply || "N/A"} ${poolData?.token_symbol || ""}`}</span>
@@ -94,7 +98,11 @@ const PoolInfoTab = ({ presaleData, poolData }) => {
           <span>Liquidity Percent</span>
           <span> {` ${presale?.liquidity_percentage}% `} </span>
         </div>
-      </div>
+        </>
+            :
+            <div className="text-center py-4">Loading token data...</div>
+          }
+      </div> 
     </div>
   );
 };

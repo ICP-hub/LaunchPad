@@ -4,7 +4,7 @@ import CopyToClipboard from '../../../common/CopyToClipboard';
 
 const AffiliateProgram = ({ poolData, presaleData }) => {
   const [saleTime, setSaleTime] = useState({ start_time: "N/A", end_time: "N/A" });
-
+  const [isLoading,setIsLoading]=useState(true)
   useEffect(() => {
     if (presaleData?.start_time_utc) {
       const startTime = convertTimestampToIST(presaleData.start_time_utc);
@@ -14,6 +14,7 @@ const AffiliateProgram = ({ poolData, presaleData }) => {
       const endTime = convertTimestampToIST(presaleData.end_time_utc);
       setSaleTime(prev => ({ ...prev, end_time: endTime }));
     }
+    setIsLoading(false)
   }, [presaleData]);
 
 
@@ -27,7 +28,10 @@ const AffiliateProgram = ({ poolData, presaleData }) => {
 
       {/* Pool Information */}
       <div className="border-t pt-4 space-y-2">
-        {/* Tokens for Presale */}
+        
+        { !isLoading ? 
+      <>
+      {/* Tokens for Presale */}
         <div className="flex justify-between text-[14px] xxs1:text-[17px] border-b py-2">
           <span>Total Supply</span>
           <span>{`${poolData?.total_supply || 'N/A'} ${poolData?.token_symbol || ''}`}</span>
@@ -75,7 +79,10 @@ const AffiliateProgram = ({ poolData, presaleData }) => {
           <span>Liquidity Percent</span>
           <span> {` ${presaleData?.liquidity_percentage}% `} </span>
         </div>
-
+        </> 
+        :
+        <div className="text-center py-4">Loading token data...</div>
+      }
       </div>
     </div>
   );

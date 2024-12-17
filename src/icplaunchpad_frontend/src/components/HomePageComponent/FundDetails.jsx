@@ -3,6 +3,7 @@ import { Principal } from '@dfinity/principal';
 import { convertTimestampToISTFormatted } from '../../utils/convertTimestampToIST';
 import { useAuths } from '../../StateManagement/useContext/useClient';
 import { useSelector } from 'react-redux';
+import Skeleton from 'react-loading-skeleton';
 
 const FundDetails = ({ sale, index }) => {
     const [tokenDetails, setTokenDetails] = useState({});
@@ -64,14 +65,14 @@ const FundDetails = ({ sale, index }) => {
         <tr key={index} className="text-base">
             <td className="py-3 px-6 text-center">{index + 1}</td>
            <td className=" py-3 px-6">
-           <span className='flex text-center justify-center
+           <span className='flex text-center justify-center items-center
            '>
             <img src={tokenDetails.token_image || ""} alt="Logo" className="object-cover h-6 w-6  rounded-full  mr-2" />
-            {tokenDetails.token_name || "N/A"}
+            {tokenDetails.token_name || <Skeleton width={60} height={15}/> }
             </span> 
             </td>
-            <td className="py-3 px-6 text-center"> {tokenDetails ? tokenDetails.token_symbol : "" } </td>
-            <td className="py-3 px-6 text-center"> {tokenDetails ? tokenDetails.owner_bal : 0 } ICP</td>
+            <td className="py-3 px-6 text-center"> {(tokenDetails && tokenDetails.token_symbol) ? tokenDetails.token_symbol : <Skeleton width={60} height={15}/> } </td>
+            <td className="py-3 px-6 text-center"> {(tokenDetails && tokenDetails?.owner_bal) ? `${tokenDetails?.owner_bal} ICP` : <Skeleton width={60} height={15}/> } </td>
             <td className="py-3 px-6 text-center">{` ${Number(sale.sale_details.tokens_for_fairlaunch)}`}</td>
             <td className="py-3 px-6 text-center"> Fairlaunch</td>
             <td className="py-3 px-6 text-center">{convertTimestampToISTFormatted(sale.sale_details.end_time_utc)}</td>
