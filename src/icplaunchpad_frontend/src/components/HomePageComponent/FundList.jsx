@@ -9,7 +9,7 @@ const FundList = () => {
   const [isLoading, setIsLoading ]=useState(true);
 
   useEffect(()=>{
-   if(SuccesFullSales.length){
+   if(SuccesFullSales){
     setIsLoading(false)
    }
   },[SuccesFullSales])

@@ -49,7 +49,7 @@ const UpcomingSales = React.forwardRef((props, ref) => {
       <div className="flex lg:flex-row flex-col flex-wrap items-center md:px-[8.5%] m-auto gap-12 justify-start">
         {isLoading ? (
           <ProjectCardSkeleton count={3} />
-        ) : salesData && salesData.length > 0 ? (
+        ) : (salesData && salesData.length > 0 ? (
           salesData.slice(0, 3).map((sale, index) => (
             <ProjectCard
               key={index}
@@ -67,7 +67,8 @@ const UpcomingSales = React.forwardRef((props, ref) => {
               message3="Stay tuned for exciting opportunities to participate in future sales."
             />
           </div>
-        )}
+        )
+       )}
 
         {salesData && salesData.length > 3 && (
           <button
