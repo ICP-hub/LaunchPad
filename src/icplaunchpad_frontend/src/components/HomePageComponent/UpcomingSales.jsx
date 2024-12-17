@@ -13,10 +13,11 @@ const UpcomingSales = React.forwardRef((props, ref) => {
 
   // Update loading state when salesData is available
   useEffect(() => {
-    if (salesData) {
+    if (salesData !== undefined) {
       setIsLoading(false);
     }
   }, [salesData]);
+
 
   // Handle navigation to the projects page
   const handleViewMoreClick = () => {

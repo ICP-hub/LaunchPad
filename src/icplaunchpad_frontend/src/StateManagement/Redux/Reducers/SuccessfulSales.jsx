@@ -16,7 +16,11 @@ const SuccessfulSalesSlice = createSlice({
     },
     SuccessfulSalesHandlerSuccess: (state, action) => {
       state.loading = false;
-      state.data = action.payload;
+      if (Array.isArray(action.payload)) {
+        state.data = action.payload; 
+      } else {
+        state.data = []; 
+      }
     },
     SuccessfulSalesHandlerFailure: (state, action) => {
       state.loading = false;

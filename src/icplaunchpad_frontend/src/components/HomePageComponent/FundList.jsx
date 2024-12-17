@@ -7,12 +7,13 @@ import FundListSkeleton from '../../common/SkeletonUI/FundListSkeleton';
 const FundList = () => {
   const SuccesFullSales = useSelector((state) => state.SuccessfulSales.data);
   const [isLoading, setIsLoading ]=useState(true);
-
+  console.log('SuccesFullSales==',SuccesFullSales)
   useEffect(()=>{
-   if(SuccesFullSales){
-    setIsLoading(false)
-   }
-  },[SuccesFullSales])
+    
+    if (SuccesFullSales !== undefined) {
+       setIsLoading(false);
+     }
+   }, [SuccesFullSales]);
 
   return (
     <div className="px-[9%] py-[5%] md:py-[6%] lg:py-[3%] bg-black">

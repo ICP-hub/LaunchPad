@@ -16,7 +16,11 @@ const UserTokensInfoSlice = createSlice({
     },
     UserTokensInfoHandlerSuccess: (state, action) => {
       state.loading = false;
-      state.data = action.payload;
+      if (Array.isArray(action.payload)) {
+        state.data = action.payload; 
+      } else {
+        state.data = []; 
+      }
     },
     UserTokensInfoHandlerFailure: (state, action) => {
       state.loading = false;
