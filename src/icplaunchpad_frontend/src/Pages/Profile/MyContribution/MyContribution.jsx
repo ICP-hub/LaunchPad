@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import ProjectCard from "../../Projects/ProjectCard";
 import { useSelector } from "react-redux";
 import NoDataFound from "../../../common/NoDataFound";
+import ProjectCardSkeleton from "../../../common/SkeletonUI/ProjectCard";
 
 
 
 const ProjectLists = () => {
   const navigate = useNavigate();
   const actor = useSelector((currState) => currState.actors.actor);
+  const [isLoading, setIsLoading]= useState(true);
   const isAuthenticated = useSelector(
     (currState) => currState.internet.isAuthenticated
   );
@@ -17,7 +19,11 @@ const ProjectLists = () => {
   const tokens= useSelector((state)=>state?.UserTokensInfo?.data)
   console.log("Fetched tokens in ProjectLists:", tokens);
 
-
+  useEffect(()=>{
+    if(tokens){
+      setIsLoading(false)
+    }
+  },[tokens])
   
 
   return (
@@ -29,7 +35,10 @@ const ProjectLists = () => {
         <ProjectCard isUserToken={true} projectData={sale} key={index} />
         
       ))} */}
-        {tokens && tokens.length > 0 ? (
+        {isLoading ? 
+        <ProjectCardSkeleton count={5} />
+        :
+        (tokens && tokens.length > 0) ? (
           tokens.map((sale, index) => (
             <ProjectCard isUserToken={true} projectData={sale} key={index} />
           ))

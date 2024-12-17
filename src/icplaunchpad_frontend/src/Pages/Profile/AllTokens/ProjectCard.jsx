@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuths } from '../../../StateManagement/useContext/useClient';
 import { useSelector } from 'react-redux';
 import { Principal } from '@dfinity/principal';
+import Skeleton from 'react-loading-skeleton';
 
 const ProjectCard = ({ ledgerID, index }) => {
   const navigate = useNavigate();
@@ -109,7 +110,7 @@ const ProjectCard = ({ ledgerID, index }) => {
     <div onClick={handleExportNavigate}>
       <div
         key={index}
-        className="bg-[#FFFFFF1A] cursor-pointer text-white p-1 pb-4 rounded-xl flex flex-col w-[340px] md:w-[375px] mt-14 mx-0 sm:mx-2"
+        className=" bg-[#FFFFFF1A] cursor-pointer text-white p-1 pb-4 rounded-xl flex flex-col w-[340px] md:w-[375px] mt-14 mx-0 sm:mx-2"
       >
         {/* Main UI */}
         <div className="h-[240px] rounded-lg py-5 flex flex-col">
@@ -124,7 +125,7 @@ const ProjectCard = ({ ledgerID, index }) => {
             </div>
           </div>
           <div className="mt-[70px] text-center text-white space-y-3">
-            <div className="text-[24px] font-semibold">{tokenInfo?.token_name || 'N/A'}</div>
+            <div className="text-[24px] font-semibold">{tokenInfo?.token_name ||  <Skeleton width={80} height={20}/>} </div>
             <div className="text-[16px] text-[#FFFFFFA6] font-medium">TOKEN INFO</div>
           </div>
           <div className="bg-[#FFFFFF66] h-[2px] w-[92%] mx-auto mt-5"></div>
@@ -135,19 +136,19 @@ const ProjectCard = ({ ledgerID, index }) => {
           <div className="flex flex-col items-center bg-gradient-to-r from-[#1d1e22] via-[#25282d] to-[#1d1e22] rounded-lg p-4 shadow-lg w-[45%]">
             <span className="text-xs text-gray-300 tracking-wide">TOKEN SYMBOL</span>
             <span className="text-lg font-bold text-gradient bg-gradient-to-r from-[#f09787] to-[#CACCF5] text-transparent bg-clip-text">
-              {tokenInfo?.token_symbol || 'N/A'}
+              {tokenInfo?.token_symbol ||  <Skeleton width={50} height={15}/>}
             </span>
           </div>
           <div className="flex flex-col items-center bg-gradient-to-r from-[#1d1e22] via-[#25282d] to-[#1d1e22] rounded-lg p-4 shadow-lg w-[45%]">
             <span className="text-xs text-gray-300 tracking-wide">DECIMALS</span>
             <span className="text-lg font-bold text-white">
-              {tokenInfo?.decimals || 'N/A'}
+              {tokenInfo?.decimals ||  <Skeleton width={30} height={15}/> }
             </span>
           </div>
           <div className="flex flex-col items-center bg-gradient-to-r from-[#1d1e22] via-[#25282d] to-[#1d1e22] rounded-lg p-4 shadow-lg w-[90%]">
             <span className="text-xs text-gray-300 tracking-wide">TOTAL SUPPLY</span>
             <span className="text-lg font-bold text-white">
-              {Number(tokenInfo?.total_supply) || 'N/A'}
+              {Number(tokenInfo?.total_supply) ||  <Skeleton width={100} height={15}/> }
             </span>
           </div>
         </div>

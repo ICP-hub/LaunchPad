@@ -1,10 +1,18 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import FundDetails from './FundDetails';
 import NoDataFound from '../../common/NoDataFound';
+import FundListSkeleton from '../../common/SkeletonUI/FundListSkeleton';
 
 const FundList = () => {
   const SuccesFullSales = useSelector((state) => state.SuccessfulSales.data);
+  const [isLoading, setIsLoading ]=useState(true);
+
+  useEffect(()=>{
+   if(SuccesFullSales.length){
+    setIsLoading(false)
+   }
+  },[SuccesFullSales])
 
   return (
     <div className="px-[9%] py-[5%] md:py-[6%] lg:py-[3%] bg-black">
@@ -25,7 +33,10 @@ const FundList = () => {
             </tr>
           </thead>
           <tbody className="text-white text-sm divide-y divide-[#FFFFFF33]">
-            {SuccesFullSales && SuccesFullSales.length > 0 ? (
+            {isLoading ?
+            <FundListSkeleton count={5}/>
+            :
+            (SuccesFullSales && SuccesFullSales.length > 0) ? (
               SuccesFullSales.map((sale, index) => (
                 <FundDetails sale={sale[0]} index={index} key={index} />
               ))

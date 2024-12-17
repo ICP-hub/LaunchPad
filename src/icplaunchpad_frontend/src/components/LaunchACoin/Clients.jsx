@@ -5,6 +5,7 @@ import l3 from '../../../assets/images/carousel/l3.png'
 import ProjectCard from "../../Pages/Projects/ProjectCard";
 import { useSelector } from "react-redux";
 import NoDataFound from "../../common/NoDataFound";
+import ProjectCardSkeleton from "../../common/SkeletonUI/ProjectCard";
 
   
 
@@ -14,6 +15,7 @@ const Clients = () => {
   const navigate = useNavigate();
   const actor = useSelector((currState) => currState.actors.actor);
   const [salesData, setSuccessfullSalesData] = useState([]);
+  const [isLoading, setIsLoading]=useState(true)
 
   console.log("Fetched tokens in ProjectLists:", salesData);
 
@@ -25,6 +27,7 @@ const Clients = () => {
           const response = await actor.get_successful_sales();
           if (response && response?.Ok?.length > 0) {
             setSuccessfullSalesData(response.Ok);
+            setIsLoading(false);
           } else {
             console.log("No tokens data available or empty response.");
           }
@@ -40,7 +43,7 @@ const Clients = () => {
   }, [actor]);
   // Handle navigation to the projects page
   const handleViewMoreClick = () => {
-    if(salesData.length > 0)
+    if(salesData && salesData.length > 0)
        navigate('/projects', {state:{salesData, sale_Type:"Successful"} });
   };
 
@@ -57,7 +60,10 @@ const Clients = () => {
 
     <div className="flex lg:flex-row flex-col flex-wrap items-center md:px-[8.5%] m-auto gap-12 justify-start">
       
-      { (salesData.length > 0 ) ? salesData.map((sales, index) => (
+      { isLoading ?
+      <ProjectCardSkeleton count={3}/>
+      :
+       (salesData && salesData.length > 0 ) ? salesData.map((sales, index) => (
         (index < 3) && <ProjectCard initial_Total_supply={ sales[1] || null} projectData={sales[0]} saleType="successfull" index={index}/> 
       )) :
       // <h1 className="text-xl mx-auto my-16"> Data Not Found... </h1>

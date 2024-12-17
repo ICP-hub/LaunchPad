@@ -31,6 +31,7 @@ import RaisedFundProgress from "../../common/RaisedFundProgress.jsx";
 import Tokenomic from "./Tokenomics/Tokenomics.jsx";
 import ICP_TopUp1 from "../../components/Modals/ICP_TopUp1.jsx";
 import ICP_TopUp2 from "../../components/Modals/ICP_TopUp2.jsx";
+import Skeleton from "react-loading-skeleton";
 // import ICP_TopUp2 from "../../components/Modals/ICP_TopUp2.jsx";
 
 const TokenPage = () => {
@@ -274,7 +275,7 @@ const TokenPage = () => {
               </div>
               <div className="content-div flex font-posterama justify-between w-[90%] m-auto mt-7 ">
                 <div className="left flex flex-col gap-5">
-                  <div className="text-[25px]"> {tokenData ? tokenData.token_name : "PUPPO"}</div>
+                  <div className="text-[25px]"> {tokenData ? tokenData.token_name :  <Skeleton width={150} height={25}/> } </div>
                   <div className="font-extralight"> Fair Launch </div>
                   <div className="logos flex  gap-11">
                     {
@@ -333,7 +334,7 @@ const TokenPage = () => {
 
               <div className="mt-[70px] text-center font-posterama text-white space-y-2">
                 <div className=" ">
-                  <div className="text-[24px] font-bold"> {tokenData ? tokenData.token_name : "PUPPO"} </div>
+                  <div className="text-[24px] font-bold"> {tokenData ? tokenData.token_name : <Skeleton width={150} height={25}/>  } </div>
                   <FiEdit3 onClick={handleTokenEdit} className="cursor-pointer absolute right-5 top-4 " />
                   
                 </div>
@@ -478,13 +479,13 @@ const TokenPage = () => {
                 <div className="flex flex-col">
                   <span className="text-sm text-gray-400">UNSOLD TOKENS</span>
                   <span className="text-lg font-semibold">
-                    {tokenData ? `${tokenData.total_supply.toString()} ${tokenData.token_symbol}` : ''}
+                   {tokenData ? `${tokenData?.total_supply.toString()} ${tokenData.token_symbol}` : <Skeleton width={120} height={25}/> }
                   </span>
                 </div>
                 <div className="flex flex-col">
                   <span className="text-sm text-gray-400">CURRENT RAISED</span>
                   <span className="text-lg font-semibold">
-                    {tokenData ? tokenData.owner_bal : 0} ICP
+                    {tokenData ? `${tokenData?.owner_bal} ICP` : <Skeleton width={80} height={25}/>}
                   </span>
                 </div>
               </div>
@@ -527,13 +528,13 @@ const TokenPage = () => {
                 <div className="flex flex-col">
                   <span className="text-sm text-gray-400">UNSOLD TOKENS</span>
                   <span className="text-lg mr-2 font-semibold">
-                    {tokenData ? `${tokenData.total_supply.toString()} ${tokenData.token_symbol}` : '0'}
+                    {tokenData ? `${tokenData?.total_supply.toString()} ${tokenData.token_symbol}` : <Skeleton width={120} height={25}/> }
                   </span>
                 </div>
                 <div className="flex flex-col">
                   <span className="text-sm text-gray-400">CURRENT RAISED</span>
                   <span className="text-lg font-semibold">
-                    {tokenData ? tokenData.owner_bal : 0} ICP
+                    {tokenData ? `${tokenData?.owner_bal} ICP` : <Skeleton width={80} height={25}/> } 
                   </span>
                 </div>
               </div>

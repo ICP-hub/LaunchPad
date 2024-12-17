@@ -4,10 +4,12 @@ import { useSelector } from "react-redux";
 import NoDataFound from "../../../common/NoDataFound";
 import { Principal } from "@dfinity/principal";
 import ProjectCard from "./ProjectCard";
+import ProjectCardSkeleton from "../../../common/SkeletonUI/ProjectCard";
 
 
 const ProjectLists = () => {
   const navigate = useNavigate();
+  const [isLoading,setIsLoading]=useState(true);
   const actor = useSelector((currState) => currState.actors.actor);
   const isAuthenticated = useSelector(
     (currState) => currState.internet.isAuthenticated
@@ -26,6 +28,7 @@ const ProjectLists = () => {
 
           if (response && response?.Ok && response?.Ok?.length > 0) {
             setTokensLedger(response?.Ok);
+            setIsLoading(false)
           } else {
             console.log("No tokens data available or empty response.");
           }
@@ -54,7 +57,10 @@ const ProjectLists = () => {
         <ProjectCard isUserToken={true} projectData={sale} key={index} />
         
       ))} */}
-        {tokensLedger && tokensLedger.length > 0 ? (
+        {isLoading ?
+        <ProjectCardSkeleton count={6} cardType={'AllTokens'} />
+        :
+        (tokensLedger && tokensLedger.length > 0) ? (
           tokensLedger.map((ledger, index) => (
             <ProjectCard ledgerID={ledger} key={index} />
           ))

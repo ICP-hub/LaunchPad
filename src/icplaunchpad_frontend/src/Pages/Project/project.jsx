@@ -22,9 +22,10 @@ import { useAgent, useIdentityKit } from "@nfid/identitykit/react";
 import { Actor } from "@dfinity/agent";
 import RaisedFundProgress from "../../common/RaisedFundProgress.jsx";
 import ApproveOrRejectModal from "../../common/ApproveOrRejectModal.jsx";
+import Skeleton from "react-loading-skeleton";
 
 const TokenPage = () => {
-  const [tokenPhase, setTokenPhase] = useState("UPCOMING");
+  const [tokenPhase, setTokenPhase] = useState("");
   const [activeTab, setActiveTab] = useState("About");
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 640);
   const location = useLocation();
@@ -238,8 +239,8 @@ console.log("ledger actor ", ledgerActor)
                 />
               </div>
               <div className="content-div font-posterama flex justify-between w-[90%] m-auto mt-7 ">
-                <div className="left flex flex-col gap-5">
-                  <div> {projectData && projectData?.token_name} </div>
+                <div className="left flex flex-col gap-4">
+                  <div className="text-[24px]"> {projectData ? projectData?.token_name :  <Skeleton width={80} height={20}/> } </div>
                   <div>Fair Launch</div>
                   <div className="logos flex  gap-11">
                     {
@@ -262,8 +263,8 @@ console.log("ledger actor ", ledgerActor)
                   </div>
                 </div>
                 <div className="right flex flex-col text-[17px] mr-8 lgx:mr-0 gap-4">
-                  <div className="text-[#FFC145]"> {tokenPhase} </div>
-                  <div>{`Soft ${saleParams?.softcap} ICP`}</div>
+                  <div className="text-[#FFC145]"> {tokenPhase ? tokenPhase : <Skeleton width={80} height={20}/>} </div>
+                  <div>{saleParams ? `Soft ${saleParams?.softcap} ICP` : <Skeleton width={100} height={20}/>}</div>
                 </div>
               </div>
               <div className="bg-[#FFFFFF66] h-[2px] max-w-[90%] mx-auto mt-4"></div>
@@ -281,14 +282,14 @@ console.log("ledger actor ", ledgerActor)
               </div>
 
               <div className="mt-[70px] font-posterama text-center text-white space-y-2">
-                <div className=" text-[24px] font-bold"> {projectData && projectData?.token_name}</div>
+                <div className=" text-[24px] font-bold"> {projectData ? projectData?.token_name : <Skeleton width={80} height={20}/>   }</div>
                 <div className=" text-[16px] font-medium">
                  Fair Launch
                 </div>
                 <div className="text-[#FFC145] text-[18px] font-semibold">
-                {tokenPhase}
+                {tokenPhase ? tokenPhase : <Skeleton width={80} height={20}/>}
                 </div>
-                <div className="text-[16px]"> {`Soft ${saleParams?.softcap} ICP`} </div>
+                <div className="text-[16px]"> {saleParams ? `Soft ${saleParams?.softcap} ICP` : <Skeleton width={100} height={20}/>} </div>
               </div>
 
               <div className="bg-[#FFFFFF66] h-[2px] w-[100%] mx-auto mt-4"></div>
@@ -316,7 +317,7 @@ console.log("ledger actor ", ledgerActor)
           )}
 
           {!isMobile && (
-            <div className="max-w-[90%] mx-auto">
+            <div className="max-w-[90%] mx-auto lgx:mt-4">
               <div className="flex font-posterama text-[12px] xl:text-[15px]  justify-between">
                 {tabNames.map((tab) => (
                   <div
@@ -382,13 +383,13 @@ console.log("ledger actor ", ledgerActor)
               <div className="flex flex-col">
                 <span className="text-sm text-gray-400">UNSOLD TOKENS</span>
                 <span className="text-lg font-semibold">
-                  {projectData ? ` ${projectData.total_supply.toString()} ${projectData.token_symbol}` : ''}
+                  {projectData ? ` ${projectData.total_supply.toString()} ${projectData.token_symbol}` : <Skeleton width={80} height={20}/> }
                 </span>
               </div>
               <div className="flex flex-col">
                 <span className="text-sm text-gray-400">CURRENT RAISED</span>
                 <span className="text-lg font-semibold">
-                  {tokenOwnerInfo ? tokenOwnerInfo.owner_bal : 0} ICP
+                  {tokenOwnerInfo ? `${tokenOwnerInfo.owner_bal} ICP` : <Skeleton width={60} height={20}/>} 
                 </span>
               </div>
             </div>
