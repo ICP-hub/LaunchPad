@@ -96,7 +96,8 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
       // Upload profile picture if exists
       if (userData.profile_picture.length > 0) {
         try {
-          await actor.upload_profile_image("br5f7-7uaaa-aaaaa-qaaca-cai", {
+          
+          await actor.upload_profile_image(process.env.CANISTER_ID_IC_ASSET_HANDLER, {
             content: userData.profile_picture,
           });
           dispatch(ProfileImageIDHandlerRequest());

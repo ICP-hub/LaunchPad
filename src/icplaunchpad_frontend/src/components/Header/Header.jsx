@@ -13,7 +13,6 @@ import icp from "../../../assets/images/icp.png"
 import CreateUser from "../Modals/CreateUser";
 import { Principal } from "@dfinity/principal";
 import { useDispatch, useSelector } from "react-redux";
-import { addUserData } from "../../Redux-Config/ReduxSlices/UserSlice";
 import UpdateUser from "../Modals/UpdateUser";
 import { userRegisteredHandlerRequest } from "../../StateManagement/Redux/Reducers/userRegisteredData";
 import { useAuths } from "../../StateManagement/useContext/useClient";

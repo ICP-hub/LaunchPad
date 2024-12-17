@@ -141,17 +141,16 @@ const VerifyToken = () => {
           content: [TokenPicture],
           ledger_id: ledgerPrincipalId,
         };
-        const res = await actor.upload_token_image("br5f7-7uaaa-aaaaa-qaaca-cai", imgUrl);
+        const res = await actor.upload_token_image(process.env.CANISTER_ID_IC_ASSET_HANDLER, imgUrl);
         console.log("uploaded img response ", res)
       }
 
-      if (CoverPicture) {
-       
+      if (CoverPicture) { 
         const imgUrl_cover = {
           content: [CoverPicture],
           ledger_id: ledgerPrincipalId,
         };
-        const res = await actor.upload_cover_image("br5f7-7uaaa-aaaaa-qaaca-cai", imgUrl_cover);
+        const res = await actor.upload_cover_image(process.env.CANISTER_ID_IC_ASSET_HANDLER, imgUrl_cover);
         console.log("uploaded cover img response ", res)
       }
 

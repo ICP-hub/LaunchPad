@@ -25,9 +25,10 @@ const Clients = () => {
       try {
         if (actor) {
           const response = await actor.get_successful_sales();
+          setIsLoading(false);
           if (response && response?.Ok?.length > 0) {
             setSuccessfullSalesData(response.Ok);
-            setIsLoading(false);
+            
           } else {
             console.log("No tokens data available or empty response.");
           }

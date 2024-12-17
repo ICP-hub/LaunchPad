@@ -121,7 +121,7 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
       }
 
       if (profile_picture.length > 0) {
-        await actor.upload_profile_image("br5f7-7uaaa-aaaaa-qaaca-cai", { content: [profile_picture[0]] });
+        await actor.upload_profile_image(process.env.CANISTER_ID_IC_ASSET_HANDLER, { content: [profile_picture[0]] });
         console.log("profile pic uploaded")
         dispatch(ProfileImageIDHandlerRequest());
       }
