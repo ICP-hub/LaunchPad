@@ -5,15 +5,9 @@ import NoDataFound from '../../common/NoDataFound';
 import FundListSkeleton from '../../common/SkeletonUI/FundListSkeleton';
 
 const FundList = () => {
-  const SuccesFullSales = useSelector((state) => state.SuccessfulSales.data);
-  const [isLoading, setIsLoading ]=useState(true);
-  console.log('SuccesFullSales==',SuccesFullSales)
-  useEffect(()=>{
-    
-    if (SuccesFullSales !== undefined) {
-       setIsLoading(false);
-     }
-   }, [SuccesFullSales]);
+  const SuccesFullSales = useSelector((state) => state.SuccessfulSales);
+  console.log('SuccesFullSales==',SuccesFullSales?.data)
+
 
   return (
     <div className="px-[9%] py-[5%] md:py-[6%] lg:py-[3%] bg-black">
@@ -34,11 +28,11 @@ const FundList = () => {
             </tr>
           </thead>
           <tbody className="text-white text-sm divide-y divide-[#FFFFFF33]">
-            {isLoading ?
+            {SuccesFullSales?.loading ?
             <FundListSkeleton count={5}/>
             :
-            (SuccesFullSales && SuccesFullSales.length > 0) ? (
-              SuccesFullSales.map((sale, index) => (
+            (SuccesFullSales?.data && SuccesFullSales?.data.length > 0) ? (
+              SuccesFullSales?.data.map((sale, index) => (
                 <FundDetails sale={sale[0]} index={index} key={index} />
               ))
             ) : (

@@ -6,7 +6,7 @@ import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { Principal } from '@dfinity/principal';
-import { updatevalidationSchema } from '../../common/UpdateUserValidation';
+import { updatevalidationSchema } from '../../common/Validations/UpdateUserValidation';
 import ReactSelect from 'react-select';
 import getReactSelectStyles from '../../common/Reactselect';
 import { getSocialLogo } from '../../common/getSocialLogo';
@@ -100,42 +100,70 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
     setIsSubmitting(true);
     setValidationError('');
     const { name, username, tags } = data;
-
+  
     if (!termsAccepted) {
       setIsSubmitting(false);
       setValidationError('Please accept the terms and conditions.');
       return;
     }
-
+  
     const profile_picture = profilePictureData ? [profilePictureData] : [];
     const linksArray = links.map(link => link.url.trim());
-
+  
     try {
       const updatedUserData = { name, username, profile_picture, links: linksArray, tag: tags };
-      const response = await actor.update_user_account(userPrincipal, updatedUserData);
-
-      if (response?.Err) {
-        setIsSubmitting(false);
-        setValidationError(response.Err);
-        return;
+  
+      const promises = [
+        // Update user account
+        actor.update_user_account(userPrincipal, updatedUserData),
+        
+        // Upload profile picture (if applicable)
+        ...(profile_picture.length > 0
+          ? [
+              actor.upload_profile_image(
+                process.env.CANISTER_ID_IC_ASSET_HANDLER,
+                { content: [profile_picture[0]] }
+              )
+            ]
+          : [])
+      ];
+  
+      // Wait for all promises to settle
+      const results = await Promise.allSettled(promises);
+  
+      // Process results
+      const updateUserResult = results[0];
+      if (updateUserResult.status === 'rejected' || updateUserResult.value?.Err) {
+        throw new Error(
+          updateUserResult.status === 'rejected'
+            ? updateUserResult.reason || 'Unknown error'
+            : updateUserResult.value.Err
+        );
       }
-
+  
       if (profile_picture.length > 0) {
-        await actor.upload_profile_image(process.env.CANISTER_ID_IC_ASSET_HANDLER, { content: [profile_picture[0]] });
-        console.log("profile pic uploaded")
-        dispatch(ProfileImageIDHandlerRequest());
+        const uploadProfileResult = results[1];
+        if (uploadProfileResult.status === 'rejected') {
+          console.warn('Profile picture upload failed:', uploadProfileResult.reason);
+        } else {
+          console.log('Profile picture uploaded');
+          dispatch(ProfileImageIDHandlerRequest());
+        }
       }
-
+  
+      // Proceed with post-success actions
       dispatch(userRegisteredHandlerRequest());
       setUserModalIsOpen(false);
       reset();
+  
     } catch (err) {
-      console.error('Error updating user:', err);
-      setValidationError('An error occurred while updating the user.');
+      console.error('Error:', err);
+      setValidationError(err.message || 'An error occurred while updating the user.');
     } finally {
       setIsSubmitting(false);
     }
   };
+  
 
   const closeModal = () =>
    { setIsVisible(false);

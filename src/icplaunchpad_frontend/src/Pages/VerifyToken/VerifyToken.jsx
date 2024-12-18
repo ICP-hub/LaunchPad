@@ -16,7 +16,7 @@ import { SetLedgerIdHandler } from "../../StateManagement/Redux/Reducers/LedgerI
 import { upcomingSalesHandlerRequest } from "../../StateManagement/Redux/Reducers/UpcomingSales";
 import { SuccessfulSalesHandlerRequest } from "../../StateManagement/Redux/Reducers/SuccessfulSales";
 import { SaleParamsHandlerRequest } from "../../StateManagement/Redux/Reducers/SaleParams";
-import { getSchemaForStep } from "../../common/TokensValidation";
+import { getSchemaForStep } from "../../common/Validations/TokensValidation";
 import compressImage from "../../utils/CompressedImage";
 import { toast, Toaster } from "react-hot-toast";
 import { UserTokensInfoHandlerRequest } from "../../StateManagement/Redux/Reducers/UserTokensInfo";
@@ -45,6 +45,17 @@ const VerifyToken = () => {
   );
   // console.log('ledger_canister_id verify', Principal.fromUint8Array(ledger_canister_id))
   const principal = useSelector((currState) => currState.internet.principal);
+
+  //  useBlocker(
+  //   ({ action, location }) => {
+  //     if (isSubmitting || currentStep < 4) {
+  //       return window.confirm("You have unsaved changes. Are you sure you want to leave?");
+  //     }
+  //     return true;
+  //   },
+  //   true // Enable blocking
+  // );
+
   useEffect(() => {
     if (formData)
       setTokenData(formData)
