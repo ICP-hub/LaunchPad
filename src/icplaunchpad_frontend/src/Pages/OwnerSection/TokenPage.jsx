@@ -31,6 +31,7 @@ import RaisedFundProgress from "../../common/RaisedFundProgress.jsx";
 import Tokenomic from "./Tokenomics/Tokenomics.jsx";
 import ICP_TopUp1 from "../../components/Modals/ICP_TopUp1.jsx";
 import ICP_TopUp2 from "../../components/Modals/ICP_TopUp2.jsx";
+import { fetchWithRetry } from "../../utils/fetchWithRetry";
 import Skeleton from "react-loading-skeleton";
 // import ICP_TopUp2 from "../../components/Modals/ICP_TopUp2.jsx";
 
@@ -131,57 +132,74 @@ const TokenPage = () => {
 
   // Fetch Token Data
   const fetchData = async () => {
-    console.log('useEffect 2 enter')
+    console.log('useEffect 2 enter');
     try {
       if (ledger_canister_id) {
-       const ledgerId = typeof ledger_canister_id !== 'string'
-        ? Principal.fromUint8Array(ledger_canister_id)
-        : Principal.fromText(ledger_canister_id);
-
+        const ledgerId = typeof ledger_canister_id !== 'string'
+          ? Principal.fromUint8Array(ledger_canister_id)
+          : Principal.fromText(ledger_canister_id);
+  
         const ledgerActor = await createCustomActor(ledgerId);
         setLedgerActor(ledgerActor);
-
-        // Fetch Token Details
-        const tokenName = await ledgerActor.icrc1_name();
-        const tokenSymbol = await ledgerActor.icrc1_symbol();
-        const totalSupply = await ledgerActor.icrc1_total_supply();
-
-        setTokenData({
-          canister_id: ledger_canister_id,
-          token_name: tokenName,
-          token_symbol: tokenSymbol,
-          total_supply: totalSupply,
-        });
-
-        // Fetch Owner Details
-        const owner = await ledgerActor.icrc1_minting_account();
-        if (owner?.[0]?.owner) {
-          const ownerBalance = await ledgerActor.icrc1_balance_of(owner[0]);
+  
+        // Fetch Token Details with retry logic
+        const tokenDataResults = await Promise.allSettled([
+          fetchWithRetry(() => ledgerActor.icrc1_name(), 3, 1000),
+          fetchWithRetry(() => ledgerActor.icrc1_symbol(), 3, 1000),
+          fetchWithRetry(() => ledgerActor.icrc1_total_supply(), 3, 1000),
+        ]);
+  
+        console.log("Token Data Results:", tokenDataResults);
+  
+        const tokenName = tokenDataResults[0].status === "fulfilled" ? tokenDataResults[0].value : null;
+        const tokenSymbol = tokenDataResults[1].status === "fulfilled" ? tokenDataResults[1].value : null;
+        const totalSupply = tokenDataResults[2].status === "fulfilled" ? tokenDataResults[2].value : null;
+  
+        if (tokenName && tokenSymbol && totalSupply) {
+          setTokenData({
+            canister_id: ledger_canister_id,
+            token_name: tokenName,
+            token_symbol: tokenSymbol,
+            total_supply: totalSupply,
+          });
+        } else {
+          console.error("Failed to fetch some token data.");
+        }
+  
+        // Fetch Owner Details with retry logic
+        const ownerData = await fetchWithRetry(() => ledgerActor.icrc1_minting_account(), 3, 1000);
+        if (ownerData?.[0]?.owner) {
+          const ownerBalance = await fetchWithRetry(
+            () => ledgerActor.icrc1_balance_of(ownerData[0]),
+            3,
+            1000
+          );
+  
           setTokenData((prevData) => ({
             ...prevData,
             owner_bal: ownerBalance?.toString() || '0',
-            owner: owner[0].owner.toString(),
+            owner: ownerData[0].owner.toString(),
           }));
         }
-
-        // Fetch Token Image
-        const tokenImgId = await actor.get_token_image_id(ledgerId);
-        if (tokenImgId?.Ok) {
-          const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId?.Ok}`;
-          setTokenImg(imageUrl);
+  
+        // Fetch Token Image and Cover Image
+        const [tokenImgResult, coverImgResult] = await Promise.allSettled([
+          fetchWithRetry(() => actor.get_token_image_id(ledgerId), 3, 1000),
+          fetchWithRetry(() => actor.get_cover_image_id(ledgerId), 3, 1000),
+        ]);
+  
+        if (tokenImgResult.status === "fulfilled" && tokenImgResult.value?.Ok) {
+          setTokenImg(`${protocol}://${canisterId}.${domain}/f/${tokenImgResult.value?.Ok}`);
         } else {
-          console.warn("Token image ID not found:", tokenImgId);
+          console.warn("Token image ID not found:", tokenImgResult);
         }
-
-        // Fetch Cover Image
-        const coverImgId = await actor.get_cover_image_id(ledgerId);
-        if (coverImgId?.Ok) {
-          const imageUrl = `${protocol}://${canisterId}.${domain}/f/${coverImgId?.Ok}`;
-          setCoverImg(imageUrl);
+  
+        if (coverImgResult.status === "fulfilled" && coverImgResult.value?.Ok) {
+          setCoverImg(`${protocol}://${canisterId}.${domain}/f/${coverImgResult.value?.Ok}`);
         } else {
-          console.warn("Cover image ID not found:", coverImgId);
+          console.warn("Cover image ID not found:", coverImgResult);
         }
-
+  
         // Fetch Presale Data
         if (!projectData) {
           dispatch(SaleParamsHandlerRequest());
@@ -191,6 +209,7 @@ const TokenPage = () => {
       console.error("Error fetching token data:", error);
     }
   };
+  
 
   console.log('useEffect 2')
   useEffect(() => {

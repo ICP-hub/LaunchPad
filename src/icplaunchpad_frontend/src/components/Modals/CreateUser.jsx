@@ -25,6 +25,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const actor = useSelector((currState) => currState.actors.actor);
 
   const principal = useSelector((currState) => currState.internet.principal);
+  console.log('principal',principal)
   const { register,unregister, handleSubmit, formState: { errors }, control, reset, setValue, clearErrors, setError } = useForm({
     resolver: yupResolver(validationSchema),
   });

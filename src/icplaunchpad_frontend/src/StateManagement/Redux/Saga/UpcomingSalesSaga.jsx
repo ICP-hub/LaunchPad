@@ -1,4 +1,4 @@
-import { takeLatest, call, put, select } from "redux-saga/effects";
+import { takeLatest, call, put, select, delay } from "redux-saga/effects";
 import {
   upcomingSalesHandlerRequest,
   upcomingSalesHandlerSuccess,
@@ -9,9 +9,12 @@ const selectActor = (currState) => currState.actors.actor;
 
 function* fetchUpcomingSales() {
   try {
-    const actor = yield select(selectActor);
+    let actor = yield select(selectActor);
     if (!actor) {
-      throw new Error("Actor is not initialized");
+      // Retry or delay until actor is initialized
+      yield delay(1000); // 1-second delay for retry (no call needed)
+      actor = yield select(selectActor);
+      if (!actor) throw new Error("Actor is still not initialized after retry");
     }
     let salesData = yield call([actor, actor.get_upcoming_sales]);
     if (salesData) {
@@ -28,7 +31,6 @@ function* fetchUpcomingSales() {
     );
   }
 }
-
 
 export function* fetchUpcomingSalesSaga() {
   yield takeLatest(upcomingSalesHandlerRequest.type, fetchUpcomingSales);

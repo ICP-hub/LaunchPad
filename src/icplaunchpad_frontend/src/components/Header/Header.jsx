@@ -94,8 +94,9 @@ const Header = () => {
 
   async function getProfileIMG() {
     if (profile_ImgId) {
+      console.log(profile_ImgId)
       // console.log('profile_iMGId', profile_ImgId)
-      const imageUrl = `${protocol}://${canisterId}.${domain}/f/${profile_ImgId.Ok}`;
+      const imageUrl = `${protocol}://${canisterId}.${domain}/f/${profile_ImgId?.Ok}`;
       setProfileImg(imageUrl);
       // console.log("userImg-", imageUrl);
     }

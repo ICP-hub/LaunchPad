@@ -8,27 +8,31 @@ import {
 const selectActor = (currState) => currState.actors.actor;
 
 function* fetchSuccessfulSales() {
-  // console.log("calling fetchSuccessfulSales");
   try {
     const actor = yield select(selectActor);
+
+    if (!actor) {
+      console.log("Actor is not available, waiting for it...");
+      return; // Don't proceed until actor is available
+    }
+
     let SuccessfulSalesData = yield call([actor, actor.get_successful_sales]);
 
-    console.log("get_successful_sales in saga", SuccessfulSalesData?.Ok);
     if (SuccessfulSalesData) {
-      // Proceed with dispatching the success action
       yield put(SuccessfulSalesHandlerSuccess(SuccessfulSalesData?.Ok));
-    }else {
+    } else {
       throw new Error("Invalid SuccessfulSales data format");
     }
   } catch (error) {
     console.error("Error fetching SuccessfulSales data:", error);
     yield put(
-        SuccessfulSalesHandlerFailure(
+      SuccessfulSalesHandlerFailure(
         `Failed to fetch SuccessfulSales data: ${error.message}`
       )
     );
   }
 }
+
 
 export function* fetchSuccessfulSalesSaga() {
   yield takeLatest(SuccessfulSalesHandlerRequest.type, fetchSuccessfulSales);

@@ -29,20 +29,21 @@ function App() {
   const dispatch = useDispatch();
   const identity = useIdentity()
 
+
   const { balance,  fetchBalance } = useBalance()
 
   const fetchDataSequentially = async () => {
     if (isAuthenticated && identity) {
       try {
          dispatch(handleActorRequest({ identity }));
-        await Promise.all([
-          dispatch(userRegisteredHandlerRequest()),
-        dispatch(ProfileImageIDHandlerRequest()),
-        dispatch(TokensInfoHandlerRequest()),
-        dispatch(UserTokensInfoHandlerRequest()),
-        dispatch(upcomingSalesHandlerRequest()),
-        dispatch(SuccessfulSalesHandlerRequest()),
-        ]);
+        //  await Promise.all([
+        //   dispatch(userRegisteredHandlerRequest()),
+        // dispatch(ProfileImageIDHandlerRequest()),
+        // dispatch(TokensInfoHandlerRequest()),
+        // dispatch(UserTokensInfoHandlerRequest()),
+        // dispatch(upcomingSalesHandlerRequest()),
+        // dispatch(SuccessfulSalesHandlerRequest()),
+        // ]);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -53,20 +54,22 @@ function App() {
     fetchDataSequentially();
   }, [isAuthenticated, identity, dispatch]);
 
-  const fetchBalanceData = async () => {
-    if (isAuthenticated && identity) {
-    try {
-      const balance = await fetchBalance();
-      // console.log('fetchUserIcpBalance', balance);
-    } catch (error) {
-      console.error('Error fetching ICP balance:', error);
-    }}
+  const fetchBalanceData = () => {
+    dispatch(userRegisteredHandlerRequest());
+    dispatch(ProfileImageIDHandlerRequest());
+    // Uncomment the following lines as needed
+    // dispatch(TokensInfoHandlerRequest());
+    // dispatch(UserTokensInfoHandlerRequest());
+    // dispatch(upcomingSalesHandlerRequest());
+    // dispatch(SuccessfulSalesHandlerRequest());
   };
-
-
+  
   useEffect(() => {
-    fetchBalanceData();
-  }, [isAuthenticated, identity]);
+    if (actor) {
+      fetchBalanceData();
+    }
+  }, [actor]);
+  
   return (
     <SkeletonTheme baseColor="#FFFFFF1A" highlightColor="#444">
     <div className="text-white max-w-[1700px] mx-auto container">

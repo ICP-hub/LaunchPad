@@ -56,7 +56,7 @@ const tokenSchema = yup.object().shape({
     .positive("Decimals must be positive")
     .integer("Decimals must be an integer")
     .min(1, "Decimals must be greater than 0")
-    .max(255, "Decimals must be less than or equal to 255"),
+    .max(64, "Decimals must be less than or equal to 64"),
 
 
   total_supply: yup
@@ -97,6 +97,7 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
     reset,
   } = useForm({
     resolver: yupResolver(tokenSchema),
+    mode:'all'
   });
 
   useEffect(()=>{
