@@ -45,7 +45,7 @@ const Clients = () => {
   // Handle navigation to the projects page
   const handleViewMoreClick = () => {
     if(salesData && salesData.length > 0)
-       navigate('/projects', {state:{salesData, sale_Type:"Successful"} });
+       navigate('/projects', {state:{sale_Type:"Successful"} });
   };
 
 

@@ -16,7 +16,7 @@ import ProjectCardSkeleton from "../../common/SkeletonUI/ProjectCard.jsx";
 
 const ProjectLists = () => {
   const location = useLocation();
-  const { salesData, sale_Type } = location.state || {};
+  const { sale_Type } = location.state || {};
   const [isLoading, setIsLoading]=useState(true);
 
   const [search, setSearch] = useState("");
@@ -26,9 +26,10 @@ const ProjectLists = () => {
   const [saleType, setSaleType] = useState(sale_Type || "Active");
 
   const dispatch = useDispatch();
-  const projectsData = useSelector((state) => state?.TokensInfo?.data || []);
-  const upcomingSales = useSelector((state) => state?.upcomingSales?.data || []);
-  const successfulSales = useSelector((state) => state?.SuccessfulSales?.data || []);
+  const projectsData = useSelector((state) => state?.TokensInfo);
+  const upcomingSales = useSelector((state) => state?.upcomingSales);
+  const successfulSales = useSelector((state) => state?.SuccessfulSales)
+  console.log('successfulSales',successfulSales)
   const { createCustomActor } = useAuths();
 
   // Fetch tokens data on mount
@@ -57,13 +58,14 @@ const ProjectLists = () => {
       case "Successful":
         return successfulSales;
       default:
-        return salesData ?? projectsData;
+        return projectsData;
     }
-  }, [saleType, salesData, projectsData, upcomingSales.length > 0, successfulSales.length >0]);
+  }, [saleType, projectsData?.data, upcomingSales?.data.length > 0, successfulSales?.data.length > 0]);
 
+  console.log('tokensData',tokensData)
   useEffect(() => {
-    if (tokensData){
-      setFilteredTokensData(tokensData);
+    if (tokensData?.data){
+      setFilteredTokensData(tokensData?.data);
       setIsLoading(false);
       }
   }, [tokensData]);
@@ -98,18 +100,33 @@ const ProjectLists = () => {
 
   // Handle search filtering
   useEffect(() => {
-    debouncedFilterData(search, tokensData);
+    debouncedFilterData(search, tokensData?.data);
 
     return () => {
       debouncedFilterData.cancel();
     };
-  }, [search, tokensData, debouncedFilterData]);
+  }, [search, tokensData?.data, debouncedFilterData]);
+
+
+  const handleFilterChange = async (type) => {
+    setIsLoading();
+    if (type === 'Upcoming') {
+      await dispatch(upcomingSalesHandlerRequest());
+    } else if (type === 'Successful') {
+      await dispatch(SuccessfulSalesHandlerRequest());
+    } else {
+      await dispatch(TokensInfoHandlerRequest());
+    }
+    setSaleType(type);
+    setIsLoading(false);
+  };
+  
 
   // Handle sorting
   const handleSort = useCallback(
     async (order) => {
       const sortedData = await Promise.all(
-        tokensData.map(async (data) => {
+        tokensData?.data.map(async (data) => {
           const tokenName =
             data.token_name || (await getTokenName(data[0]?.ledger_canister_id));
           return { ...data, resolvedTokenName: tokenName.toLowerCase() };
@@ -124,7 +141,7 @@ const ProjectLists = () => {
 
       setFilteredTokensData(sortedData);
     },
-    [tokensData, getTokenName]
+    [tokensData?.data, getTokenName]
   );
 
   const SaleType = ["Upcoming", "Active", "Successful"];
@@ -182,10 +199,7 @@ const ProjectLists = () => {
                     className={`cursor-pointer  mx-2 hover:text-[#ebe8e898] text-center py-2 ${index === (SaleType.length - 1) ? 'border-b-0' : ' border-b-2 '}`}
 
                     onClick={() => {
-                      type == 'Upcoming' ? dispatch(upcomingSalesHandlerRequest()) 
-                      : type == 'Successful' ?  dispatch(SuccessfulSalesHandlerRequest())
-                      :  dispatch(TokensInfoHandlerRequest());
-                      setSaleType(type);
+                      handleFilterChange(type);
                       setShowFilterDropdown(false);
                     }}
                   >

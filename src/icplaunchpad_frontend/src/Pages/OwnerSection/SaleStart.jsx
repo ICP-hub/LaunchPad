@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 // import { useDispatch } from 'react-redux';
 import { SuccessfulSalesHandlerRequest } from '../../StateManagement/Redux/Reducers/SuccessfulSales';
 import { upcomingSalesHandlerRequest } from '../../StateManagement/Redux/Reducers/UpcomingSales';
+import Skeleton from 'react-loading-skeleton';
 
 const SaleStart = ({ style, setTokenPhase, presaleData }) => {
     // const dispatch = useDispatch();
-    const [timeRemaining, setTimeRemaining] = useState("Loading...");
+    const [timeRemaining, setTimeRemaining] = useState();
     const [phase, setPhase] = useState("upcoming"); // Track the sale phase internally
 
     useEffect(()=>{
@@ -75,7 +76,7 @@ const SaleStart = ({ style, setTokenPhase, presaleData }) => {
     return (
         <>
             <p className={`${style.text_heading} mb-2`}>{(timeRemaining === "Sale Started!" || timeRemaining === "Sale Ended!") ? "" : "SALE STARTS IN"}</p>
-            <div className={`${style.text_content} font-bold`} >{timeRemaining}</div>
+            <div className={`${style.text_content} font-bold`} >{timeRemaining ? timeRemaining :  <Skeleton width={80} height={15} /> }</div>
         </>
     );
 };
