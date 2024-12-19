@@ -209,7 +209,6 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
     overlayClassName="fixed inset-0 z-50 bg-black bg-opacity-60"
     ariaHideApp={false}
   >
-    <form onSubmit={handleSubmit(onSubmit)}>
     <div className="bg-[#222222] p-6 rounded-2xl text-white mx-6 max-h-[90vh] w-[786px] relative">
       {/* Modal Header */}
       <div className="bg-[#FFFFFF4D] px-4 py-1 mb-4 rounded-2xl relative">
@@ -220,7 +219,8 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
           Create User
         </h2>
       </div>
-
+      
+    <form onSubmit={handleSubmit(onSubmit)}>
       {/* Scrollable Form Content */}
       <div style={{ maxHeight: "calc(90vh - 150px)", overflowY: "auto" }}>
         <div  className="space-y-4">
@@ -396,8 +396,8 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
       <div className="flex justify-center items-center mt-4">
         <AnimationButton text="Submit" loading={isSubmitting} isDisabled={isSubmitting}  />
       </div>
-    </div>
     </form>
+  </div> 
   </Modal>
 </div>
 
