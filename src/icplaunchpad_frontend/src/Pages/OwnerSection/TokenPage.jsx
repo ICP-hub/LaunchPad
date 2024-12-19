@@ -47,7 +47,7 @@ const TokenPage = () => {
   const [topUpCansiter,setTopUpCansiter] = useState('')
   const location = useLocation();
   const { projectData } = location.state || {};
-  const { actor, createCustomActor, isAuthenticated, principal } = useAuths();
+  const { createCustomActor, isAuthenticated, principal } = useAuths();
   const [tokenData, setTokenData] = useState(null);
   const [tokenImg, setTokenImg] = useState();
   const [coverImg, setCoverImg] = useState();
@@ -60,6 +60,7 @@ const TokenPage = () => {
   const [saleProgress, setSaleProgress] = useState(0);
   const [balance, setBalance]=useState(0);
 
+  const actor = useSelector((currState) => currState.actors.actor);
   // const presale = useSelector((state) => state.SaleParams.data.Ok);
   const dispatch = useDispatch()
 

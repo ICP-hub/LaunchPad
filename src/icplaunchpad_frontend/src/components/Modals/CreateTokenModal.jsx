@@ -175,8 +175,8 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
             console.log("Token creation response:", response);
 
             if (response && response.Ok) {
-                dispatch(TokensInfoHandlerRequest());
-                dispatch(UserTokensInfoHandlerRequest());
+                // dispatch(TokensInfoHandlerRequest());
+                // dispatch(UserTokensInfoHandlerRequest());
                 const { ledger_canister_id, index_canister_id } = response.Ok;
                 navigate("/verify-token", {
                     state: {
@@ -225,8 +225,8 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
                 console.log("Token creation response:", response);
 
                 if (response && response.Ok) {
-                    dispatch(TokensInfoHandlerRequest());
-                    dispatch(UserTokensInfoHandlerRequest());
+                    // dispatch(TokensInfoHandlerRequest());
+                    // dispatch(UserTokensInfoHandlerRequest());
                     const { ledger_canister_id, index_canister_id } = response.Ok;
                     navigate("/verify-token", {
                         state: {

@@ -23,6 +23,7 @@ import { Actor } from "@dfinity/agent";
 import RaisedFundProgress from "../../common/RaisedFundProgress.jsx";
 import ApproveOrRejectModal from "../../common/ApproveOrRejectModal.jsx";
 import Skeleton from "react-loading-skeleton";
+import { useSelector } from "react-redux";
 
 const TokenPage = () => {
   const [tokenPhase, setTokenPhase] = useState("");
@@ -30,11 +31,14 @@ const TokenPage = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 640);
   const location = useLocation();
   const { projectData } = location.state || {};
-  const { actor, createCustomActor, principal } = useAuths();
+  const {  createCustomActor, principal } = useAuths();
   const [saleParams, setSaleParams] = useState(null);
   const [ledgerActor, setLedgerActor] = useState(null);
   const [tokenOwnerInfo, setTokenOwnerInfo] = useState(null);
   const [ModalIsOpen, setModalIsOpen] = useState(false);
+
+  const actor = useSelector((currState) => currState.actors.actor);
+
   console.log("baclance at 35",tokenOwnerInfo)
   const [amount, setAmount] = useState(0);
   console.log("amount")
@@ -424,7 +428,7 @@ console.log("ledger actor ", ledgerActor)
               <div className="flex flex-col">
                 <span className="text-sm text-gray-400">UNSOLD TOKENS</span>
                 <span className="text-lg font-semibold">
-                  {projectData ? ` ${projectData.total_supply.toString()} ${projectData.token_symbol}` : <Skeleton width={80} height={20}/> }
+                  {projectData ? ` ${projectData.total_supply && projectData.total_supply.toString()} ${projectData.token_symbol}` : <Skeleton width={80} height={20}/> }
                 </span>
               </div>
               <div className="flex flex-col">

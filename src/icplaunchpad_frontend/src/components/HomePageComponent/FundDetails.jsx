@@ -4,6 +4,7 @@ import { convertTimestampToISTFormatted } from '../../utils/convertTimestampToIS
 import { useAuths } from '../../StateManagement/useContext/useClient';
 import { useSelector } from 'react-redux';
 import Skeleton from 'react-loading-skeleton';
+import { fetchWithRetry } from '../../utils/fetchWithRetry';
 
 const FundDetails = ({ sale, index }) => {
     const [tokenDetails, setTokenDetails] = useState({});

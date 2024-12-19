@@ -36,14 +36,14 @@ function App() {
     if (isAuthenticated && identity) {
       try {
          dispatch(handleActorRequest({ identity }));
-        //  await Promise.all([
-        //   dispatch(userRegisteredHandlerRequest()),
+         await Promise.all([
+          dispatch(userRegisteredHandlerRequest()),
         // dispatch(ProfileImageIDHandlerRequest()),
         // dispatch(TokensInfoHandlerRequest()),
         // dispatch(UserTokensInfoHandlerRequest()),
         // dispatch(upcomingSalesHandlerRequest()),
         // dispatch(SuccessfulSalesHandlerRequest()),
-        // ]);
+        ]);
       } catch (error) {
         console.error('Error fetching data:', error);
       }

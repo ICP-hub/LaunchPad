@@ -53,7 +53,7 @@ const VerifyToken = () => {
       setTokenData(formData)
   }, [formData])
 
-  console.log('tokenData',tokenData)
+  console.log('tokenData', tokenData)
   const {
     register,
     unregister,
@@ -81,168 +81,198 @@ const VerifyToken = () => {
     console.log("Submitting presale details with data:", data);
 
     try {
-        setIsSubmitting(true);
-        const {
-            token_name = tokenData?.token_name,
-            FairlaunchTokens,
-            hardcapToken,
-            softcapToken,
-            minimumBuy,
-            maximumBuy,
-            tokensLiquidity,
-            liquidityPercentage,
-            startTime,
-            endTime,
-            logoURL,
-            description,
-            social_links,
-            project_video,
-            coverImageURL,
-            website = "",
-        } = presaleDetails;
+      setIsSubmitting(true);
+      const {
+        token_name = tokenData?.token_name,
+        FairlaunchTokens,
+        hardcapToken,
+        softcapToken,
+        minimumBuy,
+        maximumBuy,
+        tokensLiquidity,
+        liquidityPercentage,
+        startTime,
+        endTime,
+        logoURL,
+        description,
+        social_links,
+        project_video,
+        coverImageURL,
+        website = "",
+      } = presaleDetails;
 
-        const start_time_utc = Math.floor(new Date(startTime).getTime() / 1000);
-        const end_time_utc = Math.floor(new Date(endTime).getTime() / 1000);
-        const TokenPicture = logoURL ? await convertFileToBytes(logoURL) : null;
-        const CoverPicture = coverImageURL ? await convertFileToBytes(coverImageURL) : null;
-        const creatorPrincipal =
-            typeof principal === "string"
-                ? Principal.fromText(principal)
-                : principal;
+      const start_time_utc = Math.floor(new Date(startTime).getTime() / 1000);
+      const end_time_utc = Math.floor(new Date(endTime).getTime() / 1000);
+      const TokenPicture = logoURL ? await convertFileToBytes(logoURL) : null;
+      const CoverPicture = coverImageURL ? await convertFileToBytes(coverImageURL) : null;
+      const creatorPrincipal =
+        typeof principal === "string"
+          ? Principal.fromText(principal)
+          : principal;
 
-        const presaleData = {
-            creator: creatorPrincipal,
-            tokens_for_fairlaunch: parseInt(FairlaunchTokens),
-            hardcap: parseInt(hardcapToken),
-            softcap: parseInt(softcapToken),
-            min_contribution: parseInt(minimumBuy),
-            max_contribution: parseInt(maximumBuy),
-            start_time_utc,
-            end_time_utc,
-            tokens_for_liquidity: parseInt(tokensLiquidity),
-            liquidity_percentage: parseFloat(liquidityPercentage),
-            description,
-            social_links,
-            website,
-            project_video,
-        };
+      const presaleData = {
+        creator: creatorPrincipal,
+        tokens_for_fairlaunch: parseInt(FairlaunchTokens),
+        hardcap: parseInt(hardcapToken),
+        softcap: parseInt(softcapToken),
+        min_contribution: parseInt(minimumBuy),
+        max_contribution: parseInt(maximumBuy),
+        start_time_utc,
+        end_time_utc,
+        tokens_for_liquidity: parseInt(tokensLiquidity),
+        liquidity_percentage: parseFloat(liquidityPercentage),
+        description,
+        social_links,
+        website,
+        project_video,
+      };
 
-        const ledgerPrincipalId =
-            typeof ledger_canister_id !== "string" && ledger_canister_id
-                ? Principal.fromUint8Array(ledger_canister_id)
-                : Principal.fromText(ledger_canister_id);
+      const ledgerPrincipalId =
+        typeof ledger_canister_id !== "string" && ledger_canister_id
+          ? Principal.fromUint8Array(ledger_canister_id)
+          : Principal.fromText(ledger_canister_id);
 
-        if (!ledgerPrincipalId) throw new Error("Invalid ledger canister ID");
+      if (!ledgerPrincipalId) throw new Error("Invalid ledger canister ID");
 
-        console.log("ledger_canister_id:", ledger_canister_id);
+      console.log("ledger_canister_id:", ledger_canister_id);
 
-        const response = await actor.create_sale(ledgerPrincipalId, presaleData);
-
-        if (response?.Err) {
-            console.error("Presale creation failed:", response.Err);
-            toast.error(`Presale creation failed: ${response.Err}`);
-            return;
-        }
-
-        console.log("Presale creation response:", response.Ok);
-        setTokenApproved(response.Ok);
+      // Create an array of promises for presale and images
+      const promises = [
+        actor.create_sale(ledgerPrincipalId, presaleData),
+      ];
 
       if (TokenPicture) {
-       
-        const imgUrl = {
-          content: [TokenPicture],
-          ledger_id: ledgerPrincipalId,
-        };
-        const res = await actor.upload_token_image(process.env.CANISTER_ID_IC_ASSET_HANDLER, imgUrl);
-        console.log("uploaded img response ", res)
-      }
-
-      if (CoverPicture) { 
-        const imgUrl_cover = {
-          content: [CoverPicture],
-          ledger_id: ledgerPrincipalId,
-        };
-        const res = await actor.upload_cover_image(process.env.CANISTER_ID_IC_ASSET_HANDLER, imgUrl_cover);
-        console.log("uploaded cover img response ", res)
-      }
-
-        dispatch(
-            SetLedgerIdHandler({
-                ledger_canister_id: ledgerPrincipalId.toText(),
-                index_canister_id: index_canister_id,
-            })
+        promises.push(
+          actor.upload_token_image(process.env.CANISTER_ID_IC_ASSET_HANDLER, {
+            content: [TokenPicture],
+            ledger_id: ledgerPrincipalId,
+          })
         );
+      }
 
-        dispatch(upcomingSalesHandlerRequest());
-        dispatch(SuccessfulSalesHandlerRequest());
-        dispatch(UserTokensInfoHandlerRequest());
+      if (CoverPicture) {
+        promises.push(
+          actor.upload_cover_image(process.env.CANISTER_ID_IC_ASSET_HANDLER, {
+            content: [CoverPicture],
+            ledger_id: ledgerPrincipalId,
+          })
+        );
+      }
 
-        if (process.env.NETWORK === "ic") {
-            try {
-                const ledgerActor = Actor.createActor(ledgerIDL, {
-                    agent,
-                    canisterId: ledger_canister_id.toText(),
-                });
+      // Execute all promises
+      const results = await Promise.allSettled(promises);
 
-                const spenderAccount = {
-                    owner: Principal.fromText(process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND),
-                    subaccount: [],
-                };
+      // Handle presale creation response
+      const presaleResult = results[0];
+      if (presaleResult.status === "rejected" || presaleResult.value?.Err) {
+        const errorMsg =
+          presaleResult.status === "rejected"
+            ? presaleResult.reason || "Unknown error occurred during presale creation."
+            : presaleResult.value.Err;
+        throw new Error(errorMsg);
+      }
 
-                const expiresAtTimeInMicroseconds = getExpirationTimeInMicroseconds(10);
-                const creationTimeInMicroseconds = timestampAgo(BigInt(Date.now()) * 1000n);
-                const Amount = BigInt(Math.round(tokenApproved * 10 ** tokenData?.decimals));
-                const feeAmount = BigInt(Math.round(0.0001 * 10 ** 8) + 10000);
+      console.log("Presale created successfully:", presaleResult.value.Ok);
+      setTokenApproved(presaleResult.value.Ok);
 
-                const icrc2ApproveArgs = {
-                    from_subaccount: [],
-                    spender: spenderAccount,
-                    fee: [Amount],
-                    memo: [],
-                    amount: feeAmount,
-                    created_at_time: [creationTimeInMicroseconds],
-                    expected_allowance: [feeAmount],
-                    expires_at: [expiresAtTimeInMicroseconds],
-                };
-
-                const approveResponse = await ledgerActor.icrc2_approve(icrc2ApproveArgs);
-                console.log("ICRC2 approve response:", approveResponse);
-
-                if (approveResponse?.Err) {
-                    throw new Error(`ICRC2 approval failed: ${approveResponse.Err}`);
-                }
-
-                toast.success("ICRC2 approval successful.");
-            } catch (approvalError) {
-                console.error("ICRC2 approval failed:", approvalError);
-                toast.error("ICRC2 approval failed. Please check the network or parameters.");
-            }
+      // Handle token image upload response
+      if (TokenPicture) {
+        const tokenImageResult = results[1];
+        if (tokenImageResult.status === "fulfilled") {
+          console.log("Token image uploaded successfully:", tokenImageResult.value);
+        } else {
+          console.warn("Error uploading token image:", tokenImageResult.reason);
         }
+      }
+
+      // Handle cover image upload response
+      if (CoverPicture) {
+        const coverImageIndex = TokenPicture ? 2 : 1;
+        const coverImageResult = results[coverImageIndex];
+        if (coverImageResult.status === "fulfilled") {
+          console.log("Cover image uploaded successfully:", coverImageResult.value);
+        } else {
+          console.warn("Error uploading cover image:", coverImageResult.reason);
+        }
+      }
+
+      // Dispatch necessary actions
+      dispatch(
+        SetLedgerIdHandler({
+          ledger_canister_id: ledgerPrincipalId.toText(),
+          index_canister_id: index_canister_id,
+        })
+      );
+      dispatch(upcomingSalesHandlerRequest());
+      dispatch(SuccessfulSalesHandlerRequest());
+      dispatch(UserTokensInfoHandlerRequest());
+
+      if (process.env.NETWORK === "ic") {
+        try {
+          const ledgerActor = Actor.createActor(ledgerIDL, {
+            agent,
+            canisterId: ledger_canister_id.toText(),
+          });
+
+          const spenderAccount = {
+            owner: Principal.fromText(process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND),
+            subaccount: [],
+          };
+
+          const expiresAtTimeInMicroseconds = getExpirationTimeInMicroseconds(10);
+          const creationTimeInMicroseconds = timestampAgo(BigInt(Date.now()) * 1000n);
+          const Amount = BigInt(Math.round(tokenApproved * 10 ** tokenData?.decimals));
+          const feeAmount = BigInt(Math.round(0.0001 * 10 ** 8) + 10000);
+
+          const icrc2ApproveArgs = {
+            from_subaccount: [],
+            spender: spenderAccount,
+            fee: [Amount],
+            memo: [],
+            amount: feeAmount,
+            created_at_time: [creationTimeInMicroseconds],
+            expected_allowance: [feeAmount],
+            expires_at: [expiresAtTimeInMicroseconds],
+          };
+
+          const approveResponse = await ledgerActor.icrc2_approve(icrc2ApproveArgs);
+          console.log("ICRC2 approve response:", approveResponse);
+
+          if (approveResponse?.Err) {
+            throw new Error(`ICRC2 approval failed: ${approveResponse.Err}`);
+          }
+
+          toast.success("ICRC2 approval successful.");
+        } catch (approvalError) {
+          console.error("ICRC2 approval failed:", approvalError);
+          toast.error("ICRC2 approval failed. Please check the network or parameters.");
+        }
+      }
     } catch (error) {
-        console.error("Submission failed with error:", error);
-        setError(error.toString());
-        toast.error(error.message || "An unexpected error occurred.");
+      console.error("Submission failed with error:", error);
+      setError(error.toString());
+      toast.error(error.message || "An unexpected error occurred.");
     } finally {
-        setIsSubmitting(false);
+      setIsSubmitting(false);
     }
-};
+  };
 
 
-  
+
 
   const handleNext = handleSubmit((data) => {
     console.log("Step form data:", data);
-  
+
     // Merge current step data into presaleDetails
     setPresaleDetails((prev) => ({
       ...prev,
       ...data,
       ...tokenData, // Ensure tokenData values are also included
     }));
-  
+
     // Debug logs for validation
     console.log("Moving to the next step:", currentStep);
-  
+
     // Proceed to the next step or submit
     if (currentStep < 4) {
       setError(""); // Clear any previous errors
@@ -251,8 +281,8 @@ const VerifyToken = () => {
       submitPresaleDetails(data);
     }
   });
-  
-  
+
+
   const handleBack = () => {
     if (currentStep > 1) setCurrentStep((prevStep) => prevStep - 1);
   };
@@ -312,7 +342,7 @@ const VerifyToken = () => {
             onClick={() => {
               handleNext();
             }}
-            disabled = { isSubmitting }
+            disabled={isSubmitting}
 
           >
             {/* {currentStep === 4 ? "Submit" : "Next"} */}
