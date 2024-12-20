@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { convertTimestampToIST } from '../../../utils/convertTimestampToIST';
 import { Principal } from '@dfinity/principal';
 import CopyToClipboard from '../../../common/CopyToClipboard';
+import PoolDetailsSkeleton from '../../../common/SkeletonUI/PoolDetailsSkeleton';
 
 const PoolInfoTab = ({ presaleData, poolData }) => {
   const actor = useSelector((currState) => currState.actors.actor);
@@ -15,6 +16,7 @@ const PoolInfoTab = ({ presaleData, poolData }) => {
    const [isLoading, setIsLoading]=useState(true);
   useEffect(() => {
     async function fetchPresale() {
+
       try {
         if (!presaleData && poolData?.canister_id) { // Fetch only if presaleData is missing
           const ledgerId = typeof poolData?.canister_id === 'string'
@@ -47,6 +49,8 @@ const PoolInfoTab = ({ presaleData, poolData }) => {
 
   return (
     <div className="text-gray-300 p-6 rounded-lg w-full max-w-full">
+       { !isLoading ? 
+      <>
       <div className="flex justify-between gap-1 mb-6">
         <span>Address</span>
         <span className="border-b-2 overflow-hidden text-right">
@@ -55,8 +59,7 @@ const PoolInfoTab = ({ presaleData, poolData }) => {
       </div>
       {/* Total Supply  */}
       <div className="border-t pt-4">
-      { !isLoading ? 
-      <>
+     
         <div className="flex justify-between border-b py-2">
           <span className="text-gray-400">Total Supply</span>
           <span className="text-white">{`${poolData?.total_supply || "N/A"} ${poolData?.token_symbol || ""}`}</span>
@@ -97,12 +100,12 @@ const PoolInfoTab = ({ presaleData, poolData }) => {
         <div className="flex justify-between text-[14px] xxs1:text-[17px] border-b py-2">
           <span>Liquidity Percent</span>
           <span> {` ${presale?.liquidity_percentage}% `} </span>
-        </div>
-        </>
-            :
-            <div className="text-center py-4">Loading token data...</div>
-          }
+        </div> 
       </div> 
+        </>
+        :
+       <PoolDetailsSkeleton/>
+      }
     </div>
   );
 };

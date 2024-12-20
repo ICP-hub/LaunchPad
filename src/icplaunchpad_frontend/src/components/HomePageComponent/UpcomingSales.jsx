@@ -14,7 +14,7 @@ const UpcomingSales = React.forwardRef((props, ref) => {
   const handleViewMoreClick = () => {
     if (salesData?.data && salesData?.data.length > 0) {
       navigate("/projects", {
-        state: { salesData: salesData?.data[0], sale_Type: "Upcoming" },
+        state: {sale_Type: "Upcoming" },
       });
     }
   };
@@ -28,7 +28,7 @@ const UpcomingSales = React.forwardRef((props, ref) => {
         <h2 className="text-white font-bold font-posterama text-[24px] xxs1:text-3xl">
           UPCOMING SALES
         </h2>
-        {salesData?.data && salesData?.data.length > 0 && (
+        {salesData?.data && salesData?.data.length > 3 && (
           <button
             onClick={handleViewMoreClick}
             className="text-white hidden sm:block font-posterama underline text-[15px] xxs1:text-xl"
