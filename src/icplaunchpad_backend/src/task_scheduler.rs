@@ -3,8 +3,18 @@ use std::time::Duration;
 use candid::{Nat, Principal};
 use ic_cdk::api::{call::CallResult, time};
 use ic_cdk_timers::set_timer_interval;
-use crate::{api_query::get_sale_params, perform_refund, send_tokens_to_contributor, tax_transfer_on_funds_raised, tax_transfer_on_tokens, Account, TransferFromArgs, TransferFromResult, U64Wrapper, STATE};
+use crate::{api_query::{get_funds_raised, get_sale_params}, perform_refund, send_tokens_to_contributor, tax_transfer_on_funds_raised, tax_transfer_on_tokens, Account, AddPoolArgs, TransferFromArgs, TransferFromResult, U64Wrapper, STATE};
 
+
+#[ic_cdk::post_upgrade]
+pub async fn process_sales() {
+    set_timer_interval(Duration::from_secs(60), || {
+        ic_cdk::spawn(async {
+            // This callback will run every minute (60 seconds).
+            process_sales_end().await;
+        });
+    });
+}
 
 async fn process_sales_end() {
     let current_time = time() / 1_000_000_000; // Convert to seconds
@@ -115,16 +125,21 @@ async fn process_sale(sale_id: Principal, softcap_reached: bool) -> Result<(), S
                     }
                 });
 
-                // Only trigger `transfer_fee_and_liquidity_to_backend` if tokens were successfully distributed (softcap_reached)
+                // Only trigger the tax functions and `add_pool` if tokens were successfully distributed (softcap_reached)
                 if softcap_reached {
+                    // Transfer the liquidity and fee to backend
                     transfer_fee_and_liquidity_to_backend(sale_id).await?;
 
                     // After the above transfer is successful, trigger the tax transfer (fee only)
                     let fee_amount = details.fee_for_approval;  // The fee to send
+                    ic_cdk::println!("Fee transferred given- token tax is: {}",fee_amount);
                     tax_transfer_on_tokens(sale_id, fee_amount).await?; // Send the fee to the fee collector
 
                     // Now trigger the tax transfer on funds raised
                     tax_transfer_on_funds_raised(sale_id).await?; // Transfer fee on funds raised to fee collector
+
+                    // **Only after all tax functions are successful, call add_pool**
+                    add_pool_to_kong(sale_id).await?;  // Call the add_pool function after taxes
                 }
 
                 Ok(()) // Return Ok after processing
@@ -143,6 +158,7 @@ async fn process_sale(sale_id: Principal, softcap_reached: bool) -> Result<(), S
         Err(format!("Sale details not found for Sale ID: {:?}", sale_id)) // Return error if sale details are not found
     }
 }
+
 
 
 
@@ -325,7 +341,7 @@ async fn distribute_tokens(sale_id: &Principal) -> Result<(), String> {
 //FUNCTION WHICH SENDS LIQUIDITY+FEE TO BACKEND POST SALE.
 async fn transfer_fee_and_liquidity_to_backend(ledger_canister_id: Principal) -> Result<(), String> {
     // Get the sale parameters using the ledger canister ID
-    let sale_details = get_sale_params(ledger_canister_id)?;
+    let sale_details = get_sale_params(ledger_canister_id).await?;
 
     // Ensure the sale has ended and tokens were distributed
     if !sale_details.processed || !sale_details.is_ended {
@@ -338,9 +354,11 @@ async fn transfer_fee_and_liquidity_to_backend(ledger_canister_id: Principal) ->
     // Retrieve the backend canister ID (where funds will be transferred)
     let backend_canister_id = ic_cdk::id();
 
+    let transfer_amount = sale_details.tokens_for_liquidity_after_fee + sale_details.fee_for_approval;
+
     // Create transfer arguments for liquidity tokens after fee and the fee amount
     let transfer_args = TransferFromArgs {
-        amount: Nat::from(sale_details.tokens_for_liquidity_after_fee + sale_details.fee_for_approval),
+        amount: Nat::from(transfer_amount),
         to: Account {
             owner: backend_canister_id,
             subaccount: None,
@@ -354,6 +372,8 @@ async fn transfer_fee_and_liquidity_to_backend(ledger_canister_id: Principal) ->
             subaccount: None,
         },
     };
+
+    ic_cdk::println!("Transferring total amount of tokens: {}", transfer_amount);
 
     // Call `icrc2_transfer_from` to transfer the tokens to the backend canister
     let response: CallResult<(TransferFromResult,)> = ic_cdk::call(
@@ -377,14 +397,98 @@ async fn transfer_fee_and_liquidity_to_backend(ledger_canister_id: Principal) ->
     }
 }
 
+#[ic_cdk::update]
+pub async fn add_pool_to_kong(sale_id: Principal) -> Result<(), String> {
+    // Step 1: Query sale parameters to get liquidity after fee
+    let sale_params = match get_sale_params(sale_id).await {
+        Ok(params) => params,
+        Err(e) => {
+            let error_message = format!("Failed to get sale parameters for Sale ID {:?}: {}", sale_id, e);
+            ic_cdk::println!("{}", error_message);
+            return Err(error_message);
+        }
+    };
+    let liquidity_after_fee = sale_params.tokens_for_liquidity_after_fee;
 
+    // Step 2: Get funds raised, deduct 5% and use it for amount_1
+    let funds_raised = match get_funds_raised(sale_id) {
+        Ok(funds) => funds,
+        Err(e) => {
+            let error_message = format!("Failed to get funds raised for Sale ID {:?}: {}", sale_id, e);
+            ic_cdk::println!("{}", error_message);
+            return Err(error_message);
+        }
+    };
+    let amount_1 = funds_raised - (funds_raised / 20); // Deduct 5%
 
-#[ic_cdk::post_upgrade]
-pub async fn process_sales() {
-    set_timer_interval(Duration::from_secs(60), || {
-        ic_cdk::spawn(async {
-            // This callback will run every minute (60 seconds).
-            process_sales_end().await;
+    // Step 3: Format token_0 as the sale ID (token_0)
+    let token_0 = format!("IC.{}", sale_id);
+
+    // Step 4: Token_1 is always ICP
+    let token_1 = "ICP".to_string();
+
+    // Step 5: Prepare AddPoolArgs
+    let args = AddPoolArgs {
+        token_0,
+        amount_0: liquidity_after_fee.into(),
+        tx_id_0: None, // Assuming no tx_id is needed
+        token_1,
+        amount_1: amount_1.into(),
+        tx_id_1: None, // Assuming no tx_id is needed
+        lp_fee_bps: None,
+        kong_fee_bps: None,
+        on_kong: None,
+    };
+
+    // Step 6: Call the inter-canister `add_pool` function
+    let kong_canister_id = match Principal::from_text("2ipq2-uqaaa-aaaar-qailq-cai") {
+        Ok(principal) => principal,
+        Err(e) => {
+            let error_message = format!("Invalid Kong Canister ID: {}", e);
+            ic_cdk::println!("{}", error_message);
+            return Err(error_message);
+        }
+    };
+
+    // Adjust the result handling to map RejectionCode to u32
+    let result = ic_cdk::call(kong_canister_id, "add_pool", (args,))
+        .await
+        .map_err(|(code, message)| {
+            let error_message = format!(
+                "Failed to add pool for Sale ID {:?}. Error Code: {:?}, Message: {}",
+                sale_id,
+                code as u32, // Map RejectionCode to u32
+                message
+            );
+            ic_cdk::println!("{}", error_message);
+            (code as u32, message)
         });
-    });
+
+    // Step 7: Handle the result
+    match result {
+        Ok(()) => {
+            ic_cdk::println!("Pool added successfully for Sale ID: {:?}", sale_id);
+            Ok(())
+        }
+        Err((code, message)) => {
+            Err(format!(
+                "Failed to add pool for Sale ID {:?}. Error Code: {}, Message: {}",
+                sale_id, code, message
+            ))
+        }
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

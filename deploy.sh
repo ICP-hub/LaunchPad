@@ -62,10 +62,9 @@ if [ -z "$MINTER_ACCOUNT_ID" ]; then
 fi
 
 # Switch back to the default identity and set DEFAULT_ACCOUNT_ID only if not already set
-dfx identity use default
-if [ -z "$DEFAULT_ACCOUNT_ID" ]; then
-  export DEFAULT_ACCOUNT_ID=$(dfx ledger account-id)
-fi
+dfx identity use controller
+DEFAULT_ACCOUNT_ID=$(dfx ledger account-id)
+
 
 # Switch back to the controller identity
 dfx identity use controller
@@ -79,7 +78,7 @@ dfx deploy --specified-id ryjl3-tyaaa-aaaaa-aaaba-cai icp_ledger_canister --argu
           record {
             \"$DEFAULT_ACCOUNT_ID\";
             record {
-              e8s = 10_000_000_000 : nat64;
+              e8s = 10_000_000_000_000000000 : nat64;
             };
           };
         };
@@ -123,6 +122,4 @@ done
 
 echo "Cycle fabrication completed for all local canisters."
 
-# Final deployment message
-echo "Deployment complete. Please use the Candid UI to call the 'create_token' function with your parameters."
-echo "Or run ./tokendeploy.sh to run example token parameters."
+echo "run ./test_fairlaunch.sh to run an example successful fairlaunch."
