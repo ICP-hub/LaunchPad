@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useAuths } from '../../../StateManagement/useContext/useClient';
 import CopyToClipboard from '../../../common/CopyToClipboard';
+import TokenDetailsSkeleton from '../../../common/SkeletonUI/TokenDetailsSkeleton';
 
 
 const TokenTab = ({ ledgerId }) => {
-  const {createCustomActor}=useAuths();
+  const { createCustomActor } = useAuths();
   const [tokenData, setTokenData] = useState(null);
-   console.log('ledgerId->', ledgerId)
+  console.log('ledgerId->', ledgerId)
   const fetchTokenData = async () => {
     try {
       const actor = await createCustomActor(ledgerId); // Assuming createCustomActor is defined elsewhere
@@ -36,19 +37,20 @@ const TokenTab = ({ ledgerId }) => {
 
   return (
     <div className="bg-[#FFFFFF1A] sm:bg-transparent text-gray-300 p-3 xxs1:p-6 rounded-lg w-full max-w-full">
-      {/* Token Address */}
-      <div className="flex justify-between mb-4">
-        <span>Address</span>
-        <span className="border-b-2 ml-2 text-right overflow-hidden text-ellipsis whitespace-nowrap">
-          <CopyToClipboard address={ledgerId}/>
-        </span>
-      </div>
-      <p className="text-xs mb-6">Do not send ICP to the token address</p>
+      {tokenData ? (
+        <>
+          {/* Token Address */}
+          <div className="flex justify-between mb-4">
+            <span>Address</span>
+            <span className="border-b-2 ml-2 text-right overflow-hidden text-ellipsis whitespace-nowrap">
+              <CopyToClipboard address={ledgerId} />
+            </span>
+          </div>
+          <p className="text-xs mb-6">Do not send ICP to the token address</p>
 
-      {/* Token Details */}
-      <div className="border-t pt-4">
-        {tokenData ? (
-          <>
+          {/* Token Details */}
+          <div className="border-t pt-4">
+
             <div className="flex border-b-2 justify-between py-2">
               <span>Name</span>
               <span>{tokenData.tokenName}</span>
@@ -67,11 +69,12 @@ const TokenTab = ({ ledgerId }) => {
                 {tokenData.tokenSupply ? tokenData.tokenSupply.toString() : 'N/A'}
               </span>
             </div>
-          </>
-        ) : (
-          <div className="text-center py-4">Loading token data...</div>
-        )}
-      </div>
+
+          </div>
+        </>
+      ) : (
+        <TokenDetailsSkeleton/>
+      )}
     </div>
   );
 };

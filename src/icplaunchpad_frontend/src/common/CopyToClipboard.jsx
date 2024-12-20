@@ -3,7 +3,7 @@ import React, { useRef, useState } from 'react'
 import { FaRegCopy } from "react-icons/fa";
 import { FaRegCheckCircle } from "react-icons/fa";
 
-const CopyToClipboard = ({address, width}) => {
+const CopyToClipboard = ({address, width, isBgNone}) => {
     const [copySuccess, setCopySuccess] = useState(false);
     const inputRef = useRef(null);
 
@@ -24,7 +24,8 @@ const CopyToClipboard = ({address, width}) => {
             <input
     ref={inputRef}
     type="text"
-    className={" py-2 pl-4 pr-10 mb-2 bg-[#333333] outline-none relative rounded-md"}
+    className={`py-2 pl-4 pr-10  outline-none relative rounded-md ${isBgNone ? "bg-transparent" : "bg-[#333333] mb-2 "}`}
+
     style={{ width: width || '100%' }}
     value={
         typeof address === 'string'

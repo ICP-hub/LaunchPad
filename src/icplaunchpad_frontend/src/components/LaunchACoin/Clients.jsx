@@ -53,7 +53,7 @@ const Clients = () => {
     <div  className=" h-full   md:mb-[5%] lg:mb-0 sm4:mb-3 py-[5%]">
       <div className="flex justify-between items-center px-[4%] md:px-[9%] mb-10 mx-auto">
         <h2 className="text-white font-bold font-posterama text-[20px] xxs1:text-3xl">CLIENT SUCCESS STORIES</h2>
-        {salesData && salesData.length > 0 && (<button onClick={handleViewMoreClick} className="text-white font-posterama hidden sm:block underline text-[15px] xxs1:text-xl">
+        {salesData && salesData.length > 3 && (<button onClick={handleViewMoreClick} className="text-white font-posterama hidden sm:block underline text-[15px] xxs1:text-xl">
           View More
         </button>)
         }
@@ -72,10 +72,11 @@ const Clients = () => {
             <NoDataFound message="No Successful Sales Found..." message2="No tokens have been successfully raised for this project yet." message3="Kickstart your fundraising journey by creating and sharing your campaign." />
       </div>
       }
-      
+      {salesData && salesData.length > 3 &&
       <button onClick={handleViewMoreClick} className="text-white font-posterama  sm:hidden underline text-[20px] mt-6 xxs1:text-xl">
           Load More
         </button>
+      }
     </div>
     </div>
   );
