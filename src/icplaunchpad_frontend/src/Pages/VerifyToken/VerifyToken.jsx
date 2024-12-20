@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -20,6 +18,7 @@ import { getSchemaForStep } from "../../common/Validations/TokensValidation";
 import compressImage from "../../utils/CompressedImage";
 import { toast, Toaster } from "react-hot-toast";
 import { UserTokensInfoHandlerRequest } from "../../StateManagement/Redux/Reducers/UserTokensInfo";
+import { useBlocker } from "../../common/NavigationBlocker";
 
 
 const convertFileToBytes = async (file) => {
