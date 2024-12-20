@@ -49,129 +49,87 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const onSubmit = async (data) => {
     setIsSubmitting(true);
     setValidationError('');
-  
+
     const { name, username, links, profile_picture, tags } = data;
     console.log('links=', links);
-  
-    console.log('data',data)
-    console.log('links=', links);
-  
+    console.log('data', data);
+
     if (!termsAccepted) {
-      setValidationError('Please accept the terms and conditions.');
-      setValidationError('Please accept the terms and conditions.');
-      setIsSubmitting(false);
-      return;
+        setValidationError('Please accept the terms and conditions.');
+        setIsSubmitting(false);
+        return;
     }
-  
-  
+
     try {
-      const userData = {
-        name,
-        username,
-        profile_picture: imageData ? [imageData] : [],
-        links,
-        tag: tags.length > 0 ? tags : [],
-      };
-  console.log('userData',userData)
-      // Create an array of promises
-      const promises = [
-        actor.create_account(userData), // Create the user account
-      ];
-  
-      if (userData.profile_picture.length > 0) {
-        promises.push(
-          actor.upload_profile_image(process.env.CANISTER_ID_IC_ASSET_HANDLER, {
-            content: userData.profile_picture,
-          }) // Upload profile picture if it exists
-        );
-  
-      console.log('userData',userData)
-      // Create an array of promises
-      const promises = [
-        actor.create_account(userData), // Create the user account
-      ];
-  
-      if (userData.profile_picture.length > 0) {
-        promises.push(
-          actor.upload_profile_image(process.env.CANISTER_ID_IC_ASSET_HANDLER, {
-            content: userData.profile_picture,
-          }) // Upload profile picture if it exists
-        );
-      }
-  
-      // Use Promise.allSettled to handle all promises
-      const results = await Promise.allSettled(promises);
-  
-      // Handle the results
-      const createAccountResult = results[0];
-      if (createAccountResult.status === 'rejected' || createAccountResult.value?.Err) {
-        const errorMsg =
-          createAccountResult.status === 'rejected'
-            ? createAccountResult.reason || 'Unknown error occurred while creating account.'
-            : createAccountResult.value.Err;
-        throw new Error(errorMsg);
-  
-      // Use Promise.allSettled to handle all promises
-      const results = await Promise.allSettled(promises);
-  
-      // Handle the results
-      const createAccountResult = results[0];
-      if (createAccountResult.status === 'rejected' || createAccountResult.value?.Err) {
-        const errorMsg =
-          createAccountResult.status === 'rejected'
-            ? createAccountResult.reason || 'Unknown error occurred while creating account.'
-            : createAccountResult.value.Err;
-        throw new Error(errorMsg);
-      }
-  
-      console.log('User account created:', createAccountResult.value);
-  
-      if (results.length > 1) {
-        const uploadImageResult = results[1];
-        if (uploadImageResult.status === 'rejected') {
-          console.warn('Error uploading profile picture:', uploadImageResult.reason);
-        } else {
-          console.log('Profile picture uploaded successfully');
-  
-      console.log('User account created:', createAccountResult.value);
-  
-      if (results.length > 1) {
-        const uploadImageResult = results[1];
-        if (uploadImageResult.status === 'rejected') {
-          console.warn('Error uploading profile picture:', uploadImageResult.reason);
-        } else {
-          console.log('Profile picture uploaded successfully');
-          dispatch(ProfileImageIDHandlerRequest());
+        const userData = {
+            name,
+            username,
+            profile_picture: imageData ? [imageData] : [],
+            links,
+            tags: tags.length > 0 ? tags : [],
+        };
+
+        console.log('userData', userData);
+
+        // Create an array of promises
+        const promises = [
+            actor.create_account(userData), // Create the user account
+        ];
+
+        if (userData.profile_picture.length > 0) {
+            promises.push(
+                actor.upload_profile_image(process.env.CANISTER_ID_IC_ASSET_HANDLER, {
+                    content: userData.profile_picture,
+                })
+            );
         }
-      }
-  
-  
-      if (!principal) {
-        throw new Error('User is not authenticated or principal is missing.');
-        throw new Error('User is not authenticated or principal is missing.');
-      }
-  
-      // Dispatch user registration action
-      dispatch(userRegisteredHandlerRequest());
-  
-  
-      // Dispatch user registration action
-      dispatch(userRegisteredHandlerRequest());
-  
-      // Close modal, reset form, and navigate to home
-      setUserModalIsOpen(false);
-      navigate('/');
-      navigate('/');
-      reset();
+
+        // Use Promise.allSettled to handle all promises
+        const results = await Promise.allSettled(promises);
+
+        // Handle account creation result
+        const createAccountResult = results[0];
+        if (createAccountResult.status === 'rejected' || createAccountResult.value?.Err) {
+            const errorMsg =
+                createAccountResult.status === 'rejected'
+                    ? createAccountResult.reason || 'Unknown error occurred while creating account.'
+                    : createAccountResult.value.Err;
+            throw new Error(errorMsg);
+        }
+
+        console.log('User account created:', createAccountResult.value);
+
+        // Handle profile picture upload result if applicable
+        if (results.length > 1) {
+            const uploadImageResult = results[1];
+            if (uploadImageResult.status === 'rejected') {
+                console.warn('Error uploading profile picture:', uploadImageResult.reason);
+            } else {
+                console.log('Profile picture uploaded successfully');
+                dispatch(ProfileImageIDHandlerRequest());
+            }
+        }
+
+        if (!principal) {
+            throw new Error('User is not authenticated or principal is missing.');
+        }
+
+        // Dispatch user registration action
+        dispatch(userRegisteredHandlerRequest());
+
+        // Close modal, reset form, and navigate to home
+        setUserModalIsOpen(false);
+        navigate('/');
+        reset();
+
     } catch (err) {
-      console.error('An error occurred:', err);
-      setValidationError(err.message || 'An error occurred while creating the User.');
-      console.error('An error occurred:', err);
-      setValidationError(err.message || 'An error occurred while creating the User.');
+        console.error('An error occurred:', err);
+        setValidationError(err.message || 'An error occurred while creating the User.');
     } finally {
-      setIsSubmitting(false);
+        setIsSubmitting(false);
     }
-  };
+};
+
   
   
 
