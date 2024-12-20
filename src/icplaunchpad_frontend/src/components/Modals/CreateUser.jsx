@@ -15,6 +15,7 @@ import getReactSelectStyles from '../../common/Reactselect';
 import { FaTrash } from "react-icons/fa";
 import { getSocialLogo } from "../../common/getSocialLogo";
 import { validationSchema } from '../../common/Validations/UserValidation';
+import { validationSchema } from '../../common/Validations/UserValidation';
 import AnimationButton from '../../common/AnimationButton';
 import { userRegisteredHandlerRequest } from '../../StateManagement/Redux/Reducers/userRegisteredData';
 import { ProfileImageIDHandlerRequest } from '../../StateManagement/Redux/Reducers/ProfileImageID';
@@ -25,8 +26,10 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const actor = useSelector((currState) => currState.actors.actor);
 
   const principal = useSelector((currState) => currState.internet.principal);
-  const { register,unregister, handleSubmit, formState: { errors }, control, reset, setValue, clearErrors, setError } = useForm({
+  console.log('principal',principal)
+  const { register,unregister, handleSubmit, formState: { errors }, control, reset, setValue, clearErrors, setError,trigger } = useForm({
     resolver: yupResolver(validationSchema),
+    mode:'all'
   });
 
   const dispatch = useDispatch();
@@ -35,6 +38,8 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const [fileName, setFileName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [links, setLinks] = useState([{ url: '' }]);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [imageData, setImageData] = useState(null);
   // Manage social links with react-hook-form's useFieldArray
   const { append, remove } = useFieldArray({
     control,
@@ -44,96 +49,88 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const onSubmit = async (data) => {
     setIsSubmitting(true);
     setValidationError('');
-  
+
     const { name, username, links, profile_picture, tags } = data;
     console.log('links=', links);
-  
+    console.log('data', data);
+
     if (!termsAccepted) {
-      setValidationError('Please accept the terms and conditions.');
-      setIsSubmitting(false);
-      return;
+        setValidationError('Please accept the terms and conditions.');
+        setIsSubmitting(false);
+        return;
     }
-  
+
     try {
-      // Prepare user data
-      let originalFileSize = 0;
-      let profilePictureData = [];
-     
-      if (profile_picture ) {
-        originalFileSize = profile_picture.size;
-        console.log('Original Image Size (bytes):', originalFileSize);
-  
-        const compressedFile = await CompressedImage(profile_picture);
-        console.log('Compressed Image Size (bytes):', compressedFile.size);
-        profilePictureData = await convertFileToUint8Array(compressedFile);
-        
-      }
-  
-      const userData = {
-        name,
-        username,
-        profile_picture: profilePictureData.length > 0 ? [profilePictureData] : [],
-        links,
-        tag: tags.length > 0 ? tags : [],
-      };
-  
-      console.log('userData',userData)
-      // Create an array of promises
-      const promises = [
-        actor.create_account(userData), // Create the user account
-      ];
-  
-      if (userData.profile_picture.length > 0) {
-        promises.push(
-          actor.upload_profile_image(process.env.CANISTER_ID_IC_ASSET_HANDLER, {
-            content: userData.profile_picture,
-          }) // Upload profile picture if it exists
-        );
-      }
-  
-      // Use Promise.allSettled to handle all promises
-      const results = await Promise.allSettled(promises);
-  
-      // Handle the results
-      const createAccountResult = results[0];
-      if (createAccountResult.status === 'rejected' || createAccountResult.value?.Err) {
-        const errorMsg =
-          createAccountResult.status === 'rejected'
-            ? createAccountResult.reason || 'Unknown error occurred while creating account.'
-            : createAccountResult.value.Err;
-        throw new Error(errorMsg);
-      }
-  
-      console.log('User account created:', createAccountResult.value);
-  
-      if (results.length > 1) {
-        const uploadImageResult = results[1];
-        if (uploadImageResult.status === 'rejected') {
-          console.warn('Error uploading profile picture:', uploadImageResult.reason);
-        } else {
-          console.log('Profile picture uploaded successfully');
-          dispatch(ProfileImageIDHandlerRequest());
+        const userData = {
+            name,
+            username,
+            profile_picture: imageData ? [imageData] : [],
+            links,
+            tags: tags.length > 0 ? tags : [],
+        };
+
+        console.log('userData', userData);
+
+        // Create an array of promises
+        const promises = [
+            actor.create_account(userData), // Create the user account
+        ];
+
+        if (userData.profile_picture.length > 0) {
+            promises.push(
+                actor.upload_profile_image(process.env.CANISTER_ID_IC_ASSET_HANDLER, {
+                    content: userData.profile_picture,
+                })
+            );
         }
-      }
-  
-      if (!principal) {
-        throw new Error('User is not authenticated or principal is missing.');
-      }
-  
-      // Dispatch user registration action
-      dispatch(userRegisteredHandlerRequest());
-  
-      // Close modal, reset form, and navigate to home
-      setUserModalIsOpen(false);
-      navigate('/');
-      reset();
+
+        // Use Promise.allSettled to handle all promises
+        const results = await Promise.allSettled(promises);
+
+        // Handle account creation result
+        const createAccountResult = results[0];
+        if (createAccountResult.status === 'rejected' || createAccountResult.value?.Err) {
+            const errorMsg =
+                createAccountResult.status === 'rejected'
+                    ? createAccountResult.reason || 'Unknown error occurred while creating account.'
+                    : createAccountResult.value.Err;
+            throw new Error(errorMsg);
+        }
+
+        console.log('User account created:', createAccountResult.value);
+
+        // Handle profile picture upload result if applicable
+        if (results.length > 1) {
+            const uploadImageResult = results[1];
+            if (uploadImageResult.status === 'rejected') {
+                console.warn('Error uploading profile picture:', uploadImageResult.reason);
+            } else {
+                console.log('Profile picture uploaded successfully');
+                dispatch(ProfileImageIDHandlerRequest());
+            }
+        }
+
+        if (!principal) {
+            throw new Error('User is not authenticated or principal is missing.');
+        }
+
+        // Dispatch user registration action
+        dispatch(userRegisteredHandlerRequest());
+
+        // Close modal, reset form, and navigate to home
+        setUserModalIsOpen(false);
+        navigate('/');
+        reset();
+
     } catch (err) {
-      console.error('An error occurred:', err);
-      setValidationError(err.message || 'An error occurred while creating the User.');
+        console.error('An error occurred:', err);
+        setValidationError(err.message || 'An error occurred while creating the User.');
     } finally {
-      setIsSubmitting(false);
+        setIsSubmitting(false);
     }
-  };
+};
+
+  
   
 
   // Helper function to convert file to Uint8Array
@@ -158,6 +155,35 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
     document.getElementById('profile_picture').click();
   };
 
+  const imageCreationFunc = async (file) => {
+    const result = await trigger('profile_picture');
+    if (result) {
+      try {
+        const compressedFile = await CompressedImage(file);
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setImagePreview(reader.result);
+        };
+        reader.readAsDataURL(compressedFile);
+        const byteArray = await compressedFile.arrayBuffer();
+        setImageData(Array.from(new Uint8Array(byteArray)));
+      } catch (error) {
+        setError('profile_picture', {
+          type: 'manual',
+          message: 'Could not process image, please try another.',
+        });
+      }
+    } else {
+      console.log('ERROR--imageCreationFunc-file', file);
+    }
+  };
+
+  const clearImageFunc = (val) => {
+    setValue(val, null);
+    clearErrors(val);
+    setImageData(null);
+    setImagePreview(null);
+  };
 
   // const extractDomain = (url) => {
   //   try {
@@ -181,7 +207,6 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const removeLink = (index) => {
     setLinks(prev => prev.filter((_, i) => i !== index));
     clearErrors(`links.${index}`);
-    clearErrors("links");
     unregister(`links.${index}`);
   };
   const updateLink = (index, value) => {
@@ -211,7 +236,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
     overlayClassName="fixed inset-0 z-50 bg-black bg-opacity-60"
     ariaHideApp={false}
   >
-    <div className="bg-[#222222] p-6 rounded-2xl text-white mx-6 max-h-[90vh] w-[786px] relative">
+        <div className="bg-[#222222] p-6 rounded-2xl text-white mx-6 max-h-[90vh] w-[786px] relative">
       {/* Modal Header */}
       <div className="bg-[#FFFFFF4D] px-4 py-1 mb-4 rounded-2xl relative">
         <button onClick={closeModal} className="absolute top-2 right-4 text-[20px] font-bold text-white">
@@ -221,7 +246,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
           Create User
         </h2>
       </div>
-      
+
     <form onSubmit={handleSubmit(onSubmit)}>
       {/* Scrollable Form Content */}
       <div style={{ maxHeight: "calc(90vh - 150px)", overflowY: "auto" }}>
@@ -264,6 +289,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
                     onChange={(e) => {
                       field.onChange(e.target.files[0]);
                       setFileName(e.target.files[0]?.name || "");
+                      imageCreationFunc(e.target.files[0]);
                     }}
                   />
                 )}
@@ -399,7 +425,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
         <AnimationButton text="Submit" loading={isSubmitting} isDisabled={isSubmitting}  />
       </div>
     </form>
-  </div> 
+    </div>
   </Modal>
 </div>
 

@@ -2,18 +2,29 @@ import React, { useEffect, useState } from 'react';
 import { PiCopyDuotone } from 'react-icons/pi';
 import CopyToClipboard from '../../../common/CopyToClipboard';
 import TokenDetailsSkeleton from '../../../common/SkeletonUI/TokenDetailsSkeleton';
+import { fetchWithRetry } from '../../../utils/fetchWithRetry';
 
-const TokenInfoTab = ({ ledger_canister_id,actor }) => {
+const TokenInfoTab = ({ ledger_canister_id, actor }) => {
   const [tokenData, setTokenData] = useState(null);
   console.log(ledger_canister_id)
   const fetchTokenData = async () => {
     try {
       if (actor) {
-      
-        const tokenName = await actor.icrc1_name();
-        const tokenSymbol = await actor.icrc1_symbol();
-        const tokenDecimals = await actor.icrc1_decimals();
-        const tokenSupply = await actor.icrc1_total_supply();
+        
+        // Fetch Token Details with retry logic
+        const tokenDataResults = await Promise.allSettled([
+          fetchWithRetry(() => actor.icrc1_name(), 3, 1000),
+          fetchWithRetry(() => actor.icrc1_symbol(), 3, 1000),
+          fetchWithRetry(() => actor.icrc1_decimals(), 3, 1000),
+          fetchWithRetry(() => actor.icrc1_total_supply(), 3, 1000),
+        ]);
+
+        console.log("Token Data Results:", tokenDataResults);
+
+        const tokenName = tokenDataResults[0].status === "fulfilled" ? tokenDataResults[0].value : null;
+        const tokenSymbol = tokenDataResults[1].status === "fulfilled" ? tokenDataResults[1].value : null;
+        const tokenDecimals = tokenDataResults[2].status === "fulfilled" ? tokenDataResults[2].value : null;
+        const tokenSupply = tokenDataResults[3].status === "fulfilled" ? tokenDataResults[3].value : null;
 
         setTokenData({
           tokenName,
@@ -39,7 +50,7 @@ const TokenInfoTab = ({ ledger_canister_id,actor }) => {
       <div className="flex justify-between mb-4">
         <span>Address</span>
         <span className="border-b-2  ml-2 text-right overflow-hidden text-ellipsis whitespace-nowrap">
-         <CopyToClipboard address={ledger_canister_id}/>
+          <CopyToClipboard address={ledger_canister_id} />
 
         </span>
       </div>

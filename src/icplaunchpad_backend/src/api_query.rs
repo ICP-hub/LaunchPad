@@ -46,18 +46,22 @@ pub fn get_user_by_username(username: String) -> Result<UserAccount, String> {
 
 
 #[ic_cdk::query]
-pub fn is_account_created() -> String {
+pub fn is_account_created() -> Result<bool, String> {
     let caller = ic_cdk::api::caller();
 
-    // Check if the account exists in the state
-    let account_status = read_state(|state| state.user_accounts.contains_key(&caller));
+    // Attempt to check if the account exists in the state
+    let result = read_state(|state| state.user_accounts.contains_key(&caller));
 
-    if account_status {
-        format!("Account for principal {} is already created.", caller)
+    if result {
+        Ok(true) 
     } else {
-        format!("Account for principal {} has not been created yet.", caller)
+        Err(format!(
+            "Account for principal {} has not been created yet.",
+            caller
+        )) 
     }
 }
+
 
 #[ic_cdk::query]
 pub fn get_tokens_info() -> Result<Vec<CanisterIndexInfo>, String> {

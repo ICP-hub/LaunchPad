@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuths } from '../../../StateManagement/useContext/useClient';
 import CopyToClipboard from '../../../common/CopyToClipboard';
 import TokenDetailsSkeleton from '../../../common/SkeletonUI/TokenDetailsSkeleton';
+import { fetchWithRetry } from '../../../utils/fetchWithRetry';
 
 
 const TokenTab = ({ ledgerId }) => {
@@ -10,22 +11,39 @@ const TokenTab = ({ ledgerId }) => {
   console.log('ledgerId->', ledgerId)
   const fetchTokenData = async () => {
     try {
-      const actor = await createCustomActor(ledgerId); // Assuming createCustomActor is defined elsewhere
+      const actor = await fetchWithRetry(
+        () => createCustomActor(ledgerId), // Retry creating the actor
+        3,
+        1000
+      );
+  
       if (actor) {
-        const tokenName = await actor.icrc1_name();
-        const tokenSymbol = await actor.icrc1_symbol();
-        const tokenDecimals = await actor.icrc1_decimals();
-        const tokenSupply = await actor.icrc1_total_supply();
-
-        setTokenData({
-          tokenName,
-          tokenSymbol,
-          tokenDecimals,
-          tokenSupply,
-        });
+        // Fetch token data using Promise.allSettled with retry logic
+        const tokenDataResults = await Promise.allSettled([
+          fetchWithRetry(() => actor?.icrc1_name(), 3, 1000),
+          fetchWithRetry(() => actor?.icrc1_symbol(), 3, 1000),
+          fetchWithRetry(() => actor?.icrc1_decimals(), 3, 1000),
+          fetchWithRetry(() => actor?.icrc1_total_supply(), 3, 1000),
+        ]);
+  
+        const tokenName = tokenDataResults[0]?.status === "fulfilled" ? tokenDataResults[0]?.value : null;
+        const tokenSymbol = tokenDataResults[1]?.status === "fulfilled" ? tokenDataResults[1]?.value : null;
+        const tokenDecimals = tokenDataResults[2]?.status === "fulfilled" ? tokenDataResults[2]?.value : null;
+        const tokenSupply = tokenDataResults[3]?.status === "fulfilled" ? tokenDataResults[3]?.value : null;
+  
+        if (tokenName && tokenSymbol && tokenDecimals && tokenSupply) {
+          setTokenData({
+            tokenName,
+            tokenSymbol,
+            tokenDecimals,
+            tokenSupply,
+          });
+        } else {
+          console.error("Some token data could not be fetched.");
+        }
       }
     } catch (err) {
-      console.error('Error fetching token data:', err);
+      console.error("Error fetching token data:", err);
     }
   };
 

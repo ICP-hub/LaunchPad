@@ -4,6 +4,7 @@ import { Principal } from "@dfinity/principal";
 import { useAuths } from "../../../StateManagement/useContext/useClient";
 import CopyToClipboard from "../../../common/CopyToClipboard";
 import { useAgent } from "@nfid/identitykit/react";
+import { fetchWithRetry } from "../../../utils/fetchWithRetry";
 
 const VerifyTokenTab = ({ register, errors, setTokenData, watch, ledger_canister_id, tokenData }) => {
   const [tokenInfo, setTokenInfo] = useState(null);
@@ -13,50 +14,46 @@ const VerifyTokenTab = ({ register, errors, setTokenData, watch, ledger_canister
   // console.log('ledger_canister_id',ledgerPrincipalId.toText()); 
   useEffect(() => {
     if (ledger_canister_id) {
-      if (typeof ledger_canister_id != 'string') {
-        const ledgerId = Principal.fromUint8Array(ledger_canister_id)
-        getTokenData(ledgerId.toText());
-      } else {
-        const ledgerId = Principal.fromText(ledger_canister_id)
-        getTokenData(ledgerId);
-      }
+        if (typeof ledger_canister_id !== 'string') {
+            const ledgerId = Principal.fromUint8Array(ledger_canister_id);
+            getTokenData(ledgerId.toText());
+        } else {
+            const ledgerId = Principal.fromText(ledger_canister_id);
+            getTokenData(ledgerId);
+        }
     }
+}, [ledger_canister_id]);
 
-  }, [ledger_canister_id]);
-  const getTokenData = async (ledger_canister_id) => {
+const getTokenData = async (ledger_canister_id) => {
     try {
         console.log("Fetching token data for canister ID:", ledger_canister_id);
+
         const actor = await createCustomActor(ledger_canister_id);
 
         if (!actor) {
             console.error("Actor creation failed.");
             return;
         }
+
         console.log("Actor created successfully:", actor);
 
-        const tokenDataResults = await Promise.all([
-            actor?.icrc1_name?.().catch((err) => {
-                console.error("Error fetching icrc1_name:", err);
-                return null;
-            }),
-            actor?.icrc1_symbol?.().catch((err) => {
-                console.error("Error fetching icrc1_symbol:", err);
-                return null;
-            }),
-            actor?.icrc1_decimals?.().catch((err) => {
-                console.error("Error fetching icrc1_decimals:", err);
-                return null;
-            }),
-            actor?.icrc1_total_supply?.().catch((err) => {
-                console.error("Error fetching icrc1_total_supply:", err);
-                return null;
-            }),
+        // Fetch token data using Promise.allSettled
+        const tokenDataResults = await Promise.allSettled([
+            fetchWithRetry(() => actor?.icrc1_name?.(), 3, 1000),
+            fetchWithRetry(() => actor?.icrc1_symbol?.(), 3, 1000),
+            fetchWithRetry(() => actor?.icrc1_decimals?.(), 3, 1000),
+            fetchWithRetry(() => actor?.icrc1_total_supply?.(), 3, 1000),
         ]);
 
         console.log("Token Data Results:", tokenDataResults);
 
-        const [tokenName, tokenSymbol, tokenDecimals, tokenSupply] = tokenDataResults;
+        // Process the settled promises
+        const tokenName = tokenDataResults[0].status === "fulfilled" ? tokenDataResults[0].value : null;
+        const tokenSymbol = tokenDataResults[1].status === "fulfilled" ? tokenDataResults[1].value : null;
+        const tokenDecimals = tokenDataResults[2].status === "fulfilled" ? tokenDataResults[2].value : null;
+        const tokenSupply = tokenDataResults[3].status === "fulfilled" ? tokenDataResults[3].value : null;
 
+        // Check if all required data is available
         if (!tokenName || !tokenSymbol || !tokenDecimals || !tokenSupply) {
             console.error("Error: Some token data could not be fetched.");
             return;
@@ -68,6 +65,7 @@ const VerifyTokenTab = ({ register, errors, setTokenData, watch, ledger_canister
             decimals: tokenDecimals,
             total_supply: tokenSupply,
         });
+
     } catch (err) {
         console.error("Error fetching token data:", err);
     }
@@ -75,16 +73,6 @@ const VerifyTokenTab = ({ register, errors, setTokenData, watch, ledger_canister
 
 
 
-const fetchWithRetry = async (fn, retries = 1, delay = 1000) => {
-    try {
-        return await fn();
-    } catch (err) {
-        if (retries === 0) throw err;
-        console.warn(`Retrying... Attempts left: ${retries}`);
-        await new Promise((resolve) => setTimeout(resolve, delay));
-        return fetchWithRetry(fn, retries - 1, delay);
-    }
-};
   
   const feeOption = watch("feeOption", false);
   const currencyICP = watch("currencyICP", false);

@@ -25,7 +25,7 @@ type RejectionCode = variant {
   CanisterReject;
 };
 type Result = variant { Ok : nat; Err : text };
-type Result_1 = variant { Ok; Err : text };
+type Result_1 = variant { Ok : text; Err : text };
 type Result_10 = variant {
   Ok : vec record { SaleDetailsWithID; nat };
   Err : text;
@@ -38,8 +38,9 @@ type Result_15 = variant {
   Ok : vec record { CanisterIndexInfo; SaleDetails };
   Err : text;
 };
-type Result_16 = variant { Ok : CanisterIndexInfo; Err : text };
-type Result_17 = variant { Ok : text; Err : text };
+type Result_16 = variant { Ok : bool; Err : text };
+type Result_17 = variant { Ok; Err : text };
+type Result_18 = variant { Ok : CanisterIndexInfo; Err : text };
 type Result_2 = variant { Ok : nat64; Err : text };
 type Result_3 = variant { Ok : TokenCreationResult; Err : text };
 type Result_4 = variant { Ok; Err : record { RejectionCode; text } };
@@ -147,15 +148,15 @@ service : () -> {
   icrc10_supported_standards : () -> (vec SupportedStandard) query;
   icrc28_trusted_origins : () -> (Icrc28TrustedOriginsResponse);
   icrc_get_balance : (principal) -> (Result_5);
-  import_token : (principal, opt principal) -> (Result_1);
-  insert_funds_raised : (principal, nat64) -> (Result_1);
+  import_token : (principal, opt principal) -> (Result_16);
+  insert_funds_raised : (principal, nat64) -> (Result_17);
   is_account_created : () -> (text) query;
   obtain_cycles_for_canister : (nat, principal) -> (Result_5);
-  search_by_token_name_or_symbol : (text) -> (Result_16) query;
-  token_fee_transfer : (principal, nat64, principal) -> (Result_1);
-  update_sale_params : (principal, SaleDetailsUpdate) -> (Result_1);
-  update_user_account : (principal, UserAccount) -> (Result_1);
-  upload_cover_image : (text, CoverImageData) -> (Result_17);
-  upload_profile_image : (text, ProfileImageData) -> (Result_17);
-  upload_token_image : (text, CoverImageData) -> (Result_17);
+  search_by_token_name_or_symbol : (text) -> (Result_18) query;
+  token_fee_transfer : (principal, nat64, principal) -> (Result_17);
+  update_sale_params : (principal, SaleDetailsUpdate) -> (Result_17);
+  update_user_account : (principal, UserAccount) -> (Result_17);
+  upload_cover_image : (text, CoverImageData) -> (Result_1);
+  upload_profile_image : (text, ProfileImageData) -> (Result_1);
+  upload_token_image : (text, CoverImageData) -> (Result_1);
 }

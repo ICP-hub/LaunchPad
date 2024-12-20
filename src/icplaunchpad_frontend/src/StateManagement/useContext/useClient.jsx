@@ -1,9 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { createActor } from "../../../../declarations/icplaunchpad_backend/index";
-import {  useBalance, useIdentity, useAccounts, useDelegationType, useIsInitializing, useAuth, useAgent } from '@nfid/identitykit/react';
+import { useBalance, useIdentity, useAccounts, useDelegationType, useIsInitializing, useAuth, useAgent } from '@nfid/identitykit/react';
 import {
-    loginStart,
     loginSuccess,
     logoutSuccess,
     logoutFailure,
@@ -11,45 +10,52 @@ import {
 import { Actor, HttpAgent } from "@dfinity/agent";
 import { idlFactory as ledgerIDL } from "./ledger.did.js";
 
-
 const AuthContext = createContext();
 const canisterID = process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND;
+
 export const useAuthClient = () => {
     const dispatch = useDispatch();
-    const { connect, disconnect, isConnecting, user } = useAuth()
-         const { balance, fetchBalance } = useBalance()
-         const identity = useIdentity()
-         const accounts = useAccounts()
-         const agent = useAgent()
-         const delegationType = useDelegationType()
-         const isInitializing = useIsInitializing()
+    const { connect, disconnect, isConnecting, user } = useAuth();
+    const { balance, fetchBalance } = useBalance();
+    const identity = useIdentity();
+    const accounts = useAccounts();
+    const delegationType = useDelegationType();
+    const isInitializing = useIsInitializing();
+    
     const [backendActor, setBackendActor] = useState(null);
 
-    // console.log('user',user?.principal.toText())
-    // console.log('icpBalance',balance)
+    const LOCAL_HOST = "http://127.0.0.1:4943";
+    const MAINNET_HOST = "https://icp0.io";
+    const HOST = process.env.DFX_NETWORK === "ic" ? MAINNET_HOST : LOCAL_HOST;
+
     useEffect(() => {
-        if (user) {
-            const backendCanisterId = process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND;
-    
-            if (!backendCanisterId) {
-                console.error("CANISTER_ID_ICPLAUNCHPAD_BACKEND is undefined");
-                return;
-            }
-    
-            const actor = createActor(backendCanisterId, { agent });
-    console.log('actor',actor)
-            setBackendActor(actor);
-    
-            dispatch(
-                loginSuccess({
-                    isAuthenticated: true,
+        const initActor = async () => {
+            if (user && identity && HOST) { // Ensure user and identity are ready
+                const agent = new HttpAgent({
                     identity,
-                    principal: user?.principal.toText(),
-                })
-            );
-        }
-    }, [user, dispatch]);
-    
+                    host: HOST
+                });
+
+                // Fetch root key for local development
+                if (process.env.DFX_NETWORK !== "ic") {
+                    await agent.fetchRootKey();
+                }
+
+                const actor = createActor(canisterID, { agent });
+                setBackendActor(actor);
+
+                dispatch(
+                    loginSuccess({
+                        isAuthenticated: true,
+                        identity,
+                        principal: user?.principal.toText(),
+                    })
+                );
+            }
+        };
+
+        initActor();
+    }, [user, identity, dispatch]);
 
     const handleLogin = async () => {
         try {
@@ -79,30 +85,28 @@ export const useAuthClient = () => {
         }
     };
 
-
-
     const createCustomActor = async (canisterId) => {
         try {
-          if (!canisterId) {
-            throw new Error("Canister ID is required.");
-          }
-          const agent = new HttpAgent({ identity });
-          console.log("Creating actor for canister ID:", canisterId);
-          const actor = Actor.createActor(ledgerIDL, { agent, canisterId });
-          if (!actor) {
-            throw new Error("Actor creation failed. Check the IDL and canister ID.");
-          }
-          console.log("Actor created successfully:", actor);
-          return actor;
-        } catch (err) {
-          console.error("Error creating custom actor:", err.message, err.stack);
-          throw err;
-        }
-      };
-    
-    
-    const principal = user && user.principal ? user.principal.toText() : null;
+            if (!canisterId) {
+                throw new Error("Canister ID is required.");
+            }
+            const agent = new HttpAgent({ identity, host: HOST });
 
+            // Only fetch root key in local development
+            if (process.env.DFX_NETWORK !== "ic") {
+                await agent.fetchRootKey();
+            }
+
+            const actor = Actor.createActor(ledgerIDL, { agent, canisterId });
+            if (!actor) {
+                throw new Error("Actor creation failed. Check the IDL and canister ID.");
+              }
+            return actor;
+        } catch (err) {
+            console.error("Error creating custom actor:", err.message);
+            throw err;
+        }
+    };
 
     return {
         isInitializing,
@@ -114,21 +118,15 @@ export const useAuthClient = () => {
         createCustomActor,
         delegationType,
         handleLogin,
-        principal: principal,
+        principal: user?.principal?.toText() || null,
         logout: handleLogout,
         fetchBalance,
-        actor: createActor(canisterID, {
-            agentOptions: { identity, verifyQuerySignatures: false },
-        }),
     };
 };
 
 export const AuthProvider = ({ children }) => {
     const auth = useAuthClient();
-
-
     return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
 };
 
 export const useAuths = () => useContext(AuthContext);
-

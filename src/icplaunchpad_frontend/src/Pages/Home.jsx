@@ -16,8 +16,10 @@ const actor = useSelector((currState) => currState.actors.actor);
   //   dispatch(SuccessfulSalesHandlerRequest()) 
   // },[actor])
   useEffect(() => {
+    if(actor){
     dispatch(upcomingSalesHandlerRequest()) 
     dispatch(SuccessfulSalesHandlerRequest())
+    }
   }, [dispatch]);
 
   const upcomingSalesRef = useRef(null);

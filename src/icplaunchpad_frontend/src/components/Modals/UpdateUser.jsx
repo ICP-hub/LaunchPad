@@ -7,6 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { Principal } from '@dfinity/principal';
 import { updatevalidationSchema } from '../../common/Validations/UpdateUserValidation';
+import { updatevalidationSchema } from '../../common/Validations/UpdateUserValidation';
 import ReactSelect from 'react-select';
 import getReactSelectStyles from '../../common/Reactselect';
 import { getSocialLogo } from '../../common/getSocialLogo';
@@ -53,7 +54,7 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
 
   useEffect(() => {
     if (userData) {
-     
+
       const selectedTags = userData.tag?.map(tag => ({ value: tag, label: tag })) || [];
       setTagSelectedOptions(selectedTags);
 
@@ -101,36 +102,39 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
     setValidationError('');
     const { name, username, tags } = data;
   
+  
     if (!termsAccepted) {
       setIsSubmitting(false);
       setValidationError('Please accept the terms and conditions.');
       return;
     }
   
+  
     const profile_picture = profilePictureData ? [profilePictureData] : [];
     const linksArray = links.map(link => link.url.trim());
   
+  
     try {
       const updatedUserData = { name, username, profile_picture, links: linksArray, tag: tags };
-  
+
       const promises = [
         // Update user account
         actor.update_user_account(userPrincipal, updatedUserData),
-        
+
         // Upload profile picture (if applicable)
         ...(profile_picture.length > 0
           ? [
-              actor.upload_profile_image(
-                process.env.CANISTER_ID_IC_ASSET_HANDLER,
-                { content: [profile_picture[0]] }
-              )
-            ]
+            actor.upload_profile_image(
+              process.env.CANISTER_ID_IC_ASSET_HANDLER,
+              { content: [profile_picture[0]] }
+            )
+          ]
           : [])
       ];
-  
+
       // Wait for all promises to settle
       const results = await Promise.allSettled(promises);
-  
+
       // Process results
       const updateUserResult = results[0];
       if (updateUserResult.status === 'rejected' || updateUserResult.value?.Err) {
@@ -141,7 +145,9 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
         );
       }
   
+  
       if (profile_picture.length > 0) {
+      
         const uploadProfileResult = results[1];
         if (uploadProfileResult.status === 'rejected') {
           console.warn('Profile picture upload failed:', uploadProfileResult.reason);
@@ -150,25 +156,27 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
           dispatch(ProfileImageIDHandlerRequest());
         }
       }
-  
+
       // Proceed with post-success actions
       dispatch(userRegisteredHandlerRequest());
       setUserModalIsOpen(false);
       reset();
-  
+
     } catch (err) {
+      console.error('Error:', err);
+      setValidationError(err.message || 'An error occurred while updating the user.');
       console.error('Error:', err);
       setValidationError(err.message || 'An error occurred while updating the user.');
     } finally {
       setIsSubmitting(false);
     }
   };
-  
 
-  const closeModal = () =>
-   { setIsVisible(false);
+
+  const closeModal = () => {
+    setIsVisible(false);
     setTimeout(() => setUserModalIsOpen(false), 300); // Match transition duration
-   }
+  }
 
   const addLink = () => setLinks(prev => [...prev, { url: '' }]);
 
@@ -198,8 +206,7 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
         overlayClassName="fixed inset-0 z-50 bg-black bg-opacity-50 transition-opacity duration-300"
         ariaHideApp={false}
       >
-        <div className={`bg-[#222222] p-6 rounded-2xl text-white max-h-[90vh] overflow-y-auto no-scrollbar w-[786px] relative transform transition-all duration-300 ${
-            isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
+        <div className={`bg-[#222222] p-6 rounded-2xl text-white max-h-[90vh] overflow-y-auto no-scrollbar w-[786px] relative transform transition-all duration-300 ${isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
           }`}>
           <div className="bg-[#FFFFFF4D] px-4 py-1 mb-4 rounded-2xl relative">
             <button
@@ -298,17 +305,17 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
                   )}
                 </div>
               ))}
-            <button
-    onClick={addLink}
-    className="text-[#F3B3A7] mt-2"
-    disabled={links.length >= 5} // Limit to 5 links
-  >
-    + Add another link
-  </button>
-  {/* Limit Message */}
-  {links.length >= 5 && (
-    <p className="text-gray-500 text-sm mt-1">You can add up to 5 links only.</p>
-  )}
+              <button
+                onClick={addLink}
+                className="text-[#F3B3A7] mt-2"
+                disabled={links.length >= 5} // Limit to 5 links
+              >
+                + Add another link
+              </button>
+              {/* Limit Message */}
+              {links.length >= 5 && (
+                <p className="text-gray-500 text-sm mt-1">You can add up to 5 links only.</p>
+              )}
             </div>
 
 

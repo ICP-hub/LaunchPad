@@ -24,6 +24,7 @@ import RaisedFundProgress from "../../common/RaisedFundProgress.jsx";
 import ApproveOrRejectModal from "../../common/ApproveOrRejectModal.jsx";
 import Skeleton from "react-loading-skeleton";
 import TokenTransactions from "../../common/TokenTransactions/TokenTransactions";
+import { useSelector } from "react-redux";
 
 const TokenPage = () => {
   const [tokenPhase, setTokenPhase] = useState("");
@@ -31,65 +32,109 @@ const TokenPage = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 640);
   const location = useLocation();
   const { projectData } = location.state || {};
-  const { actor, createCustomActor, principal } = useAuths();
+  const {  createCustomActor, principal } = useAuths();
   const [saleParams, setSaleParams] = useState(null);
   const [ledgerActor, setLedgerActor] = useState(null);
   const [tokenOwnerInfo, setTokenOwnerInfo] = useState(null);
   const [ModalIsOpen, setModalIsOpen] = useState(false);
-  console.log("baclance at 35", tokenOwnerInfo)
+
+  const actor = useSelector((currState) => currState.actors.actor);
+
+  console.log("baclance at 35",tokenOwnerInfo)
   const [amount, setAmount] = useState(0);
   console.log("amount")
   const authenticatedAgent = useAgent()
   console.log("agent project", authenticatedAgent)
-  const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    const fetchTokenData = async () => {
-      if (projectData?.canister_id) {
-        console.log("projectData=>", projectData)
-        try {
-          const ledgerPrincipal = Principal.fromText(projectData.canister_id);
-          const ledgerActor = await createCustomActor(ledgerPrincipal);
-          setLedgerActor(ledgerActor);
-
-          // Fetching the owner of the token
-          const owner = await ledgerActor.icrc1_minting_account();
-          if (owner) {
-            const ownerBalance = await ledgerActor.icrc1_balance_of(owner[0]);
-            setTokenOwnerInfo({
-              owner_bal: ownerBalance.toString(),
-              owner: owner[0].owner.toString(),
-            });
-          }
-        } catch (error) {
-          console.error("Error fetching token data:", error);
-        }
+  const [isLoading, setIsLoading] = useState(false); 
+  
+// Utility function for retrying API calls
+const fetchWithRetry = async (fetchFunction, retries, delay) => {
+  let attempt = 0;
+  while (attempt < retries) {
+    try {
+      return await fetchFunction();
+    } catch (error) {
+      attempt++;
+      console.warn(`Attempt ${attempt} failed. Retrying...`, error);
+      if (attempt >= retries) {
+        throw new Error(`Failed after ${retries} retries: ${error.message}`);
       }
-    };
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
+  }
+};
 
-    const fetchSaleParams = async () => {
+// Main useEffect for fetching data
+useEffect(() => {
+  const fetchTokenData = async () => {
+    if (projectData?.canister_id) {
+      console.log("projectData=>", projectData);
+      try {
+        const ledgerPrincipal = Principal.fromText(projectData.canister_id);
 
-      if (actor && projectData?.canister_id) {
-        try {
-          console.log("ledger id >>>>", projectData.canister_id)
-          const ledgerPrincipal = Principal.fromText(projectData.canister_id);
-          const sale = await actor.get_sale_params(ledgerPrincipal);
-          console.log('SALE=>>>', sale)
-          if (sale?.Ok) {
+        // Create ledger actor with retry logic
+        const ledgerActor = await fetchWithRetry(
+          () => createCustomActor(ledgerPrincipal),
+          3,
+          1000
+        );
+        setLedgerActor(ledgerActor);
 
-            setSaleParams(sale.Ok);
-          } else {
-            console.warn("No sale data available or an error occurred.");
-          }
-        } catch (error) {
-          console.error("Error fetching sale parameters:", error);
+        // Fetching the owner of the token with retry logic
+        const owner = await fetchWithRetry(
+          () => ledgerActor.icrc1_minting_account(),
+          3,
+          1000
+        );
+
+        if (owner) {
+          const ownerBalance = await fetchWithRetry(
+            () => ledgerActor.icrc1_balance_of(owner[0]),
+            3,
+            1000
+          );
+
+          setTokenOwnerInfo({
+            owner_bal: ownerBalance.toString(),
+            owner: owner[0].owner.toString(),
+          });
         }
+      } catch (error) {
+        console.error("Error fetching token data:", error);
       }
-    };
+    }
+  };
 
-    fetchTokenData();
-    fetchSaleParams();
-  }, [actor, projectData?.canister_id, createCustomActor]);
+  const fetchSaleParams = async () => {
+    if (actor && projectData?.canister_id) {
+      try {
+        console.log("ledger id >>>>", projectData.canister_id);
+        const ledgerPrincipal = Principal.fromText(projectData.canister_id);
+
+        // Fetch sale parameters with retry logic
+        const sale = await fetchWithRetry(
+          () => actor.get_sale_params(ledgerPrincipal),
+          3,
+          1000
+        );
+
+        console.log("SALE=>>>", sale);
+
+        if (sale?.Ok) {
+          setSaleParams(sale.Ok);
+        } else {
+          console.warn("No sale data available or an error occurred.");
+        }
+      } catch (error) {
+        console.error("Error fetching sale parameters:", error);
+      }
+    }
+  };
+
+  fetchTokenData();
+  fetchSaleParams();
+}, [projectData?.canister_id]);
+
 
   const renderContent = () => {
     switch (activeTab) {
@@ -158,7 +203,7 @@ const TokenPage = () => {
       subaccount: [],
     };
 
-    console.log('dh', BigInt(amount * 10 ** 8 + 100000))
+    console.log('dh', BigInt(amount * 10 ** 8 + 1000))
     const icrc2_approve_args = {
       from_subaccount: [],
       spender: acc,
@@ -174,16 +219,16 @@ const TokenPage = () => {
 
     console.log("Total amount:", totalamount);
     try {
-      const response = await ledgerActor.icrc2_approve(icrc2_approve_args);
+      const response = await ledgerActor?.icrc2_approve(icrc2_approve_args);
       console.log("Response from payment approve", response);
 
       if (response && response.Ok) {
-        const byer = {
-          buyer_principal: Principal.fromText(principal),
-          tokens: totalamount,
-          icrc1_ledger_canister_id: Principal.fromText(projectData?.canister_id),
-        }
-        const finalOrderResponse = await actor.buy_tokens(byer);
+       const byer = {
+         buyer_principal: Principal.fromText(principal),
+         tokens: totalamount,
+         icrc1_ledger_canister_id: Principal.fromText(projectData?.canister_id),
+       }
+        const finalOrderResponse = await actor?.buy_tokens(byer);
         console.log("Final Order Response", finalOrderResponse);
         toast.success("Transaction successful!");
 
@@ -196,7 +241,7 @@ const TokenPage = () => {
             token_ledger_canister_id: projectData?.canister_id,
           };
 
-          const sellResponse = await actor.sell_tokens(sellArgs);
+          const sellResponse = await actor?.sell_tokens(sellArgs);
           console.log("Sell Tokens Response:", sellResponse);
 
           if (sellResponse && sellResponse?.Ok) {
@@ -383,7 +428,7 @@ const TokenPage = () => {
               <div className="flex flex-col">
                 <span className="text-sm text-gray-400">UNSOLD TOKENS</span>
                 <span className="text-lg font-semibold">
-                  {projectData ? ` ${projectData.total_supply.toString()} ${projectData.token_symbol}` : <Skeleton width={80} height={20} />}
+                  {projectData ? ` ${projectData.total_supply && projectData.total_supply.toString()} ${projectData.token_symbol}` : <Skeleton width={80} height={20}/> }
                 </span>
               </div>
               <div className="flex flex-col">

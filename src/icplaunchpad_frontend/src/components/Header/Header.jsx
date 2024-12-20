@@ -53,7 +53,8 @@ const Header = () => {
   const canisterId = process.env.CANISTER_ID_IC_ASSET_HANDLER;
   const [profileImg, setProfileImg] = useState();
 
-  const { isAuthenticated, principal, actor } = useAuths();
+  const { isAuthenticated, principal } = useAuths();
+  const actor = useSelector((currState) => currState.actors.actor);
   const userData = useSelector((state) => state?.userData?.data);
   const navigate = useNavigate();
   const profile_ImgId = useSelector((state) => state?.ProfileImageID?.data)
@@ -61,30 +62,30 @@ const Header = () => {
 
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && actor) {
       userCheck();
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, actor]);
 
   async function userCheck() {
     try {
       // Check if actor is defined
       if (actor) {
         const response = await actor.is_account_created();
-        console.log("Account creation response:", response);
-        const resultResponse = response.slice(-16);
-        if (resultResponse === "already created.") {
+  
+        if (response?.Ok) {
+          console.log("Account is created:", response.Ok);
           setUserRegister(true);
-
-        } else {
+        } else if (response?.Err) {
+          console.log("Account creation error:", response.Err);
           setUserRegister(false);
-          console.log("User account has not been created yet.");
         }
       }
     } catch (error) {
-      console.error("Specific error occurred:", error.message); // Handle specific known errors
+      console.error("An unexpected error occurred:", error.message); // Handle unexpected errors
     }
   }
+  
 
 
   //fetch profile image  
@@ -94,8 +95,9 @@ const Header = () => {
 
   async function getProfileIMG() {
     if (profile_ImgId) {
+      console.log(profile_ImgId)
       // console.log('profile_iMGId', profile_ImgId)
-      const imageUrl = `${protocol}://${canisterId}.${domain}/f/${profile_ImgId.Ok}`;
+      const imageUrl = `${protocol}://${canisterId}.${domain}/f/${profile_ImgId?.Ok}`;
       setProfileImg(imageUrl);
       // console.log("userImg-", imageUrl);
     }
@@ -140,30 +142,54 @@ const handleFetchToken = async () => {
   }
 };
 
-  const handleSearchedToken = async (data) => {
-    // console.log('searched data', data)
 
-    if (data.canister_id) {
-      const ledgerPrincipal = Principal.fromText(data.canister_id);
+const handleSearchedToken = async (data) => {
+  if (!data.canister_id) return;
+  const ledgerPrincipal = Principal.fromText(data.canister_id);
+  try {
+    // Use Promise.allSettled to fetch token image ID and sale parameters in parallel
+    const [tokenImgResult, saleParamsResult] = await Promise.allSettled([
+      actor.get_token_image_id(ledgerPrincipal),
+      actor.get_sale_params(ledgerPrincipal),
+    ]);
 
-      // Fetch token image ID
-      const tokenImgId = await actor.get_token_image_id(ledgerPrincipal);
-      console.log("Fetched token image ID:", tokenImgId);
-      const saleParams = await actor.get_sale_params(ledgerPrincipal);
-
-      if (tokenImgId && tokenImgId.length > 0) {
-        const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId[tokenImgId.length - 1]}`;
-        console.log("Token Image URL:", imageUrl);
-
-        const creator = saleParams?.Ok?.creator;
-        navigate(creator == principal ? '/token-page' : '/project', { state: { projectData: { ...data, token_image: imageUrl } } });
-      }
-      else {
-        const creator = saleParams?.Ok?.creator;
-        navigate(creator == principal ? '/token-page' : '/project', { state: { projectData: { ...data } } });
-      }
+    // Handle token image ID result
+    let tokenImgId = [];
+    if (tokenImgResult.status === 'fulfilled') {
+      tokenImgId = tokenImgResult.value;
+      console.log('Fetched token image ID:', tokenImgId);
+    } else {
+      console.warn('Error fetching token image ID:', tokenImgResult.reason);
     }
+
+    // Handle sale parameters result
+    let saleParams = null;
+    if (saleParamsResult.status === 'fulfilled') {
+      saleParams = saleParamsResult.value;
+    } else {
+      console.warn('Error fetching sale parameters:', saleParamsResult.reason);
+    }
+
+    // Determine image URL and navigation logic
+    const imageUrl =
+      tokenImgId && tokenImgId.length > 0
+        ? `${protocol}://${canisterId}.${domain}/f/${tokenImgId[tokenImgId.length - 1]}`
+        : null;
+
+    if (imageUrl) {
+      console.log('Token Image URL:', imageUrl);
+    }
+
+    const creator = saleParams?.Ok?.creator;
+    navigate(
+      creator === principal ? '/token-page' : '/project',
+      { state: { projectData: { ...data, ...(imageUrl ? { token_image: imageUrl } : {}) } } }
+    );
+  } catch (error) {
+    console.error('Error handling searched token:', error);
   }
+};
+
 
 
   const toggleDropdown = () => {
