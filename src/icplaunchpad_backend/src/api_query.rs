@@ -3,6 +3,7 @@ use ic_cdk::query;
 
 use crate::{read_state, CanisterIndexInfo, SaleDetails, SaleDetailsWithID, State, UserAccount};
 
+
 #[ic_cdk::query]
 pub fn get_user_account(principal: Principal) -> Result<UserAccount, String> {
     // Retrieve the user account for the given principal
@@ -155,18 +156,31 @@ pub fn get_tokens_info() -> Result<Vec<CanisterIndexInfo>, String> {
 pub fn get_user_tokens_info() -> Result<Vec<CanisterIndexInfo>, String> {
     let caller = ic_cdk::caller();
 
-    // Retrieve user tokens info for user-created tokens (from `canister_ids` and `index_canister_ids`)
+    // Retrieve all sales: active, upcoming, and successful
+    let all_sales: Vec<Principal> = read_state(|state| {
+        state
+            .sale_details
+            .iter()
+            .map(|(key, _)| key) // Collect the Principal of all sales
+            .collect()
+    });
+
+    // Helper function to check if a canister_id corresponds to a sale, now redundant but keeping for structure
+    let is_sale = |canister_id: &Principal| all_sales.contains(canister_id);
+
+    // Retrieve user-created tokens (from `canister_ids` and `index_canister_ids`)
     let user_tokens_info: Vec<CanisterIndexInfo> = read_state(|state| {
         state
             .canister_ids
             .iter()
-            .zip(state.index_canister_ids.iter())  // Zip both maps to retrieve related data
-            .filter_map(|((canister_key, canister_wrapper), (index_key, _index_wrapper))| {
-                // Only include entries where the owner matches the caller
-                if canister_wrapper.owner == caller {
+            .zip(state.index_canister_ids.iter())
+            .filter_map(|((canister_key, canister_wrapper), (index_key, _))| {
+                let canister_id = Principal::from_text(canister_key.clone()).ok()?;
+    
+                if canister_wrapper.owner == caller && is_sale(&canister_id) {
                     Some(CanisterIndexInfo {
-                        canister_id: canister_key.clone(),
-                        index_canister_id: index_key.clone(), // Fetch index canister id from index_canister_ids map
+                        canister_id: canister_key.clone(), 
+                        index_canister_id: index_key.clone(),
                         token_name: canister_wrapper.token_name.clone(),
                         token_symbol: canister_wrapper.token_symbol.clone(),
                         total_supply: canister_wrapper.total_supply.clone(),
@@ -177,20 +191,22 @@ pub fn get_user_tokens_info() -> Result<Vec<CanisterIndexInfo>, String> {
             })
             .collect()
     });
+    
 
-    // Retrieve imported tokens info (from `imported_canister_ids`)
+    // Retrieve imported tokens (from `imported_canister_ids`)
     let imported_tokens_info: Vec<CanisterIndexInfo> = read_state(|state| {
         state
             .imported_canister_ids
             .iter()
             .filter_map(|(_, wrapper)| {
-                if wrapper.caller == caller {
+                let ledger_canister_id = wrapper.ledger_canister_id; 
+                if wrapper.caller == caller && is_sale(&ledger_canister_id) {
                     Some(CanisterIndexInfo {
-                        canister_id: wrapper.ledger_canister_id.to_string(),
-                        index_canister_id: wrapper.index_canister_id.to_string(),  // Directly fetch from imported map
+                        canister_id: ledger_canister_id.to_text(),
+                        index_canister_id: wrapper.index_canister_id.to_string(),
                         token_name: "Imported".to_string(),
                         token_symbol: "IMP".to_string(),
-                        total_supply: Nat::from(0u64), // No total supply information for imported tokens
+                        total_supply: Nat::from(0u64),
                     })
                 } else {
                     None
@@ -198,6 +214,7 @@ pub fn get_user_tokens_info() -> Result<Vec<CanisterIndexInfo>, String> {
             })
             .collect()
     });
+    
 
     // Combine both user-created and imported tokens
     let all_tokens = [user_tokens_info, imported_tokens_info].concat();
@@ -209,6 +226,9 @@ pub fn get_user_tokens_info() -> Result<Vec<CanisterIndexInfo>, String> {
         Ok(all_tokens)
     }
 }
+
+
+
 
 
 
@@ -358,7 +378,7 @@ pub fn get_cover_image_id(ledger_id: Principal) -> Result<u32, String> {
 
 
 #[ic_cdk::query]
-pub fn get_sale_params(ledger_canister_id: Principal) -> Result<SaleDetails, String> {
+pub async fn get_sale_params(ledger_canister_id: Principal) -> Result<SaleDetails, String> {
     // Retrieve the sale parameters from stable memory using ledger_canister_id
     let sale_details = read_state(|state| {
         state

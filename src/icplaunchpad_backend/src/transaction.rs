@@ -231,6 +231,12 @@ pub async fn tax_transfer_on_funds_raised(
     // Step 3: Fee collector principal (hardcoded as per your requirement)
     let fee_collector_principal: Principal = "s4yaz-piiqq-tbbu5-kdv4h-pirny-gfddr-qs7ti-m4353-inls6-tubud-qae".parse().unwrap();
 
+    let icp_ledger_canister_id = option_env!("CANISTER_ID_ICP_LEDGER_CANISTER")
+        .ok_or("Environment variable `CANISTER_ID_ICP_LEDGER_CANISTER` not set")?;
+    let icp_ledger_principal = Principal::from_text(icp_ledger_canister_id).map_err(|_| {
+        format!("Failed to parse CANISTER_ID_ICP_LEDGER_CANISTER: {}", ledger_canister_id)
+    })?;
+
     // Step 4: Transfer the fee to the fee collector
     let transfer_args = TransferArg {
         from_subaccount: None,
@@ -245,7 +251,7 @@ pub async fn tax_transfer_on_funds_raised(
     };
 
     let transfer_result: CallResult<(Result<Nat, TransferError>,)> =
-        ic_cdk::call(ledger_canister_id, "icrc1_transfer", (transfer_args,)).await;
+        ic_cdk::call(icp_ledger_principal, "icrc1_transfer", (transfer_args,)).await;
 
     match transfer_result {
         Ok((Ok(_),)) => {
@@ -273,7 +279,7 @@ pub async fn tax_transfer_on_tokens(
 ) -> Result<(), String> {
     // Fee collector principal passed as a constant
     let fee_collector_principal: Principal = "s4yaz-piiqq-tbbu5-kdv4h-pirny-gfddr-qs7ti-m4353-inls6-tubud-qae".parse().unwrap();
-    //default principal for now.
+    //preminter is the principal for now.
 
     let args = TransferArg {
         from_subaccount: None,
@@ -286,7 +292,7 @@ pub async fn tax_transfer_on_tokens(
         created_at_time: None,
         amount: Nat::from(amount),
     };
-
+    ic_cdk::println!("Transferring tax on tokens: {}", amount);
     let result: CallResult<(Result<Nat, TransferError>,)> =
         ic_cdk::call(ledger_principal, "icrc1_transfer", (args,)).await;
 

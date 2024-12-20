@@ -118,8 +118,9 @@ type UserInputParams = record {
   token_name : text;
 };
 service : () -> {
-  buy_tokens : (BuyTransferParams) -> (Result);
-  create_account : (UserAccount) -> (Result_1);
+  add_pool_to_kong : (principal) -> (Result);
+  buy_tokens : (BuyTransferParams) -> (Result_1);
+  create_account : (UserAccount) -> (Result);
   create_sale : (principal, SaleInputParams) -> (Result_2);
   create_token : (UserInputParams) -> (Result_3);
   debug_index_canister_ids : () -> (vec record { text; text }) query;
