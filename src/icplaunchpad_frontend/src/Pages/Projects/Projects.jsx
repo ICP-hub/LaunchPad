@@ -11,6 +11,7 @@ import { debounce } from "lodash";
 import { upcomingSalesHandlerRequest } from "../../StateManagement/Redux/Reducers/UpcomingSales.jsx";
 import { SuccessfulSalesHandlerRequest } from "../../StateManagement/Redux/Reducers/SuccessfulSales.jsx";
 import NoDataFound from "../../common/NoDataFound.jsx";
+import { fetchWithRetry } from "../../utils/fetchWithRetry.js";
 import ProjectCardSkeleton from "../../common/SkeletonUI/ProjectCard.jsx";
 
 
@@ -19,6 +20,7 @@ const ProjectLists = () => {
   const { sale_Type } = location.state || {};
   const [isLoading, setIsLoading]=useState(true);
 
+  console.log('sales',salesData)
   const [search, setSearch] = useState("");
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
   const [showSortDropdown, setShowSortDropdown] = useState(false);
@@ -32,10 +34,10 @@ const ProjectLists = () => {
   console.log('successfulSales',successfulSales)
   const { createCustomActor } = useAuths();
 
-  // Fetch tokens data on mount
-  useEffect(() => {
-    dispatch(TokensInfoHandlerRequest());
-  }, [dispatch]);
+// Fetch tokens data on mount
+useEffect(() => {
+  dispatch(TokensInfoHandlerRequest());
+}, [dispatch]);
 
   const getTokenName = useCallback(
     async (ledger_canister_id) => {
@@ -70,33 +72,32 @@ const ProjectLists = () => {
       }
   }, [tokensData]);
 
-  // Debounced filter function
-  const debouncedFilterData = useCallback(
-    debounce(async (searchValue, tokens) => {
-      if (!searchValue) {
-        setFilteredTokensData(tokens);
-        return;
-      }
+// Debounced filter function
+const debouncedFilterData = useCallback(
+  debounce(async (searchValue, tokens) => {
+    if (!searchValue) {
+      setFilteredTokensData(tokens);
+      return;
+    }
 
-      const filteredData = await Promise.all(
-        tokens.map(async (data) => {
-          try {
-            const tokenName =
-              data.token_name || (await getTokenName(data[0]?.ledger_canister_id));
-            return tokenName.toLowerCase().includes(searchValue.toLowerCase())
-              ? data
-              : null;
-          } catch (error) {
-            console.error("Error filtering tokens:", error);
-            return null;
-          }
-        })
-      );
+    const filteredData = await Promise.all(
+      tokens.map(async (data) => {
+        try {
+          const tokenName =
+            data.token_name ||
+            (await fetchWithRetry(() => getTokenName(data[0]?.ledger_canister_id), 3, 1000));
+          return tokenName.toLowerCase().includes(searchValue.toLowerCase()) ? data : null;
+        } catch (error) {
+          console.error("Error filtering tokens:", error);
+          return null;
+        }
+      })
+    );
 
-      setFilteredTokensData(filteredData.filter(Boolean));
-    }, 500),
-    [getTokenName]
-  );
+    setFilteredTokensData(filteredData.filter(Boolean));
+  }, 500),
+  [getTokenName]
+);
 
   // Handle search filtering
   useEffect(() => {

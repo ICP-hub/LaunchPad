@@ -1,6 +1,6 @@
 import "./main.css";
 import AllRoutes from './AllRoutes';
-import { useEffect } from "react";
+import { useEffect ,useState} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { userRegisteredHandlerRequest } from "./StateManagement/Redux/Reducers/userRegisteredData";
 import { ProfileImageIDHandlerRequest } from "./StateManagement/Redux/Reducers/ProfileImageID";
@@ -21,13 +21,16 @@ function App() {
   );
   const principal = useSelector((currState) => currState.internet.principal);
   const userData = useSelector((state) => state?.userData?.data);
-  console.log('user',userData)
+    const [isUserRegistered, setUserRegister] = useState(null);
+  
+  // console.log('user',userData)
 //  console.log("is authentication", isAuthenticated)
-//   console.log("is actor", actor)
+  console.log("is actor", actor)
 //   console.log("is principal", principal)
 //   console.log("is userData", userData)
   const dispatch = useDispatch();
   const identity = useIdentity()
+
 
   const { balance,  fetchBalance } = useBalance()
 
@@ -35,14 +38,6 @@ function App() {
     if (isAuthenticated && identity) {
       try {
          dispatch(handleActorRequest({ identity }));
-        await Promise.all([
-          dispatch(userRegisteredHandlerRequest()),
-        dispatch(ProfileImageIDHandlerRequest()),
-        dispatch(TokensInfoHandlerRequest()),
-        dispatch(UserTokensInfoHandlerRequest()),
-        dispatch(upcomingSalesHandlerRequest()),
-        dispatch(SuccessfulSalesHandlerRequest()),
-        ]);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -53,20 +48,17 @@ function App() {
     fetchDataSequentially();
   }, [isAuthenticated, identity, dispatch]);
 
-  const fetchBalanceData = async () => {
-    if (isAuthenticated && identity) {
-    try {
-      const balance = await fetchBalance();
-      // console.log('fetchUserIcpBalance', balance);
-    } catch (error) {
-      console.error('Error fetching ICP balance:', error);
-    }}
+  const fetchBalanceData = () => {
+    dispatch(userRegisteredHandlerRequest());
+    dispatch(ProfileImageIDHandlerRequest());
   };
-
-
+  
   useEffect(() => {
-    fetchBalanceData();
-  }, [isAuthenticated, identity]);
+    if (actor ) {
+      fetchBalanceData();
+    }
+  }, [actor]);
+  
   return (
     <SkeletonTheme baseColor="#FFFFFF1A" highlightColor="#444">
     <div className="text-white max-w-[1700px] mx-auto container">

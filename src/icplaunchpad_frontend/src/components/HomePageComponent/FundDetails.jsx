@@ -4,6 +4,7 @@ import { convertTimestampToISTFormatted } from '../../utils/convertTimestampToIS
 import { useAuths } from '../../StateManagement/useContext/useClient';
 import { useSelector } from 'react-redux';
 import Skeleton from 'react-loading-skeleton';
+import { fetchWithRetry } from '../../utils/fetchWithRetry';
 
 const FundDetails = ({ sale, index }) => {
     const [tokenDetails, setTokenDetails] = useState({});
@@ -22,41 +23,73 @@ const FundDetails = ({ sale, index }) => {
 
     const fetchTokenData = async (ledgerId) => {
         try {
-            if (ledgerId) {
-              const customActor = await createCustomActor(ledgerId);
-
-                if (customActor) {
-                    const tokenName = await customActor.icrc1_name();
-                    const tokenSymbol = await customActor.icrc1_symbol();
-                    setTokenDetails((prev) => ({ ...prev, token_name: tokenName, token_symbol:tokenSymbol }));
-                }
-
-                // Fetching the owner of the token
-                const owner = await customActor.icrc1_minting_account();
-                if (owner) {
-                    const ownerBalance = await customActor.icrc1_balance_of(owner[0]);
-                    setTokenDetails((prevData) => ({
-                        ...prevData,
-                        owner_bal: ownerBalance.toString(),
-                        owner: owner[0].owner.toString(),
-                    }));
-                }
-
-                // Fetching token image
-                if (actor) {
-                    const ledgerPrincipal = Principal.fromText(ledgerId);
-                    const tokenImgId = await actor.get_token_image_id(ledgerPrincipal);
-                    console.log('Fetched token image ID:', tokenImgId);
-
-                    if (tokenImgId) {
-                        const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId?.Ok}`;
-                        console.log('Token Image URL:', imageUrl);
-                        setTokenDetails((prev) => ({ ...prev, token_image: imageUrl }));
-                    }
+            console.log("Fetching token data for ledger ID:", ledgerId);
+    
+            if (!ledgerId) {
+                console.error("Invalid ledger ID provided.");
+                return;
+            }
+    
+            const customActor = await createCustomActor(ledgerId);
+    
+            if (!customActor) {
+                console.error("Failed to create custom actor for the ledger ID.");
+                return;
+            }
+    
+            console.log("Custom actor created successfully:", customActor);
+    
+            // Fetch token data using Promise.allSettled
+            const tokenDataResults = await Promise.allSettled([
+                fetchWithRetry(() => customActor.icrc1_name(), 3, 1000),
+                fetchWithRetry(() => customActor.icrc1_symbol(), 3, 1000),
+                fetchWithRetry(() => customActor.icrc1_minting_account(), 3, 1000),
+            ]);
+    
+            console.log("Token Data Results:", tokenDataResults);
+    
+            const tokenName = tokenDataResults[0].status === "fulfilled" ? tokenDataResults[0].value : null;
+            const tokenSymbol = tokenDataResults[1].status === "fulfilled" ? tokenDataResults[1].value : null;
+            const mintingAccount = tokenDataResults[2].status === "fulfilled" ? tokenDataResults[2].value : null;
+    
+            // Set token name and symbol
+            if (tokenName && tokenSymbol) {
+                setTokenDetails((prev) => ({
+                    ...prev,
+                    token_name: tokenName,
+                    token_symbol: tokenSymbol,
+                }));
+            } else {
+                console.error("Failed to fetch token name or symbol.");
+            }
+    
+            // Fetch owner balance if minting account exists
+            if (mintingAccount && mintingAccount[0]) {
+                const ownerBalance = await fetchWithRetry(() => customActor.icrc1_balance_of(mintingAccount[0]), 3, 1000);
+                setTokenDetails((prevData) => ({
+                    ...prevData,
+                    owner_bal: ownerBalance?.toString() || "0",
+                    owner: mintingAccount[0]?.owner?.toString() || "Unknown",
+                }));
+            } else {
+                console.error("Failed to fetch minting account or owner balance.");
+            }
+    
+            // Fetch token image if the actor is available
+            if (customActor) {
+                const actorPrincipal = Principal.fromText(ledgerId);
+                const tokenImgId = await fetchWithRetry(() => actor.get_token_image_id(actorPrincipal), 3, 1000);
+    
+                if ( tokenImgId &&tokenImgId?.Ok) {
+                    const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId?.Ok}`;
+                    console.log("Token Image URL:", imageUrl);
+                    setTokenDetails((prev) => ({ ...prev, token_image: imageUrl }));
+                } else {
+                    console.error("Failed to fetch token image.");
                 }
             }
         } catch (err) {
-            console.error('Error fetching token data:', err);
+            console.error("Error fetching token data:", err);
         }
     };
   console.log('tokenDetails=',tokenDetails)

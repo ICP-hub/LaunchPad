@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { Principal } from '@dfinity/principal';
 import { useAuths } from '../../../StateManagement/useContext/useClient';
 import { useSelector } from 'react-redux';
+import { fetchWithRetry } from '../../../utils/fetchWithRetry';
 
 const MyProjectCard = ({ projectData, index }) => {
     const protocol = process.env.DFX_NETWORK === 'ic' ? 'https' : 'http';
@@ -24,57 +25,74 @@ const MyProjectCard = ({ projectData, index }) => {
 
     useEffect(() => {
         if (projectData.ledger_canister_id) FetchProjectData();
-    }, [projectData.ledger_canister_id]);
-
-    const FetchProjectData = async () => {
+      }, [projectData.ledger_canister_id]);
+      
+      const FetchProjectData = async () => {
         const ledgerId = projectData.ledger_canister_id;
         const ledgerActor = await createCustomActor(ledgerId);
-
+      
         if (ledgerActor) {
-            console.log('ledgerActor', ledgerActor);
-            const name = await ledgerActor.icrc1_name();
+          console.log('ledgerActor', ledgerActor);
+          try {
+            // Fetch token name with retry
+            const name = await fetchWithRetry(() => ledgerActor.icrc1_name(), 3, 1000);
             console.log('Token Name:', name);
             setTokenData((prevData) => ({ ...prevData, token_name: name }));
+          } catch (error) {
+            console.error('Error fetching token name:', error);
+          }
         }
-
+      
         if (ledgerId && actor) {
-            try {
-                const ledgerPrincipal = Principal.fromText(ledgerId); // Corrected variable
-                const tokenImgId = await actor.get_token_image_id(ledgerPrincipal);
-                console.log('Fetched token image ID:', tokenImgId);
-
-                if (tokenImgId && tokenImgId.length > 0) {
-                    const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId[tokenImgId.length - 1]}`;
-                    setTokenImg(imageUrl);
-                    console.log('Token Image URL:', imageUrl);
-                }
-                setFetchingIMG(true);
-            } catch (error) {
-                console.error('Error fetching token image:', error);
-            }
-        }
-    };
-
-    useEffect(() => {
-        if (projectData.canister_id) fetchTokenIMG();
-    }, [projectData.canister_id]);
-
-    const fetchTokenIMG = async () => {
-        try {
-            const ledgerPrincipal = Principal.fromText(projectData.canister_id); // Corrected variable
-            const tokenImgId = await actor.get_token_image_id(ledgerPrincipal);
+          try {
+            const ledgerPrincipal = Principal.fromText(ledgerId);
+            // Fetch token image ID with retry
+            const tokenImgId = await fetchWithRetry(
+              () => actor.get_token_image_id(ledgerPrincipal),
+              3,
+              1000
+            );
             console.log('Fetched token image ID:', tokenImgId);
-
+      
             if (tokenImgId && tokenImgId.length > 0) {
-                const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId[tokenImgId.length - 1]}`;
-                setTokenImg(imageUrl);
-                console.log('Token Image URL:', imageUrl);
+              const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId[tokenImgId.length - 1]}`;
+              setTokenImg(imageUrl);
+              console.log('Token Image URL:', imageUrl);
             }
             setFetchingIMG(true);
-        } catch (error) {
+          } catch (error) {
             console.error('Error fetching token image:', error);
+          }
         }
-    };
+      };
+      
+
+      useEffect(() => {
+        if (projectData.canister_id) fetchTokenIMG();
+      }, [projectData.canister_id]);
+      
+      const fetchTokenIMG = async () => {
+        try {
+          const ledgerPrincipal = Principal.fromText(projectData.canister_id);
+          // Fetch token image ID with retry
+          const tokenImgId = await fetchWithRetry(
+            () => actor.get_token_image_id(ledgerPrincipal),
+            3,
+            1000
+          );
+          console.log('Fetched token image ID:', tokenImgId);
+      
+          if (tokenImgId && tokenImgId.length > 0) {
+            const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId[tokenImgId.length - 1]}`;
+            setTokenImg(imageUrl);
+            console.log('Token Image URL:', imageUrl);
+          }
+          setFetchingIMG(true);
+        } catch (error) {
+          console.error('Error fetching token image:', error);
+        }
+      };
+      
 
     const handleViewMoreClick2 = () => {
         if (isFetchingIMG) {

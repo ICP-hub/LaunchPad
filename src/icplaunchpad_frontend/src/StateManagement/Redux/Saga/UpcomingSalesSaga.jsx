@@ -2,25 +2,29 @@ import { takeLatest, call, put, select } from "redux-saga/effects";
 import {
   upcomingSalesHandlerRequest,
   upcomingSalesHandlerSuccess,
-  upcomingSalesHandlerFailure
+  upcomingSalesHandlerFailure,
 } from "../Reducers/UpcomingSales";
 
 const selectActor = (currState) => currState.actors.actor;
 
 function* fetchUpcomingSales() {
   try {
+    // Select the actor directly
     const actor = yield select(selectActor);
-    if (!actor) {
-      throw new Error("Actor is not initialized");
-    }
-    let salesData = yield call([actor, actor.get_upcoming_sales]);
-    if (salesData) {
-      yield put(upcomingSalesHandlerSuccess(salesData?.Ok));
+
+    if (actor) {
+    // Fetch upcoming sales data
+    const salesData = yield call([actor, actor.get_upcoming_sales]);
+    if (salesData?.Ok) {
+      yield put(upcomingSalesHandlerSuccess(salesData.Ok));
     } else {
       throw new Error("Invalid upcoming sales data format");
     }
+    }else {
+      throw new Error("Actor is not initialized");
+    }
   } catch (error) {
-    console.error("Error fetching upcoming Sales data:", error);
+    console.error("Error fetching upcoming sales data:", error);
     yield put(
       upcomingSalesHandlerFailure(
         `Failed to fetch upcoming sales data: ${error.message}`
@@ -28,7 +32,6 @@ function* fetchUpcomingSales() {
     );
   }
 }
-
 
 export function* fetchUpcomingSalesSaga() {
   yield takeLatest(upcomingSalesHandlerRequest.type, fetchUpcomingSales);

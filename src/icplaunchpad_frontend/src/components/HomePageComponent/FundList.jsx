@@ -6,7 +6,7 @@ import FundListSkeleton from '../../common/SkeletonUI/FundListSkeleton';
 
 const FundList = () => {
   const SuccesFullSales = useSelector((state) => state.SuccessfulSales);
-  console.log('SuccesFullSales==',SuccesFullSales?.data)
+  // console.log('SuccesFullSales==',SuccesFullSales?.data)
 
 
   return (

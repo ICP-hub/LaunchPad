@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuths } from '../../../StateManagement/useContext/useClient';
 import { useSelector } from 'react-redux';
 import { Principal } from '@dfinity/principal';
+import { fetchWithRetry } from '../../../utils/fetchWithRetry';
 import Skeleton from 'react-loading-skeleton';
 
 const ProjectCard = ({ ledgerID, index }) => {
@@ -45,66 +46,84 @@ const ProjectCard = ({ ledgerID, index }) => {
 
   }
 
-  // Fetch project data if ledger canister ID is available
-  useEffect(() => {
-    const fetchProjectData = async () => {
-      try {
-        const ledgerActor = await createCustomActor(ledgerID);
-        console.log('ledgerActor', ledgerActor)
-        if (!ledgerActor) {
-          console.error(`Unable to create ledger actor for ledgerID: ${ledgerID}`);
-          return;
-        }
+// Fetch project data if ledger canister ID is available
+useEffect(() => {
+  const fetchProjectData = async () => {
+    try {
+      const ledgerActor = await createCustomActor(ledgerID);
+      console.log('ledgerActor', ledgerActor);
+      if (!ledgerActor) {
+        console.error(`Unable to create ledger actor for ledgerID: ${ledgerID}`);
+        return;
+      }
 
-        const [token_name, token_symbol, decimals, total_supply] = await Promise.all([
-          ledgerActor.icrc1_name(),
-          ledgerActor.icrc1_symbol(),
-          ledgerActor.icrc1_decimals(),
-          ledgerActor.icrc1_total_supply(),
-        ]);
+      // Fetch token details with retry logic
+      const tokenDataResults = await Promise.allSettled([
+        fetchWithRetry(() => ledgerActor.icrc1_name(), 3, 1000),
+        fetchWithRetry(() => ledgerActor.icrc1_symbol(), 3, 1000),
+        fetchWithRetry(() => ledgerActor.icrc1_decimals(), 3, 1000),
+        fetchWithRetry(() => ledgerActor.icrc1_total_supply(), 3, 1000),
+      ]);
 
-        console.log('total_supply', total_supply)
+      const token_name = tokenDataResults[0].status === "fulfilled" ? tokenDataResults[0].value : null;
+      const token_symbol = tokenDataResults[1].status === "fulfilled" ? tokenDataResults[1].value : null;
+      const decimals = tokenDataResults[2].status === "fulfilled" ? tokenDataResults[2].value : null;
+      const total_supply = tokenDataResults[3].status === "fulfilled" ? tokenDataResults[3].value : null;
+
+      if (token_name && token_symbol && decimals && total_supply) {
+        console.log('total_supply', total_supply);
         setTokenInfo((prev) => ({ ...prev, token_name, token_symbol, decimals, total_supply }));
-      } catch (error) {
-        console.error(`Error fetching project data for ledgerId: ${ledgerID}`, error);
+      } else {
+        console.error("Error fetching some token data.");
       }
-    };
+    } catch (error) {
+      console.error(`Error fetching project data for ledgerId: ${ledgerID}`, error);
+    }
+  };
 
-    if (ledgerID) fetchProjectData();
-  }, [createCustomActor, ledgerID]);
+  if (ledgerID) fetchProjectData();
+}, [createCustomActor, ledgerID]);
 
-  // Fetch token-specific info if canister ID is available
-  useEffect(() => {
-    const fetchTokenInfo = async () => {
-      try {
-        if (!actor) {
-          console.error('Actor is not available for fetching token info.');
-          return;
-        }
-
-        const [tokenImgId, coverImgId] = await Promise.all([
-          actor.get_token_image_id(ledgerID),
-          actor.get_cover_image_id(ledgerID),
-        ]);
-
-        if (tokenImgId?.Ok) {
-          const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId.Ok}`;
-          setTokenInfo((prev) => ({ ...prev, token_image: imageUrl }));
-        }
-
-        if (coverImgId?.Ok) {
-          const imageUrl = `${protocol}://${canisterId}.${domain}/f/${coverImgId?.Ok}`;
-          setTokenInfo((prev) => ({ ...prev, cover_image: imageUrl }));
-        }
-
-        setFetchingIMG(true);
-      } catch (error) {
-        console.error('Error fetching token images:', error);
+// Fetch token-specific info if canister ID is available
+useEffect(() => {
+  const fetchTokenInfo = async () => {
+    try {
+      if (!actor) {
+        console.error('Actor is not available for fetching token info.');
+        return;
       }
-    };
 
-    if (ledgerID) fetchTokenInfo();
-  }, [actor, ledgerID, canisterId, domain, protocol]);
+      // Fetch token images with retry logic
+      const tokenImgResults = await Promise.allSettled([
+        fetchWithRetry(() => actor.get_token_image_id(ledgerID), 3, 1000),
+        fetchWithRetry(() => actor.get_cover_image_id(ledgerID), 3, 1000),
+      ]);
+
+      const tokenImgId = tokenImgResults[0].status === "fulfilled" ? tokenImgResults[0].value : null;
+      const coverImgId = tokenImgResults[1].status === "fulfilled" ? tokenImgResults[1].value : null;
+
+      if (tokenImgId?.Ok) {
+        const imageUrl = `${protocol}://${canisterId}.${domain}/f/${tokenImgId?.Ok}`;
+        setTokenInfo((prev) => ({ ...prev, token_image: imageUrl }));
+      } else {
+        console.warn("Token image ID not found:", tokenImgId);
+      }
+
+      if (coverImgId?.Ok) {
+        const imageUrl = `${protocol}://${canisterId}.${domain}/f/${coverImgId?.Ok}`;
+        setTokenInfo((prev) => ({ ...prev, cover_image: imageUrl }));
+      } else {
+        console.warn("Cover image ID not found:", coverImgId);
+      }
+
+      setFetchingIMG(true);
+    } catch (error) {
+      console.error('Error fetching token images:', error);
+    }
+  };
+
+  if (ledgerID) fetchTokenInfo();
+}, [actor, ledgerID, canisterId, domain, protocol]);
 
   return (
     <div onClick={handleExportNavigate}>

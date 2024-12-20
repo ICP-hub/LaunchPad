@@ -6,37 +6,49 @@ import {
   userRegisteredHandlerSuccess,
 } from "../Reducers/userRegisteredData";
 
+const selectPrincipal = (currState) => currState?.internet?.principal;
 const selectActor = (currState) => currState.actors.actor;
-const selectPrincipal = (currState) => currState.internet.principal;
 
-function* fetchUserHandler() {
+
+function* fetchUserHandler(action) {
   try {
-    const actor = yield select(selectActor);
-    console.log('actor', actor);
-    const principalString = yield select(selectPrincipal);
+      const actor = yield select(selectActor);
+    console.log('Actor in user saga:', actor);
 
-    if (actor && principalString) {
-      // Check if the principalString is valid before converting it to Principal
-      if (principalString) {
-        const principal = Principal.fromText(principalString);
-        // Call the actor's method to get the user data
-        const userData = yield call([actor, actor.get_user_account], principal);
-        console.log("UserData in saga:", userData);
-        // Dispatch success action with the user data
-        yield put(userRegisteredHandlerSuccess(userData?.Ok));
+    const principalString = yield select(selectPrincipal);
+    console.log('Principal from state:', principalString);
+
+    if (!principalString || typeof principalString !== "string" || !principalString.trim()) {
+      console.error("Principal string is invalid:", principalString);
+      yield put(userRegisteredHandlerFailure("Principal string is invalid."));
+      return;
+    }
+
+    if (!actor || typeof actor.get_user_account !== "function") {
+      console.error("Actor is invalid or missing required method.");
+      yield put(userRegisteredHandlerFailure("Actor is invalid or missing required method."));
+      return;
+    }
+
+    try {
+      const principal = Principal.fromText(principalString);
+      console.log('Converted Principal:', principal);
+
+      // Log before calling the method
+      console.log("Calling actor.get_user_account with:", principal);
+
+      const userData = yield call([actor, actor.get_user_account], principal);
+      console.log("User data in saga:", userData);
+
+      if (userData?.Ok) {
+        yield put(userRegisteredHandlerSuccess(userData.Ok));
       } else {
-        throw new Error("Principal string is invalid or undefined.");
+        console.error("Error in user data response:", userData?.Err || "Unknown error");
+        yield put(userRegisteredHandlerFailure(userData?.Err || "Unknown error from canister."));
       }
-    } else {
-      let errorMessage = "";
-      if (!actor) {
-        errorMessage += "Actor is undefined or invalid. ";
-      }
-      if (!principalString) {
-        errorMessage += "Principal string is undefined or invalid.";
-      }
-      console.error("Error fetching user data:", errorMessage);
-      yield put(userRegisteredHandlerFailure(`Failed to fetch user data: ${errorMessage}`));
+    } catch (err) {
+      console.error("Error calling canister method:", err);
+      yield put(userRegisteredHandlerFailure(err.message));
     }
   } catch (error) {
     console.error("Error fetching user data:", error);
@@ -47,6 +59,10 @@ function* fetchUserHandler() {
     );
   }
 }
+
+
+
+
 
 export function* fetchUserSaga() {
   yield takeLatest(userRegisteredHandlerRequest.type, fetchUserHandler);
