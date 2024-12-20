@@ -180,7 +180,8 @@ const handleSearchedToken = async (data) => {
       console.log('Token Image URL:', imageUrl);
     }
 
-    const creator = saleParams?.Ok?.creator;
+    const creator = saleParams?.Ok?.creator.toString();
+    console.log('creator & principal',creator, ' & ' ,principal)
     navigate(
       creator === principal ? '/token-page' : '/project',
       { state: { projectData: { ...data, ...(imageUrl ? { token_image: imageUrl } : {}) } } }

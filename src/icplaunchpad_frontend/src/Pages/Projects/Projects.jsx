@@ -20,7 +20,7 @@ const ProjectLists = () => {
   const { sale_Type } = location.state || {};
   const [isLoading, setIsLoading]=useState(true);
 
-  console.log('sales',salesData)
+
   const [search, setSearch] = useState("");
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
   const [showSortDropdown, setShowSortDropdown] = useState(false);

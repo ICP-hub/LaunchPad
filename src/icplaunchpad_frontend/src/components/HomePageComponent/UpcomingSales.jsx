@@ -9,18 +9,15 @@ const UpcomingSales = React.forwardRef((props, ref) => {
   const navigate = useNavigate();
   // const actor = useSelector((currState) => currState.actors.actor);
   const salesData = useSelector((state) => state.upcomingSales);
-  // const actor = useSelector((currState) => currState.actors.actor);
-  const salesData = useSelector((state) => state.upcomingSales);
+
 
   // Handle navigation to the projects page
   const handleViewMoreClick = () => {
     if (salesData?.data && salesData?.data.length > 0) {
-    if (salesData?.data && salesData?.data.length > 0) {
       navigate("/projects", {
         state: { salesData: salesData?.data[0], sale_Type: "Upcoming" },
       });
-    }
-  };
+  }};
 
   return (
     <div

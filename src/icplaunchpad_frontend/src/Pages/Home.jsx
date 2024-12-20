@@ -11,16 +11,13 @@ import { SuccessfulSalesHandlerRequest } from '../StateManagement/Redux/Reducers
 function Home() {
 const dispatch=useDispatch();
 const actor = useSelector((currState) => currState.actors.actor);
-  // useEffect(()=>{
-  //   dispatch(upcomingSalesHandlerRequest()) 
-  //   dispatch(SuccessfulSalesHandlerRequest()) 
-  // },[actor])
+
   useEffect(() => {
     if(actor){
     dispatch(upcomingSalesHandlerRequest()) 
     dispatch(SuccessfulSalesHandlerRequest())
     }
-  }, [dispatch]);
+  }, [dispatch,actor]);
 
   const upcomingSalesRef = useRef(null);
 

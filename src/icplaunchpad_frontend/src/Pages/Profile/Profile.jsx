@@ -11,8 +11,10 @@ import RecentlyViewed from './RecentlyViewed/RecentlyViewed';
 import MyContribution from './MyContribution/MyContribution';
 import { useNavigate } from 'react-router-dom';
 import { useAuths} from '../../StateManagement/useContext/useClient';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import CopyToClipboard from '../../common/CopyToClipboard';
+import { UserTokenLedgerIdsHandlerRequest } from '../../StateManagement/Redux/Reducers/UserTokenLedgerIds';
+import { UserTokensInfoHandlerRequest } from '../../StateManagement/Redux/Reducers/UserTokensInfo';
 
 const Profile = () => {
   const [activeTab, setActiveTab] = useState("All Tokens");
@@ -24,12 +26,15 @@ const Profile = () => {
   );
   const principal = useSelector((currState) => currState.internet.principal);
   const navigate = useNavigate();
+  const dispatch=useDispatch();
 
-  // const handleLogout = async (e) => {
-  //   e.preventDefault();
-  //     await logout().then(() => window.location.reload()); 
+  useEffect(() => {
+    if(actor){
+    dispatch(UserTokenLedgerIdsHandlerRequest()) 
+    dispatch(UserTokensInfoHandlerRequest())
+    }
+  }, [dispatch, actor]);
 
-  // };
   const handleLogout = async (e) => {
     e.preventDefault();
     await logout().then(() => {

@@ -83,7 +83,7 @@ const TokenTransactions = ({ actor }) => {
             )}
           </tbody>
         </table>
-        <div className="flex w-full bg-[#383838] p-2 justify-between items-center">
+        <div className="flex w-full bg-[#383838] p-2 mt-2 justify-between items-center">
           <h1 className=' text-xs lg:text-sm'>
             Showing {transactions.length} transactions from {start + 1} to {start + transactions.length}
           </h1>
