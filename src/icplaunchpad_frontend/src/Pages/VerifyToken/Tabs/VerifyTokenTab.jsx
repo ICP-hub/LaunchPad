@@ -176,7 +176,7 @@ const getTokenData = async (ledger_canister_id) => {
         </div>
 
         <div className="bg-[#F5F5F51A] text-white p-3 rounded-md dlg:mb-8">
-          <ul className="text-[12px] dxs:text-[15px] px-2 ss2:px-7 ss2:py-4 list-disc">
+          <ul className="text-[12px] sm:text-[15px] px-2 ss2:px-7 ss2:py-4 list-disc">
             <li>Token verification ensures that your token meets the required standards for authenticity and compliance, giving users confidence in your project.</li>
             <li>Verified tokens build trust and credibility among potential investors and contributors, increasing the chances of successful participation in your project.</li>
           </ul>

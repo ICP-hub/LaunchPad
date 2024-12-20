@@ -4,9 +4,7 @@ import ProjectRectangleBg from "../../../assets/images/project-rectangle-bg.png"
 import { FaFacebook } from "react-icons/fa";
 import { FaTwitter } from "react-icons/fa";
 import { IoGlobeOutline } from "react-icons/io5";
-import { FaReddit } from "react-icons/fa";
 import { FaTelegram } from "react-icons/fa6";
-import { FaInstagram } from "react-icons/fa";
 import { FaDiscord } from "react-icons/fa";
 
 import person1 from "../../../assets/images/carousel/user.png"
@@ -33,6 +31,7 @@ import ICP_TopUp1 from "../../components/Modals/ICP_TopUp1.jsx";
 import ICP_TopUp2 from "../../components/Modals/ICP_TopUp2.jsx";
 import { fetchWithRetry } from "../../utils/fetchWithRetry";
 import Skeleton from "react-loading-skeleton";
+import TokenTransactions from "../../common/TokenTransactions/TokenTransactions";
 // import ICP_TopUp2 from "../../components/Modals/ICP_TopUp2.jsx";
 
 const TokenPage = () => {
@@ -41,10 +40,10 @@ const TokenPage = () => {
   const [sellType, setSellType] = useState('public');
   const [modalIsOpen, setIsOpen] = useState(false);
   const [tokenModalIsOpen, setTokenModalIsOpen] = useState(false)
-  const [isTopUpModal1,setTopUpModal1] = useState(false)
-  const [isTopUpModal2,setTopUpModal2] = useState(false)
+  const [isTopUpModal1, setTopUpModal1] = useState(false)
+  const [isTopUpModal2, setTopUpModal2] = useState(false)
   const [tokenPhase, setTokenPhase] = useState("UPCOMING");
-  const [topUpCansiter,setTopUpCansiter] = useState('')
+  const [topUpCansiter, setTopUpCansiter] = useState('')
   const location = useLocation();
   const { projectData } = location.state || {};
   const { createCustomActor, isAuthenticated, principal } = useAuths();
@@ -58,7 +57,7 @@ const TokenPage = () => {
   const [presaleData, setPresaleData] = useState(null);
   const [renderComponent, setRenderComponent] = useState(false);
   const [saleProgress, setSaleProgress] = useState(0);
-  const [balance, setBalance]=useState(0);
+  const [balance, setBalance] = useState(0);
 
   const actor = useSelector((currState) => currState.actors.actor);
   // const presale = useSelector((state) => state.SaleParams.data.Ok);
@@ -90,15 +89,15 @@ const TokenPage = () => {
 
   // Fetch Sale Parameters
   const getSaleParams = async () => {
-    console.log('useEffect 1 enter',ledger_canister_id)
+    console.log('useEffect 1 enter', ledger_canister_id)
     try {
       if (ledger_canister_id) {
         const ledgerId = typeof ledger_canister_id !== 'string'
-        ? Principal.fromUint8Array(ledger_canister_id)
-        : Principal.fromText(ledger_canister_id);
+          ? Principal.fromUint8Array(ledger_canister_id)
+          : Principal.fromText(ledger_canister_id);
 
         const presale = await actor.get_sale_params(ledgerId);
-         console.log('presale-->',presale)
+        console.log('presale-->', presale)
         if (presale?.Ok) {
 
           setPresaleData(presale.Ok);
@@ -111,16 +110,16 @@ const TokenPage = () => {
     }
   };
 
-  const getBalance= async()=>{
+  const getBalance = async () => {
     if (ledger_canister_id) {
       const ledgerId = typeof ledger_canister_id !== 'string'
-      ? Principal.fromUint8Array(ledger_canister_id)
-      : Principal.fromText(ledger_canister_id);
+        ? Principal.fromUint8Array(ledger_canister_id)
+        : Principal.fromText(ledger_canister_id);
 
-      const balance= await actor.fetch_canister_balance(ledgerId);
+      const balance = await actor.fetch_canister_balance(ledgerId);
       setBalance(Number(balance.Ok))
-      console.log('balance==',balance)
-  }
+      console.log('balance==', balance)
+    }
   }
 
   console.log('useEffect 1')
@@ -129,7 +128,7 @@ const TokenPage = () => {
       getSaleParams();
       getBalance();
     }
-  }, [ledger_canister_id,renderComponent ]);
+  }, [ledger_canister_id, renderComponent]);
 
   // Fetch Token Data
   const fetchData = async () => {
@@ -139,7 +138,7 @@ const TokenPage = () => {
         const ledgerId = typeof ledger_canister_id !== 'string'
           ? Principal.fromUint8Array(ledger_canister_id)
           : Principal.fromText(ledger_canister_id);
-  
+
         const ledgerActor = await createCustomActor(ledgerId);
         setLedgerActor(ledgerActor);
   
@@ -235,7 +234,9 @@ const TokenPage = () => {
       case "FAQs & Discussion":
         return <FAQsDiscussion />;
       case "Tokenomic":
-        return <Tokenomic/>;
+        return <Tokenomic />;
+      case "Transactions":
+        return <TokenTransactions actor={ledgerActor} />;
       default:
         return <ProjectTokenAbout presaleData={presaleData} />;
     }
@@ -246,6 +247,7 @@ const TokenPage = () => {
     "Token",
     "Pool Info",
     "Tokenomic",
+    "Transactions",
     "FAQs & Discussion",
 
   ];
@@ -293,9 +295,9 @@ const TokenPage = () => {
                 />
 
               </div>
-              <div className="content-div flex font-posterama justify-between w-[90%] m-auto mt-7 ">
-                <div className="left flex flex-col gap-5">
-                  <div className="text-[25px]"> {tokenData ? tokenData.token_name :  <Skeleton width={150} height={25}/> } </div>
+              <div className="content-div font-posterama flex justify-between w-[90%] m-auto mt-7 ">
+                <div className="left flex flex-col gap-4">
+                  <div className="text-[24px]"> {tokenData ? tokenData.token_name : <Skeleton width={150} height={25} />} </div>
                   <div className="font-extralight"> Fair Launch </div>
                   <div className="logos flex  gap-11">
                     {
@@ -309,37 +311,35 @@ const TokenPage = () => {
                           <IoGlobeOutline className="size-6" />
                           <FaTwitter className="size-6" />
                           <FaFacebook className="size-6" />
-                          <FaReddit className="size-6" />
                           <FaTelegram className="size-6" />
-                          < FaInstagram className="size-6" />
                           <FaDiscord className="size-6" />
                         </>
                     }
                   </div>
                 </div>
                 <div className="right w-48 xl:w-40 flex flex-col gap-5">
-                <div className=" flex justify-end items-center">
-                  <FiEdit3 onClick={handleTokenEdit} className="cursor-pointer ml-32 xl:ml-32" />
+                  <div className=" flex justify-end items-center">
+                    <FiEdit3 onClick={handleTokenEdit} className="cursor-pointer ml-32 xl:ml-32" />
                   </div>
-                 
-                <div className=" flex justify-end items-center">
-                 <input className=" text-black w-24 xl:w-28 px-2  outline-none" readOnly value={balance} />
-                 <PiHandDepositFill onClick={handleTopUp}  className="ml-2 h-7 w-7 cursor-pointer " />   
-                 </div>
-               
+
+                  <div className=" flex justify-end items-center">
+                    <input className=" text-black w-24 xl:w-28 px-2  outline-none" readOnly value={balance} />
+                    <PiHandDepositFill onClick={handleTopUp} className="ml-2 h-7 w-7 cursor-pointer " />
+                  </div>
+
                 </div>
               </div>
 
-              <div className="bg-[#FFFFFF66] h-[2px] w-[100%] mx-auto mt-4"></div>
+              <div className="bg-[#FFFFFF66] h-[2px] max-w-[90%] mx-auto mt-4"></div>
             </div>
           )}
 
-           {/* UpdateModal*/}
+          {/* UpdateModal*/}
           {tokenData && <UpdateToken ledgerId={tokenData.canister_id} setRenderComponent={setRenderComponent} tokenModalIsOpen={tokenModalIsOpen} setTokenModalIsOpen={setTokenModalIsOpen} />}
 
           {/* TopUpModal*/}
-          { balance ? <ICP_TopUp1 isTopUpModal1={isTopUpModal1} setTopUpModal1={setTopUpModal1} setTopUpModal2={setTopUpModal2} topUpCansiter={topUpCansiter} setTopUpCansiter={setTopUpCansiter}/>  : ''}
-          <ICP_TopUp2 isTopUpModal2={isTopUpModal2}  setTopUpModal2={setTopUpModal2} setTopUpModal1={setTopUpModal1} topUpCansiter={topUpCansiter}/>
+          {balance ? <ICP_TopUp1 isTopUpModal1={isTopUpModal1} setTopUpModal1={setTopUpModal1} setTopUpModal2={setTopUpModal2} topUpCansiter={topUpCansiter} setTopUpCansiter={setTopUpCansiter} /> : ''}
+          <ICP_TopUp2 isTopUpModal2={isTopUpModal2} setTopUpModal2={setTopUpModal2} setTopUpModal1={setTopUpModal1} topUpCansiter={topUpCansiter} />
 
           {isMobile && (
             <div className="h-[345px] relative bg-[#181818] rounded-2xl py-5 flex flex-col">
@@ -354,11 +354,11 @@ const TokenPage = () => {
 
               <div className="mt-[70px] text-center font-posterama text-white space-y-2">
                 <div className=" ">
-                  <div className="text-[24px] font-bold"> {tokenData ? tokenData.token_name : <Skeleton width={150} height={25}/>  } </div>
+                  <div className="text-[24px] font-bold"> {tokenData ? tokenData.token_name : <Skeleton width={150} height={25} />} </div>
                   <FiEdit3 onClick={handleTokenEdit} className="cursor-pointer absolute right-5 top-4 " />
-                  
+
                 </div>
-             
+
                 <div className="righttext-[16px] font-medium">
                   Fair Launch
                 </div>
@@ -369,9 +369,9 @@ const TokenPage = () => {
                   {`Soft ${presaleData?.softcap} ICP `}
                 </div>
                 <div className=" flex justify-center mx-auto items-center">
-                 <input className=" text-black w-28 px-2 outline-none" readOnly value={balance} />
-                 <PiHandDepositFill onClick={handleTopUp}  className="ml-2 h-7 w-7 cursor-pointer " />   
-                 </div>
+                  <input className=" text-black w-28 px-2 outline-none" readOnly value={balance} />
+                  <PiHandDepositFill onClick={handleTopUp} className="ml-2 h-7 w-7 cursor-pointer " />
+                </div>
               </div>
 
               <div className="bg-[#FFFFFF66] h-[2px] w-[100%] mx-auto mt-4 "></div>
@@ -388,9 +388,7 @@ const TokenPage = () => {
                       <IoGlobeOutline className="size-6" />
                       <FaTwitter className="size-6" />
                       <FaFacebook className="size-6" />
-                      <FaReddit className="size-6" />
                       <FaTelegram className="size-6" />
-                      < FaInstagram className="size-6" />
                       <FaDiscord className="size-6" />
                     </>
                 }
@@ -499,13 +497,13 @@ const TokenPage = () => {
                 <div className="flex flex-col">
                   <span className="text-sm text-gray-400">UNSOLD TOKENS</span>
                   <span className="text-lg font-semibold">
-                   {tokenData ? `${tokenData?.total_supply.toString()} ${tokenData.token_symbol}` : <Skeleton width={120} height={25}/> }
+                    {tokenData ? `${tokenData?.total_supply.toString()} ${tokenData.token_symbol}` : <Skeleton width={120} height={25} />}
                   </span>
                 </div>
                 <div className="flex flex-col">
                   <span className="text-sm text-gray-400">CURRENT RAISED</span>
                   <span className="text-lg font-semibold">
-                    {tokenData ? `${tokenData?.owner_bal} ICP` : <Skeleton width={80} height={25}/>}
+                    {tokenData ? `${tokenData?.owner_bal} ICP` : <Skeleton width={80} height={25} />}
                   </span>
                 </div>
               </div>
@@ -514,8 +512,8 @@ const TokenPage = () => {
           )}
 
           {!isMobile && (
-            <div className="max-w-[90%] mx-auto mt-6 xl2:mt-11">
-              <div className="flex justify-between   text-[12px] xl:text-[15px] gap-4 font-posterama">
+            <div className="max-w-[90%] mx-auto lgx:mt-4">
+              <div className="flex font-posterama text-[12px] xl:text-[15px]  justify-between">
                 {tabNames.map((tab) => (
                   <div
                     key={tab}
@@ -548,13 +546,13 @@ const TokenPage = () => {
                 <div className="flex flex-col">
                   <span className="text-sm text-gray-400">UNSOLD TOKENS</span>
                   <span className="text-lg mr-2 font-semibold">
-                    {tokenData ? `${tokenData?.total_supply.toString()} ${tokenData.token_symbol}` : <Skeleton width={120} height={25}/> }
+                    {tokenData ? `${tokenData?.total_supply.toString()} ${tokenData.token_symbol}` : <Skeleton width={120} height={25} />}
                   </span>
                 </div>
                 <div className="flex flex-col">
                   <span className="text-sm text-gray-400">CURRENT RAISED</span>
                   <span className="text-lg font-semibold">
-                    {tokenData ? `${tokenData?.owner_bal} ICP` : <Skeleton width={80} height={25}/> } 
+                    {tokenData ? `${tokenData?.owner_bal} ICP` : <Skeleton width={80} height={25} />}
                   </span>
                 </div>
               </div>
@@ -656,7 +654,7 @@ const TokenPage = () => {
       </div>
     </>
   );
- 
+
 };
 
 export default TokenPage;

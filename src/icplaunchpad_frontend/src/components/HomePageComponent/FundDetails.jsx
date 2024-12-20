@@ -108,7 +108,7 @@ const FundDetails = ({ sale, index }) => {
             <td className="py-3 px-6 text-center"> {(tokenDetails && tokenDetails?.owner_bal) ? `${tokenDetails?.owner_bal} ICP` : <Skeleton width={60} height={15}/> } </td>
             <td className="py-3 px-6 text-center">{` ${Number(sale.sale_details.tokens_for_fairlaunch)}`}</td>
             <td className="py-3 px-6 text-center"> Fairlaunch</td>
-            <td className="py-3 px-6 text-center">{convertTimestampToISTFormatted(sale.sale_details.end_time_utc)}</td>
+            <td className="py-3 px-6 whitespace-nowrap text-center">{convertTimestampToISTFormatted(sale.sale_details.end_time_utc)}</td>
         </tr>
     );
 };

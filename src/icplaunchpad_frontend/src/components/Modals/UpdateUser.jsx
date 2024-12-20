@@ -7,6 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { Principal } from '@dfinity/principal';
 import { updatevalidationSchema } from '../../common/Validations/UpdateUserValidation';
+import { updatevalidationSchema } from '../../common/Validations/UpdateUserValidation';
 import ReactSelect from 'react-select';
 import getReactSelectStyles from '../../common/Reactselect';
 import { getSocialLogo } from '../../common/getSocialLogo';
@@ -101,14 +102,17 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
     setValidationError('');
     const { name, username, tags } = data;
   
+  
     if (!termsAccepted) {
       setIsSubmitting(false);
       setValidationError('Please accept the terms and conditions.');
       return;
     }
   
+  
     const profile_picture = profilePictureData ? [profilePictureData] : [];
     const linksArray = links.map(link => link.url.trim());
+  
   
     try {
       const updatedUserData = { name, username, profile_picture, links: linksArray, tag: tags };
@@ -140,6 +144,7 @@ const UpdateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
             : updateUserResult.value.Err
         );
       }
+  
   
       if (profile_picture.length > 0) {
       

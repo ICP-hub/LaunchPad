@@ -8,9 +8,10 @@ import Pooolinfo from "./pooolinfo/Pooolinfo";
 import Token from "./token/Token";
 import "./tokenpage.css";
 import Tokenomic from "./Tokenomics/Tokenomics.jsx";
+import TokenTransactions from "../../common/TokenTransactions/TokenTransactions";
 
 const MobileViewTab = ({ actor, poolData, presaleData }) => {
-  console.log('poolData',poolData)
+  console.log('poolData', poolData)
   const [activeTab, setActiveTab] = useState("About");
   const renderContent = () => {
     switch (activeTab) {
@@ -24,6 +25,8 @@ const MobileViewTab = ({ actor, poolData, presaleData }) => {
         return <FAQsDiscussion />;
       case "TOKENOMIC":
         return <Tokenomic />;
+      case "TRANSACTIONS":
+        return <TokenTransactions actor={actor} />;
       default:
         return <ProjectTokenAbout />;
     }
@@ -34,6 +37,7 @@ const MobileViewTab = ({ actor, poolData, presaleData }) => {
     { name: "TOKEN", content: renderContent() },
     { name: "POOL INFO", content: renderContent() },
     { name: "TOKENOMIC", content: renderContent() },
+    { name: "TRANSACTIONS", content: renderContent() },
     { name: "FAQs & DISCUSSION", content: renderContent() },
   ];
 

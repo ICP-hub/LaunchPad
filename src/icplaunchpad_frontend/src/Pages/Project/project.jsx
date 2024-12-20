@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import ProjectRectangleBg from "../../../assets/images/project-rectangle-bg.png";
-import { FaFacebook, FaTwitter, FaReddit, FaInstagram, FaDiscord } from "react-icons/fa";
+import { FaFacebook, FaTwitter, FaDiscord } from "react-icons/fa";
 import { IoGlobeOutline } from "react-icons/io5";
 import { FaTelegram } from "react-icons/fa6";
 import { toast, Toaster } from "react-hot-toast";
-import { idlFactory  } from "../../StateManagement/useContext/ledger.did.js";
+import { idlFactory } from "../../StateManagement/useContext/ledger.did.js";
 
 import person1 from "../../../assets/images/carousel/user.png";
 import ProjectTokenAbout from "./about/ProjectTokenAbout.jsx";
@@ -23,6 +23,7 @@ import { Actor } from "@dfinity/agent";
 import RaisedFundProgress from "../../common/RaisedFundProgress.jsx";
 import ApproveOrRejectModal from "../../common/ApproveOrRejectModal.jsx";
 import Skeleton from "react-loading-skeleton";
+import TokenTransactions from "../../common/TokenTransactions/TokenTransactions";
 import { useSelector } from "react-redux";
 
 const TokenPage = () => {
@@ -145,6 +146,8 @@ useEffect(() => {
         return <Pooolinfo presaleData={saleParams} poolData={projectData ? { ...projectData, total_supply: projectData?.total_supply } : {}} />;
       case "Tokenomic":
         return <Tokenomic />;
+      case "Transactions":
+        return <TokenTransactions actor={ledgerActor} />;
       case "FAQs & Discussion":
         return <FAQsDiscussion />;
       default:
@@ -157,6 +160,7 @@ useEffect(() => {
     "Token",
     "Pool Info",
     "Tokenomic",
+    "Transactions",
     "FAQs & Discussion",
   ];
 
@@ -179,7 +183,7 @@ useEffect(() => {
     }
   };
 
-console.log("ledger actor ", ledgerActor)
+  console.log("ledger actor ", ledgerActor)
 
   const handleTransaction = async () => {
     if (!amount || amount <= 0) {
@@ -187,11 +191,11 @@ console.log("ledger actor ", ledgerActor)
       return;
     }
 
-    if ( !projectData?.canister_id) {
+    if (!projectData?.canister_id) {
       toast.error("Missing required data to process the transaction.");
       console.log(" authenticprojectData?.canister_idatedAgent 188", projectData?.canister_id)
       return;
-    }   
+    }
     setIsLoading(true);
 
     const acc = {
@@ -212,7 +216,7 @@ console.log("ledger actor ", ledgerActor)
     };
     console.log("icrc2_approve_args icrc2_approve_args 201:", icrc2_approve_args);
     const totalamount = BigInt(amount * 10 ** 8);
- 
+
     console.log("Total amount:", totalamount);
     try {
       const response = await ledgerActor?.icrc2_approve(icrc2_approve_args);
@@ -228,7 +232,7 @@ console.log("ledger actor ", ledgerActor)
         console.log("Final Order Response", finalOrderResponse);
         toast.success("Transaction successful!");
 
-        if ( finalOrderResponse && finalOrderResponse?.Ok) {
+        if (finalOrderResponse && finalOrderResponse?.Ok) {
           toast.success("Token purchase successful!");
 
           const sellArgs = {
@@ -240,7 +244,7 @@ console.log("ledger actor ", ledgerActor)
           const sellResponse = await actor?.sell_tokens(sellArgs);
           console.log("Sell Tokens Response:", sellResponse);
 
-          if ( sellResponse && sellResponse?.Ok) {
+          if (sellResponse && sellResponse?.Ok) {
             toast.success("Sell transaction successful!");
           } else {
             console.error("Sell transaction failed:", sellResponse);
@@ -250,7 +254,7 @@ console.log("ledger actor ", ledgerActor)
           console.error("Buy tokens failed:", finalOrderResponse);
           toast.error("Token purchase failed. Please try again.");
         }
-        
+
       } else {
         console.error("Approval failed", response);
         toast.error("Payment approval failed. Please check your wallet balance.");
@@ -259,13 +263,13 @@ console.log("ledger actor ", ledgerActor)
       console.error("Error during payment approval or token purchase", err);
       toast.error("Payment process failed. Please try again.");
     } finally {
-      setIsLoading(false); 
+      setIsLoading(false);
     }
-  
+
   };
-  console.log('cover',projectData.cover_image)
+  console.log('cover', projectData.cover_image)
   return (
-   
+
     <>
       <div className="flex flex-col  gap-5 max-w-[95%] mx-auto lg:flex-row">
         <div className={`bg-[#FFFFFF1A] rounded-lg  mt-24 pb-5`}>
@@ -285,7 +289,7 @@ console.log("ledger actor ", ledgerActor)
               </div>
               <div className="content-div font-posterama flex justify-between w-[90%] m-auto mt-7 ">
                 <div className="left flex flex-col gap-4">
-                  <div className="text-[24px]"> {projectData ? projectData?.token_name :  <Skeleton width={80} height={20}/> } </div>
+                  <div className="text-[24px]"> {projectData ? projectData?.token_name : <Skeleton width={80} height={20} />} </div>
                   <div>Fair Launch</div>
                   <div className="logos flex  gap-11">
                     {
@@ -299,17 +303,15 @@ console.log("ledger actor ", ledgerActor)
                           <IoGlobeOutline className="size-6" />
                           <FaTwitter className="size-6" />
                           <FaFacebook className="size-6" />
-                          <FaReddit className="size-6" />
                           <FaTelegram className="size-6" />
-                          < FaInstagram className="size-6" />
                           <FaDiscord className="size-6" />
                         </>
                     }
                   </div>
                 </div>
                 <div className="right flex flex-col text-[17px] mr-8 lgx:mr-0 gap-4">
-                  <div className="text-[#FFC145]"> {tokenPhase ? tokenPhase : <Skeleton width={80} height={20}/>} </div>
-                  <div>{saleParams ? `Soft ${saleParams?.softcap} ICP` : <Skeleton width={100} height={20}/>}</div>
+                  <div className="text-[#FFC145]"> {tokenPhase ? tokenPhase : <Skeleton width={80} height={20} />} </div>
+                  <div>{saleParams ? `Soft ${saleParams?.softcap} ICP` : <Skeleton width={100} height={20} />}</div>
                 </div>
               </div>
               <div className="bg-[#FFFFFF66] h-[2px] max-w-[90%] mx-auto mt-4"></div>
@@ -327,14 +329,14 @@ console.log("ledger actor ", ledgerActor)
               </div>
 
               <div className="mt-[70px] font-posterama text-center text-white space-y-2">
-                <div className=" text-[24px] font-bold"> {projectData ? projectData?.token_name : <Skeleton width={80} height={20}/>   }</div>
+                <div className=" text-[24px] font-bold"> {projectData ? projectData?.token_name : <Skeleton width={80} height={20} />}</div>
                 <div className=" text-[16px] font-medium">
-                 Fair Launch
+                  Fair Launch
                 </div>
                 <div className="text-[#FFC145] text-[18px] font-semibold">
-                {tokenPhase ? tokenPhase : <Skeleton width={80} height={20}/>}
+                  {tokenPhase ? tokenPhase : <Skeleton width={80} height={20} />}
                 </div>
-                <div className="text-[16px]"> {saleParams ? `Soft ${saleParams?.softcap} ICP` : <Skeleton width={100} height={20}/>} </div>
+                <div className="text-[16px]"> {saleParams ? `Soft ${saleParams?.softcap} ICP` : <Skeleton width={100} height={20} />} </div>
               </div>
 
               <div className="bg-[#FFFFFF66] h-[2px] w-[100%] mx-auto mt-4"></div>
@@ -351,9 +353,7 @@ console.log("ledger actor ", ledgerActor)
                       <IoGlobeOutline className="size-6" />
                       <FaTwitter className="size-6" />
                       <FaFacebook className="size-6" />
-                      <FaReddit className="size-6" />
                       <FaTelegram className="size-6" />
-                      < FaInstagram className="size-6" />
                       <FaDiscord className="size-6" />
                     </>
                 }
@@ -405,20 +405,20 @@ console.log("ledger actor ", ledgerActor)
             />
 
             {/* token amount per icp */}
-          
 
-            <button onClick={()=>(amount > 0) && setModalIsOpen(true)} className="w-[50%] p-2 rounded-2xl   font-semibold  bg-gradient-to-r from-[#f3b3a7] to-[#cac9f5] text-black text-base">
+
+            <button onClick={() => (amount > 0) && setModalIsOpen(true)} className="w-[50%] p-2 rounded-2xl   font-semibold  bg-gradient-to-r from-[#f3b3a7] to-[#cac9f5] text-black text-base">
               USE ICP
             </button>
             <div>
-           {ModalIsOpen && <ApproveOrRejectModal handleAction={handleTransaction} ModalIsOpen={ModalIsOpen} setModalIsOpen={setModalIsOpen} amount={amount} ledgerPrincipal={projectData.canister_id} /> }
+              {ModalIsOpen && <ApproveOrRejectModal handleAction={handleTransaction} ModalIsOpen={ModalIsOpen} setModalIsOpen={setModalIsOpen} amount={amount} ledgerPrincipal={projectData.canister_id} />}
             </div>
-            
+
           </div>
 
           <div className="bg-[#FFFFFF1A] text-white p-1 rounded-lg flex flex-col ss2:flex-row    w-full lg:min-w-[406px]">
-            
-          <RaisedFundProgress ledgerId={projectData?.canister_id} projectData={saleParams}/>
+
+            <RaisedFundProgress ledgerId={projectData?.canister_id} projectData={saleParams} />
 
             <div className="mt-6 w-[40%] gap-4 sxs3:gap-8 px-2 relative  flex ss2:flex-col  justify-around ">
               <div className="flex flex-col">
@@ -434,7 +434,7 @@ console.log("ledger actor ", ledgerActor)
               <div className="flex flex-col">
                 <span className="text-sm text-gray-400">CURRENT RAISED</span>
                 <span className="text-lg font-semibold">
-                  {tokenOwnerInfo ? `${tokenOwnerInfo.owner_bal} ICP` : <Skeleton width={60} height={20}/>} 
+                  {tokenOwnerInfo ? `${tokenOwnerInfo.owner_bal} ICP` : <Skeleton width={60} height={20} />}
                 </span>
               </div>
             </div>
@@ -444,7 +444,7 @@ console.log("ledger actor ", ledgerActor)
             <SaleStart style={{ text_heading: 'text-lg', text_content: 'text-2xl' }} setTokenPhase={setTokenPhase} presaleData={saleParams} />
           </div>
         </div>
-        {isMobile && <MobileViewTab ledgerId={projectData?.canister_id}
+        {isMobile && <MobileViewTab actor={ledgerActor} ledgerId={projectData?.canister_id}
           presaleData={saleParams} poolData={projectData ? { ...projectData, total_supply: projectData?.total_supply } : {}}
         />}
       </div>
