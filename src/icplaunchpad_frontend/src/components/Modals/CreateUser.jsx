@@ -58,14 +58,15 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
       // Prepare user data
       let originalFileSize = 0;
       let profilePictureData = [];
-      
-      if (profile_picture && profile_picture[0]) {
-        originalFileSize = profile_picture[0].size;
+     
+      if (profile_picture ) {
+        originalFileSize = profile_picture.size;
         console.log('Original Image Size (bytes):', originalFileSize);
   
         const compressedFile = await CompressedImage(profile_picture);
         console.log('Compressed Image Size (bytes):', compressedFile.size);
         profilePictureData = await convertFileToUint8Array(compressedFile);
+        
       }
   
       const userData = {
@@ -76,6 +77,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
         tag: tags.length > 0 ? tags : [],
       };
   
+      console.log('userData',userData)
       // Create an array of promises
       const promises = [
         actor.create_account(userData), // Create the user account
