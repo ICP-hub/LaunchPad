@@ -6,33 +6,36 @@ import {
   userRegisteredHandlerSuccess,
 } from "../Reducers/userRegisteredData";
 
-const selectActor = (currState) => currState?.actors?.actor;
 const selectPrincipal = (currState) => currState?.internet?.principal;
+const selectActor = (currState) => currState.actors.actor;
 
-function* fetchUserHandler() {
+
+function* fetchUserHandler(action) {
   try {
-    const actor = yield select(selectActor);
+      const actor = yield select(selectActor);
     console.log('Actor in user saga:', actor);
 
     const principalString = yield select(selectPrincipal);
     console.log('Principal from state:', principalString);
 
-    // Guard clause: exit early if principalString is undefined or actor is null
-    if (!principalString) {
-      console.error("Principal string is not defined in the state.");
-      yield put(userRegisteredHandlerFailure("Principal string is undefined or null."));
+    if (!principalString || typeof principalString !== "string" || !principalString.trim()) {
+      console.error("Principal string is invalid:", principalString);
+      yield put(userRegisteredHandlerFailure("Principal string is invalid."));
       return;
     }
 
-    if (!actor) {
-      console.error("Actor is undefined.");
-      yield put(userRegisteredHandlerFailure("Actor is undefined."));
+    if (!actor || typeof actor.get_user_account !== "function") {
+      console.error("Actor is invalid or missing required method.");
+      yield put(userRegisteredHandlerFailure("Actor is invalid or missing required method."));
       return;
     }
 
     try {
       const principal = Principal.fromText(principalString);
       console.log('Converted Principal:', principal);
+
+      // Log before calling the method
+      console.log("Calling actor.get_user_account with:", principal);
 
       const userData = yield call([actor, actor.get_user_account], principal);
       console.log("User data in saga:", userData);
@@ -56,6 +59,7 @@ function* fetchUserHandler() {
     );
   }
 }
+
 
 
 

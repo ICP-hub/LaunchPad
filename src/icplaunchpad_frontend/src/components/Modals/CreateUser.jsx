@@ -14,7 +14,7 @@ import ReactSelect from 'react-select';
 import getReactSelectStyles from '../../common/Reactselect';
 import { FaTrash } from "react-icons/fa";
 import { getSocialLogo } from "../../common/getSocialLogo";
-import { validationSchema } from '../../common/UserValidation';
+import { validationSchema } from '../../common/Validations/UserValidation';
 import AnimationButton from '../../common/AnimationButton';
 import { userRegisteredHandlerRequest } from '../../StateManagement/Redux/Reducers/userRegisteredData';
 import { ProfileImageIDHandlerRequest } from '../../StateManagement/Redux/Reducers/ProfileImageID';
@@ -26,8 +26,9 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
 
   const principal = useSelector((currState) => currState.internet.principal);
   console.log('principal',principal)
-  const { register,unregister, handleSubmit, formState: { errors }, control, reset, setValue, clearErrors, setError } = useForm({
+  const { register,unregister, handleSubmit, formState: { errors }, control, reset, setValue, clearErrors, setError,trigger } = useForm({
     resolver: yupResolver(validationSchema),
+    mode:'all'
   });
 
   const dispatch = useDispatch();
@@ -36,6 +37,8 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const [fileName, setFileName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [links, setLinks] = useState([{ url: '' }]);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [imageData, setImageData] = useState(null);
   // Manage social links with react-hook-form's useFieldArray
   const { append, remove } = useFieldArray({
     control,
@@ -45,85 +48,83 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const onSubmit = async (data) => {
     setIsSubmitting(true);
     setValidationError('');
-
+  
     const { name, username, links, profile_picture, tags } = data;
-    console.log("links=", links)
-
+    console.log('data',data)
+    console.log('links=', links);
+  
     if (!termsAccepted) {
-      setValidationError("Please accept the terms and conditions.");
+      setValidationError('Please accept the terms and conditions.');
       setIsSubmitting(false);
       return;
     }
-
+  
     try {
-      // Prepare user data
-      let originalFileSize = 0;
-      if (profile_picture && profile_picture[0]) {
-        originalFileSize = profile_picture[0].size;
-        console.log('Original Image Size (bytes):', originalFileSize);
-      }
-      let profilePictureData = [];
-      if (profile_picture) {
-
-        const compressedFile = await CompressedImage(profile_picture);
-        console.log('Compressed Image Size (bytes):', compressedFile.size);
-        profilePictureData = await convertFileToUint8Array(compressedFile);
-      }
-      // const linksArray = links.map(link => link.url);
-      // const linksArray = links.map(link => link.url.trim());
-
       const userData = {
         name,
         username,
-        profile_picture: profilePictureData.length > 0 ? [profilePictureData] : [],
+        profile_picture: imageData ? [imageData] : [],
         links,
         tag: tags.length > 0 ? tags : [],
       };
-
-      // Create the user account
-      const response = await actor.create_account(userData);
-
-      if (response?.Err) {
-        setValidationError(response.Err);
-        setIsSubmitting(false);
-        return;
-      }
-
-      if (response) {
-        console.log("user created ", response)
-        dispatch(userRegisteredHandlerRequest());
-      }
-
-      // Upload profile picture if exists
+  console.log('userData',userData)
+      // Create an array of promises
+      const promises = [
+        actor.create_account(userData), // Create the user account
+      ];
+  
       if (userData.profile_picture.length > 0) {
-        try {
-          
-          await actor.upload_profile_image(process.env.CANISTER_ID_IC_ASSET_HANDLER, {
+        promises.push(
+          actor.upload_profile_image(process.env.CANISTER_ID_IC_ASSET_HANDLER, {
             content: userData.profile_picture,
-          });
+          }) // Upload profile picture if it exists
+        );
+      }
+  
+      // Use Promise.allSettled to handle all promises
+      const results = await Promise.allSettled(promises);
+  
+      // Handle the results
+      const createAccountResult = results[0];
+      if (createAccountResult.status === 'rejected' || createAccountResult.value?.Err) {
+        const errorMsg =
+          createAccountResult.status === 'rejected'
+            ? createAccountResult.reason || 'Unknown error occurred while creating account.'
+            : createAccountResult.value.Err;
+        throw new Error(errorMsg);
+      }
+  
+      console.log('User account created:', createAccountResult.value);
+  
+      if (results.length > 1) {
+        const uploadImageResult = results[1];
+        if (uploadImageResult.status === 'rejected') {
+          console.warn('Error uploading profile picture:', uploadImageResult.reason);
+        } else {
+          console.log('Profile picture uploaded successfully');
           dispatch(ProfileImageIDHandlerRequest());
-        } catch (imgErr) {
-          console.error("Error uploading profile picture:", imgErr);
         }
       }
-
+  
       if (!principal) {
-        setValidationError("User is not authenticated or principal is missing.");
-        setIsSubmitting(false);
-        return false;
+        throw new Error('User is not authenticated or principal is missing.');
       }
-
+  
+      // Dispatch user registration action
+      dispatch(userRegisteredHandlerRequest());
+  
       // Close modal, reset form, and navigate to home
       setUserModalIsOpen(false);
-      navigate("/");
+      navigate('/');
       reset();
     } catch (err) {
-      console.error("An error occurred:", err);
-      setValidationError("An error occurred while creating the User.");
+      console.error('An error occurred:', err);
+      setValidationError(err.message || 'An error occurred while creating the User.');
     } finally {
       setIsSubmitting(false);
     }
   };
+  
 
   // Helper function to convert file to Uint8Array
   const convertFileToUint8Array = (file) => {
@@ -147,6 +148,35 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
     document.getElementById('profile_picture').click();
   };
 
+  const imageCreationFunc = async (file) => {
+    const result = await trigger('profile_picture');
+    if (result) {
+      try {
+        const compressedFile = await CompressedImage(file);
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setImagePreview(reader.result);
+        };
+        reader.readAsDataURL(compressedFile);
+        const byteArray = await compressedFile.arrayBuffer();
+        setImageData(Array.from(new Uint8Array(byteArray)));
+      } catch (error) {
+        setError('profile_picture', {
+          type: 'manual',
+          message: 'Could not process image, please try another.',
+        });
+      }
+    } else {
+      console.log('ERROR--imageCreationFunc-file', file);
+    }
+  };
+
+  const clearImageFunc = (val) => {
+    setValue(val, null);
+    clearErrors(val);
+    setImageData(null);
+    setImagePreview(null);
+  };
 
   // const extractDomain = (url) => {
   //   try {
@@ -170,7 +200,6 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
   const removeLink = (index) => {
     setLinks(prev => prev.filter((_, i) => i !== index));
     clearErrors(`links.${index}`);
-    clearErrors("links");
     unregister(`links.${index}`);
   };
   const updateLink = (index, value) => {
@@ -253,6 +282,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
                     onChange={(e) => {
                       field.onChange(e.target.files[0]);
                       setFileName(e.target.files[0]?.name || "");
+                      imageCreationFunc(e.target.files[0]);
                     }}
                   />
                 )}

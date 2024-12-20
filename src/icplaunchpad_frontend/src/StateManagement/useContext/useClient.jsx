@@ -19,7 +19,6 @@ export const useAuthClient = () => {
     const { balance, fetchBalance } = useBalance();
     const identity = useIdentity();
     const accounts = useAccounts();
-    const agent = useAgent();
     const delegationType = useDelegationType();
     const isInitializing = useIsInitializing();
     
@@ -31,7 +30,7 @@ export const useAuthClient = () => {
 
     useEffect(() => {
         const initActor = async () => {
-            if (user && identity) { // Ensure user and identity are ready
+            if (user && identity && HOST) { // Ensure user and identity are ready
                 const agent = new HttpAgent({
                     identity,
                     host: HOST

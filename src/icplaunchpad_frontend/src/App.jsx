@@ -1,6 +1,6 @@
 import "./main.css";
 import AllRoutes from './AllRoutes';
-import { useEffect } from "react";
+import { useEffect ,useState} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { userRegisteredHandlerRequest } from "./StateManagement/Redux/Reducers/userRegisteredData";
 import { ProfileImageIDHandlerRequest } from "./StateManagement/Redux/Reducers/ProfileImageID";
@@ -21,9 +21,11 @@ function App() {
   );
   const principal = useSelector((currState) => currState.internet.principal);
   const userData = useSelector((state) => state?.userData?.data);
-  console.log('user',userData)
+    const [isUserRegistered, setUserRegister] = useState(null);
+  
+  // console.log('user',userData)
 //  console.log("is authentication", isAuthenticated)
-//   console.log("is actor", actor)
+  console.log("is actor", actor)
 //   console.log("is principal", principal)
 //   console.log("is userData", userData)
   const dispatch = useDispatch();
@@ -36,14 +38,6 @@ function App() {
     if (isAuthenticated && identity) {
       try {
          dispatch(handleActorRequest({ identity }));
-         await Promise.all([
-          dispatch(userRegisteredHandlerRequest()),
-        // dispatch(ProfileImageIDHandlerRequest()),
-        // dispatch(TokensInfoHandlerRequest()),
-        // dispatch(UserTokensInfoHandlerRequest()),
-        // dispatch(upcomingSalesHandlerRequest()),
-        // dispatch(SuccessfulSalesHandlerRequest()),
-        ]);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -57,15 +51,10 @@ function App() {
   const fetchBalanceData = () => {
     dispatch(userRegisteredHandlerRequest());
     dispatch(ProfileImageIDHandlerRequest());
-    // Uncomment the following lines as needed
-    // dispatch(TokensInfoHandlerRequest());
-    // dispatch(UserTokensInfoHandlerRequest());
-    // dispatch(upcomingSalesHandlerRequest());
-    // dispatch(SuccessfulSalesHandlerRequest());
   };
   
   useEffect(() => {
-    if (actor) {
+    if (actor ) {
       fetchBalanceData();
     }
   }, [actor]);

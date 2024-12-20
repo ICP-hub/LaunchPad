@@ -7,23 +7,14 @@ import ProjectCardSkeleton from "../../common/SkeletonUI/ProjectCard";
 
 const UpcomingSales = React.forwardRef((props, ref) => {
   const navigate = useNavigate();
-  const actor = useSelector((currState) => currState.actors.actor);
-  const salesData = useSelector((state) => state.upcomingSales.data);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Update loading state when salesData is available
-  useEffect(() => {
-    if (salesData !== undefined) {
-      setIsLoading(false);
-    }
-  }, [salesData]);
-
+  // const actor = useSelector((currState) => currState.actors.actor);
+  const salesData = useSelector((state) => state.upcomingSales);
 
   // Handle navigation to the projects page
   const handleViewMoreClick = () => {
-    if (salesData && salesData.length > 0) {
+    if (salesData?.data && salesData?.data.length > 0) {
       navigate("/projects", {
-        state: { salesData: salesData[0], sale_Type: "Upcoming" },
+        state: { salesData: salesData?.data[0], sale_Type: "Upcoming" },
       });
     }
   };
@@ -37,7 +28,7 @@ const UpcomingSales = React.forwardRef((props, ref) => {
         <h2 className="text-white font-bold font-posterama text-[24px] xxs1:text-3xl">
           UPCOMING SALES
         </h2>
-        {salesData && salesData?.length > 0 && (
+        {salesData?.data && salesData?.data.length > 0 && (
           <button
             onClick={handleViewMoreClick}
             className="text-white hidden sm:block font-posterama underline text-[15px] xxs1:text-xl"
@@ -48,10 +39,10 @@ const UpcomingSales = React.forwardRef((props, ref) => {
       </div>
 
       <div className="flex lg:flex-row flex-col flex-wrap items-center md:px-[8.5%] m-auto gap-12 justify-start">
-        {isLoading ? (
+        { salesData?.loading ? (
           <ProjectCardSkeleton count={3} />
-        ) : (salesData && salesData.length > 0 ? (
-          salesData.slice(0, 3).map((sale, index) => (
+        ) : (salesData?.data && salesData?.data.length > 0 ? (
+          salesData?.data.slice(0, 3).map((sale, index) => (
             <ProjectCard
               key={index}
               initial_Total_supply={sale[1] || null}
@@ -71,7 +62,7 @@ const UpcomingSales = React.forwardRef((props, ref) => {
         )
        )}
 
-        {salesData && salesData.length > 3 && (
+        {salesData?.data && salesData?.data.length > 3 && (
           <button
             onClick={handleViewMoreClick}
             className="text-white mt-4 sm:hidden font-posterama underline text-[20px] xxs1:text-xl"

@@ -2,7 +2,6 @@ import { takeLatest, call, put } from 'redux-saga/effects';
 import { setActor, handleActorRequest, actorError } from '../Reducers/actorBindReducer';
 import { createActor } from '../../../../../declarations/icplaunchpad_backend/index';
 import { HttpAgent } from '@dfinity/agent';
-
 // Helper function to initialize HttpAgent and create the actor
 function* initializeActor(identity, backendCanisterId) {
   try {
@@ -23,11 +22,13 @@ function* initializeActor(identity, backendCanisterId) {
     if (process.env.DFX_NETWORK !== 'ic') {
       yield call([agent, agent.fetchRootKey]);
     }
-
+if(agent){
     const actor = createActor(backendCanisterId, { agent });
+  
     console.log('Actor successfully created:', actor);
 
     return actor;
+}
   } catch (error) {
     console.error('Failed to initialize actor:', error.message);
     throw new Error(error.message);

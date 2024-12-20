@@ -6,7 +6,8 @@ import FundListSkeleton from '../../common/SkeletonUI/FundListSkeleton';
 
 const FundList = () => {
   const SuccesFullSales = useSelector((state) => state.SuccessfulSales);
-  console.log('SuccesFullSales==',SuccesFullSales)
+  // console.log('SuccesFullSales==',SuccesFullSales?.data)
+
 
   return (
     <div className="px-[9%] py-[5%] md:py-[6%] lg:py-[3%] bg-black">

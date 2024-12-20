@@ -8,7 +8,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { FaTrash } from 'react-icons/fa';
 import { formatDateForDateTimeLocal } from '../../utils/formatDateFromBigInt';
 import { useSelector } from 'react-redux';
-import { UpdateTokenValidationSchema } from '../../common/UpdateTokenValidation';
+import { UpdateTokenValidationSchema } from '../../common/Validations/UpdateTokenValidation';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 const UpdateToken = ({ ledgerId, tokenModalIsOpen, setRenderComponent, setTokenModalIsOpen }) => {

@@ -80,7 +80,7 @@ pub async fn obtain_cycles_for_canister(
 }
 
 #[ic_cdk::update]
-pub fn create_account(user_input: UserAccount) -> Result<(), String> {
+pub fn create_account(user_input: UserAccount) -> Result<String, String> {
     // Validate input fields
     if user_input.username.trim().is_empty() {
         return Err("Username cannot be empty.".to_string());
@@ -102,7 +102,7 @@ pub fn create_account(user_input: UserAccount) -> Result<(), String> {
     }
 
     let principal = ic_cdk::api::caller();
-
+   
     // Create a new UserAccount from the input struct
     let new_user_account = UserAccount {
         name: user_input.name.clone(),
@@ -122,7 +122,7 @@ pub fn create_account(user_input: UserAccount) -> Result<(), String> {
         );
     });
 
-    Ok(())
+    Ok("User Created Successfully!".to_string())
 }
 
 #[ic_cdk::update]
@@ -352,7 +352,7 @@ pub async fn create_token(user_params: UserInputParams) -> Result<TokenCreationR
 pub async fn import_token(
     ledger_canister_id: Principal,
     optional_index_canister_id: Option<Principal>,
-) -> Result<(), String> {
+) -> Result<bool, String> {
     let user_principal = ic_cdk::api::caller(); // Get the Principal of the caller (user)
 
     // // Check if the ledger_canister_id is already imported
@@ -447,7 +447,7 @@ pub async fn import_token(
         user_principal
     );
 
-    Ok(())
+    Ok(true)
 }
 
 #[ic_cdk::update]

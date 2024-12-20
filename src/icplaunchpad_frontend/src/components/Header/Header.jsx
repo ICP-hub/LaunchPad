@@ -60,7 +60,7 @@ const Header = () => {
   const profile_ImgId = useSelector((state) => state?.ProfileImageID?.data)
   const { balance, fetchBalance } = useBalance()
 
-  console.log('actor',actor)
+
   useEffect(() => {
     if (isAuthenticated && actor) {
       userCheck();
@@ -72,21 +72,20 @@ const Header = () => {
       // Check if actor is defined
       if (actor) {
         const response = await actor.is_account_created();
-        console.log("Account creation response:", response);
-        const resultResponse = response.slice(-16);
-        console.log('resultResponse',resultResponse)
-        if (resultResponse === "already created.") {
+  
+        if (response?.Ok) {
+          console.log("Account is created:", response.Ok);
           setUserRegister(true);
-
-        } else {
+        } else if (response?.Err) {
+          console.log("Account creation error:", response.Err);
           setUserRegister(false);
-          console.log("User account has not been created yet.");
         }
       }
     } catch (error) {
-      console.error("Specific error occurred:", error.message); // Handle specific known errors
+      console.error("An unexpected error occurred:", error.message); // Handle unexpected errors
     }
   }
+  
 
 
   //fetch profile image  
@@ -228,7 +227,7 @@ const handleSearchedToken = async (data) => {
 
   const formattedIcpBalance =
     balance !== undefined ? Number(balance).toFixed(5) : "Fetching...";
-  console.log('isAuthenticated',isAuthenticated,isUserRegistered)
+
   return (
     <div>
       {isAuthenticated && isUserRegistered === false && (

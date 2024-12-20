@@ -128,7 +128,6 @@ useEffect(() => {
         }
 
         if (coverImgId?.Ok) {
-          console.log('hello', coverImgId)
           const imageUrl = `${protocol}://${canisterId}.${domain}/f/${coverImgId?.Ok}`;
           setTokenInfo((prev) => ({ ...prev, cover_image: imageUrl }));
         }
