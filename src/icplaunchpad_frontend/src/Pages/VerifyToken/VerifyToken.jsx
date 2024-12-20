@@ -258,6 +258,9 @@ const VerifyToken = () => {
           toast.error("ICRC2 approval failed. Please check the network or parameters.");
         }
       }
+       
+      navigate("/token-page", { state: { projectData: {canister_id: ledger_canister_id } } });
+
     } catch (error) {
       console.error("Submission failed with error:", error);
       setError(error.toString());

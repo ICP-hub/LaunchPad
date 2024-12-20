@@ -7,7 +7,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { Principal } from '@dfinity/principal';
 import { updatevalidationSchema } from '../../common/Validations/UpdateUserValidation';
-import { updatevalidationSchema } from '../../common/Validations/UpdateUserValidation';
 import ReactSelect from 'react-select';
 import getReactSelectStyles from '../../common/Reactselect';
 import { getSocialLogo } from '../../common/getSocialLogo';

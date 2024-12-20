@@ -8,38 +8,22 @@ import ProjectCardSkeleton from "../../../common/SkeletonUI/ProjectCard";
 
 
 const ProjectLists = () => {
-  const navigate = useNavigate();
-  const actor = useSelector((currState) => currState.actors.actor);
-  const [isLoading, setIsLoading]= useState(true);
-  const isAuthenticated = useSelector(
-    (currState) => currState.internet.isAuthenticated
-  );
-  const principal = useSelector((currState) => currState.internet.principal);
- 
-  const tokens= useSelector((state)=>state?.UserTokensInfo?.data)
+   
+  const tokens= useSelector((state)=>state?.UserTokensInfo)
+  
   console.log("Fetched tokens in ProjectLists:", tokens);
-
-  useEffect(()=>{
-    if(tokens){
-      setIsLoading(false)
-    }
-  },[tokens])
   
 
   return (
     <div  className="    md:mb-[5%] lg:mb-0 sm4:mb-3 py-[5%]">
     <div className="flex lg:flex-row flex-wrap gap-6 items-center sm:w-[95%]  m-auto justify-around">
       
-      {/* {tokens && tokens.map((sale, index) => (
-    
-        <ProjectCard isUserToken={true} projectData={sale} key={index} />
-        
-      ))} */}
-        {isLoading ? 
+
+        {tokens?.loading ? 
         <ProjectCardSkeleton count={5} />
         :
-        (tokens && tokens.length > 0) ? (
-          tokens.map((sale, index) => (
+        (tokens?.data && tokens?.data.length > 0) ? (
+          tokens?.data.map((sale, index) => (
             <ProjectCard isUserToken={true} projectData={sale} key={index} />
           ))
         ) : (
