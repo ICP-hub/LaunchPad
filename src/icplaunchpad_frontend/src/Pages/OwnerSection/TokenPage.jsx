@@ -60,6 +60,7 @@ const TokenPage = () => {
   const [balance, setBalance] = useState(0);
 
   const actor = useSelector((currState) => currState.actors.actor);
+  console.log(actor)
   // const presale = useSelector((state) => state.SaleParams.data.Ok);
   const dispatch = useDispatch()
 
@@ -117,7 +118,9 @@ const TokenPage = () => {
         : Principal.fromText(ledger_canister_id);
 
       const balance = await actor.fetch_canister_balance(ledgerId);
-      setBalance(Number(balance.Ok))
+      if(balance.Ok)
+       setBalance(Number(balance.Ok))
+
       console.log('balance==', balance)
     }
   }
@@ -128,7 +131,7 @@ const TokenPage = () => {
       getSaleParams();
       getBalance();
     }
-  }, [ledger_canister_id, renderComponent]);
+  }, [actor,ledger_canister_id, renderComponent]);
 
   // Fetch Token Data
   const fetchData = async () => {
@@ -166,19 +169,14 @@ const TokenPage = () => {
           console.error("Failed to fetch some token data.");
         }
   
-        // Fetch Owner Details with retry logic
-        const ownerData = await fetchWithRetry(() => ledgerActor.icrc1_minting_account(), 3, 1000);
-        if (ownerData?.[0]?.owner) {
-          const ownerBalance = await fetchWithRetry(
-            () => ledgerActor.icrc1_balance_of(ownerData[0]),
-            3,
-            1000
-          );
-  
+        // Fetch fund raised
+        if (ledgerId) {
+          const fundRaised = await actor.get_funds_raised(ledgerId)
+          console.log('fundRaised====',fundRaised)
+   
           setTokenData((prevData) => ({
             ...prevData,
-            owner_bal: ownerBalance?.toString() || '0',
-            owner: ownerData[0].owner.toString(),
+            fund_raised: fundRaised?.Ok.toString() || '0',
           }));
         }
   
@@ -496,14 +494,14 @@ const TokenPage = () => {
                 </div>
                 <div className="flex flex-col">
                   <span className="text-sm text-gray-400">UNSOLD TOKENS</span>
-                  <span className="text-lg font-semibold">
+                  <span className="text-lg font-semibold pr-2">
                     {tokenData ? `${tokenData?.total_supply.toString()} ${tokenData.token_symbol}` : <Skeleton width={120} height={25} />}
                   </span>
                 </div>
                 <div className="flex flex-col">
                   <span className="text-sm text-gray-400">CURRENT RAISED</span>
                   <span className="text-lg font-semibold">
-                    {tokenData ? `${tokenData?.owner_bal} ICP` : <Skeleton width={80} height={25} />}
+                    {tokenData ? `${tokenData?.fund_raised} ICP` : <Skeleton width={80} height={25} />}
                   </span>
                 </div>
               </div>
@@ -545,14 +543,14 @@ const TokenPage = () => {
                 </div>
                 <div className="flex flex-col">
                   <span className="text-sm text-gray-400">UNSOLD TOKENS</span>
-                  <span className="text-lg mr-2 font-semibold">
+                  <span className="text-lg mr-2 overflow-x-scroll no-scrollbar font-semibold">
                     {tokenData ? `${tokenData?.total_supply.toString()} ${tokenData.token_symbol}` : <Skeleton width={120} height={25} />}
                   </span>
                 </div>
                 <div className="flex flex-col">
                   <span className="text-sm text-gray-400">CURRENT RAISED</span>
                   <span className="text-lg font-semibold">
-                    {tokenData ? `${tokenData?.owner_bal} ICP` : <Skeleton width={80} height={25} />}
+                    {tokenData ? `${tokenData?.fund_raised} ICP` : <Skeleton width={80} height={25} />}
                   </span>
                 </div>
               </div>

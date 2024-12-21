@@ -11,18 +11,21 @@ function* fetchUpcomingSales() {
   try {
     // Select the actor directly
     const actor = yield select(selectActor);
+    
+    if (!actor) {
+      console.log("Actor is not available, waiting for it...");
+      return; // Don't proceed until actor is available
+    }
 
-    if (actor) {
     // Fetch upcoming sales data
     const salesData = yield call([actor, actor.get_upcoming_sales]);
-    if (salesData?.Ok) {
+    console.log('salesData',salesData)
+    if (salesData) {
       yield put(upcomingSalesHandlerSuccess(salesData.Ok));
     } else {
       throw new Error("Invalid upcoming sales data format");
     }
-    }else {
-      throw new Error("Actor is not initialized");
-    }
+   
   } catch (error) {
     console.error("Error fetching upcoming sales data:", error);
     yield put(

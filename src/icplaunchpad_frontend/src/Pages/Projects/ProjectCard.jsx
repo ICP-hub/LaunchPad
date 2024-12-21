@@ -37,21 +37,22 @@ useEffect(() => {
       const createdActor = await fetchWithRetry(() => createCustomActor(ledgerId), 3, 1000);
       setLedgerActor(createdActor);
 
-      const owner = await fetchWithRetry(() => createdActor.icrc1_minting_account(), 3, 1000);
-      if (owner) {
-        const ownerBalance = await fetchWithRetry(
-          () => createdActor.icrc1_balance_of(owner[0]),
-          3,
-          1000
-        );
+         // Fetch fund raised
+         if (ledgerId) {
+            const ledgerPrincipal= typeof ledgerId === "string"
+                    ? Principal.fromText(ledgerId)
+                    : ledgerId;
+          console.log('ledgerid',ledgerId)
+          const fundRaised = await actor.get_funds_raised(ledgerPrincipal)
+          console.log('fundRaised==',fundRaised)
+
         setTokenInfo((prev) => ({
           ...prev,
-          owner_bal: ownerBalance.toString(),
-          owner: owner[0].owner.toString(),
+          fund_raised: fundRaised?.Ok.toString() || '0',
         }));
       }
     } catch (error) {
-      console.error(`Error fetching token owner info for ledgerId: ${ledgerId}`, error);
+      console.error(`Error fetching token funds raised for ledgerId: ${ledgerId}`, error);
     }
   };
 
@@ -193,7 +194,7 @@ useEffect(() => {
           <div className="mt-6 w-[40%] flex flex-col justify-around">
             <div className="flex flex-col">
               <span className="text-sm text-gray-400">HARD</span>
-              <span className="text-lg font-semibold bg-gradient-to-r from-[#f09787] to-[#CACCF5] text-transparent bg-clip-text">
+              <span className="text-lg font-semibold bg-gradient-to-r overflow-x-scroll no-scrollbar from-[#f09787] to-[#CACCF5] text-transparent bg-clip-text">
                 {projectData?.sale_details?.hardcap || tokenInfo?.sale_Params?.hardcap
                   ? `${Number(projectData?.sale_details?.hardcap || tokenInfo?.sale_Params?.hardcap)} ICP`
                   : <Skeleton width={70} height={20} />}

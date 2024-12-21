@@ -8,45 +8,10 @@ import ProjectCardSkeleton from "../../../common/SkeletonUI/ProjectCard";
 
 
 const ProjectLists = () => {
-  const navigate = useNavigate();
-  const [isLoading,setIsLoading]=useState(true);
-  const actor = useSelector((currState) => currState.actors.actor);
-  const isAuthenticated = useSelector(
-    (currState) => currState.internet.isAuthenticated
-  );
-  const principal = useSelector((currState) => currState.internet.principal);
-  
-  const [tokensLedger, setTokensLedger] = useState([])
-  console.log("Fetched tokens in ProjectLists:", tokensLedger);
 
-  useEffect(() => {
-    const fetchUserTokensInfo = async () => {
-        const userPrincipal= Principal.fromText(principal)
-      try {
-        if (actor) {
-          const response = await actor.get_user_ledger_ids(userPrincipal);
+ const tokensLedger= useSelector((state)=>state?.UserTokenLedgerIds)
+  console.log("Fetched tokensLedger Ids:", tokensLedger);
 
-          if (response && response?.Ok && response?.Ok?.length > 0) {
-            setTokensLedger(response?.Ok);
-            setIsLoading(false)
-          } else {
-            console.log("No tokens data available or empty response.");
-          }
-        } else {
-          console.log("User account has not been created yet.");
-        }
-      } catch (error) {
-        console.error("Error fetching user tokens info:", error.message);
-      }
-    };
-
-    fetchUserTokensInfo();
-  }, [actor]);
-  // Handle navigation to the projects page
-  // const handleViewMoreClick2 = () => {
-  //   navigate('/project');
-  // };
-  
 
   return (
     <div  className="    md:mb-[5%] lg:mb-0 sm4:mb-3 py-[5%]">
@@ -57,11 +22,11 @@ const ProjectLists = () => {
         <ProjectCard isUserToken={true} projectData={sale} key={index} />
         
       ))} */}
-        {isLoading ?
+        {tokensLedger?.loading ?
         <ProjectCardSkeleton count={6} cardType={'AllTokens'} />
         :
-        (tokensLedger && tokensLedger.length > 0) ? (
-          tokensLedger.map((ledger, index) => (
+        (tokensLedger?.data && tokensLedger?.data.length > 0) ? (
+          tokensLedger?.data.map((ledger, index) => (
             <ProjectCard ledgerID={ledger} key={index} />
           ))
         ) : (

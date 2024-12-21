@@ -15,7 +15,6 @@ import getReactSelectStyles from '../../common/Reactselect';
 import { FaTrash } from "react-icons/fa";
 import { getSocialLogo } from "../../common/getSocialLogo";
 import { validationSchema } from '../../common/Validations/UserValidation';
-import { validationSchema } from '../../common/Validations/UserValidation';
 import AnimationButton from '../../common/AnimationButton';
 import { userRegisteredHandlerRequest } from '../../StateManagement/Redux/Reducers/userRegisteredData';
 import { ProfileImageIDHandlerRequest } from '../../StateManagement/Redux/Reducers/ProfileImageID';
@@ -66,7 +65,7 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
             username,
             profile_picture: imageData ? [imageData] : [],
             links,
-            tags: tags.length > 0 ? tags : [],
+            tag: tags.length > 0 ? tags : [],
         };
 
         console.log('userData', userData);

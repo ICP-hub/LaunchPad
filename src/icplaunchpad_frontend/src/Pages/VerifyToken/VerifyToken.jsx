@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -22,6 +20,7 @@ import { toast, Toaster } from "react-hot-toast";
 import { UserTokensInfoHandlerRequest } from "../../StateManagement/Redux/Reducers/UserTokensInfo";
 import { Actor } from "@dfinity/agent";
 import timestampAgo, { getExpirationTimeInMicroseconds } from "../../utils/timeStampAgo";
+import { useBlocker } from "../../common/NavigationBlocker";
 
 
 const convertFileToBytes = async (file) => {
@@ -259,6 +258,10 @@ const VerifyToken = () => {
           toast.error("ICRC2 approval failed. Please check the network or parameters.");
         }
       }
+       
+      //navigate to token page
+      navigate("/token-page", { state: { projectData: {canister_id: ledger_canister_id } } });
+
     } catch (error) {
       console.error("Submission failed with error:", error);
       setError(error.toString());
@@ -267,8 +270,6 @@ const VerifyToken = () => {
       setIsSubmitting(false);
     }
   };
-
-
 
 
   const handleNext = handleSubmit((data) => {

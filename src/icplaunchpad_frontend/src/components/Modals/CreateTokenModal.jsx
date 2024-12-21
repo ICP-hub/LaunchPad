@@ -154,7 +154,7 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
 
         // Construct token data
         const tokenData = {
-            token_name: token_name.toLowerCase(),
+            token_name: token_name.trim(),
             token_symbol,
             decimals: [parseInt(decimals, 10)],
             initial_balances: [
@@ -167,16 +167,14 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
                 ],
             ],
         };
-
         console.log("Token data:", tokenData);
+
         // Handle local network
         if (process.env.DFX_NETWORK !== 'ic') {
             const response = await actor.create_token(tokenData);
             console.log("Token creation response:", response);
 
             if (response && response.Ok) {
-                // dispatch(TokensInfoHandlerRequest());
-                // dispatch(UserTokensInfoHandlerRequest());
                 const { ledger_canister_id, index_canister_id } = response.Ok;
                 navigate("/verify-token", {
                     state: {
@@ -219,14 +217,17 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
 
             const approveResponse = await ledgerActor.icrc2_approve(icrc2ApproveArgs);
             console.log("ICRC2 approve response:", approveResponse);
-
-            if (approveResponse && approveResponse.Ok) {
+    
+            if(approveResponse && !approveResponse?.Err){
+              const ledgerPrincipal=Principal.fromText("ryjl3-tyaaa-aaaaa-aaaba-cai")
+              const feeResponse= await actor.token_fee_transfer(ownerPrincipal, Amount,ledgerPrincipal);
+              console.log('feeResponse=',feeResponse);
+    
+            if(feeResponse && !feeResponse?.Err){
                 const response = await actor.create_token(tokenData);
                 console.log("Token creation response:", response);
 
                 if (response && response.Ok) {
-                    // dispatch(TokensInfoHandlerRequest());
-                    // dispatch(UserTokensInfoHandlerRequest());
                     const { ledger_canister_id, index_canister_id } = response.Ok;
                     navigate("/verify-token", {
                         state: {
@@ -237,8 +238,11 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
                     });
                 } else {
                     setValidationError("Token creation failed.");
-                }
-            } else {
+                } }
+                else 
+                  throw new Error(`ICRC2 fee Transfer failed: ${feeResponse?.Err}`);
+              }
+             else {
                 throw new Error(`ICRC2 approval failed: ${approveResponse.Err}`);
             }
         }

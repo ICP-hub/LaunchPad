@@ -29,6 +29,20 @@ const FundDetails = ({ sale, index }) => {
                 console.error("Invalid ledger ID provided.");
                 return;
             }
+
+                 // Fetch fund raised
+        if (ledgerId) {
+            const ledgerPrincipal=typeof ledgerId === "string"
+            ? Principal.fromText(ledgerId)
+            : ledgerId;
+
+            const fundRaised = await actor.get_funds_raised(ledgerPrincipal)
+            console.log('fundRaised==',fundRaised)
+            setTokenDetails((prevData) => ({
+                ...prevData,
+                fund_raised: fundRaised?.Ok.toString() || '0',
+            }));
+          }
     
             const customActor = await createCustomActor(ledgerId);
     
@@ -43,14 +57,12 @@ const FundDetails = ({ sale, index }) => {
             const tokenDataResults = await Promise.allSettled([
                 fetchWithRetry(() => customActor.icrc1_name(), 3, 1000),
                 fetchWithRetry(() => customActor.icrc1_symbol(), 3, 1000),
-                fetchWithRetry(() => customActor.icrc1_minting_account(), 3, 1000),
             ]);
     
             console.log("Token Data Results:", tokenDataResults);
     
             const tokenName = tokenDataResults[0].status === "fulfilled" ? tokenDataResults[0].value : null;
             const tokenSymbol = tokenDataResults[1].status === "fulfilled" ? tokenDataResults[1].value : null;
-            const mintingAccount = tokenDataResults[2].status === "fulfilled" ? tokenDataResults[2].value : null;
     
             // Set token name and symbol
             if (tokenName && tokenSymbol) {
@@ -61,18 +73,6 @@ const FundDetails = ({ sale, index }) => {
                 }));
             } else {
                 console.error("Failed to fetch token name or symbol.");
-            }
-    
-            // Fetch owner balance if minting account exists
-            if (mintingAccount && mintingAccount[0]) {
-                const ownerBalance = await fetchWithRetry(() => customActor.icrc1_balance_of(mintingAccount[0]), 3, 1000);
-                setTokenDetails((prevData) => ({
-                    ...prevData,
-                    owner_bal: ownerBalance?.toString() || "0",
-                    owner: mintingAccount[0]?.owner?.toString() || "Unknown",
-                }));
-            } else {
-                console.error("Failed to fetch minting account or owner balance.");
             }
     
             // Fetch token image if the actor is available
@@ -105,7 +105,7 @@ const FundDetails = ({ sale, index }) => {
             </span> 
             </td>
             <td className="py-3 px-6 text-center"> {(tokenDetails && tokenDetails.token_symbol) ? tokenDetails.token_symbol : <Skeleton width={60} height={15}/> } </td>
-            <td className="py-3 px-6 text-center"> {(tokenDetails && tokenDetails?.owner_bal) ? `${tokenDetails?.owner_bal} ICP` : <Skeleton width={60} height={15}/> } </td>
+            <td className="py-3 px-6 text-center"> {(tokenDetails && tokenDetails?.fund_raised) ? `${tokenDetails?.fund_raised} ICP` : <Skeleton width={60} height={15}/> } </td>
             <td className="py-3 px-6 text-center">{` ${Number(sale.sale_details.tokens_for_fairlaunch)}`}</td>
             <td className="py-3 px-6 text-center"> Fairlaunch</td>
             <td className="py-3 px-6 whitespace-nowrap text-center">{convertTimestampToISTFormatted(sale.sale_details.end_time_utc)}</td>
