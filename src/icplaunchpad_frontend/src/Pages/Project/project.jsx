@@ -72,31 +72,13 @@ useEffect(() => {
       try {
         const ledgerPrincipal = Principal.fromText(projectData.canister_id);
 
-        // Create ledger actor with retry logic
-        const ledgerActor = await fetchWithRetry(
-          () => createCustomActor(ledgerPrincipal),
-          3,
-          1000
-        );
-        setLedgerActor(ledgerActor);
-
-        // Fetching the owner of the token with retry logic
-        const owner = await fetchWithRetry(
-          () => ledgerActor.icrc1_minting_account(),
-          3,
-          1000
-        );
-
-        if (owner) {
-          const ownerBalance = await fetchWithRetry(
-            () => ledgerActor.icrc1_balance_of(owner[0]),
-            3,
-            1000
-          );
+        // Fetch fund raised
+        if (ledgerPrincipal) {
+          const fundRaised = await actor.get_funds_raised(ledgerPrincipal)
+          console.log('fundRaised==',fundRaised)
 
           setTokenOwnerInfo({
-            owner_bal: ownerBalance.toString(),
-            owner: owner[0].owner.toString(),
+            fund_raised: fundRaised?.Ok.toString() || '2',
           });
         }
       } catch (error) {
@@ -110,6 +92,9 @@ useEffect(() => {
       try {
         console.log("ledger id >>>>", projectData.canister_id);
         const ledgerPrincipal = Principal.fromText(projectData.canister_id);
+
+        const ledgerActor= await createCustomActor(ledgerPrincipal);
+        setLedgerActor(ledgerActor)
 
         // Fetch sale parameters with retry logic
         const sale = await fetchWithRetry(
@@ -133,7 +118,7 @@ useEffect(() => {
 
   fetchTokenData();
   fetchSaleParams();
-}, [projectData?.canister_id]);
+}, [projectData?.canister_id, actor]);
 
 
   const renderContent = () => {
@@ -427,14 +412,14 @@ useEffect(() => {
               </div>
               <div className="flex flex-col">
                 <span className="text-sm text-gray-400">UNSOLD TOKENS</span>
-                <span className="text-lg font-semibold">
+                <span className="text-lg font-semibold overflow-x-scroll no-scrollbar">
                   {projectData ? ` ${projectData.total_supply && projectData.total_supply.toString()} ${projectData.token_symbol}` : <Skeleton width={80} height={20}/> }
                 </span>
               </div>
               <div className="flex flex-col">
                 <span className="text-sm text-gray-400">CURRENT RAISED</span>
                 <span className="text-lg font-semibold">
-                  {tokenOwnerInfo ? `${tokenOwnerInfo.owner_bal} ICP` : <Skeleton width={60} height={20} />}
+                  {tokenOwnerInfo ? `${tokenOwnerInfo.fund_raised} ICP` : <Skeleton width={60} height={20} />}
                 </span>
               </div>
             </div>

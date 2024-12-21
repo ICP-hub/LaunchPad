@@ -259,6 +259,7 @@ const VerifyToken = () => {
         }
       }
        
+      //navigate to token page
       navigate("/token-page", { state: { projectData: {canister_id: ledger_canister_id } } });
 
     } catch (error) {
@@ -269,8 +270,6 @@ const VerifyToken = () => {
       setIsSubmitting(false);
     }
   };
-
-
 
 
   const handleNext = handleSubmit((data) => {
