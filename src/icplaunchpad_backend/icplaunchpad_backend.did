@@ -24,34 +24,30 @@ type RejectionCode = variant {
   SysFatal;
   CanisterReject;
 };
-type Result = variant { Ok : nat; Err : text };
-type Result_1 = variant { Ok : text; Err : text };
-type Result_10 = variant {
+type Result = variant { Ok; Err : text };
+type Result_1 = variant { Ok : nat; Err : text };
+type Result_10 = variant { Ok : SaleDetails; Err : text };
+type Result_11 = variant {
   Ok : vec record { SaleDetailsWithID; nat };
   Err : text;
 };
-type Result_11 = variant { Ok : vec record { nat32; principal }; Err : text };
-type Result_12 = variant { Ok : vec CanisterIndexInfo; Err : text };
-type Result_13 = variant { Ok : UserAccount; Err : text };
-type Result_14 = variant { Ok : vec principal; Err : text };
-type Result_15 = variant {
-  Ok : vec record { CanisterIndexInfo; SaleDetails };
-  Err : text;
-};
+type Result_12 = variant { Ok : vec record { nat32; principal }; Err : text };
+type Result_13 = variant { Ok : vec CanisterIndexInfo; Err : text };
+type Result_14 = variant { Ok : UserAccount; Err : text };
+type Result_15 = variant { Ok : vec principal; Err : text };
 type Result_16 = variant { Ok : bool; Err : text };
-type Result_17 = variant { Ok; Err : text };
-type Result_18 = variant { Ok : CanisterIndexInfo; Err : text };
-type Result_2 = variant { Ok : nat64; Err : text };
-type Result_3 = variant { Ok : TokenCreationResult; Err : text };
-type Result_4 = variant { Ok; Err : record { RejectionCode; text } };
-type Result_5 = variant { Ok : nat; Err : text };
-type Result_6 = variant { Ok : vec SaleDetailsWithID; Err : text };
-type Result_7 = variant {
+type Result_17 = variant { Ok : CanisterIndexInfo; Err : text };
+type Result_2 = variant { Ok : text; Err : text };
+type Result_3 = variant { Ok : nat64; Err : text };
+type Result_4 = variant { Ok : TokenCreationResult; Err : text };
+type Result_5 = variant { Ok; Err : record { RejectionCode; text } };
+type Result_6 = variant { Ok : nat; Err : text };
+type Result_7 = variant { Ok : vec SaleDetailsWithID; Err : text };
+type Result_8 = variant {
   Ok : vec record { SaleDetailsWithID; text };
   Err : text;
 };
-type Result_8 = variant { Ok : nat32; Err : text };
-type Result_9 = variant { Ok : SaleDetails; Err : text };
+type Result_9 = variant { Ok : nat32; Err : text };
 type SaleDetails = record {
   creator : principal;
   tokens_for_fairlaunch : nat64;
@@ -120,44 +116,43 @@ type UserInputParams = record {
 service : () -> {
   add_pool_to_kong : (principal) -> (Result);
   buy_tokens : (BuyTransferParams) -> (Result_1);
-  create_account : (UserAccount) -> (Result);
-  create_sale : (principal, SaleInputParams) -> (Result_2);
-  create_token : (UserInputParams) -> (Result_3);
+  create_account : (UserAccount) -> (Result_2);
+  create_sale : (principal, SaleInputParams) -> (Result_3);
+  create_token : (UserInputParams) -> (Result_4);
   debug_index_canister_ids : () -> (vec record { text; text }) query;
-  deposit_cycles_to_canister : (CanisterIdRecord, nat) -> (Result_4);
+  deposit_cycles_to_canister : (CanisterIdRecord, nat) -> (Result_5);
   fee_for_creation_token : () -> (float64) query;
-  fetch_canister_balance : (principal) -> (Result_5);
-  get_active_sales : () -> (Result_6) query;
-  get_all_sales : () -> (Result_7) query;
+  fetch_canister_balance : (principal) -> (Result_6);
+  get_active_sales : () -> (Result_7) query;
+  get_all_sales : () -> (Result_8) query;
   get_contributions_for_sale : (principal) -> (
       vec record { principal; nat64 },
     ) query;
-  get_cover_image_id : (principal) -> (Result_8) query;
-  get_funds_raised : (principal) -> (Result_2) query;
-  get_profile_image_id : () -> (Result_8) query;
-  get_sale_params : (principal) -> (Result_9) query;
-  get_successful_sales : () -> (Result_10) query;
-  get_token_image_id : (principal) -> (Result_8) query;
-  get_token_image_ids : () -> (Result_11) query;
-  get_tokens_info : () -> (Result_12) query;
-  get_upcoming_sales : () -> (Result_10) query;
-  get_user_account : (principal) -> (Result_13) query;
-  get_user_by_username : (text) -> (Result_13) query;
-  get_user_ledger_ids : (principal) -> (Result_14) query;
-  get_user_sale_params : () -> (Result_15) query;
-  get_user_tokens_info : () -> (Result_12) query;
+  get_cover_image_id : (principal) -> (Result_9) query;
+  get_funds_raised : (principal) -> (Result_3) query;
+  get_profile_image_id : () -> (Result_9) query;
+  get_sale_params : (principal) -> (Result_10) query;
+  get_successful_sales : () -> (Result_11) query;
+  get_token_image_id : (principal) -> (Result_9) query;
+  get_token_image_ids : () -> (Result_12) query;
+  get_tokens_info : () -> (Result_13) query;
+  get_upcoming_sales : () -> (Result_11) query;
+  get_user_account : (principal) -> (Result_14) query;
+  get_user_by_username : (text) -> (Result_14) query;
+  get_user_ledger_ids : (principal) -> (Result_15) query;
+  get_user_tokens_info : () -> (Result_13) query;
   icrc10_supported_standards : () -> (vec SupportedStandard) query;
   icrc28_trusted_origins : () -> (Icrc28TrustedOriginsResponse);
-  icrc_get_balance : (principal) -> (Result_5);
+  icrc_get_balance : (principal) -> (Result_6);
   import_token : (principal, opt principal) -> (Result_16);
-  insert_funds_raised : (principal, nat64) -> (Result_17);
-  is_account_created : () -> (text) query;
-  obtain_cycles_for_canister : (nat, principal) -> (Result_5);
-  search_by_token_name_or_symbol : (text) -> (Result_18) query;
-  token_fee_transfer : (principal, nat64, principal) -> (Result_17);
-  update_sale_params : (principal, SaleDetailsUpdate) -> (Result_17);
-  update_user_account : (principal, UserAccount) -> (Result_17);
-  upload_cover_image : (text, CoverImageData) -> (Result_1);
-  upload_profile_image : (text, ProfileImageData) -> (Result_1);
-  upload_token_image : (text, CoverImageData) -> (Result_1);
+  insert_funds_raised : (principal, nat64) -> (Result);
+  is_account_created : () -> (Result_16) query;
+  obtain_cycles_for_canister : (nat, principal) -> (Result_6);
+  search_by_token_name_or_symbol : (text) -> (Result_17) query;
+  token_fee_transfer : (principal, nat64, principal) -> (Result);
+  update_sale_params : (principal, SaleDetailsUpdate) -> (Result);
+  update_user_account : (principal, UserAccount) -> (Result);
+  upload_cover_image : (text, CoverImageData) -> (Result_2);
+  upload_profile_image : (text, ProfileImageData) -> (Result_2);
+  upload_token_image : (text, CoverImageData) -> (Result_2);
 }
