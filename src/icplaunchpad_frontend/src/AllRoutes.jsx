@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Route, Routes } from "react-router-dom";
 import Home from "./Pages/Home";
 import LaunchCoin from "./Pages/LaunchCoin"
@@ -11,8 +11,22 @@ import VerifyToken from './Pages/VerifyToken/VerifyToken';
 import ProjectList from './Pages/Projects/Projects';
 import TokenPage from './Pages/OwnerSection/TokenPage';
 import Project from './Pages/Project/project'
+import { useDispatch, useSelector } from 'react-redux';
+import { upcomingSalesHandlerRequest } from './StateManagement/Redux/Reducers/UpcomingSales';
+import { SuccessfulSalesHandlerRequest } from './StateManagement/Redux/Reducers/SuccessfulSales';
 
 function AllRoutes() {
+
+const dispatch=useDispatch();
+const actor = useSelector((currState) => currState.actors.actor);
+
+  useEffect(() => {
+    if(actor){
+    dispatch(upcomingSalesHandlerRequest()) 
+    dispatch(SuccessfulSalesHandlerRequest())
+    }
+  }, [dispatch,actor]);
+
   return (
     
       <Routes>
