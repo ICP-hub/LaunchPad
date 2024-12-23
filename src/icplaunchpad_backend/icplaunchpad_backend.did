@@ -133,7 +133,7 @@ service : () -> {
   get_profile_image_id : () -> (Result_9) query;
   get_sale_params : (principal) -> (Result_10) query;
   get_successful_sales : () -> (Result_11) query;
-  get_token_image_id : (principal) -> (Result_9) query;
+  get_token_image_id : (principal) -> (Result_2) query;
   get_token_image_ids : () -> (Result_12) query;
   get_tokens_info : () -> (Result_13) query;
   get_upcoming_sales : () -> (Result_11) query;

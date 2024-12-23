@@ -346,23 +346,36 @@ pub fn get_token_image_ids() -> Result<Vec<(String, u32)>, String> {
 
 
 #[ic_cdk::query]
-pub fn get_token_image_id(ledger_id: Principal) -> Result<u32, String> {
+pub fn get_token_image_id(ledger_canister_id: Principal) -> Result<String, String> {
+    ic_cdk::println!("Calling get_token_image_id with ledger_canister_id: {}", ledger_canister_id);
+
     // Safely retrieve the token image ID from the state
     let token_image_id = read_state(|state| {
+        ic_cdk::println!("Getting token image ID from state:");
         state
             .token_image_ids
-            .get(&ledger_id.to_string())
-            .map(|image_wrapper| image_wrapper.image_id) // Extract the image_id from the wrapper
+            .get(&ledger_canister_id.to_string())
+            .map(|wrapper| {
+                ic_cdk::println!("  Token image ID: {}", wrapper.image_id);
+                wrapper.image_id.clone()
+            })
     });
 
     match token_image_id {
-        Some(image_id) => Ok(image_id),
-        None => Err(format!(
-            "Token image ID not found for ledger ID: {}",
-            ledger_id
-        )),
+        Some(image_id) => {
+            ic_cdk::println!("Returning token image ID: {}", image_id);
+            Ok(image_id.to_string())
+        }
+        None => {
+            ic_cdk::println!("No token image ID found for ledger ID: {}", ledger_canister_id);
+            Err(format!(
+                "Token image ID not found for ledger ID: {}",
+                ledger_canister_id
+            ))
+        }
     }
 }
+
 
 
 

@@ -514,23 +514,14 @@ pub async fn upload_token_image(
     asset_canister_id: String,
     image_data: TokenImageData,
 ) -> Result<String, String> {
-    let principal = ic_cdk::api::caller();
-    ic_cdk::println!("Caller principal: {}", principal);
-
     // Validate inputs
     if image_data.content.is_none() {
-        ic_cdk::println!("Validation failed: Image content is empty.");
         return Err("Image content cannot be empty.".to_string());
     }
-    ic_cdk::println!("Image content validated.");
 
     // Convert the asset canister ID to a Principal
     let asset_canister_principal = Principal::from_text(&asset_canister_id)
-        .map_err(|_| {
-            ic_cdk::println!("Invalid asset canister ID: {}", asset_canister_id);
-            format!("Invalid asset canister ID: {}", asset_canister_id)
-        })?;
-    ic_cdk::println!("Asset canister principal: {}", asset_canister_principal);
+        .map_err(|_| format!("Invalid asset canister ID: {}", asset_canister_id))?;
 
     // Create input for the file upload
     let input = CreateFileInput {
@@ -543,46 +534,23 @@ pub async fn upload_token_image(
         ert: None,
         crc32: None,
     };
-    ic_cdk::println!("File input created for upload.");
 
-    // Make the call to the asset canister to create the file
+    // Make the call to the asset canister to upload the image
     let response: CallResult<(ReturnResult,)> =
         ic_cdk::call(asset_canister_principal, "create_file", (input,)).await;
-    ic_cdk::println!("Received response from asset canister.");
 
     match response {
         Ok((Ok(image_id),)) => {
-            ic_cdk::println!("Image uploaded successfully with ID: {}", image_id);
-            // Update the image ID in the state mapping after successful upload
+            // Update the state with the new image ID using the ledger canister ID from image_data as key
             mutate_state(|state| {
-                ic_cdk::println!("Updating state with new image ID.");
-                state.token_image_ids.insert(principal.to_string(), TokenImageIdWrapper { image_id });
+                state.token_image_ids.insert(image_data.ledger_id.to_string(), TokenImageIdWrapper { image_id });
             });
-
-            Ok(format!(
-                "Token image uploaded successfully with ID: {}",
-                image_id
-            ))
+            Ok(format!("Token image uploaded successfully with ID: {}", image_id))
         },
-        Ok((Err(err),)) => {
-            ic_cdk::println!("Error from asset canister: {}", err);
-            Err(format!("Error from asset canister: {}", err))
-        },
-        Err((code, message)) => {
-            ic_cdk::println!("Error with rejection code {:?}: {}", code, message);
-            match code {
-                RejectionCode::NoError => Err("Unexpected error with NoError rejection code.".to_string()),
-                RejectionCode::SysFatal => Err("System fatal error occurred.".to_string()),
-                RejectionCode::SysTransient => Err("Transient system error occurred. Please retry.".to_string()),
-                RejectionCode::DestinationInvalid => Err("Invalid destination canister.".to_string()),
-                RejectionCode::CanisterReject => Err(format!("Canister rejected the request: {}", message)),
-                _ => Err(format!("Unknown rejection code: {:?}: {}", code, message)),
-            }
-        },
+        Ok((Err(err),)) => Err(format!("Error from asset canister: {}", err)),
+        Err((code, message)) => Err(format!("Error with rejection code {:?}: {}", code, message)),
     }
 }
-
-
 
 
 
