@@ -18,7 +18,7 @@ import ProjectCardSkeleton from "../../common/SkeletonUI/ProjectCard.jsx";
 const ProjectLists = () => {
   const location = useLocation();
   const { sale_Type } = location.state || {};
-  const [isLoading, setIsLoading]=useState(true);
+  const [isLoading, setIsLoading]=useState();
 
 
   const [search, setSearch] = useState("");
@@ -26,6 +26,7 @@ const ProjectLists = () => {
   const [showSortDropdown, setShowSortDropdown] = useState(false);
   const [filteredTokensData, setFilteredTokensData] = useState([]);
   const [saleType, setSaleType] = useState(sale_Type || "Active");
+  console.log('saleType=>',saleType)
 
   const dispatch = useDispatch();
   const projectsData = useSelector((state) => state?.TokensInfo);
@@ -33,6 +34,16 @@ const ProjectLists = () => {
   const successfulSales = useSelector((state) => state?.SuccessfulSales)
   console.log('successfulSales',successfulSales)
   const { createCustomActor } = useAuths();
+
+  useEffect(()=>{
+    if(saleType==="Active")
+      setIsLoading(projectsData?.loading)
+    else if(saleType==="Upcoming")
+      setIsLoading(upcomingSales?.loading)
+    else
+    setIsLoading(successfulSales?.loading)
+  },[saleType,projectsData,upcomingSales,successfulSales])
+  
 
 // Fetch tokens data on mount
 useEffect(() => {
@@ -68,7 +79,7 @@ useEffect(() => {
   useEffect(() => {
     if (tokensData?.data){
       setFilteredTokensData(tokensData?.data);
-      setIsLoading(false);
+     
       }
   }, [tokensData]);
 
@@ -110,16 +121,16 @@ const debouncedFilterData = useCallback(
 
 
   const handleFilterChange = async (type) => {
-    setIsLoading();
+
     if (type === 'Upcoming') {
-      await dispatch(upcomingSalesHandlerRequest());
+       dispatch(upcomingSalesHandlerRequest());
     } else if (type === 'Successful') {
-      await dispatch(SuccessfulSalesHandlerRequest());
+       dispatch(SuccessfulSalesHandlerRequest());
     } else {
-      await dispatch(TokensInfoHandlerRequest());
+       dispatch(TokensInfoHandlerRequest());
     }
     setSaleType(type);
-    setIsLoading(false);
+    
   };
   
 
