@@ -47,6 +47,7 @@ dfx deploy token_deployer --argument '(
   }
 )'
 
+
 # Deploy the index canister with specified arguments
 dfx deploy index_canister --argument '(opt variant { Init = record { ledger_id = principal "aaaaa-aa"; retrieve_blocks_from_ledger_interval_seconds = opt 10 } })'
 
@@ -62,8 +63,9 @@ if [ -z "$MINTER_ACCOUNT_ID" ]; then
 fi
 
 # Switch back to the default identity and set DEFAULT_ACCOUNT_ID only if not already set
-dfx identity use controller
-DEFAULT_ACCOUNT_ID=$(dfx ledger account-id)
+dfx identity use default
+
+export DEFAULT_ACCOUNT_ID=$(dfx ledger account-id)
 
 
 # Switch back to the controller identity

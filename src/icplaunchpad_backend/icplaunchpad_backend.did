@@ -31,7 +31,7 @@ type Result_11 = variant {
   Ok : vec record { SaleDetailsWithID; nat };
   Err : text;
 };
-type Result_12 = variant { Ok : vec record { nat32; principal }; Err : text };
+type Result_12 = variant { Ok : vec record { text; nat32 }; Err : text };
 type Result_13 = variant { Ok : vec CanisterIndexInfo; Err : text };
 type Result_14 = variant { Ok : UserAccount; Err : text };
 type Result_15 = variant { Ok : vec principal; Err : text };
@@ -119,10 +119,10 @@ service : () -> {
   create_account : (UserAccount) -> (Result_2);
   create_sale : (principal, SaleInputParams) -> (Result_3);
   create_token : (UserInputParams) -> (Result_4);
-  debug_index_canister_ids : () -> (vec record { text; text }) query;
   deposit_cycles_to_canister : (CanisterIdRecord, nat) -> (Result_5);
   fee_for_creation_token : () -> (float64) query;
   fetch_canister_balance : (principal) -> (Result_6);
+  fetch_canister_balance_new : (principal) -> (Result_6);
   get_active_sales : () -> (Result_7) query;
   get_all_sales : () -> (Result_8) query;
   get_contributions_for_sale : (principal) -> (
