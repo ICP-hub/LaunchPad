@@ -494,7 +494,7 @@ const TokenPage = () => {
                 </div>
                 <div className="flex flex-col">
                   <span className="text-sm text-gray-400">UNSOLD TOKENS</span>
-                  <span className="text-lg font-semibold pr-2">
+                  <span className="text-lg font-semibold  overflow-x-scroll no-scrollbar pr-2">
                     {tokenData ? `${tokenData?.total_supply.toString()} ${tokenData.token_symbol}` : <Skeleton width={120} height={25} />}
                   </span>
                 </div>
