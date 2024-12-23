@@ -5,6 +5,7 @@ import { useAuths } from "../../../StateManagement/useContext/useClient";
 import CopyToClipboard from "../../../common/CopyToClipboard";
 import { useAgent } from "@nfid/identitykit/react";
 import { fetchWithRetry } from "../../../utils/fetchWithRetry";
+import Skeleton from "react-loading-skeleton";
 
 const VerifyTokenTab = ({ register, errors, setTokenData, watch, ledger_canister_id, tokenData }) => {
   const [tokenInfo, setTokenInfo] = useState(null);
@@ -106,19 +107,19 @@ const getTokenData = async (ledger_canister_id) => {
         <div className="mb-8 mt-8">
           <div className="flex justify-between border-b-2 py-1 border-[#FFFFFF80]">
             <p>Name</p>
-            <p>{tokenInfo?.token_name || "N/A"}</p>
+            <p>{tokenInfo?.token_name || <Skeleton width={50} height={15} />}</p>
           </div>
           <div className="flex justify-between border-b-2 py-1 border-[#FFFFFF80]">
             <p>Symbol</p>
-            <p>{tokenInfo?.token_symbol || "N/A"}</p>
+            <p>{tokenInfo?.token_symbol || <Skeleton width={40} height={15} /> }</p>
           </div>
           <div className="flex justify-between border-b-2 py-1 border-[#FFFFFF80]">
             <p>Decimals</p>
-            <p>{tokenInfo?.decimals || "N/A"}</p>
+            <p>{tokenInfo?.decimals || <Skeleton width={20} height={15} />}</p>
           </div>
           <div className="flex justify-between border-b-2 py-1 border-[#FFFFFF80]">
             <p>Total Supply</p>
-            <p>{Number(tokenInfo?.total_supply) || 0}</p>
+            <p>{Number(tokenInfo?.total_supply) || <Skeleton width={100} height={15} />}</p>
           </div>
 
         </div>
