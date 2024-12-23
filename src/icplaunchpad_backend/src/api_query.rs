@@ -1,7 +1,8 @@
 use candid::{Nat, Principal};
-use ic_cdk::query;
+use ic_cdk::{api::management_canister::main::{canister_status, CanisterIdRecord}, query, update};
 
 use crate::{read_state, CanisterIndexInfo, SaleDetails, SaleDetailsWithID, UserAccount};
+use num_traits::cast::ToPrimitive;
 
 
 #[ic_cdk::query]
@@ -319,30 +320,18 @@ pub fn search_by_token_name_or_symbol(
 
 
 #[ic_cdk::query]
-pub fn get_token_image_ids() -> Result<Vec<(u32, Principal)>, String> {
+pub fn get_token_image_ids() -> Result<Vec<(String, u32)>, String> {
     let mut image_ledger_pairs = Vec::new();
 
     // Safely read the state
     read_state(|state| {
-        for (_ledger_id, canister_entry) in state.canister_ids.iter() {
-            match (canister_entry.image_id, canister_entry.ledger_id) {
-                (Some(image_id), Some(ledger_id)) => {
-                    // Add valid image_id and ledger_id pairs to the result
-                    image_ledger_pairs.push((image_id, ledger_id));
-                }
-                (None, _) => {
-                    ic_cdk::println!(
-                        "Missing image_id for canister entry: {:?}",
-                        canister_entry
-                    );
-                }
-                (_, None) => {
-                    ic_cdk::println!(
-                        "Missing ledger_id for canister entry: {:?}",
-                        canister_entry
-                    );
-                }
-            }
+        ic_cdk::println!("Getting token image IDs:");
+        for (ledger_id, image_wrapper) in state.token_image_ids.iter() {
+            ic_cdk::println!("  Ledger ID: {}", ledger_id);
+            ic_cdk::println!("    Token Image ID: {}", image_wrapper.image_id);
+            // Since TokenImageIdsMap holds all necessary information directly,
+            // no need to check for existence of image_id or ledger_id.
+            image_ledger_pairs.push((ledger_id.clone(), image_wrapper.image_id));
         }
     });
 
@@ -355,14 +344,15 @@ pub fn get_token_image_ids() -> Result<Vec<(u32, Principal)>, String> {
 }
 
 
+
 #[ic_cdk::query]
 pub fn get_token_image_id(ledger_id: Principal) -> Result<u32, String> {
     // Safely retrieve the token image ID from the state
     let token_image_id = read_state(|state| {
         state
-            .canister_ids
+            .token_image_ids
             .get(&ledger_id.to_string())
-            .and_then(|canister_entry| canister_entry.image_id) // Return the image_id if available
+            .map(|image_wrapper| image_wrapper.image_id) // Extract the image_id from the wrapper
     });
 
     match token_image_id {
@@ -375,6 +365,7 @@ pub fn get_token_image_id(ledger_id: Principal) -> Result<u32, String> {
 }
 
 
+
 #[ic_cdk::query]
 pub fn get_profile_image_id() -> Result<u32, String> {
     let principal = ic_cdk::api::caller();
@@ -382,7 +373,7 @@ pub fn get_profile_image_id() -> Result<u32, String> {
     // Safely retrieve the profile image ID from the state
     let profile_image_id = read_state(|state| {
         state
-            .image_ids
+            .profile_image_ids
             .get(&principal.to_string())
             .map(|wrapper| wrapper.image_id)
     });
@@ -783,4 +774,33 @@ pub fn get_user_ledger_ids(user_principal: Principal) -> Result<Vec<Principal>, 
     }
 }
 
+#[update]
+pub async fn fetch_canister_balance_new(canister_id: Principal) -> Result<u128, String> {
+    let arg = CanisterIdRecord { canister_id };
 
+    ic_cdk::println!("Fetching canister balance for: {}", canister_id);
+
+    // Retrieve the canister status from the management canister
+    match canister_status(arg).await {
+        Ok((status,)) => {
+            ic_cdk::println!("Retrieved canister status: {:?}", status);
+
+            // Access cycles from the CanisterStatusResponse
+            match status.cycles.0.to_u128() {
+                Some(cycles) => {
+                    ic_cdk::println!("Successfully converted cycles to u128: {}", cycles);
+                    Ok(cycles)
+                },
+                None => {
+                    ic_cdk::println!("Failed to convert cycles to u128. Possible overflow.");
+                    Err("Conversion to u128 failed. Possible overflow.".to_string())
+                }
+            }
+        },
+        Err((code, message)) => {
+            // Format the error tuple into a readable string
+            ic_cdk::println!("Failed to retrieve canister status. Error code: {:?}. Message: {}", code, message);
+            Err(format!("Canister status query failed with code {:?}: {}", code, message))
+        }
+    }
+}

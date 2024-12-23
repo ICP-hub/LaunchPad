@@ -8,10 +8,11 @@ use crate::state_handler::*;
 pub struct State {
     pub canister_ids: CanisterIdsMap,
     pub index_canister_ids: IndexCanisterIdsMap,
-    pub image_ids: ImageIdsMap,
+    pub profile_image_ids: ProfileImageIdsMap,
     pub sale_details: SaleDetailsMap,
     pub user_accounts: UserAccountsMap,
     pub cover_image_ids: CoverImageIdsMap,
+    pub token_image_ids: TokenImageIdsMap,
     pub funds_raised: FundsRaisedMap,
     pub contributions: ContributionsMap,
     pub imported_canister_ids: ImportedCanisterIdsMap,
@@ -364,6 +365,16 @@ pub struct UserAccountWrapper {
 
 #[derive(CandidType, Deserialize, Debug, Clone)]
 pub struct CoverImageIdWrapper {
+    pub image_id: u32,
+}
+
+#[derive(CandidType, Deserialize, Debug, Clone)]
+pub struct ProfileImageIdWrapper {
+    pub image_id: u32,
+}
+
+#[derive(CandidType, Deserialize, Debug, Clone)]
+pub struct TokenImageIdWrapper {
     pub image_id: u32,
 }
 

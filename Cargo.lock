@@ -651,6 +651,7 @@ dependencies = [
  "ic-stable-structures",
  "icrc-ledger-types",
  "lazy_static",
+ "num-traits",
  "serde",
  "serde_bytes",
  "serde_json",
