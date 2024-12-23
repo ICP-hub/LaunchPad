@@ -114,11 +114,9 @@ const handleFetchToken = async () => {
   try {
     // Proceed only if the user is authenticated and searchText is non-empty
     if (isAuthenticated && searchText.trim().length > 0) {
-      // const searchTextLower = searchText.toLowerCase().trim();
-      const searchTextTrimed = searchText.trim();
-
+      const searchTextLower = searchText.toLowerCase().trim();
       // Fetch token data by name or symbol
-      const data = await actor.search_by_token_name_or_symbol(searchTextTrimed);
+      const data = await actor.search_by_token_name_or_symbol(searchTextLower);
       console.log("Token searched data=", data);
 
       if (data?.Ok) {
