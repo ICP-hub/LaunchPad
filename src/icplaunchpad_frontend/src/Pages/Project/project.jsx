@@ -32,93 +32,94 @@ const TokenPage = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 640);
   const location = useLocation();
   const { projectData } = location.state || {};
-  const {  createCustomActor, principal } = useAuths();
+  const { createCustomActor, principal } = useAuths();
   const [saleParams, setSaleParams] = useState(null);
   const [ledgerActor, setLedgerActor] = useState(null);
   const [tokenOwnerInfo, setTokenOwnerInfo] = useState(null);
   const [ModalIsOpen, setModalIsOpen] = useState(false);
+  const [err, setErr] = useState("");
 
   const actor = useSelector((currState) => currState.actors.actor);
 
-  console.log("baclance at 35",tokenOwnerInfo)
+  console.log("baclance at 35", tokenOwnerInfo)
   const [amount, setAmount] = useState(0);
   console.log("amount")
   const authenticatedAgent = useAgent()
   console.log("agent project", authenticatedAgent)
-  const [isLoading, setIsLoading] = useState(false); 
-  
-// Utility function for retrying API calls
-const fetchWithRetry = async (fetchFunction, retries, delay) => {
-  let attempt = 0;
-  while (attempt < retries) {
-    try {
-      return await fetchFunction();
-    } catch (error) {
-      attempt++;
-      console.warn(`Attempt ${attempt} failed. Retrying...`, error);
-      if (attempt >= retries) {
-        throw new Error(`Failed after ${retries} retries: ${error.message}`);
-      }
-      await new Promise((resolve) => setTimeout(resolve, delay));
-    }
-  }
-};
+  const [isLoading, setIsLoading] = useState(false);
 
-// Main useEffect for fetching data
-useEffect(() => {
-  const fetchTokenData = async () => {
-    if (projectData?.canister_id) {
-      console.log("projectData=>", projectData);
+  // Utility function for retrying API calls
+  const fetchWithRetry = async (fetchFunction, retries, delay) => {
+    let attempt = 0;
+    while (attempt < retries) {
       try {
-        const ledgerPrincipal = Principal.fromText(projectData.canister_id);
-
-        // Fetch fund raised
-        if (ledgerPrincipal) {
-          const fundRaised = await actor.get_funds_raised(ledgerPrincipal)
-          console.log('fundRaised==',fundRaised)
-
-          setTokenOwnerInfo({
-            fund_raised: fundRaised?.Ok.toString() || '2',
-          });
-        }
+        return await fetchFunction();
       } catch (error) {
-        console.error("Error fetching token data:", error);
+        attempt++;
+        console.warn(`Attempt ${attempt} failed. Retrying...`, error);
+        if (attempt >= retries) {
+          throw new Error(`Failed after ${retries} retries: ${error.message}`);
+        }
+        await new Promise((resolve) => setTimeout(resolve, delay));
       }
     }
   };
 
-  const fetchSaleParams = async () => {
-    if (actor && projectData?.canister_id) {
-      try {
-        console.log("ledger id >>>>", projectData.canister_id);
-        const ledgerPrincipal = Principal.fromText(projectData.canister_id);
+  // Main useEffect for fetching data
+  useEffect(() => {
+    const fetchTokenData = async () => {
+      if (projectData?.canister_id) {
+        console.log("projectData=>", projectData);
+        try {
+          const ledgerPrincipal = Principal.fromText(projectData.canister_id);
 
-        const ledgerActor= await createCustomActor(ledgerPrincipal);
-        setLedgerActor(ledgerActor)
+          // Fetch fund raised
+          if (ledgerPrincipal) {
+            const fundRaised = await actor.get_funds_raised(ledgerPrincipal)
+            console.log('fundRaised==', fundRaised)
 
-        // Fetch sale parameters with retry logic
-        const sale = await fetchWithRetry(
-          () => actor.get_sale_params(ledgerPrincipal),
-          3,
-          1000
-        );
-
-        console.log("SALE=>>>", sale);
-
-        if (sale?.Ok) {
-          setSaleParams(sale.Ok);
-        } else {
-          console.warn("No sale data available or an error occurred.");
+            setTokenOwnerInfo({
+              fund_raised: fundRaised?.Ok.toString() || '0',
+            });
+          }
+        } catch (error) {
+          console.error("Error fetching token data:", error);
         }
-      } catch (error) {
-        console.error("Error fetching sale parameters:", error);
       }
-    }
-  };
+    };
 
-  fetchTokenData();
-  fetchSaleParams();
-}, [projectData?.canister_id, actor]);
+    const fetchSaleParams = async () => {
+      if (actor && projectData?.canister_id) {
+        try {
+          console.log("ledger id >>>>", projectData.canister_id);
+          const ledgerPrincipal = Principal.fromText(projectData.canister_id);
+
+          const ledgerActor = await createCustomActor(ledgerPrincipal);
+          setLedgerActor(ledgerActor)
+
+          // Fetch sale parameters with retry logic
+          const sale = await fetchWithRetry(
+            () => actor.get_sale_params(ledgerPrincipal),
+            3,
+            1000
+          );
+
+          console.log("SALE=>>>", sale);
+
+          if (sale?.Ok) {
+            setSaleParams(sale.Ok);
+          } else {
+            console.warn("No sale data available or an error occurred.");
+          }
+        } catch (error) {
+          console.error("Error fetching sale parameters:", error);
+        }
+      }
+    };
+
+    fetchTokenData();
+    fetchSaleParams();
+  }, [projectData?.canister_id, actor]);
 
 
   const renderContent = () => {
@@ -208,14 +209,14 @@ useEffect(() => {
       console.log("Response from payment approve", response);
 
       if (response && response.Ok) {
-       const byer = {
-         buyer_principal: Principal.fromText(principal),
-         tokens: totalamount,
-         icrc1_ledger_canister_id: Principal.fromText(projectData?.canister_id),
-       }
+        const byer = {
+          buyer_principal: Principal.fromText(principal),
+          tokens: totalamount,
+          icrc1_ledger_canister_id: Principal.fromText(projectData?.canister_id),
+        }
         const finalOrderResponse = await actor?.buy_tokens(byer);
         console.log("Final Order Response", finalOrderResponse);
-        toast.success("Transaction successful!");
+        // toast.success("Transaction successful!");
 
         if (finalOrderResponse && finalOrderResponse?.Ok) {
           toast.success("Token purchase successful!");
@@ -296,7 +297,7 @@ useEffect(() => {
                 </div>
                 <div className="right flex flex-col text-[17px] mr-8 lgx:mr-0 gap-4">
                   <div className="text-[#FFC145]"> {tokenPhase ? tokenPhase : <Skeleton width={80} height={20} />} </div>
-                  <div>{saleParams ? `Soft ${saleParams?.softcap} ICP` : <Skeleton width={100} height={20} />}</div>
+                  <div>{saleParams ? `Softcap ${saleParams?.softcap} ICP` : <Skeleton width={100} height={20} />}</div>
                 </div>
               </div>
               <div className="bg-[#FFFFFF66] h-[2px] max-w-[90%] mx-auto mt-4"></div>
@@ -321,7 +322,7 @@ useEffect(() => {
                 <div className="text-[#FFC145] text-[18px] font-semibold">
                   {tokenPhase ? tokenPhase : <Skeleton width={80} height={20} />}
                 </div>
-                <div className="text-[16px]"> {saleParams ? `Soft ${saleParams?.softcap} ICP` : <Skeleton width={100} height={20} />} </div>
+                <div className="text-[16px]"> {saleParams ? `Softcap ${saleParams?.softcap} ICP` : <Skeleton width={140} height={20} />} </div>
               </div>
 
               <div className="bg-[#FFFFFF66] h-[2px] w-[100%] mx-auto mt-4"></div>
@@ -372,29 +373,45 @@ useEffect(() => {
             <input
               type="number"
               disabled={tokenPhase !== "ONGOING"}
-              className=" no-spinner w-full p-2 rounded-md bg-[#333333] border-none text-white text-base mb-5"
-              placeholder={projectData && `Enter Amount in ICP`}
+              className="no-spinner w-full p-2 rounded-md bg-[#333333] border-none text-white text-base mb-2"
+              placeholder={projectData ? "Enter Amount in ICP" : ""}
               onKeyDown={(e) => {
-                if (e.key === '-' || e.key === 'e' || e.key === '+') {
+                if (['-', 'e', '+'].includes(e.key)) {
                   e.preventDefault();
                 }
               }}
               onChange={(e) => {
-                const value = e.target.value;
-                if (value < 0) {
-                  e.target.value = 0; // Reset to 0 if negative value is entered programmatically
+                setErr("");
+                const value = parseFloat(e.target.value);
+
+                if (isNaN(value) || value === "") {
+                  setErr("Please enter a valid amount.");
+                  return;
                 }
+
+                if (value <= 0) {
+
+                  setErr(value === 0 ? "You can't contribute 0 ICP" : "Invalid amount.");
+                  return;
+                }
+
                 handleAmount(e); // Call your handler
               }}
               min="0"
             />
 
-            {/* token amount per icp */}
 
+            <h1 className="text-red-600 font-medium mb-4">{err}</h1>
 
-            <button onClick={() => (amount > 0) && setModalIsOpen(true)} className="w-[50%] p-2 rounded-2xl   font-semibold  bg-gradient-to-r from-[#f3b3a7] to-[#cac9f5] text-black text-base">
+            <button
+              disabled={tokenPhase !== "ONGOING" || err}
+              onClick={() => (amount > 0) && setModalIsOpen(true)}
+              className={`w-[50%] p-2 rounded-2xl font-semibold text-black text-base 
+    ${tokenPhase !== "ONGOING" ? "bg-gray-300 cursor-not-allowed" : "bg-gradient-to-r from-[#f3b3a7] to-[#cac9f5] hover:opacity-90"}`}
+            >
               USE ICP
             </button>
+
             <div>
               {ModalIsOpen && <ApproveOrRejectModal handleAction={handleTransaction} ModalIsOpen={ModalIsOpen} setModalIsOpen={setModalIsOpen} amount={amount} ledgerPrincipal={projectData.canister_id} />}
             </div>
@@ -413,7 +430,7 @@ useEffect(() => {
               <div className="flex flex-col">
                 <span className="text-sm text-gray-400">UNSOLD TOKENS</span>
                 <span className="text-lg font-semibold overflow-x-scroll no-scrollbar">
-                  {projectData ? ` ${projectData.total_supply && projectData.total_supply.toString()} ${projectData.token_symbol}` : <Skeleton width={80} height={20}/> }
+                  {projectData ? ` ${projectData.total_supply && projectData.total_supply.toString()} ${projectData.token_symbol}` : <Skeleton width={80} height={20} />}
                 </span>
               </div>
               <div className="flex flex-col">

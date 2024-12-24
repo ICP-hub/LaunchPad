@@ -57,7 +57,7 @@ const TokenTransactions = ({ actor }) => {
               <th className="py-3 lg:px-6 " style={{ width: '10%' }}>#</th>
               <th className="py-3 lg:px-6" style={{ width: '20%' }}>Method</th>
               <th className="py-3 lg:px-6" style={{ width: '20%' }}>Amount</th>
-              <th className="py-3 lg:px-6" style={{ width: '25%' }}>To</th>
+              <th className="py-3 lg:px-6" style={{ width: '25%' }}>Address</th>
               <th className="py-3 lg:px-6" style={{ width: '25%' }}>Time</th>
             </tr>
           </thead>
