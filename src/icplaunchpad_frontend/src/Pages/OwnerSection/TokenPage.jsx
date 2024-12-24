@@ -364,7 +364,7 @@ const TokenPage = () => {
                   {tokenPhase}
                 </div>
                 <div>
-                  {`Soft ${presaleData?.softcap} ICP `}
+                  {`Softcap ${presaleData?.softcap} ICP `}
                 </div>
                 <div className=" flex justify-center mx-auto items-center">
                   <input className=" text-black w-28 px-2 outline-none" readOnly value={balance} />

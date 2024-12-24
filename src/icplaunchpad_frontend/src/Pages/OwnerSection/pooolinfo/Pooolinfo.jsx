@@ -93,7 +93,7 @@ const PoolInfoTab = ({ presaleData, poolData }) => {
         {/* Listing Platform */}
         <div className="flex justify-between text-[14px] xxs1:text-[17px] border-b py-2">
           <span>Listing On</span>
-          <span className="underline">Pancakeswap</span>
+          <span className="underline">KongSwap</span>
         </div>
 
         {/* Liquidity Percent */}

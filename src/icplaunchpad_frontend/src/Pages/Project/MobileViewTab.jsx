@@ -46,9 +46,9 @@ const MobileViewTab = ({actor,ledgerId,poolData,presaleData}) => {
      <div className="rounded-[17.44px]   bg-black">
               <div className="space-y-4">
                 {mobileTabs.map((tab) => (
-                  <div key={tab.name}>
+                  <div key={tab.name} className="bg-[#FFFFFF1A] ">
                     <div
-                      className="bg-[#FFFFFF1A] text-white rounded-lg p-4  cursor-pointer flex justify-between"
+                      className=" text-white rounded-lg p-4  cursor-pointer flex justify-between"
                       onClick={() => setActiveTab(tab.name)}
                     >
                       <div>{tab.name}</div>
