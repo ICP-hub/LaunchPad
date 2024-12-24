@@ -13,13 +13,17 @@ const TransactionDetails = ({ transaction, index }) => {
         {transaction?.kind}
       </td>
       <td className="py-1 lg:px-4 text-center align-middle overflow-x-scroll no-scrollbar whitespace-nowrap " style={{ width: '20%' }}>
-        {Number(transaction?.mint[0]?.amount)}
+        {Number(transaction?.[transaction?.kind][0]?.amount)}
       </td>
       <td
         className="py-1 lg:px-4 text-center align-middle overflow-hidden text-ellipsis whitespace-nowrap"
         style={{ width: '25%' }}
       >
-          {<CopyToClipboard address={transaction?.mint[0]?.to?.owner.toString()} isBgNone={true}  /> }
+          {<CopyToClipboard address={(transaction?.[transaction?.kind][0]?.to) ? 
+          transaction?.[transaction?.kind][0]?.to.owner.toString()
+          :
+          transaction?.[transaction?.kind][0]?.from.owner.toString()
+        } isBgNone={true}  /> }
       </td>
       <td className="py-1 lg:px-4 overflow-x-scroll no-scrollbar text-center align-middle whitespace-nowrap" style={{ width: '25%' }}>
         {formatDateForDateTimeLocal(transaction?.timestamp)}
