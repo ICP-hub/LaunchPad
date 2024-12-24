@@ -142,7 +142,7 @@ const VerifyToken = () => {
           ? Principal.fromUint8Array(ledger_canister_id)
           : Principal.fromText(ledger_canister_id);
 
-      if (!ledgerPrincipalId) throw new Error("Invalid ledger canister ID");
+      if ( !ledgerPrincipalId) throw new Error("Invalid ledger canister ID");
 
       console.log("ledger_canister_id:", ledger_canister_id);
 
