@@ -235,10 +235,10 @@ const CreateUser = ({ userModalIsOpen, setUserModalIsOpen }) => {
     overlayClassName="fixed inset-0 z-50 bg-black bg-opacity-60"
     ariaHideApp={false}
   >
-        <div className="bg-[#222222] p-6 rounded-2xl text-white mx-6 max-h-[90vh] w-[786px] relative">
+        <div className="bg-[#222222] p-6 rounded-2xl text-white mx-6 max-h-[90vh] overflow-y-auto no-scrollbar w-[786px] relative">
       {/* Modal Header */}
       <div className="bg-[#FFFFFF4D] px-4 py-1 mb-4 rounded-2xl relative">
-        <button onClick={closeModal} className="absolute top-2 right-4 text-[20px] font-bold text-white">
+        <button onClick={closeModal} className="absolute top-2 sm:top-3 right-4  text-[20px] font-bold text-white">
           <TfiClose />
         </button>
         <h2 className="xxs1:text-[20px] text-[17px] font-medium md:text-[25px] md:font-semibold">

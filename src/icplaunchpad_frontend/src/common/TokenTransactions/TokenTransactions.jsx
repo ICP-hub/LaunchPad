@@ -25,7 +25,7 @@ const TokenTransactions = ({ actor }) => {
       console.log('Fetching transactions with actor:', actor);
       const response = await actor.get_transactions({ start: startIndex, length: len });
       const fetchedTransactions = response?.transactions || [];
-         console.log(response)
+      console.log(response);
       setTransactions(fetchedTransactions);
       setHasMore(fetchedTransactions.length === len); // If we received less than `len`, it means no more data.
     } catch (error) {
@@ -48,63 +48,62 @@ const TokenTransactions = ({ actor }) => {
   };
 
   return (
-    <div className="min-h-[400px] text-gray-300 py-4 px-2 lg:px-2">
-      <h2 className="text-[20px] font-bold text-white font-posterama mb-4"></h2>
-      <div className="rounded-md">
-        <table className="w-full table-fixed">
-          <thead className="sticky top-0 bg-black bg-opacity-100 text-center text-white font-posterama uppercase text-sm leading-normal">
-            <tr className='text-xs sm:text-sm xl:text-base'>
-              <th className="py-3 lg:px-6 " style={{ width: '10%' }}>#</th>
-              <th className="py-3 lg:px-6" style={{ width: '20%' }}>Method</th>
-              <th className="py-3 lg:px-6" style={{ width: '20%' }}>Amount</th>
-              <th className="py-3 lg:px-6" style={{ width: '25%' }}>Address</th>
-              <th className="py-3 lg:px-6" style={{ width: '25%' }}>Time</th>
+    <div className="min-h-[400px] w-full  rounded-md text-gray-300 py-4 px-4">
+      <div className="rounded-md w-full  overflow-x-scroll no-scrollbar">
+        <table className="w-full sm:table-fixed ">
+          <thead className="sticky top-0 bg-black bg-opacity-100  text-center text-white font-posterama uppercase text-sm leading-normal">
+            <tr className="text-sm xl:text-base">
+              <th className="py-3 " style={{ width: '10%' }}>#</th>
+              <th className="py-3 " style={{ width: '15%' }}>Type</th>
+              <th className="py-3 " style={{ width: '15%' }}>Amount</th>
+              <th className="py-3 " style={{ width: '20%' }}>From</th>
+              <th className="py-3 " style={{ width: '20%' }}>To</th>
+              <th className="py-3 " style={{ width: '20%' }}>Timestamp</th>
             </tr>
           </thead>
-          <tbody className="w-full overflow-x-scroll no-scrollbar   text-white text-sm divide-y divide-[#FFFFFF33]">
+          <tbody className="text-white  text-sm divide-y divide-[#FFFFFF33]">
             {isLoading ? (
               <TransactionsSkeleton count={5} />
             ) : transactions && transactions.length > 0 ? (
               transactions.map((transaction, index) => (
                 <TransactionDetails
                   transaction={transaction}
-                  index={start + index }
+                  index={start + index}
                   key={index}
                 />
               ))
             ) : (
               <tr>
-                <td colSpan="5" className="py-3 px-6 pt-10 text-center">
-                  <NoDataFound
-                    message="Transactions Not Found..."
-                  />
+                <td colSpan="6" className="py-3 px-6 pt-10 text-center">
+                  <NoDataFound message="Transactions Not Found..." />
                 </td>
               </tr>
             )}
           </tbody>
         </table>
-        <div className="flex w-full bg-[#383838] p-2 mt-2 justify-between items-center">
-          <h1 className=' text-xs lg:text-sm'>
+
+      </div>
+      <div className="flex w-full bg-[#383838] p-2 mt-2 justify-between items-center">
+          <h1 className="text-xs sm:text-sm lg:text-base">
             Showing {transactions.length} transactions from {start + 1} to {start + transactions.length}
           </h1>
           <div className="flex gap-2">
             <button
               onClick={handlePreviousPage}
               disabled={start === 0}
-              className={`px-4 py- rounded ${start === 0 ? 'bg-black  cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-700'}`}
+              className={`px-4 py-1 rounded ${start === 0 ? 'bg-black cursor-not-allowed' : ' bg-[#e35a42] hover:bg-[#ff4e2f]'}`}
             >
-              <GrFormPreviousLink/>
+              <GrFormPreviousLink />
             </button>
             <button
               onClick={handleNextPage}
               disabled={!hasMore}
-              className={`px-4 py-1 rounded ${!hasMore ? 'bg-black  cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-700'}`}
+              className={`px-4 py-1 rounded ${!hasMore ? 'bg-black cursor-not-allowed' : 'bg-[#e35a42] hover:bg-[#ff4e2f]'}`}
             >
-              <GrFormNextLink/>
+              <GrFormNextLink />
             </button>
           </div>
         </div>
-      </div>
     </div>
   );
 };
