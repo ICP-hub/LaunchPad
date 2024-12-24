@@ -266,20 +266,23 @@ useLayoutEffect(() => {
 }, [modalIsOpen]);
 
   return (
-    <div className="mx-[50px]">
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={closeModal}
-        contentLabel="Create Token Modal"
-        className="fixed inset-0 flex items-center justify-center lg:mb-[60%] lgx:mb-[10%] bg-transparent"
-        overlayClassName="fixed inset-0 z-50 bg-black bg-opacity-60 transition-opacity duration-300"
-        ariaHideApp={false}
-      >
-        <div className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transform transition-all duration-300 ${
-            isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
-          }`}>
-          <div className="bg-[#222222] p-6 rounded-2xl text-white m-4 w-[786px] relative">
-            <div className="bg-[#FFFFFF4D] mx-[-24px] mt-[-25px] px-4 py-1 mb-4 rounded-2xl">
+    <div className="absolute">
+    <Modal
+             isOpen={modalIsOpen}
+             onRequestClose={closeModal}
+             contentLabel="Create Token Modal"
+             className={`fixed inset-0 flex  items-center justify-center bg-transparent`}
+             overlayClassName={`fixed inset-0 z-50 bg-black bg-opacity-50 transition-opacity duration-300 ${
+                 isVisible ? 'opacity-100' : 'opacity-0'
+             }`}
+             ariaHideApp={false}
+         >
+             <div
+                 className={`bg-[#222222] p-6 rounded-2xl text-white max-h-[90vh] overflow-y-auto no-scrollbar w-[786px] relative transform transition-all duration-300 ${
+                     isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+                 }`}>
+                 <div className=" px-4 py-1 mb-4 rounded-2xl relative">
+            <div className="bg-[#FFFFFF4D] mx-[-24px]  px-4 py-1 mb-4 rounded-2xl">
               <button
                 onClick={closeModal}
                 className="absolute mt-1 right-8 text-[25px] md:text-[30px] text-white"

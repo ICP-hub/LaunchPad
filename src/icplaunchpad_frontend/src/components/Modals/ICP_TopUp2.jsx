@@ -110,7 +110,7 @@ const ICP_TopUp2 = ({
         onRequestClose={closeModal}
         contentLabel="ICP Top-Up Modal"
         className="fixed inset-0 flex items-center justify-center z-50"
-        overlayClassName={`fixed inset-0 bg-black bg-opacity-50 transition-opacity duration-300 `}
+        overlayClassName={`fixed inset-0 z-50 bg-black bg-opacity-50 transition-opacity duration-300 `}
       >
         <div
           className={`bg-[#222222] w-[95%] sm:w-[90%] max-w-[400px] p-6 rounded-xl font-posterama text-white relative transform transition-all duration-300 ${

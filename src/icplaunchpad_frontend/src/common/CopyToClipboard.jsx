@@ -24,9 +24,9 @@ const CopyToClipboard = ({address, width, isBgNone}) => {
             <input
     ref={inputRef}
     type="text"
-    className={`py-2 pl-4 pr-10  outline-none relative rounded-md ${isBgNone ? "bg-transparent" : "bg-[#333333] mb-2 "}`}
+    className={`py-2 pl-4 pr-10 sm:w-full  outline-none relative rounded-md ${isBgNone ? "bg-transparent" : "bg-[#333333] mb-2 "}`}
 
-    style={{ width: width || '100%' }}
+    style={{ width: width || '' }}
     value={
         typeof address === 'string'
             ? address
@@ -38,7 +38,8 @@ const CopyToClipboard = ({address, width, isBgNone}) => {
     onClick={copyToClipboard}
 />
 
-               { !copySuccess ? <button
+               { address ? 
+               !copySuccess ? <button
                     onClick={copyToClipboard}
                     className="absolute right-4 top-[40%] lg:top-[50%] transform -translate-y-1/2 text-white text-[15px]"
                     aria-label="Copy to clipboard"
@@ -49,6 +50,8 @@ const CopyToClipboard = ({address, width, isBgNone}) => {
                 <span className="absolute right-4 top-[40%] lg:top-[50%] transform -translate-y-1/2 text-white text-[15px]">
                <FaRegCheckCircle/>
                 </span>
+                :
+                ''
                }
             </span>
            
