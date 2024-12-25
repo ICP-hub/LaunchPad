@@ -3,7 +3,7 @@ use std::sync::Arc;
 use candid::{encode_one, Nat, Principal};
 use ic_cdk::{
     api::{
-        call::{call_with_payment128, CallResult, RejectionCode},
+        call::{CallResult, RejectionCode},
         management_canister::main::{CanisterInstallMode, WasmModule},
     },
     update,
@@ -11,9 +11,17 @@ use ic_cdk::{
 use ic_ledger_types::Subaccount;
 
 use crate::{
-    create_canister, deposit_cycles, index_install_code, install_code, mutate_state, params::{self}, read_state, Account, CanisterIdRecord, CanisterIdWrapper, CoverImageData, CoverImageIdWrapper, CreateCanisterArgument, CreateFileInput, ImportedCanisterIdWrapper, IndexArg, IndexCanisterIdWrapper, IndexInitArgs, IndexInstallCodeArgument, InitArgs, InstallCodeArgument, LedgerArg, ProfileImageData, ProfileImageIdWrapper, ReturnResult, SaleDetails, SaleDetailsUpdate, SaleDetailsWrapper, SaleInputParams, TokenCreationResult, TokenImageData, TokenImageIdWrapper, U64Wrapper, UserAccount, UserAccountWrapper, UserInputParams
+    create_canister, deposit_cycles, index_install_code, install_code, mutate_state,
+    params::{self},
+    read_state, Account, CanisterIdWrapper, CoverImageData, CoverImageIdWrapper,
+    CreateCanisterArgument, CreateFileInput, ImportedCanisterIdWrapper, IndexArg,
+    IndexCanisterIdWrapper, IndexInitArgs, IndexInstallCodeArgument, InitArgs, InstallCodeArgument,
+    LedgerArg, ProfileImageData, ProfileImageIdWrapper, ReturnResult, SaleDetails,
+    SaleDetailsUpdate, SaleDetailsWrapper, SaleInputParams, TokenCreationResult, TokenImageData,
+    TokenImageIdWrapper, U64Wrapper, UserAccount, UserAccountWrapper, UserInputParams,
 };
 
+use crate::prevent_anonymous;
 use canfund::api::cmc::IcCyclesMintingCanister;
 use canfund::operations::fetch::FetchCyclesBalance;
 use canfund::operations::obtain::MintCycles;
@@ -22,7 +30,7 @@ use canfund::{
     operations::{fetch::FetchCyclesBalanceFromCanisterStatus, obtain::ObtainCycles},
 };
 
-#[ic_cdk::update]
+#[ic_cdk::update(guard = prevent_anonymous)]
 async fn fetch_canister_balance(canister_id: Principal) -> Result<u128, String> {
     ic_cdk::println!("Fetching cycles balance for canister ID: {}", canister_id);
     // Assuming you have the permission to call 'canister_status' on this canister.
@@ -33,22 +41,34 @@ async fn fetch_canister_balance(canister_id: Principal) -> Result<u128, String> 
     let balance_result = fetcher.fetch_cycles_balance(canister_id).await;
     match balance_result {
         Ok(balance) => {
-            ic_cdk::println!("Cycles balance for canister ID {}: {}", canister_id, balance);
+            ic_cdk::println!(
+                "Cycles balance for canister ID {}: {}",
+                canister_id,
+                balance
+            );
             Ok(balance)
         }
         Err(e) => {
-            ic_cdk::println!("Failed to fetch balance for canister ID {}: {:?}", canister_id, e);
+            ic_cdk::println!(
+                "Failed to fetch balance for canister ID {}: {:?}",
+                canister_id,
+                e
+            );
             Err(format!("Failed to fetch balance: {:?}", e))
         }
     }
 }
 
-#[ic_cdk::update]
+#[ic_cdk::update(guard = prevent_anonymous)]
 pub async fn obtain_cycles_for_canister(
     amount: u128,
     target_canister_id: Principal,
 ) -> Result<Nat, String> {
-    ic_cdk::println!("Calling obtain_cycles_for_canister with amount: {} and target_canister_id: {}", amount, target_canister_id);
+    ic_cdk::println!(
+        "Calling obtain_cycles_for_canister with amount: {} and target_canister_id: {}",
+        amount,
+        target_canister_id
+    );
     let caller_principal = ic_cdk::api::caller();
 
     let mut from_subaccount_bytes = [0u8; 32];
@@ -83,9 +103,12 @@ pub async fn obtain_cycles_for_canister(
     }
 }
 
-#[ic_cdk::update]
+#[ic_cdk::update(guard = prevent_anonymous)]
 pub fn create_account(user_input: UserAccount) -> Result<String, String> {
-    ic_cdk::println!("Starting account creation for username: {}", user_input.username);
+    ic_cdk::println!(
+        "Starting account creation for username: {}",
+        user_input.username
+    );
 
     // Validate input fields
     if user_input.username.trim().is_empty() {
@@ -136,12 +159,15 @@ pub fn create_account(user_input: UserAccount) -> Result<String, String> {
     Ok("User Created Successfully!".to_string())
 }
 
-#[ic_cdk::update]
+#[ic_cdk::update(guard = prevent_anonymous)]
 pub fn update_user_account(
     principal: Principal,
     updated_account: UserAccount,
 ) -> Result<(), String> {
-    ic_cdk::println!("Attempting to update user account for principal: {}", principal);
+    ic_cdk::println!(
+        "Attempting to update user account for principal: {}",
+        principal
+    );
 
     // Check if the user account exists
     let existing_user_account = read_state(|state| {
@@ -174,7 +200,10 @@ pub fn update_user_account(
             }
 
             // Update the username since it has passed the uniqueness check
-            ic_cdk::println!("Username '{}' is unique. Proceeding with update.", updated_account.username);
+            ic_cdk::println!(
+                "Username '{}' is unique. Proceeding with update.",
+                updated_account.username
+            );
             user_account_wrapper.user_account.username = updated_account.username.clone();
         }
 
@@ -196,7 +225,10 @@ pub fn update_user_account(
             state.user_accounts.insert(principal, user_account_wrapper);
         });
 
-        ic_cdk::println!("User account successfully updated for principal: {}", principal);
+        ic_cdk::println!(
+            "User account successfully updated for principal: {}",
+            principal
+        );
         Ok(())
     } else {
         ic_cdk::println!("User account not found for principal: {}", principal);
@@ -204,7 +236,7 @@ pub fn update_user_account(
     }
 }
 
-#[ic_cdk::update]
+#[ic_cdk::update(guard = prevent_anonymous)]
 pub async fn create_token(user_params: UserInputParams) -> Result<TokenCreationResult, String> {
     let caller = ic_cdk::api::caller();
     ic_cdk::println!("Starting token creation for caller: {}", caller);
@@ -343,7 +375,10 @@ pub async fn create_token(user_params: UserInputParams) -> Result<TokenCreationR
             ic_cdk::println!("Error installing ledger code: {} - {}", code as u8, msg);
             format!("Error installing ledger code: {} - {}", code as u8, msg)
         })?;
-    ic_cdk::println!("Ledger code installed successfully for canister ID: {:?}", canister_id_principal);
+    ic_cdk::println!(
+        "Ledger code installed successfully for canister ID: {:?}",
+        canister_id_principal
+    );
 
     // Update state with ledger canister details
     mutate_state(|state| {
@@ -369,7 +404,10 @@ pub async fn create_token(user_params: UserInputParams) -> Result<TokenCreationR
             ic_cdk::println!("Error installing index code: {} - {}", code as u8, msg);
             format!("Error installing index code: {} - {}", code as u8, msg)
         })?;
-    ic_cdk::println!("Index code installed successfully for canister ID: {:?}", index_canister_id_principal);
+    ic_cdk::println!(
+        "Index code installed successfully for canister ID: {:?}",
+        index_canister_id_principal
+    );
 
     // Update state with index canister details
     mutate_state(|state| {
@@ -382,14 +420,17 @@ pub async fn create_token(user_params: UserInputParams) -> Result<TokenCreationR
     });
     ic_cdk::println!("Index canister details updated in state.");
 
-    ic_cdk::println!("Token creation completed successfully for caller: {}", caller);
+    ic_cdk::println!(
+        "Token creation completed successfully for caller: {}",
+        caller
+    );
     Ok(TokenCreationResult {
         ledger_canister_id: canister_id_principal,
         index_canister_id: index_canister_id_principal,
     })
 }
 
-#[update]
+#[update(guard = prevent_anonymous)]
 pub async fn import_token(
     ledger_canister_id: Principal,
     optional_index_canister_id: Option<Principal>,
@@ -498,18 +539,7 @@ pub async fn import_token(
     Ok(true)
 }
 
-#[ic_cdk::update]
-async fn deposit_cycles_to_canister(arg: CanisterIdRecord, cycles: u128) -> CallResult<()> {
-    call_with_payment128(
-        Principal::management_canister(),
-        "deposit_cycles",
-        (arg,),
-        cycles,
-    )
-    .await
-}
-
-#[ic_cdk::update]
+#[ic_cdk::update(guard = prevent_anonymous)]
 pub async fn upload_token_image(
     asset_canister_id: String,
     image_data: TokenImageData,
@@ -543,18 +573,22 @@ pub async fn upload_token_image(
         Ok((Ok(image_id),)) => {
             // Update the state with the new image ID using the ledger canister ID from image_data as key
             mutate_state(|state| {
-                state.token_image_ids.insert(image_data.ledger_id.to_string(), TokenImageIdWrapper { image_id });
+                state.token_image_ids.insert(
+                    image_data.ledger_id.to_string(),
+                    TokenImageIdWrapper { image_id },
+                );
             });
-            Ok(format!("Token image uploaded successfully with ID: {}", image_id))
-        },
+            Ok(format!(
+                "Token image uploaded successfully with ID: {}",
+                image_id
+            ))
+        }
         Ok((Err(err),)) => Err(format!("Error from asset canister: {}", err)),
         Err((code, message)) => Err(format!("Error with rejection code {:?}: {}", code, message)),
     }
 }
 
-
-
-#[ic_cdk::update]
+#[ic_cdk::update(guard = prevent_anonymous)]
 pub async fn upload_profile_image(
     asset_canister_id: String,
     image_data: ProfileImageData,
@@ -570,11 +604,10 @@ pub async fn upload_profile_image(
     ic_cdk::println!("Image content validated.");
 
     // Convert the asset canister ID to a Principal
-    let asset_canister_principal = Principal::from_text(&asset_canister_id)
-        .map_err(|_| {
-            ic_cdk::println!("Invalid asset canister ID: {}", asset_canister_id);
-            format!("Invalid asset canister ID: {}", asset_canister_id)
-        })?;
+    let asset_canister_principal = Principal::from_text(&asset_canister_id).map_err(|_| {
+        ic_cdk::println!("Invalid asset canister ID: {}", asset_canister_id);
+        format!("Invalid asset canister ID: {}", asset_canister_id)
+    })?;
     ic_cdk::println!("Asset canister principal: {}", asset_canister_principal);
 
     // Create input for the file upload
@@ -625,7 +658,9 @@ pub async fn upload_profile_image(
                 RejectionCode::SysTransient => {
                     Err("Transient system error occurred. Please retry.".to_string())
                 }
-                RejectionCode::DestinationInvalid => Err("Invalid destination canister.".to_string()),
+                RejectionCode::DestinationInvalid => {
+                    Err("Invalid destination canister.".to_string())
+                }
                 RejectionCode::CanisterReject => {
                     Err(format!("Canister rejected the request: {}", message))
                 }
@@ -635,12 +670,15 @@ pub async fn upload_profile_image(
     }
 }
 
-#[ic_cdk::update]
+#[ic_cdk::update(guard = prevent_anonymous)]
 pub async fn upload_cover_image(
     asset_canister_id: String,
     image_data: CoverImageData,
 ) -> Result<String, String> {
-    ic_cdk::println!("Starting upload_cover_image with asset_canister_id: {}", asset_canister_id);
+    ic_cdk::println!(
+        "Starting upload_cover_image with asset_canister_id: {}",
+        asset_canister_id
+    );
 
     // Validate inputs
     if image_data.content.is_none() {
@@ -681,7 +719,10 @@ pub async fn upload_cover_image(
             // Store the cover image ID with the ledger_id in the cover_image_ids map
             mutate_state(|state| {
                 let ledger_id_str = image_data.ledger_id.to_string();
-                ic_cdk::println!("Updating state with new cover image ID for ledger_id: {}", ledger_id_str);
+                ic_cdk::println!(
+                    "Updating state with new cover image ID for ledger_id: {}",
+                    ledger_id_str
+                );
 
                 // Insert or update the cover image ID in the cover_image_ids map
                 state
@@ -708,7 +749,9 @@ pub async fn upload_cover_image(
                 RejectionCode::SysTransient => {
                     Err("Transient system error occurred. Please retry.".to_string())
                 }
-                RejectionCode::DestinationInvalid => Err("Invalid destination canister.".to_string()),
+                RejectionCode::DestinationInvalid => {
+                    Err("Invalid destination canister.".to_string())
+                }
                 RejectionCode::CanisterReject => {
                     Err(format!("Canister rejected the request: {}", message))
                 }
@@ -718,7 +761,7 @@ pub async fn upload_cover_image(
     }
 }
 
-#[ic_cdk::update]
+#[ic_cdk::update(guard = prevent_anonymous)]
 pub fn create_sale(
     ledger_canister_id: Principal,
     sale_input: SaleInputParams, // Use the updated struct with hardcap included
@@ -789,7 +832,10 @@ pub fn create_sale(
             )
             .is_some()
         {
-            ic_cdk::println!("Sale details already exist for ledger canister ID: {}", ledger_canister_id);
+            ic_cdk::println!(
+                "Sale details already exist for ledger canister ID: {}",
+                ledger_canister_id
+            );
             return Err(format!(
                 "Sale details already exist for ledger canister ID: {}",
                 ledger_canister_id
@@ -804,16 +850,22 @@ pub fn create_sale(
     })?;
 
     // Return the total tokens to approve (calculated automatically)
-    ic_cdk::println!("Returning total tokens to approve: {}", sale_details.tokens_for_approval);
+    ic_cdk::println!(
+        "Returning total tokens to approve: {}",
+        sale_details.tokens_for_approval
+    );
     Ok(sale_details.tokens_for_approval)
 }
 
-#[ic_cdk::update]
+#[ic_cdk::update(guard = prevent_anonymous)]
 pub fn update_sale_params(
     ledger_canister_id: Principal,
     updated_details: SaleDetailsUpdate,
 ) -> Result<(), String> {
-    ic_cdk::println!("update_sale_params: ledger_canister_id: {}", ledger_canister_id);
+    ic_cdk::println!(
+        "update_sale_params: ledger_canister_id: {}",
+        ledger_canister_id
+    );
     ic_cdk::println!("update_sale_params: updated_details: {:?}", updated_details);
 
     let caller = ic_cdk::api::caller(); // Get the caller's principal
@@ -831,19 +883,26 @@ pub fn update_sale_params(
 
             let mut sale_details = wrapper.sale_details.clone(); // Clone the sale details to update them
 
-            ic_cdk::println!("update_sale_params: Before updating: sale_details: {:?}", sale_details);
+            ic_cdk::println!(
+                "update_sale_params: Before updating: sale_details: {:?}",
+                sale_details
+            );
 
             // Updating various fields if provided
             if let Some(start_time) = updated_details.start_time_utc {
                 if start_time > sale_details.end_time_utc {
-                    ic_cdk::println!("update_sale_params: Error: Start time cannot be after the end time.");
+                    ic_cdk::println!(
+                        "update_sale_params: Error: Start time cannot be after the end time."
+                    );
                     return Err("Start time cannot be after the end time.".to_string());
                 }
                 sale_details.start_time_utc = start_time;
             }
             if let Some(end_time) = updated_details.end_time_utc {
                 if end_time < sale_details.start_time_utc {
-                    ic_cdk::println!("update_sale_params: Error: End time cannot be before the start time.");
+                    ic_cdk::println!(
+                        "update_sale_params: Error: End time cannot be before the start time."
+                    );
                     return Err("End time cannot be before the start time.".to_string());
                 }
                 sale_details.end_time_utc = end_time;
@@ -871,13 +930,18 @@ pub fn update_sale_params(
             }
             if let Some(project_video) = updated_details.project_video {
                 if project_video.trim().is_empty() {
-                    ic_cdk::println!("update_sale_params: Error: Project video URL cannot be empty.");
+                    ic_cdk::println!(
+                        "update_sale_params: Error: Project video URL cannot be empty."
+                    );
                     return Err("Project video URL cannot be empty.".to_string());
                 }
                 sale_details.project_video = project_video;
             }
 
-            ic_cdk::println!("update_sale_params: After updating: sale_details: {:?}", sale_details);
+            ic_cdk::println!(
+                "update_sale_params: After updating: sale_details: {:?}",
+                sale_details
+            );
 
             // Reinsert the updated wrapper back into the stable map
             state
@@ -888,7 +952,10 @@ pub fn update_sale_params(
 
             Ok(())
         } else {
-            ic_cdk::println!("update_sale_params: Error: Sale details not found for ledger_canister_id: {}", ledger_canister_id);
+            ic_cdk::println!(
+                "update_sale_params: Error: Sale details not found for ledger_canister_id: {}",
+                ledger_canister_id
+            );
             Err(format!(
                 "Sale details not found for ledger_canister_id: {}",
                 ledger_canister_id
@@ -897,7 +964,7 @@ pub fn update_sale_params(
     })
 }
 
-#[ic_cdk::update]
+#[ic_cdk::update(guard = prevent_anonymous)]
 pub fn insert_funds_raised(ledger_canister_id: Principal, amount: u64) -> Result<(), String> {
     if amount == 0 {
         return Err("Amount to insert cannot be zero.".to_string());

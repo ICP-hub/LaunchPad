@@ -126,7 +126,7 @@ dfx canister call "$LEDGER_CANISTER_ID" icrc2_approve "(
 )"
 
 # Switch to the controller identity
-dfx identity use controller
+dfx identity use default
 
 # Approve tokens for the backend canister
 dfx canister call icp_ledger_canister icrc2_approve "(

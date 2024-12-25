@@ -9,8 +9,44 @@ use std::cell::RefCell;
 
 use crate::task_scheduler::process_sales;
 use crate::{
-    CanisterIdWrapper, CoverImageIdWrapper, ImportedCanisterIdWrapper, IndexCanisterIdWrapper, ProfileImageIdWrapper, SaleDetailsWrapper, State, TokenImageIdWrapper, U64Wrapper, UserAccountWrapper
+    CanisterIdWrapper, CoverImageIdWrapper, ImportedCanisterIdWrapper, IndexCanisterIdWrapper,
+    ProfileImageIdWrapper, SaleDetailsWrapper, State, TokenImageIdWrapper, U64Wrapper,
+    UserAccountWrapper,
 };
+
+#[init]
+fn init() {
+    STATE.with(|state| {
+        *state.borrow_mut() = State::new();
+    });
+
+    ic_cdk::spawn(async {
+        process_sales().await;
+    });
+}
+
+impl State {
+    pub fn new() -> Self {
+        Self {
+            canister_ids: init_canister_ids(),
+            index_canister_ids: init_index_canister_ids(),
+            profile_image_ids: init_profile_image_ids(),
+            sale_details: init_sale_details(),
+            user_accounts: init_user_accounts(),
+            cover_image_ids: init_cover_image_ids(),
+            funds_raised: init_funds_raised_map(),
+            contributions: init_contributions(),
+            imported_canister_ids: init_imported_canister_ids(),
+            token_image_ids: init_token_image_ids(),
+        }
+    }
+}
+
+impl Default for State {
+    fn default() -> Self {
+        State::new()
+    }
+}
 
 pub type Memory = VirtualMemory<DefaultMemoryImpl>;
 pub type CanisterIdsMap = StableBTreeMap<String, CanisterIdWrapper, Memory>;
@@ -64,6 +100,46 @@ pub fn mutate_state<R>(f: impl FnOnce(&mut State) -> R) -> R {
     STATE.with(|cell| f(&mut cell.borrow_mut()))
 }
 
+pub fn init_canister_ids() -> CanisterIdsMap {
+    CanisterIdsMap::init(get_canister_ids_memory())
+}
+
+pub fn init_index_canister_ids() -> IndexCanisterIdsMap {
+    IndexCanisterIdsMap::init(get_index_canister_ids_memory())
+}
+
+pub fn init_profile_image_ids() -> ProfileImageIdsMap {
+    ProfileImageIdsMap::init(get_profile_image_ids_memory())
+}
+
+pub fn init_sale_details() -> SaleDetailsMap {
+    SaleDetailsMap::init(get_sale_details_memory())
+}
+
+pub fn init_user_accounts() -> UserAccountsMap {
+    UserAccountsMap::init(get_user_accounts_memory())
+}
+
+pub fn init_cover_image_ids() -> CoverImageIdsMap {
+    CoverImageIdsMap::init(get_cover_image_ids_memory())
+}
+
+pub fn init_funds_raised_map() -> FundsRaisedMap {
+    FundsRaisedMap::init(get_funds_raised_memory())
+}
+
+pub fn init_contributions() -> ContributionsMap {
+    ContributionsMap::init(get_contributions_memory())
+}
+
+pub fn init_imported_canister_ids() -> ImportedCanisterIdsMap {
+    ImportedCanisterIdsMap::init(get_imported_canister_ids_memory())
+}
+
+pub fn init_token_image_ids() -> TokenImageIdsMap {
+    TokenImageIdsMap::init(get_token_image_ids_memory())
+}
+
 pub fn get_canister_ids_memory() -> Memory {
     MEMORY_MANAGER.with(|m| m.borrow().get(CANISTER_IDS_MEMORY))
 }
@@ -102,82 +178,6 @@ pub fn get_imported_canister_ids_memory() -> Memory {
 
 pub fn get_token_image_ids_memory() -> Memory {
     MEMORY_MANAGER.with(|m| m.borrow().get(TOKEN_IMAGE_IDS_MEMORY))
-}
-
-#[init]
-fn init() {
-    STATE.with(|state| {
-        *state.borrow_mut() = State::new();
-    });
-
-    ic_cdk::spawn(async {
-        process_sales().await;
-    });
-}
-
-impl State {
-    pub fn new() -> Self {
-        Self {
-            canister_ids: init_canister_ids(),
-            index_canister_ids: init_index_canister_ids(),
-            profile_image_ids: init_profile_image_ids(),
-            sale_details: init_sale_details(),
-            user_accounts: init_user_accounts(),
-            cover_image_ids: init_cover_image_ids(),
-            funds_raised: init_funds_raised_map(),
-            contributions: init_contributions(),
-            imported_canister_ids: init_imported_canister_ids(),
-            token_image_ids:init_token_image_ids(),
-        }
-    }
-}
-
-
-impl Default for State {
-    fn default() -> Self {
-        State::new()
-    }
-}
-
-pub fn init_canister_ids() -> CanisterIdsMap {
-    CanisterIdsMap::init(get_canister_ids_memory())
-}
-
-pub fn init_index_canister_ids() -> IndexCanisterIdsMap {
-    IndexCanisterIdsMap::init(get_index_canister_ids_memory())
-}
-
-
-pub fn init_profile_image_ids() -> ProfileImageIdsMap {
-    ProfileImageIdsMap::init(get_profile_image_ids_memory())
-}
-
-pub fn init_sale_details() -> SaleDetailsMap {
-    SaleDetailsMap::init(get_sale_details_memory())
-}
-
-pub fn init_user_accounts() -> UserAccountsMap {
-    UserAccountsMap::init(get_user_accounts_memory())
-}
-
-pub fn init_cover_image_ids() -> CoverImageIdsMap {
-    CoverImageIdsMap::init(get_cover_image_ids_memory())
-}
-
-pub fn init_funds_raised_map() -> FundsRaisedMap {
-    FundsRaisedMap::init(get_funds_raised_memory())
-}
-
-pub fn init_contributions() -> ContributionsMap {
-    ContributionsMap::init(get_contributions_memory())
-}
-
-pub fn init_imported_canister_ids() -> ImportedCanisterIdsMap {
-    ImportedCanisterIdsMap::init(get_imported_canister_ids_memory())
-}
-
-pub fn init_token_image_ids() -> TokenImageIdsMap {
-    TokenImageIdsMap::init(get_token_image_ids_memory())
 }
 
 impl Storable for U64Wrapper {

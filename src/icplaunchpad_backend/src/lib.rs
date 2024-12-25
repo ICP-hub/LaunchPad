@@ -1,17 +1,17 @@
-use candid::{CandidType, Principal};
+use candid::Principal;
 use ic_cdk::{
     api::{
         call::{call_with_payment128, CallResult},
         canister_version,
         management_canister::main::WasmModule,
-    }, caller, export_candid, query, update
+    },
+    caller, export_candid, query, update,
 };
 mod api_update;
 mod params;
 mod state_handler;
 mod transaction;
 mod types;
-use serde::Deserialize;
 use state_handler::*;
 mod api_query;
 use crate::transaction::*;
@@ -58,6 +58,7 @@ async fn create_canister(
     .await
 }
 
+#[ic_cdk::update(guard = prevent_anonymous)]
 async fn deposit_cycles(arg: CanisterIdRecord, cycles: u128) -> CallResult<()> {
     call_with_payment128(
         Principal::management_canister(),
@@ -107,19 +108,12 @@ async fn index_install_code(arg: IndexInstallCodeArgument, wasm_module: Vec<u8>)
     )
     .await
 }
-#[query]
+#[query(guard = prevent_anonymous)]
 fn fee_for_creation_token() -> f64 {
     0.0001 // 1 ICP, no conversion
 }
 
-
-#[derive(CandidType, Deserialize, Eq, PartialEq, Debug)]
-pub struct SupportedStandard {
-    pub url: String,
-    pub name: String,
-}
- 
-#[query]
+#[query(guard = prevent_anonymous)]
 fn icrc10_supported_standards() -> Vec<SupportedStandard> {
     vec![
         SupportedStandard {
@@ -132,13 +126,8 @@ fn icrc10_supported_standards() -> Vec<SupportedStandard> {
         },
     ]
 }
- 
-#[derive(Clone, Debug, CandidType, Deserialize)]
-pub struct Icrc28TrustedOriginsResponse {
-    pub trusted_origins: Vec<String>
-}
- 
-#[update]
+
+#[update(guard = prevent_anonymous)]
 fn icrc28_trusted_origins() -> Icrc28TrustedOriginsResponse {
     let trusted_origins = vec![
         String::from("https://ajzka-lyaaa-aaaak-ak5rq-cai.icp0.io"),
@@ -148,9 +137,8 @@ fn icrc28_trusted_origins() -> Icrc28TrustedOriginsResponse {
         String::from("http://127.0.0.1:4943"),
         String::from("http://localhost:4200"),
     ];
- 
-    return Icrc28TrustedOriginsResponse { trusted_origins }
-}
 
+    return Icrc28TrustedOriginsResponse { trusted_origins };
+}
 
 export_candid!();

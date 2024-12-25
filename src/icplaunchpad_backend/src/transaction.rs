@@ -1,29 +1,21 @@
 use std::collections::HashMap;
 
-use candid::{CandidType, Nat, Principal};
+use candid::{Nat, Principal};
+use ic_cdk::api::call::CallResult;
 use ic_cdk::{api, query};
-use ic_cdk::api::call::{CallResult, RejectionCode};
 use ic_cdk_macros::update;
 use icrc_ledger_types::icrc1::account::Account;
 use icrc_ledger_types::icrc1::transfer::{TransferArg, TransferError};
 use icrc_ledger_types::icrc2::transfer_from::TransferFromArgs;
-use serde::{Deserialize, Serialize};
 
 use crate::api_query::get_funds_raised;
-use crate::{mutate_state, TransferFromResult, U64Wrapper, STATE};
+use crate::{mutate_state, BuyTransferParams, TransferFromResult, U64Wrapper, STATE};
 
 pub fn prevent_anonymous() -> Result<(), String> {
     if api::caller() == Principal::anonymous() {
         return Err(String::from("Anonymous principal not allowed!"));
     }
     Ok(())
-}
-
-#[derive(CandidType, Deserialize, Serialize)]
-pub struct BuyTransferParams {
-    pub tokens: u64,
-    pub buyer_principal: Principal,
-    pub icrc1_ledger_canister_id: Principal,
 }
 
 async fn buy_transfer(params: BuyTransferParams) -> Result<Nat, String> {
@@ -65,7 +57,8 @@ async fn buy_transfer(params: BuyTransferParams) -> Result<Nat, String> {
     if accepted_amount < params.tokens {
         ic_cdk::println!(
             "Requested tokens: {}, Accepted tokens: {}. Contribution capped at remaining cap.",
-            params.tokens, accepted_amount
+            params.tokens,
+            accepted_amount
         );
     }
 
@@ -104,12 +97,8 @@ async fn buy_transfer(params: BuyTransferParams) -> Result<Nat, String> {
         },
     };
 
-    let response: CallResult<(TransferFromResult,)> = ic_cdk::call(
-        ledger_canister_id,
-        "icrc2_transfer_from",
-        (transfer_args,),
-    )
-    .await;
+    let response: CallResult<(TransferFromResult,)> =
+        ic_cdk::call(ledger_canister_id, "icrc2_transfer_from", (transfer_args,)).await;
 
     match response {
         Ok((TransferFromResult::Ok(block_index),)) => {
@@ -144,7 +133,9 @@ async fn buy_transfer(params: BuyTransferParams) -> Result<Nat, String> {
                 let mut state = s.borrow_mut();
                 if let Some(wrapper) = state.funds_raised.get(&sale_id) {
                     let reverted_amount = wrapper.0.saturating_sub(accepted_amount);
-                    state.funds_raised.insert(sale_id, U64Wrapper(reverted_amount));
+                    state
+                        .funds_raised
+                        .insert(sale_id, U64Wrapper(reverted_amount));
                 }
             });
 
@@ -156,7 +147,9 @@ async fn buy_transfer(params: BuyTransferParams) -> Result<Nat, String> {
                 let mut state = s.borrow_mut();
                 if let Some(wrapper) = state.funds_raised.get(&sale_id) {
                     let reverted_amount = wrapper.0.saturating_sub(accepted_amount);
-                    state.funds_raised.insert(sale_id, U64Wrapper(reverted_amount));
+                    state
+                        .funds_raised
+                        .insert(sale_id, U64Wrapper(reverted_amount));
                 }
             });
 
@@ -166,7 +159,7 @@ async fn buy_transfer(params: BuyTransferParams) -> Result<Nat, String> {
 }
 
 //This is the fee function for when user creates token with create_token and we accept ICP. OR when import token is done but they don't have index canister id
-#[ic_cdk::update]
+#[ic_cdk::update(guard = prevent_anonymous)]
 pub async fn token_fee_transfer(
     buyer_principal: Principal,
     amount: u64,
@@ -217,24 +210,32 @@ pub async fn token_fee_transfer(
 }
 
 //Transfers 5% of funds raised to a fee collector principal
-pub async fn tax_transfer_on_funds_raised(
-    ledger_canister_id: Principal,
-) -> Result<(), String> {
+pub async fn tax_transfer_on_funds_raised(ledger_canister_id: Principal) -> Result<(), String> {
     // Step 1: Retrieve funds raised from the sale canister
     let funds_raised = get_funds_raised(ledger_canister_id)?;
 
     // Step 2: Calculate 5% of the funds raised as the fee
     let fee_amount = funds_raised / 20; // This calculates 5% (i.e., funds_raised * 0.05)
 
-    ic_cdk::println!("Funds raised: {}, Fee amount (5%): {}", funds_raised, fee_amount);
+    ic_cdk::println!(
+        "Funds raised: {}, Fee amount (5%): {}",
+        funds_raised,
+        fee_amount
+    );
 
     // Step 3: Fee collector principal (hardcoded as per your requirement)
-    let fee_collector_principal: Principal = "s4yaz-piiqq-tbbu5-kdv4h-pirny-gfddr-qs7ti-m4353-inls6-tubud-qae".parse().unwrap();
+    let fee_collector_principal: Principal =
+        "s4yaz-piiqq-tbbu5-kdv4h-pirny-gfddr-qs7ti-m4353-inls6-tubud-qae"
+            .parse()
+            .unwrap();
 
     let icp_ledger_canister_id = option_env!("CANISTER_ID_ICP_LEDGER_CANISTER")
         .ok_or("Environment variable `CANISTER_ID_ICP_LEDGER_CANISTER` not set")?;
     let icp_ledger_principal = Principal::from_text(icp_ledger_canister_id).map_err(|_| {
-        format!("Failed to parse CANISTER_ID_ICP_LEDGER_CANISTER: {}", ledger_canister_id)
+        format!(
+            "Failed to parse CANISTER_ID_ICP_LEDGER_CANISTER: {}",
+            ledger_canister_id
+        )
     })?;
 
     // Step 4: Transfer the fee to the fee collector
@@ -255,13 +256,19 @@ pub async fn tax_transfer_on_funds_raised(
 
     match transfer_result {
         Ok((Ok(_),)) => {
-            ic_cdk::println!("Fee of {} transferred successfully to the fee collector.", fee_amount);
+            ic_cdk::println!(
+                "Fee of {} transferred successfully to the fee collector.",
+                fee_amount
+            );
         }
         Ok((Err(error),)) => {
             return Err(format!("Refund transfer error: {:?}", error));
         }
         Err((code, message)) => {
-            return Err(format!("Inter-canister call failed: {:?} - {}", code, message));
+            return Err(format!(
+                "Inter-canister call failed: {:?} - {}",
+                code, message
+            ));
         }
     }
 
@@ -269,16 +276,15 @@ pub async fn tax_transfer_on_funds_raised(
     Ok(())
 }
 
-
-
-
-
 pub async fn tax_transfer_on_tokens(
     ledger_principal: Principal,
     amount: u64,
 ) -> Result<(), String> {
     // Fee collector principal passed as a constant
-    let fee_collector_principal: Principal = "s4yaz-piiqq-tbbu5-kdv4h-pirny-gfddr-qs7ti-m4353-inls6-tubud-qae".parse().unwrap();
+    let fee_collector_principal: Principal =
+        "s4yaz-piiqq-tbbu5-kdv4h-pirny-gfddr-qs7ti-m4353-inls6-tubud-qae"
+            .parse()
+            .unwrap();
     //preminter is the principal for now.
 
     let args = TransferArg {
@@ -299,12 +305,14 @@ pub async fn tax_transfer_on_tokens(
     match result {
         Ok((Ok(_),)) => Ok(()),
         Ok((Err(error),)) => Err(format!("Refund transfer error: {:?}", error)),
-        Err((code, message)) => Err(format!("Inter-canister call failed: {:?} - {}", code, message)),
+        Err((code, message)) => Err(format!(
+            "Inter-canister call failed: {:?} - {}",
+            code, message
+        )),
     }
 }
 
-
-#[query]
+#[query(guard = prevent_anonymous)]
 fn get_contributions_for_sale(sale_id: Principal) -> HashMap<Principal, u64> {
     // Create a new HashMap to store the results
     let mut contributions: HashMap<Principal, u64> = HashMap::new();
@@ -322,7 +330,6 @@ fn get_contributions_for_sale(sale_id: Principal) -> HashMap<Principal, u64> {
 
     contributions
 }
-
 
 #[update(guard = prevent_anonymous)]
 async fn buy_tokens(params: BuyTransferParams) -> Result<Nat, String> {
@@ -363,9 +370,6 @@ pub fn mark_sale_as_ended(sale_id: &Principal) -> Result<(), String> {
     })
 }
 
-
-
-
 fn get_current_time() -> u64 {
     ic_cdk::api::time() // Returns the current time in nanoseconds since UNIX epoch
 }
@@ -383,7 +387,10 @@ pub async fn perform_refund(
     let ledger_canister_id = option_env!("CANISTER_ID_ICP_LEDGER_CANISTER")
         .ok_or("Environment variable `CANISTER_ID_ICP_LEDGER_CANISTER` not set")?;
     let ledger_principal = Principal::from_text(ledger_canister_id).map_err(|_| {
-        format!("Failed to parse CANISTER_ID_ICP_LEDGER_CANISTER: {}", ledger_canister_id)
+        format!(
+            "Failed to parse CANISTER_ID_ICP_LEDGER_CANISTER: {}",
+            ledger_canister_id
+        )
     })?;
 
     let args = TransferArg {
@@ -404,10 +411,12 @@ pub async fn perform_refund(
     match result {
         Ok((Ok(_),)) => Ok(()),
         Ok((Err(error),)) => Err(format!("Refund transfer error: {:?}", error)),
-        Err((code, message)) => Err(format!("Inter-canister call failed: {:?} - {}", code, message)),
+        Err((code, message)) => Err(format!(
+            "Inter-canister call failed: {:?} - {}",
+            code, message
+        )),
     }
 }
-
 
 pub async fn send_tokens_to_contributor(
     sale_canister_id: &Principal,
@@ -432,7 +441,7 @@ pub async fn send_tokens_to_contributor(
         created_at_time: None,
         spender_subaccount: None,
         from: Account {
-            owner: *creator, // Sender is the creator
+            owner: *creator,  // Sender is the creator
             subaccount: None, // Use the sale canister ID as a subaccount
         },
     };
@@ -464,57 +473,13 @@ pub async fn send_tokens_to_contributor(
         Err((code, message)) => {
             ic_cdk::println!(
                 "Inter-canister call to ledger failed: {:?} - {}",
-                code, message
+                code,
+                message
             );
             Err(format!(
                 "Inter-canister call failed: {:?} - {}",
                 code, message
             ))
         }
-    }
-}
-
-
-
-
-#[update]
-pub async fn icrc_get_balance(id: Principal) -> Result<Nat, String> {
-    let ledger_canister_id = option_env!("CANISTER_ID_ICP_LEDGER_CANISTER")
-        .ok_or("Environment variable `CANISTER_ID_ICP_LEDGER_CANISTER` not set")?;
-    call_inter_canister::<Account, Nat>(
-        "icrc1_balance_of",
-        Account {
-            owner: id,
-            subaccount: None,
-        },
-        Principal::from_text(ledger_canister_id).unwrap(),
-    )
-    .await
-}
-
-// execute methods of other canisters
-pub async fn call_inter_canister<T, U>(
-    function: &str,
-    args: T,
-    canister_id: Principal,
-) -> Result<U, String>
-where
-    T: CandidType + Serialize,
-    U: CandidType + for<'de> serde::Deserialize<'de>,
-{
-    let response: CallResult<(U,)> = ic_cdk::call(canister_id, function, (args,)).await;
-
-    let res0: Result<(U,), (RejectionCode, String)> = response;
-
-    match res0 {
-        Ok(val) => Ok(val.0),
-        Err((code, message)) => match code {
-            RejectionCode::NoError => Err("NoError".to_string()),
-            RejectionCode::SysFatal => Err("SysFatal".to_string()),
-            RejectionCode::SysTransient => Err("SysTransient".to_string()),
-            RejectionCode::DestinationInvalid => Err("DestinationInvalid".to_string()),
-            RejectionCode::CanisterReject => Err("CanisterReject".to_string()),
-            _ => Err(format!("Unknown rejection code: {:?}: {}", code, message)),
-        },
     }
 }

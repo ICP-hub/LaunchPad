@@ -327,7 +327,7 @@ pub struct CanisterIdWrapper {
 pub enum TokenInfo {
     UserCreated {
         canister_id: CanisterIdWrapper,
-        index_canister_id: IndexCanisterIdWrapper, 
+        index_canister_id: IndexCanisterIdWrapper,
     },
     Imported {
         ledger_canister_id: Principal,
@@ -342,7 +342,6 @@ pub struct ImportedCanisterIdWrapper {
     pub ledger_canister_id: Principal,
     pub index_canister_id: Principal, // Add this field
 }
-
 
 #[derive(CandidType, Deserialize, Debug, Clone)]
 pub struct IndexCanisterIdWrapper {
@@ -453,10 +452,7 @@ impl SaleDetails {
         self.tokens_for_approval = total_tokens_to_approve;
         self.fee_for_approval = fee_on_tokens_for_liquidity;
     }
-
-
 }
-
 
 impl Default for SaleDetails {
     fn default() -> Self {
@@ -575,4 +571,17 @@ pub struct ICTransferReply {
     pub amount: Nat,
     pub canister_id: String,
     pub block_index: Nat,
+}
+
+#[derive(CandidType, Deserialize, Serialize)]
+pub struct BuyTransferParams {
+    pub tokens: u64,
+    pub buyer_principal: Principal,
+    pub icrc1_ledger_canister_id: Principal,
+}
+
+#[derive(CandidType, Deserialize, Eq, PartialEq, Debug)]
+pub struct SupportedStandard {
+    pub url: String,
+    pub name: String,
 }
