@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { createActor } from "../../../../declarations/icplaunchpad_backend/index";
-import { useBalance, useIdentity, useAccounts, useDelegationType, useIsInitializing, useAuth, useAgent } from '@nfid/identitykit/react';
+import { useBalance, useIdentity, useAccounts, useDelegationType, useIsInitializing, useAuth } from '@nfid/identitykit/react';
 import {
     loginSuccess,
     logoutSuccess,
@@ -107,6 +107,10 @@ export const useAuthClient = () => {
             throw err;
         }
     };
+    
+    const signerId = localStorage.getItem("signerId");
+    
+
 
     return {
         isInitializing,
@@ -121,6 +125,7 @@ export const useAuthClient = () => {
         principal: user?.principal?.toText() || null,
         logout: handleLogout,
         fetchBalance,
+        signerId
     };
 };
 
