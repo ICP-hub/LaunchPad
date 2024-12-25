@@ -91,14 +91,14 @@ const TokenTransactions = ({ actor }) => {
             <button
               onClick={handlePreviousPage}
               disabled={start === 0}
-              className={`px-4 py-1 rounded ${start === 0 ? 'bg-black cursor-not-allowed' : ' bg-[#e35a42] hover:bg-[#ff4e2f]'}`}
+              className={`px-4 py-1 rounded ${start === 0 ? 'bg-black cursor-not-allowed' : ' bg-[#ed826f] hover:bg-[#ff4e2f]'}`}
             >
               <GrFormPreviousLink />
             </button>
             <button
               onClick={handleNextPage}
               disabled={!hasMore}
-              className={`px-4 py-1 rounded ${!hasMore ? 'bg-black cursor-not-allowed' : 'bg-[#e35a42] hover:bg-[#ff4e2f]'}`}
+              className={`px-4 py-1 rounded ${!hasMore ? 'bg-black cursor-not-allowed' : 'bg-[#ed826f] hover:bg-[#ff4e2f]'}`}
             >
               <GrFormNextLink />
             </button>

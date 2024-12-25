@@ -132,7 +132,7 @@ useEffect(() => {
         className=" bg-[#FFFFFF1A] cursor-pointer text-white p-1 pb-4 rounded-xl flex flex-col w-[340px] md:w-[375px] mt-14 mx-0 sm:mx-2"
       >
         {/* Main UI */}
-        <div className="h-[240px] rounded-lg py-5 flex flex-col">
+        <div className="h-[225px] rounded-lg py-5 flex flex-col">
           <div className="relative">
             <img
               src={tokenInfo?.token_image || person1}
@@ -164,7 +164,7 @@ useEffect(() => {
               {tokenInfo?.decimals ||  <Skeleton width={30} height={15}/> }
             </span>
           </div>
-          <div className="flex flex-col items-center bg-gradient-to-r from-[#1d1e22] via-[#25282d] to-[#1d1e22] rounded-lg p-4 shadow-lg w-[90%]">
+          <div className="flex mt-1 flex-col items-center bg-gradient-to-r from-[#1d1e22] via-[#25282d] to-[#1d1e22] rounded-lg p-4 shadow-lg w-[90%]">
             <span className="text-xs text-gray-300 tracking-wide">TOTAL SUPPLY</span>
             <span className="text-lg font-bold text-white">
               {Number(tokenInfo?.total_supply) ||  <Skeleton width={100} height={15}/> }

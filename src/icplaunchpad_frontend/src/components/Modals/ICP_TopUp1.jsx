@@ -63,7 +63,7 @@ const ICP_TopUp1 = ({
 
           {/* Header */}
           <h1 className="text-lg font-semibold my-6 text-center">
-            Which canisters would you like to top up?
+            Which canister would you like to top up?
           </h1>
 
           {/* Input Section */}
