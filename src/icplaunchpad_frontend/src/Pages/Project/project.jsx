@@ -4,8 +4,6 @@ import { FaFacebook, FaTwitter, FaDiscord } from "react-icons/fa";
 import { IoGlobeOutline } from "react-icons/io5";
 import { FaTelegram } from "react-icons/fa6";
 import { toast, Toaster } from "react-hot-toast";
-import { idlFactory } from "../../StateManagement/useContext/ledger.did.js";
-
 import person1 from "../../../assets/images/carousel/user.png";
 import ProjectTokenAbout from "./about/ProjectTokenAbout.jsx";
 import FAQsDiscussion from "./FAQsDiscussion/FAQsDiscussion.jsx";
@@ -188,7 +186,9 @@ const TokenPage = () => {
       owner: Principal.fromText(process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND),
       subaccount: [],
     };
-
+    const nowInMicroseconds = BigInt(Date.now()) * 1000n;
+    const expiresAtTimeInMicroseconds = nowInMicroseconds + BigInt(10 * 60 * 1_000_000); // 10 minutes later
+    const creationTimeInMicroseconds = nowInMicroseconds;  // Ensure BigInt here
     console.log('dh', BigInt(amount * 10 ** 8 + 1000))
     const icrc2_approve_args = {
       from_subaccount: [],
@@ -196,8 +196,8 @@ const TokenPage = () => {
       fee: [],
       memo: [],
       amount: BigInt(amount * 10 ** 8 + 100000),
-      created_at_time: [],
-      expected_allowance: [],
+      created_at_time: [creationTimeInMicroseconds],
+      expected_allowance: [expiresAtTimeInMicroseconds],
       expires_at: [],
     };
     console.log("icrc2_approve_args icrc2_approve_args 201:", icrc2_approve_args);

@@ -1,13 +1,18 @@
 #!/bin/bash
 
+# exec > deploy.log 2>&1
+
 set -a
 source .env
 set +a
 
-# Check if the controller identity exists, if not, create it
-if ! dfx identity list | grep -q "controller"; then
-  dfx identity new controller
-fi
+
+
+
+# # Check if the controller identity exists, if not, create it
+# if ! dfx identity list | grep -q "controller"; then
+#   dfx identity new controller
+# fi
 dfx identity use controller
 
 # Deploy the token_deployer canister with specified arguments
@@ -51,16 +56,16 @@ dfx deploy token_deployer --argument '(
 # Deploy the index canister with specified arguments
 dfx deploy index_canister --argument '(opt variant { Init = record { ledger_id = principal "aaaaa-aa"; retrieve_blocks_from_ledger_interval_seconds = opt 10 } })'
 
-# Check if the minter identity exists, if not, create it
-if ! dfx identity list | grep -q "minter"; then
-  dfx identity new minter
-fi
+# # Check if the minter identity exists, if not, create it
+# if ! dfx identity list | grep -q "minter"; then
+#   dfx identity new minter
+# fi
 dfx identity use minter
 
 # Set MINTER_ACCOUNT_ID only if not already set
-if [ -z "$MINTER_ACCOUNT_ID" ]; then
+# if [ -z "$MINTER_ACCOUNT_ID" ]; then
   export MINTER_ACCOUNT_ID=$(dfx ledger account-id)
-fi
+# fi
 
 # Switch back to the default identity and set DEFAULT_ACCOUNT_ID only if not already set
 dfx identity use default
@@ -106,22 +111,22 @@ candid-extractor target/wasm32-unknown-unknown/release/icplaunchpad_backend.wasm
 # Deploy the backend
 dfx deploy icplaunchpad_backend
 
-# Fabricate cycles for all local canisters
-CANISTER_IDS_FILE=".dfx/local/canister_ids.json"
+# # Fabricate cycles for all local canisters
+# CANISTER_IDS_FILE=".dfx/local/canister_ids.json"
 
-# Check if the file exists
-if [ ! -f "$CANISTER_IDS_FILE" ]; then
-  echo "Error: Canister IDs file not found at $CANISTER_IDS_FILE. Make sure dfx is initialized and canisters are deployed."
-  exit 1
-fi
+# # Check if the file exists
+# if [ ! -f "$CANISTER_IDS_FILE" ]; then
+#   echo "Error: Canister IDs file not found at $CANISTER_IDS_FILE. Make sure dfx is initialized and canisters are deployed."
+#   exit 1
+# fi
 
-# Extract and fabricate cycles for all canister IDs
-canister_ids=$(jq -r '.[].local' "$CANISTER_IDS_FILE")
-for canister_id in $canister_ids; do
-  echo "Fabricating cycles for canister: $canister_id"
-  dfx ledger fabricate-cycles --canister "$canister_id"
-done
+# # Extract and fabricate cycles for all canister IDs
+# canister_ids=$(jq -r '.[].local' "$CANISTER_IDS_FILE")
+# for canister_id in $canister_ids; do
+#   echo "Fabricating cycles for canister: $canister_id"
+#   dfx ledger fabricate-cycles --canister "$canister_id"
+# done
 
-echo "Cycle fabrication completed for all local canisters."
+# echo "Cycle fabrication completed for all local canisters."
 
-echo "run ./test_fairlaunch.sh to run an example successful fairlaunch."
+# echo "run ./test_fairlaunch.sh to run an example successful fairlaunch."

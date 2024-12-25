@@ -47,6 +47,7 @@ const VerifyToken = () => {
   );
   // console.log('ledger_canister_id verify', Principal.fromUint8Array(ledger_canister_id))
   const principal = useSelector((currState) => currState.internet.principal);
+  const { signerId } = useAuths();
 
   //  useBlocker(
   //   ({ action, location }) => {
@@ -229,8 +230,9 @@ const VerifyToken = () => {
             subaccount: [],
           };
 
-          const expiresAtTimeInMicroseconds = getExpirationTimeInMicroseconds(10);
-          const creationTimeInMicroseconds = timestampAgo(BigInt(Date.now()) * 1000n);
+          const nowInMicroseconds = BigInt(Date.now()) * 1000n;
+          const expiresAtTimeInMicroseconds = nowInMicroseconds + BigInt(10 * 60 * 1_000_000); // 10 minutes later
+          const creationTimeInMicroseconds = nowInMicroseconds;  // Ensure BigInt here
           const Amount = BigInt(Math.round(tokenApproved * 10 ** tokenData?.decimals));
           const feeAmount = BigInt(Math.round(0.0001 * 10 ** 8) + 10000);
 
@@ -256,6 +258,49 @@ const VerifyToken = () => {
         } catch (approvalError) {
           console.error("ICRC2 approval failed:", approvalError);
           toast.error("ICRC2 approval failed. Please check the network or parameters.");
+        }
+      }else{
+        if(signerId ==='Plug'){
+          try {
+            const ledgerActor = Actor.createActor(ledgerIDL, {
+              agent,
+              canisterId: ledger_canister_id.toText(),
+            });
+  
+            const spenderAccount = {
+              owner: Principal.fromText(process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND),
+              subaccount: [],
+            };
+  
+            const nowInMicroseconds = BigInt(Date.now()) * 1000n;
+            const expiresAtTimeInMicroseconds = nowInMicroseconds + BigInt(10 * 60 * 1_000_000); // 10 minutes later
+            const creationTimeInMicroseconds = nowInMicroseconds;  // Ensure BigInt here
+            const Amount = BigInt(Math.round(tokenApproved * 10 ** tokenData?.decimals));
+            const feeAmount = BigInt(Math.round(0.0001 * 10 ** 8) + 10000);
+  
+            const icrc2ApproveArgs = {
+              from_subaccount: [],
+              spender: spenderAccount,
+              fee: [Amount],
+              memo: [],
+              amount: feeAmount,
+              created_at_time: [creationTimeInMicroseconds],
+              expected_allowance: [feeAmount],
+              expires_at: [expiresAtTimeInMicroseconds],
+            };
+  
+            const approveResponse = await ledgerActor.icrc2_approve(icrc2ApproveArgs);
+            console.log("ICRC2 approve response:", approveResponse);
+  
+            if (approveResponse?.Err) {
+              throw new Error(`ICRC2 approval failed: ${approveResponse.Err}`);
+            }
+  
+            toast.success("ICRC2 approval successful.");
+          } catch (approvalError) {
+            console.error("ICRC2 approval failed:", approvalError);
+            toast.error("ICRC2 approval failed. Please check the network or parameters.");
+          }
         }
       }
        
