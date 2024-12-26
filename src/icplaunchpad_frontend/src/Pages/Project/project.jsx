@@ -30,7 +30,7 @@ const TokenPage = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 640);
   const location = useLocation();
   const { projectData } = location.state || {};
-  const { createCustomActor, principal } = useAuths();
+  const { createCustomActor, principal, signerId } = useAuths();
   const [saleParams, setSaleParams] = useState(null);
   const [ledgerActor, setLedgerActor] = useState(null);
   const [tokenOwnerInfo, setTokenOwnerInfo] = useState(null);
@@ -38,7 +38,7 @@ const TokenPage = () => {
   const [err, setErr] = useState("");
 
   const actor = useSelector((currState) => currState.actors.actor);
-  const { signerId } = useAuths();
+ 
 
   console.log("baclance at 35", tokenOwnerInfo)
   const [amount, setAmount] = useState(0);
