@@ -21,6 +21,7 @@ import { UserTokensInfoHandlerRequest } from "../../StateManagement/Redux/Reduce
 import { Actor } from "@dfinity/agent";
 import timestampAgo, { getExpirationTimeInMicroseconds } from "../../utils/timeStampAgo";
 import { useBlocker } from "../../common/NavigationBlocker";
+import { useAuths } from "../../StateManagement/useContext/useClient";
 
 
 const convertFileToBytes = async (file) => {

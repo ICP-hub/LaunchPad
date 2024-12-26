@@ -38,6 +38,7 @@ const TokenPage = () => {
   const [err, setErr] = useState("");
 
   const actor = useSelector((currState) => currState.actors.actor);
+  const { signerId } = useAuths();
 
   console.log("baclance at 35", tokenOwnerInfo)
   const [amount, setAmount] = useState(0);
@@ -169,6 +170,27 @@ const TokenPage = () => {
 
   console.log("ledger actor ", ledgerActor)
 
+
+  const handleTokenPurchase = async (actor, buyerDetails, sellArgs) => {
+    const purchaseResponse = await actor?.buy_tokens(buyerDetails);
+    console.log("Token Purchase Response:", purchaseResponse);
+
+    if (purchaseResponse?.Ok) {
+      toast.success("Token purchase successful!");
+
+      const sellResponse = await actor?.sell_tokens(sellArgs);
+      console.log("Sell Tokens Response:", sellResponse);
+
+      if (sellResponse?.Ok) {
+        toast.success("Sell transaction successful!");
+      } else {
+        throw new Error(`Sell transaction failed: ${sellResponse.Err}`);
+      }
+    } else {
+      throw new Error(`Buy tokens failed: ${purchaseResponse.Err}`);
+    }
+  };
+
   const handleTransaction = async () => {
     if (!amount || amount <= 0) {
       toast.error("Invalid amount. Please enter a valid value.");
@@ -176,86 +198,90 @@ const TokenPage = () => {
     }
 
     if (!projectData?.canister_id) {
-      toast.error("Missing required data to process the transaction.");
-      console.log(" authenticprojectData?.canister_idatedAgent 188", projectData?.canister_id)
+      toast.error("Missing required project data to process the transaction.");
+      console.log("Project Canister ID is missing:", projectData?.canister_id);
       return;
     }
-    setIsLoading(true);
 
-    const acc = {
+    const totalAmount = BigInt(amount * 10 ** 8);
+    const nowInMicroseconds = BigInt(Date.now()) * 1000n;
+    const expiresAtTimeInMicroseconds = nowInMicroseconds + BigInt(10 * 60 * 1_000_000); // 10 minutes later
+    const creationTimeInMicroseconds = nowInMicroseconds;
+
+    const spender = {
       owner: Principal.fromText(process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND),
       subaccount: [],
     };
-    const nowInMicroseconds = BigInt(Date.now()) * 1000n;
-    const expiresAtTimeInMicroseconds = nowInMicroseconds + BigInt(10 * 60 * 1_000_000); // 10 minutes later
-    const creationTimeInMicroseconds = nowInMicroseconds;  // Ensure BigInt here
-    console.log('dh', BigInt(amount * 10 ** 8 + 1000))
-    const icrc2_approve_args = {
+
+    const icrc2ApproveArgs = {
       from_subaccount: [],
-      spender: acc,
+      spender,
       fee: [],
       memo: [],
-      amount: BigInt(amount * 10 ** 8 + 100000),
+      amount: totalAmount + BigInt(100000),
       created_at_time: [creationTimeInMicroseconds],
       expected_allowance: [expiresAtTimeInMicroseconds],
       expires_at: [],
     };
-    console.log("icrc2_approve_args icrc2_approve_args 201:", icrc2_approve_args);
-    const totalamount = BigInt(amount * 10 ** 8);
 
-    console.log("Total amount:", totalamount);
+    const buyerDetails = {
+      buyer_principal: Principal.fromText(principal),
+      tokens: totalAmount,
+      icrc1_ledger_canister_id: Principal.fromText(projectData?.canister_id),
+    };
+
+    const sellArgs = {
+      tokens: totalAmount,
+      to_principal: Principal.fromText(principal),
+      token_ledger_canister_id: projectData?.canister_id,
+    };
+
+    setIsLoading(true);
+
     try {
-      const response = await ledgerActor?.icrc2_approve(icrc2_approve_args);
-      console.log("Response from payment approve", response);
+      if (process.env.DFX_NETWORK !== "ic") {
+        console.log("Processing transaction on local network...");
 
-      if (response && response.Ok) {
-        const byer = {
-          buyer_principal: Principal.fromText(principal),
-          tokens: totalamount,
-          icrc1_ledger_canister_id: Principal.fromText(projectData?.canister_id),
-        }
-        const finalOrderResponse = await actor?.buy_tokens(byer);
-        console.log("Final Order Response", finalOrderResponse);
-        // toast.success("Transaction successful!");
+        if (signerId === "Plug") {
+          console.log("Using Plug wallet...");
+          console.log("ICRC2 Approve Args:", icrc2ApproveArgs);
 
-        if (finalOrderResponse && finalOrderResponse?.Ok) {
-          toast.success("Token purchase successful!");
+          const approvalResponse = await ledgerActor?.icrc2_approve(icrc2ApproveArgs);
+          console.log("Approval Response:", approvalResponse);
 
-          const sellArgs = {
-            tokens: totalamount,
-            to_principal: Principal.fromText(principal),
-            token_ledger_canister_id: projectData?.canister_id,
-          };
-
-          const sellResponse = await actor?.sell_tokens(sellArgs);
-          console.log("Sell Tokens Response:", sellResponse);
-
-          if (sellResponse && sellResponse?.Ok) {
-            toast.success("Sell transaction successful!");
+          if (approvalResponse?.Ok) {
+            await handleTokenPurchase(actor, buyerDetails, sellArgs);
           } else {
-            console.error("Sell transaction failed:", sellResponse);
-            toast.error("Sell transaction failed. Please try again.");
+            throw new Error(`Approval failed: ${approvalResponse.Err}`);
           }
         } else {
-          console.error("Buy tokens failed:", finalOrderResponse);
-          toast.error("Token purchase failed. Please try again.");
+          console.log("Processing transaction without Plug wallet...");
+          await handleTokenPurchase(actor, buyerDetails, sellArgs);
         }
-
       } else {
-        console.error("Approval failed", response);
-        toast.error("Payment approval failed. Please check your wallet balance.");
+        console.log("Processing transaction on mainnet...");
+        console.log("ICRC2 Approve Args:", icrc2ApproveArgs);
+
+        const approvalResponse = await ledgerActor?.icrc2_approve(icrc2ApproveArgs);
+        console.log("Approval Response:", approvalResponse);
+
+        if (approvalResponse?.Ok) {
+          await handleTokenPurchase(actor, buyerDetails, sellArgs);
+        } else {
+          throw new Error(`Approval failed: ${approvalResponse.Err}`);
+        }
       }
-    } catch (err) {
-      console.error("Error during payment approval or token purchase", err);
+    } catch (error) {
+      console.error("Error during transaction processing:", error);
       toast.error("Payment process failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
-
   };
-  console.log('cover', projectData.cover_image)
-  return (
 
+  console.log('cover', projectData.cover_image)
+
+  return (
     <>
       <div className="flex flex-col  gap-5 max-w-[95%] mx-auto lg:flex-row">
         <div className={`bg-[#FFFFFF1A] rounded-lg  mt-24 pb-5`}>
