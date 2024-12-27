@@ -29,14 +29,17 @@ const ProfileCard = ({ profileModalIsOpen, setProfileModalIsOpen, formattedIcpBa
   }, [profile_ImgId]);
 
 
-  async function getProfileIMG() {
-    if (profile_ImgId) {
-      console.log('profile_iMGId', profile_ImgId)
-      const imageUrl = `${protocol}://${canisterId}.${domain}/f/${profile_ImgId.Ok}`;
-      setProfileImg(imageUrl);
-      console.log("userImg-", imageUrl);
-    }
+async function getProfileIMG(profile_ImgId) {
+  if (profile_ImgId?.Ok) { // Ensure profile_ImgId and Ok property are defined
+    console.log('profile_iMGId', profile_ImgId);
+    const imageUrl = `${protocol}://${canisterId}.${domain}/f/${profile_ImgId.Ok}`;
+    setProfileImg(imageUrl);
+    console.log("userImg-", imageUrl);
+  } else {
+    console.error("Invalid profile_ImgId:", profile_ImgId);
   }
+}
+
 
   const handleLogout = async () => {
     try {

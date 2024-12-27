@@ -286,7 +286,7 @@ const TokenPage = () => {
       <div className="flex flex-col  gap-5 max-w-[95%] mx-auto lg:flex-row">
         <div className={`bg-[#FFFFFF1A] rounded-lg  mt-24 pb-5`}>
           {!isMobile && (
-            <div className="h-[314px]">
+            <div className="max-h-[314px]">
               <div className="relative">
                 <img
                   src={projectData.cover_image ? projectData.cover_image : ProjectRectangleBg}
