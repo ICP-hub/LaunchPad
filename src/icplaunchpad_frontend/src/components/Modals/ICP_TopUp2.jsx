@@ -4,6 +4,7 @@ import { TfiClose } from "react-icons/tfi";
 import { Principal } from "@dfinity/principal";
 import { useSelector } from "react-redux";
 import { ThreeDots } from "react-loader-spinner";
+import AnimationButton from "../../common/AnimationButton";
 
 const ICP_TopUp2 = ({
   isTopUpModal2,
@@ -200,19 +201,14 @@ const ICP_TopUp2 = ({
           {/* Approve Button */}
           <button
             onClick={handleTopUpApprove}
-            className="w-full text-sm bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded-lg transition flex justify-center items-center focus:outline-none focus:ring focus:ring-green-300"
+            className="w-full text-sm  text-white font-bold py-2 rounded-lg transition flex justify-center items-center "
           >
-            {loading ? (
-              <ThreeDots
-                height="20"
-                width="35"
-                color="white"
-                ariaLabel="loading-indicator"
-              />
-            ) : (
-              "Approve Funds"
-            )}
+         
+           <AnimationButton text="Approve Funds" loading={loading} />
+            
           </button>
+
+          
 
           {/* Back Button */}
           <button

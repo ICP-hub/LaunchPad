@@ -51,12 +51,13 @@ const PoolInfoTab = ({ presaleData, poolData }) => {
     <div className="text-gray-300 p-6 rounded-lg w-full max-w-full">
        { !isLoading ? 
       <>
-      <div className="flex justify-between gap-1 mb-6">
+      <div className="flex justify-between gap-1 mb-4">
         <span>Address</span>
         <span className="border-b-2 overflow-hidden text-right">
           <CopyToClipboard address={poolData?.canister_id} />
         </span>
       </div>
+      <p className="text-xs mb-6">Do not send ICP to the token address</p>
       {/* Total Supply  */}
       <div className="border-t pt-4">
      

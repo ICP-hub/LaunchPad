@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Modal from "react-modal";
 import { TfiClose } from "react-icons/tfi";
+import AnimationButton from "../../common/AnimationButton";
 
 const ICP_TopUp1 = ({
   isTopUpModal1,
@@ -71,7 +72,7 @@ const ICP_TopUp1 = ({
             <textarea
               value={topUpCansiter}
               onChange={(e) => setTopUpCansiter(e.target.value)}
-              className="w-full border-b-2 bg-[#333333] text-white rounded-lg p-4 text-sm placeholder-gray-400 outline-none focus:ring-2 focus:ring-yellow-500 h-32 resize-none"
+              className="w-full border-b-2 bg-[#333333] text-white rounded-lg p-4 text-sm placeholder-gray-400 outline-none focus:ring-2 focus:ring-[#f09787]  h-32 resize-none"
               placeholder="Paste your canister ID here..."
             />
             {/* Error Message */}
@@ -79,13 +80,13 @@ const ICP_TopUp1 = ({
               <p className="text-center text-sm mt-3 text-red-600">{error}</p>
             )}
             {/* Continue Button */}
-            <button
-              disabled={!topUpCansiter || topUpCansiter.trim().length === 0}
+            <div
               onClick={handleTopUpModal2}
-              className="my-4 bg-yellow-500 text-black font-bold py-2 px-4 rounded-lg w-full hover:bg-yellow-600 transition focus:outline-none focus:ring focus:ring-yellow-400 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="my-4 "
             >
-              Continue
-            </button>
+               <AnimationButton text="Continue" isDisabled={!topUpCansiter || topUpCansiter.trim().length === 0} />
+            </div>
+          
           </div>
         </div>
       </Modal>

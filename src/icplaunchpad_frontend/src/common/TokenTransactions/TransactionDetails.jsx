@@ -1,5 +1,5 @@
 import React from 'react';
-import { formatDateForDateTimeLocal } from '../../utils/formatDateFromBigInt';
+import { formatDateForDateTimeLocalPeriod } from '../../utils/formatDateFromBigInt';
 import CopyToClipboard from '../CopyToClipboard';
 
 const TransactionDetails = ({ transaction, index }) => {
@@ -50,7 +50,7 @@ const TransactionDetails = ({ transaction, index }) => {
 </td>
 
       <td className="py-1 px-2 sm:px-0 overflow-x-scroll no-scrollbar text-center align-middle whitespace-nowrap" style={{ width: '25%' }}>
-        {formatDateForDateTimeLocal(transaction?.timestamp)}
+        {formatDateForDateTimeLocalPeriod(transaction?.timestamp)}
       </td>
     </tr>
   );

@@ -32,6 +32,8 @@ import ICP_TopUp2 from "../../components/Modals/ICP_TopUp2.jsx";
 import { fetchWithRetry } from "../../utils/fetchWithRetry";
 import Skeleton from "react-loading-skeleton";
 import TokenTransactions from "../../common/TokenTransactions/TokenTransactions";
+import { formatCycles } from "../../common/formatCycles";
+import UpdatePoolDate from "../../components/Modals/UpdatePoolDate";
 // import ICP_TopUp2 from "../../components/Modals/ICP_TopUp2.jsx";
 
 const TokenPage = () => {
@@ -40,6 +42,7 @@ const TokenPage = () => {
   const [sellType, setSellType] = useState('public');
   const [modalIsOpen, setIsOpen] = useState(false);
   const [tokenModalIsOpen, setTokenModalIsOpen] = useState(false)
+  const [PoolDateModalIsOpen,setPoolDateModalIsOpen]=useState(false)
   const [isTopUpModal1, setTopUpModal1] = useState(false)
   const [isTopUpModal2, setTopUpModal2] = useState(false)
   const [tokenPhase, setTokenPhase] = useState("UPCOMING");
@@ -321,7 +324,7 @@ const TokenPage = () => {
                   </div>
 
                   <div className=" flex justify-end items-center">
-                    <input className=" text-black w-24 xl:w-28 px-2  outline-none" readOnly value={balance} />
+                    <input className=" text-white bg-black h-full text-center w-24 xl:w-28 px-2  outline-none" readOnly value={formatCycles(balance)} />
                     <PiHandDepositFill onClick={handleTopUp} className="ml-2 h-7 w-7 cursor-pointer " />
                   </div>
 
@@ -367,7 +370,7 @@ const TokenPage = () => {
                   {`Softcap ${presaleData?.softcap} ICP `}
                 </div>
                 <div className=" flex justify-center mx-auto items-center">
-                  <input className=" text-black w-28 px-2 outline-none" readOnly value={balance} />
+                  <input className=" text-white bg-black h-full text-center w-28 px-2 outline-none" readOnly value={formatCycles(balance)} />
                   <PiHandDepositFill onClick={handleTopUp} className="ml-2 h-7 w-7 cursor-pointer " />
                 </div>
               </div>
@@ -456,7 +459,7 @@ const TokenPage = () => {
                 {/* Buttons */}
                 <div className="mx-auto flex  items-center justify-center ">
                   <button className="w-full text-white   bg-gradient-to-r from-[#f09787]  to-[#CACCF5] rounded-2xl p-[1.5px] h-[60px] mt-2 ">
-                    <div className='flex items-center bg-[#191919] text-[13px] ss2:text-[17px] justify-center  w-full h-full  rounded-2xl  '>
+                    <div onClick={()=>setPoolDateModalIsOpen(true)} className='flex items-center bg-[#191919] text-[13px] ss2:text-[17px] justify-center  w-full h-full  rounded-2xl  '>
                       POOL START/END TIME SETTING
                     </div>
                   </button>
@@ -628,7 +631,7 @@ const TokenPage = () => {
                 {/* Buttons */}
                 <div className="mx-auto flex  items-center justify-center ">
                   <button className="w-full text-white  bg-gradient-to-r from-[#f09787]  to-[#CACCF5] rounded-3xl p-[1.5px] h-[40px] mt-2 ">
-                    <div className='flex items-center bg-[#191919] justify-center  w-full h-full  rounded-3xl  '>
+                    <div onClick={()=>setPoolDateModalIsOpen(true)} className='flex items-center bg-[#191919] justify-center  w-full h-full  rounded-3xl  '>
                       POOL START/END TIME SETTING
                     </div>
                   </button>
@@ -644,8 +647,10 @@ const TokenPage = () => {
                   </div>
                 </button>
               </div>
-            </div>
+              
+            </div>   
           )}
+          {tokenData && <UpdatePoolDate ledgerId={tokenData.canister_id} setRenderComponent={setRenderComponent} PoolDateModalIsOpen={PoolDateModalIsOpen} setPoolDateModalIsOpen={setPoolDateModalIsOpen}  /> }
 
         </div>
         {isMobile && <MobileViewTab actor={ledgerActor} poolData={tokenData ? tokenData : ''} presaleData={presaleData} />}

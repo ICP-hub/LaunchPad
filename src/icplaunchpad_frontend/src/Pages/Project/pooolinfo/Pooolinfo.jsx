@@ -25,10 +25,11 @@ const AffiliateProgram = ({ poolData, presaleData }) => {
       {!isLoading ?
         <>
           {/* Pool Address */}
-          <div className="flex justify-between gap-1 mb-6">
+          <div className="flex justify-between gap-1 mb-4">
             <span>Address</span>
             <span className="border-b-2 overflow-hidden text-right"> <CopyToClipboard address={poolData?.canister_id} /> </span>
           </div>
+          <p className="text-xs mb-6">Do not send ICP to the token address</p>
 
           {/* Pool Information */}
           <div className="border-t pt-4 space-y-2">

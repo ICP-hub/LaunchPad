@@ -58,3 +58,35 @@ export const formatDateForDateTimeLocal = (bigIntTime) => {
 
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 };
+
+
+export const formatDateForDateTimeLocalPeriod = (bigIntTime) => {
+  if (!bigIntTime) return;
+  
+  // Parse the timestamp as a BigInt
+  const timestampBigInt = BigInt(bigIntTime);
+
+  // Determine if timestamp is in seconds or nanoseconds
+  const secondsTimestamp = timestampBigInt > 1_000_000_000_000n 
+      ? timestampBigInt / 1_000_000_000n  // Nanoseconds to seconds
+      : timestampBigInt;                  // Already in seconds
+
+  // Convert to milliseconds and add IST offset (5 hours and 30 minutes)
+  const date = new Date(Number(secondsTimestamp) * 1000 + (5 * 60 + 30) * 60 * 1000);
+
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(date.getUTCDate()).padStart(2, '0');
+
+  let hours = date.getUTCHours();
+  const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+
+  // Determine AM or PM
+  const period = hours >= 12 ? 'PM' : 'AM';
+  
+  // Convert hours to 12-hour format
+  hours = hours % 12 || 12; // Convert 0 to 12 for 12 AM
+  hours = String(hours).padStart(2, '0');
+
+  return `${year}-${month}-${day}, ${hours}:${minutes} ${period}`;
+};
