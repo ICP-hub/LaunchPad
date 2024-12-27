@@ -4,8 +4,17 @@ import FundList from '../components/HomePageComponent/FundList';
 // import Carousel from '../components/HomePageComponent/Carousel';
 import Hero from '../components/HomePageComponent/Hero';
 import UpcomingSales from '../components/HomePageComponent/UpcomingSales';
+import { SuccessfulSalesHandlerRequest } from '../StateManagement/Redux/Reducers/SuccessfulSales';
+import { upcomingSalesHandlerRequest } from '../StateManagement/Redux/Reducers/UpcomingSales';
+import { useDispatch } from 'react-redux';
 
 function Home() {
+const dispatch=useDispatch()
+
+  useEffect(()=>{
+    dispatch(upcomingSalesHandlerRequest())
+    dispatch(SuccessfulSalesHandlerRequest())
+  },[])
 
 
   const upcomingSalesRef = useRef(null);

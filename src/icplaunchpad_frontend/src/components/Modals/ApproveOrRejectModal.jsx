@@ -1,34 +1,49 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { TfiClose } from 'react-icons/tfi';
 import Modal from 'react-modal';
 import { IoWarningOutline } from "react-icons/io5";
 
-const ApproveOrRejectModal = ({ handleAction, ModalIsOpen, setModalIsOpen,amount, ledgerPrincipal }) => {
-  const closeModal = () => setModalIsOpen(false);
-  const approvalFee=0.0001;
-  
-  const handleApprove =()=>{
-    if(amount > 0){
-    handleAction();
+const ApproveOrRejectModal = ({ handleAction, ModalIsOpen, setModalIsOpen, amount, ledgerPrincipal }) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const approvalFee = 0.0001;
+
+  const closeModal = () => {
+    setIsVisible(false);
+    setTimeout(() => setModalIsOpen(false), 300); // Match transition duration
+  };
+
+  const handleApprove = () => {
+    if (amount > 0) {
+      handleAction();
     }
     closeModal();
-  }
+  };
 
-  const handleReject =()=>{
+  const handleReject = () => {
     closeModal();
-  }
+  };
+
+  useEffect(() => {
+    if (ModalIsOpen) {
+      setIsVisible(true);
+    }
+  }, [ModalIsOpen]);
 
   return (
     <div className="absolute">
-    <Modal
-      isOpen={ModalIsOpen}
-      onRequestClose={closeModal}
-      contentLabel="Approve or Reject Modal"
-      className="flex items-center justify-center bg-transparent outline-none"
-      overlayClassName="fixed inset-0 z-50 bg-black bg-opacity-50"
-      ariaHideApp={false}
-    >
-      <div className="bg-[#222222] p-6 rounded-2xl text-white w-[90%] max-w-[786px] max-h-[90vh] overflow-y-auto relative">
+      <Modal
+        isOpen={ModalIsOpen}
+        onRequestClose={closeModal}
+        contentLabel="Approve or Reject Modal"
+        className="flex items-center justify-center bg-transparent outline-none"
+        overlayClassName="fixed inset-0 z-50 bg-black bg-opacity-50 transition-opacity duration-300"
+        ariaHideApp={false}
+      >
+        <div
+          className={`bg-[#222222] p-6 rounded-2xl text-white w-[90%] max-w-[786px] max-h-[90vh] overflow-y-auto relative transform transition-all duration-300 ${
+            isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+          }`}
+        >
         {/* Header Section */}
         <div className="bg-[#FFFFFF4D] px-4 py-2 mb-4 rounded-xl relative">
           <button

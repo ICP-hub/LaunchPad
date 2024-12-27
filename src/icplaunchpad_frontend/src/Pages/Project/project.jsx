@@ -19,7 +19,7 @@ import { useAuths } from "../../StateManagement/useContext/useClient.jsx";
 import { useAgent, useIdentityKit } from "@nfid/identitykit/react";
 import { Actor } from "@dfinity/agent";
 import RaisedFundProgress from "../../common/RaisedFundProgress.jsx";
-import ApproveOrRejectModal from "../../common/ApproveOrRejectModal.jsx";
+import ApproveOrRejectModal from "../../components/Modals/ApproveOrRejectModal.jsx";
 import Skeleton from "react-loading-skeleton";
 import TokenTransactions from "../../common/TokenTransactions/TokenTransactions";
 import { useSelector } from "react-redux";
@@ -294,10 +294,12 @@ const TokenPage = () => {
                   alt=""
                 />
                 <img
-                  src={projectData ? projectData.token_image : person1}
-                  className="absolute top-0 left-[50%] transform -translate-x-1/2 -translate-y-[35%] rounded-full h-[130px] md:min-h-[177px] object-cover w-[130px]  md:w-[177px]"
-                  alt="token pic"
+                  src={projectData.token_image || person1} // Show person1 as a fallback if tokenImg is not available yet
+                  className="absolute  top-0 left-[50%] transform -translate-x-1/2 -translate-y-[35%] rounded-full object-cover   h-[130px] w-[130px]"
+                  alt="Profile Picture"
+                  draggable="false"
                 />
+                
               </div>
               <div className="content-div font-posterama flex justify-between w-[90%] m-auto mt-7 ">
                 <div className="left flex flex-col gap-4">
@@ -334,7 +336,7 @@ const TokenPage = () => {
             <div className="h-[314px] bg-[#181818] rounded-lg py-5 flex flex-col">
               <div className="relative">
                 <img
-                  src={projectData ? projectData.token_image : person1}
+                   src={projectData.token_image || person1}
                   className="absolute top-0 left-[50%] transform -translate-x-1/2 -translate-y-[50%] object-cover rounded-full h-[130px] w-[130px] md:min-h-[177px] md:min-w-[177px]"
                   alt=""
                 />
