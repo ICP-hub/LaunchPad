@@ -13,6 +13,7 @@ import { handleActorRequest } from "./StateManagement/Redux/Reducers/actorBindRe
 import { useAgent, useBalance, useIdentity } from "@nfid/identitykit/react";
 import { Principal } from "@dfinity/principal";
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
+import { useAuths } from "./StateManagement/useContext/useClient";
 
 function App() {
   const actor = useSelector((currState) => currState.actors.actor);
@@ -29,7 +30,9 @@ function App() {
 //   console.log("is principal", principal)
 //   console.log("is userData", userData)
   const dispatch = useDispatch();
-  const identity = useIdentity()
+  // const identity = useIdentity()
+
+  const {identity}=useAuths()
 
 
   const { balance,  fetchBalance } = useBalance()

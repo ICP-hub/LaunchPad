@@ -6,9 +6,11 @@ import ConnectWallets from '../components/Modals/ConnectWallets.jsx'
 import infinite from '../../assets/images/icons/infinite.png';
 import id from '../../assets/images/icons/id.png';
 import plug from '../../assets/images/icons/plug.png';
+import { useAuths } from '../StateManagement/useContext/useClient';
 
 const ConnectFirst = () => {
 
+  const {login}=useAuths()
   const [modalIsOpen, setIsOpen] = useState(false);
 
    // Render wallet options as buttons
@@ -26,6 +28,9 @@ const ConnectFirst = () => {
     </div>
   );
 
+  const handleLogin = (type)=>{
+    login(type);
+}
   
   const openModal = () => {
     setIsOpen(true);
