@@ -25,12 +25,12 @@ const ProfileCard = ({ profileModalIsOpen, setProfileModalIsOpen, formattedIcpBa
   }, [profileModalIsOpen]);
 
   useEffect(() => {
-    getProfileIMG();
+    getProfileIMG(profile_ImgId);
   }, [profile_ImgId]);
 
 
 async function getProfileIMG(profile_ImgId) {
-  if (profile_ImgId?.Ok) { // Ensure profile_ImgId and Ok property are defined
+  if (profile_ImgId.Ok) { // Ensure profile_ImgId and Ok property are defined
     console.log('profile_iMGId', profile_ImgId);
     const imageUrl = `${protocol}://${canisterId}.${domain}/f/${profile_ImgId.Ok}`;
     setProfileImg(imageUrl);
