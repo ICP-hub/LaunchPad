@@ -19,10 +19,11 @@ import { useAuths } from "../../StateManagement/useContext/useClient";
 import { ConnectWallet, useBalance, useIdentityKit } from "@nfid/identitykit/react";
 import person1 from "../../../assets/images/carousel/user.png"
 import Skeleton from "react-loading-skeleton";
-const ConnectBtn = ({ onClick }) => (
+
+const ConnectBtn = ({ handleLogin }) => (
 
   <button
-    onClick={onClick}
+    onClick={handleLogin}
     className="w-[120px] md:w-[150px] lg:w-[190px] h-[25px] lg:h-[32px] 
         dxl:h-[35px] text-[10px] md:text-[15px] dlg:text-[19px] font-[400] items-center justify-center  rounded-xl p-[1.5px] bg-gradient-to-r from-[#f09787]  to-[#CACCF5]"
   >
@@ -53,7 +54,7 @@ const Header = () => {
   const canisterId = process.env.CANISTER_ID_IC_ASSET_HANDLER;
   const [profileImg, setProfileImg] = useState();
 
-  const { isAuthenticated, principal } = useAuths();
+  const { isAuthenticated, principal,handleLogin } = useAuths();
   const actor = useSelector((currState) => currState.actors.actor);
   const userData = useSelector((state) => state?.userData?.data);
   const navigate = useNavigate();
@@ -369,10 +370,11 @@ const handleSearchedToken = async (data) => {
         {!isAuthenticated && (
           <div className="hidden font-posterama md:block">
 
-            <ConnectWallet
+            {/* <ConnectWallet
               connectButtonComponent={ConnectBtn}
               className="rounded-full bg-black"
-            />
+            /> */}
+            <ConnectBtn handleLogin={handleLogin}/>
           </div>
         )}
 

@@ -19,6 +19,9 @@ function App() {
   const isAuthenticated = useSelector(
     (currState) => currState.internet.isAuthenticated
   );
+  const identity = useSelector(
+    (currState) => currState.internet.identity
+  );
   const principal = useSelector((currState) => currState.internet.principal);
   const userData = useSelector((state) => state?.userData?.data);
     const [isUserRegistered, setUserRegister] = useState(null);
@@ -29,24 +32,24 @@ function App() {
 //   console.log("is principal", principal)
 //   console.log("is userData", userData)
   const dispatch = useDispatch();
-  const identity = useIdentity()
+  // const identity = useIdentity()
 
 
   const { balance,  fetchBalance } = useBalance()
 
-  const fetchDataSequentially = async () => {
-    if (isAuthenticated && identity) {
-      try {
-         dispatch(handleActorRequest({ identity }));
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    }
-  };
-
-  useEffect(() => {
-    fetchDataSequentially();
-  }, [isAuthenticated, identity, dispatch]);
+  // const fetchDataSequentially = async () => {
+  //   if (isAuthenticated && identity) {
+  //     try {
+  //        dispatch(handleActorRequest({ identity }));
+  //     } catch (error) {
+  //       console.error('Error fetching data:', error);
+  //     }
+  //   }
+  // };
+             
+  // useEffect(() => {
+  //   fetchDataSequentially();
+  // }, [isAuthenticated, identity, dispatch]);
 
   const fetchBalanceData = () => {
     dispatch(userRegisteredHandlerRequest());
