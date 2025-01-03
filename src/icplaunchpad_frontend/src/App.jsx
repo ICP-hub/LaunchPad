@@ -9,8 +9,8 @@ import { upcomingSalesHandlerRequest } from "./StateManagement/Redux/Reducers/Up
 import { SuccessfulSalesHandlerRequest } from "./StateManagement/Redux/Reducers/SuccessfulSales";
 import { UserTokensInfoHandlerRequest } from "./StateManagement/Redux/Reducers/UserTokensInfo";
 import { loginStart } from "./StateManagement/Redux/Reducers/InternetIdentityReducer";
-import { handleActorRequest } from "./StateManagement/Redux/Reducers/actorBindReducer";
-import { useAgent, useBalance, useIdentity } from "@nfid/identitykit/react";
+import { initActor } from "./StateManagement/Redux/Reducers/actorBindReducer";
+// import { useAgent, useBalance, useIdentity } from "@nfid/identitykit/react";
 import { Principal } from "@dfinity/principal";
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 
@@ -22,34 +22,27 @@ function App() {
   const identity = useSelector(
     (currState) => currState.internet.identity
   );
+const canisterID = process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND;
+
   const principal = useSelector((currState) => currState.internet.principal);
   const userData = useSelector((state) => state?.userData?.data);
-    const [isUserRegistered, setUserRegister] = useState(null);
-  
-  // console.log('user',userData)
-//  console.log("is authentication", isAuthenticated)
-  console.log("is actor", actor)
-//   console.log("is principal", principal)
-//   console.log("is userData", userData)
   const dispatch = useDispatch();
-  // const identity = useIdentity()
 
+  console.log("is actor", actor)
 
-  const { balance,  fetchBalance } = useBalance()
-
-  // const fetchDataSequentially = async () => {
-  //   if (isAuthenticated && identity) {
-  //     try {
-  //        dispatch(handleActorRequest({ identity }));
-  //     } catch (error) {
-  //       console.error('Error fetching data:', error);
-  //     }
-  //   }
-  // };
+  const fetchDataSequentially = async () => {
+    if (isAuthenticated  && canisterID) {
+      try {
+         dispatch(initActor({canisterID}));
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    }
+  };
              
-  // useEffect(() => {
-  //   fetchDataSequentially();
-  // }, [isAuthenticated, identity, dispatch]);
+  useEffect(() => {
+    fetchDataSequentially();
+  }, [isAuthenticated, dispatch]);
 
   const fetchBalanceData = () => {
     dispatch(userRegisteredHandlerRequest());

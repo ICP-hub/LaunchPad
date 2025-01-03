@@ -2,15 +2,15 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialActorState = {
   actor: null,
+  isLoading: false,
   error: null,
-  isLoading: false, // Added for tracking loading state
 };
 
 const actorSlice = createSlice({
   name: 'actors',
   initialState: initialActorState,
   reducers: {
-    handleActorRequest: (state) => {
+    initActor: (state, action) => {
       state.isLoading = true;
       state.error = null;
     },
@@ -31,6 +31,6 @@ const actorSlice = createSlice({
   },
 });
 
-export const { setActor, actorError, removeActor, handleActorRequest } =
-  actorSlice.actions;
+export const { initActor, setActor, removeActor, actorError } = actorSlice.actions;
+
 export default actorSlice.reducer;

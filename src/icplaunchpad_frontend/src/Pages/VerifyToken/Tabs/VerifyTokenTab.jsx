@@ -3,14 +3,14 @@ import React, { useEffect, useRef, useState } from "react";
 import { Principal } from "@dfinity/principal";
 import { useAuths } from "../../../StateManagement/useContext/useClient";
 import CopyToClipboard from "../../../common/CopyToClipboard";
-import { useAgent } from "@nfid/identitykit/react";
+// import { useAgent } from "@nfid/identitykit/react";
 import { fetchWithRetry } from "../../../utils/fetchWithRetry";
 import Skeleton from "react-loading-skeleton";
 
 const VerifyTokenTab = ({ register, errors, setTokenData, watch, ledger_canister_id, tokenData }) => {
   const [tokenInfo, setTokenInfo] = useState(null);
   const { createCustomActor } = useAuths();
-  const agent = useAgent()
+  // const agent = useAgent()
 
   // console.log('ledger_canister_id',ledgerPrincipalId.toText()); 
   useEffect(() => {

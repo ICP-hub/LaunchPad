@@ -16,7 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import UpdateUser from "../Modals/UpdateUser";
 import { userRegisteredHandlerRequest } from "../../StateManagement/Redux/Reducers/userRegisteredData";
 import { useAuths } from "../../StateManagement/useContext/useClient";
-import { ConnectWallet, useBalance, useIdentityKit } from "@nfid/identitykit/react";
+// import { ConnectWallet, useBalance, useIdentityKit } from "@nfid/identitykit/react";
 import person1 from "../../../assets/images/carousel/user.png"
 import Skeleton from "react-loading-skeleton";
 import { loginStart } from "../../StateManagement/Redux/Reducers/InternetIdentityReducer";
@@ -66,7 +66,8 @@ const Header = () => {
   const userData = useSelector((state) => state?.userData?.data);
   const navigate = useNavigate();
   const profile_ImgId = useSelector((state) => state?.ProfileImageID?.data)
-  const { balance, fetchBalance } = useBalance()
+  // const { balance, fetchBalance } = useBalance()
+  const balance=0
   const dispatch=useDispatch();
 
   useEffect(() => {

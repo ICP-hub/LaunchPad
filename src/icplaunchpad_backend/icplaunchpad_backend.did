@@ -119,7 +119,7 @@ service : () -> {
   create_account : (UserAccount) -> (Result_2);
   create_sale : (principal, SaleInputParams) -> (Result_3);
   create_token : (UserInputParams) -> (Result_4);
-  deposit_cycles_to_canister : (CanisterIdRecord, nat) -> (Result_5);
+  deposit_cycles : (CanisterIdRecord, nat) -> (Result_5);
   fee_for_creation_token : () -> (float64) query;
   fetch_canister_balance : (principal) -> (Result_6);
   fetch_canister_balance_new : (principal) -> (Result_6);
@@ -143,7 +143,6 @@ service : () -> {
   get_user_tokens_info : () -> (Result_13) query;
   icrc10_supported_standards : () -> (vec SupportedStandard) query;
   icrc28_trusted_origins : () -> (Icrc28TrustedOriginsResponse);
-  icrc_get_balance : (principal) -> (Result_6);
   import_token : (principal, opt principal) -> (Result_16);
   insert_funds_raised : (principal, nat64) -> (Result);
   is_account_created : () -> (Result_16) query;

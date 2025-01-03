@@ -55,52 +55,60 @@ import {
   loginFailure,
   logoutStart,
   logoutSuccess,
+  logoutFailure,
 } from '../Reducers/InternetIdentityReducer';
 
-// Generator function to handle login
-function* login() {
+// Login Saga
+function* handleLoginSaga() {
   try {
-    // Access `handleLogin` from `authFunctions`
     const handleLogin = window.authFunctions?.handleLogin;
 
-    if (!handleLogin) {
-      throw new Error("handleLogin function is not available. Ensure AuthProvider is set up correctly.");
+    if (typeof handleLogin !== 'function') {
+      throw new Error("Auth function 'handleLogin' is not available or not a function.");
     }
+      const { isAuthenticated, identity, principal } = yield call(handleLogin);
 
-    // Call the `handleLogin` function
-    yield call(handleLogin);
+      if (!isAuthenticated || !identity || !principal) {
+          throw new Error("Login process failed: Missing required data.");
+      }
 
-    // Dispatch the login success action
-    yield put(loginSuccess());
+      // Dispatch login success
+      yield put(
+          loginSuccess({
+              isAuthenticated,
+              identity,
+              principal,
+          })
+      );
   } catch (error) {
-    // Dispatch the login failure action with error message
-    yield put(loginFailure(error.message || 'An error occurred during login.'));
+      console.error("Error in handleLoginSaga:", error.message || error);
+      yield put(loginFailure(error.message || "Login process failed."));
   }
 }
 
-// Generator function to handle logout
-function* logout() {
+
+
+// Logout Saga
+function* handleLogoutSaga() {
   try {
-    // Access `handleLogout` from `authFunctions`
     const handleLogout = window.authFunctions?.handleLogout;
 
     if (!handleLogout) {
-      throw new Error("handleLogout function is not available. Ensure AuthProvider is set up correctly.");
+      throw new Error("Auth function 'handleLogout' is not available.");
     }
 
-    // Call the `handleLogout` function
+    // Trigger logout process
     yield call(handleLogout);
 
-    // Dispatch the logout success action
     yield put(logoutSuccess());
   } catch (error) {
-    // Dispatch the logout failure action with error message
-    yield put(loginFailure(error.message || 'An error occurred during logout.'));
+    console.error('Error in handleLogoutSaga:', error.message);
+    yield put(logoutFailure(error.message || 'Logout process failed.'));
   }
 }
 
-// Watcher saga to listen for login and logout actions
+// Watcher saga
 export function* internetIdentitySaga() {
-  yield takeLatest(loginStart().type, login);
-  yield takeLatest(logoutStart().type, logout);
+  yield takeLatest(loginStart().type, handleLoginSaga);
+  yield takeLatest(logoutStart().type, handleLogoutSaga);
 }

@@ -16,7 +16,7 @@ import { Principal } from "@dfinity/principal";
 import SaleStart from "../OwnerSection/SaleStart.jsx";
 import { getSocialLogo } from "../../common/getSocialLogo.jsx";
 import { useAuths } from "../../StateManagement/useContext/useClient.jsx";
-import { useAgent, useIdentityKit } from "@nfid/identitykit/react";
+// import { useAgent, useIdentityKit } from "@nfid/identitykit/react";
 import { Actor } from "@dfinity/agent";
 import RaisedFundProgress from "../../common/RaisedFundProgress.jsx";
 import ApproveOrRejectModal from "../../components/Modals/ApproveOrRejectModal.jsx";
@@ -43,8 +43,8 @@ const TokenPage = () => {
   console.log("baclance at 35", tokenOwnerInfo)
   const [amount, setAmount] = useState(0);
   console.log("amount")
-  const authenticatedAgent = useAgent()
-  console.log("agent project", authenticatedAgent)
+  // const authenticatedAgent = useAgent()
+  // console.log("agent project", authenticatedAgent)
   const [isLoading, setIsLoading] = useState(false);
 
   // Utility function for retrying API calls

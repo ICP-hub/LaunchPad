@@ -12,23 +12,15 @@ const internetIdentitySlice = createSlice({
   name: 'internet',
   initialState,
   reducers: {
-    checkLoginOnStart: (state) => {
-      state.loading = true;
-      state.error = null;
-    },
     loginStart: (state) => {
       state.loading = true;
       state.error = null;
     },
     loginSuccess: (state, action) => {
-      const {
-        isAuthenticated = false,
-        identity = null,
-        principal = null,
-      } = action.payload || {};
-      state.isAuthenticated = isAuthenticated;
-      state.identity = identity;
-      state.principal = principal;
+      const { isAuthenticated, identity, principal } = action.payload || {};
+      state.isAuthenticated = isAuthenticated || false;
+      state.identity = identity || null;
+      state.principal = principal || null;
       state.loading = false;
       state.error = null;
     },
@@ -55,7 +47,6 @@ const internetIdentitySlice = createSlice({
 });
 
 export const {
-  checkLoginOnStart,
   loginStart,
   loginSuccess,
   loginFailure,

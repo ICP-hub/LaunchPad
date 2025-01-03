@@ -127,9 +127,9 @@ import infinite from '../../../assets/images/icons/infinite.png';
 import id from '../../../assets/images/icons/id.png';
 import plug from '../../../assets/images/icons/plug.png';
 
-import {
-  ConnectWallet,
-} from "@nfid/identitykit/react";
+// import {
+//   ConnectWallet,
+// } from "@nfid/identitykit/react";
 
 // Custom Button component
 const ConnectBtn = ({ onClick }) => (
@@ -172,10 +172,10 @@ const ConnectWallets = ({ modalIsOpen, setModalIsOpen }) => {
           <div className="w-[90%] mx-auto mt-5 flex flex-col pt-5 justify-center">
            
 
-            <ConnectWallet
+            {/* <ConnectWallet
               connectButtonComponent={ConnectBtn}
               className="rounded-full bg-black"
-            />
+            /> */}
           </div>
         </div>
       </Modal>
