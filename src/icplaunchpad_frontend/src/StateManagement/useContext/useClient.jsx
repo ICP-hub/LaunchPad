@@ -7,6 +7,7 @@ import { idlFactory } from "../../../../declarations/icplaunchpad_backend/index"
 
 const AuthContext = createContext();
 const canisterID = process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND;
+console.log()
 
 export const useAuthClient = () => {
     const dispatch = useDispatch();
@@ -29,6 +30,7 @@ export const useAuthClient = () => {
     };
 
     const handleLogin = async () => {
+     
         try {
             validateEnvVariables();
 
@@ -79,7 +81,7 @@ export const useAuthClient = () => {
             setIsLoading(false);
         }
     };
-
+    
     const handleLogout = async () => {
         try {
             setIdentity(null);
