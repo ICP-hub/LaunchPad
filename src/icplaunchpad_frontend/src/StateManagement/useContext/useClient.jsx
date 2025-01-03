@@ -32,7 +32,7 @@ export const useAuthClient = () => {
         try {
             validateEnvVariables();
 
-            if (!window.ic?.plug) {
+            if (!window?.ic?.plug) {
                 alert("Plug Wallet extension not detected. Please install.");
                 return;
             }
@@ -41,19 +41,19 @@ export const useAuthClient = () => {
 
             const whitelist = [canisterID];
             console.log("Connecting with whitelist:", whitelist);
-            const isConnected = await window.ic.plug.requestConnect({ whitelist, host: HOST });
+            const isConnected = await window?.ic?.plug?.requestConnect({ whitelist, host: HOST });
 
             if (!isConnected) {
                 throw new Error("User denied Plug connection.");
             }
 
-            const plugPrincipal = await window.ic.plug.agent.getPrincipal();
-            const plugAgent = window.ic.plug.agent;
+            const plugPrincipal = await window?.ic?.plug?.agent.getPrincipal();
+            const plugAgent = window?.ic?.plug?.agent;
 
             console.log("Plug Principal:", plugPrincipal.toText());
             console.log("Plug Agent:", plugAgent);
 
-            const backendActor = await window.ic.plug.createActor({
+            const backendActor = await window?.ic?.plug.createActor({
                 canisterId: canisterID,
                 interfaceFactory: idlFactory,
             });
@@ -102,7 +102,7 @@ export const useAuthClient = () => {
                 throw new Error("Canister ID is required.");
             }
 
-            const actor = await window.ic.plug.createActor({
+            const actor = await window?.ic?.plug.createActor({
                 canisterId,
                 interfaceFactory: ledgerIDL,
             });
@@ -133,7 +133,12 @@ export const AuthProvider = ({ children }) => {
         return <div>Connecting to Plug Wallet...</div>;
     }
 
+    // Expose auth functions for non-React usage (like Redux Saga)
+    window.authFunctions = {
+        handleLogin: auth.handleLogin,
+        handleLogout: auth.logout,
+    };
+
     return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
 };
-
 export const useAuths = () => useContext(AuthContext);
