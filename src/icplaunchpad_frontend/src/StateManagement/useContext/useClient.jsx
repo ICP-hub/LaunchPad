@@ -68,6 +68,9 @@ export const useAuthClient = () => {
                 interfaceFactory: idlFactory,
             });
     
+        //     const stats = await backendActor?.is_account_created();
+        //   console.log('backendActor stats', stats);
+
             // Update React states
             setPrincipal(plugPrincipal.toText());
             setIsAuthenticated(true);
