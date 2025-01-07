@@ -72,7 +72,9 @@ const CreatePreLaunch = () => {
     try {
       if (ledgerCanisterId ) {
         const customActor = await createCustomActor(ledgerCanisterId);
-        if (customActor) {
+        const custoIndexmActor = await createCustomActor(indexCanisterId);
+
+        if (customActor && custoIndexmActor) {
           const ledgerPrincipal = Principal.fromText(ledgerCanisterId);
           const indexPrincipal = (showIndexInput && indexCanisterId) ? [Principal.fromText(indexCanisterId)] : [] ;
           console.log('ledgerPrincipal',ledgerPrincipal, '  ','indexPrincipal',indexPrincipal) 
@@ -81,7 +83,7 @@ const CreatePreLaunch = () => {
           console.log('Import response: ', response);
           if (!response?.Err) {
             navigate('/verify-token', {
-              state: { ledger_canister_id: ledgerCanisterId },
+              state: { ledger_canister_id: ledgerCanisterId , index_canister_id: indexCanisterId },
             });
           } else {
             setError('Token has already been imported');
