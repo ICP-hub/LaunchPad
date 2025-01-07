@@ -81,9 +81,7 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
   const { signerId } = useAuths();
 
   const agent = useAgent()
-  const accounts = useAccounts()
-
-  console.log('accounts',accounts)
+  
 
 
   // React Hook Form setup
@@ -108,7 +106,7 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
     setTimeout(() => setIsOpen(false), 300); // Match transition duration
     reset();
   };
-  console.log('BigInt(1 * 10 ** 18)',BigInt(1 * 10 ** 18))
+ 
 
   const [fee, setFee] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -258,8 +256,9 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
                 subaccount: [],
             };
 
-            const nowInNanoseconds = BigInt(Date.now()) * 1_000_000n;
-            const expiresAtInNanoseconds = nowInNanoseconds + BigInt(10 * 60 * 1_000_000_000); // 10 minutes later
+            const nowInMicroseconds = BigInt(Date.now()) * 1000n;
+            const expiresAtTimeInMicroseconds = nowInMicroseconds + BigInt(10 * 60 * 1_000_000); // 10 minutes later
+            const creationTimeInMicroseconds = nowInMicroseconds; 
             const feeAmount = BigInt(0.0001 * 10 ** 8+ 10000); 
             const Amount = BigInt(Math.round(fee * 10 ** 8) + 10000); 
 
@@ -269,6 +268,8 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
                 fee: [],
                 memo: [], 
                 amount: feeAmount, 
+                expires_at: [expiresAtTimeInMicroseconds],
+                created_at_time: [creationTimeInMicroseconds],
                 expected_allowance: [], 
             };
 
@@ -310,6 +311,44 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
         setIsSubmitting(false);
     }
 };
+
+// const handleApprove = async () => {
+//   const ledgerActor = Actor.createActor(ledgerIDL, {
+//     agent,
+//     canisterId: "ryjl3-tyaaa-aaaaa-aaaba-cai",  // Ledger canister ID
+//   });
+
+//   const spenderAccount = {
+//     owner: Principal.fromText(process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND),
+//     subaccount: [], // Ensure this is correctly defined
+//   };
+
+//   const nowInMicroseconds = BigInt(Date.now()) * 1000n;
+//   const expiresAtTimeInMicroseconds = nowInMicroseconds + BigInt(10 * 60 * 1_000_000); // 10 minutes later
+//   const creationTimeInMicroseconds = nowInMicroseconds;
+  
+//   const fee = 0.0001; // Define the fee explicitly in ICP
+//   const feeAmount = BigInt(Math.round(fee * 10 ** 8)); // Convert to e8 format for precision
+
+//   const icrc2ApproveArgs = {
+//     from_subaccount: [], // Specify if using a subaccount
+//     spender: spenderAccount,
+//     fee: [feeAmount], // Optional fee amount
+//     memo: [], // Optional memo field
+//     amount: feeAmount, // Amount to approve
+//     created_at_time: [creationTimeInMicroseconds], // Time of approval creation
+//     expected_allowance: [], // Specify if needed
+//     expires_at: [expiresAtTimeInMicroseconds], // Optional expiry
+//   };
+
+//   try {
+//     const approveResponse = await ledgerActor.icrc2_approve(icrc2ApproveArgs);
+//     console.log("ICRC2 approve response:", approveResponse);
+//   } catch (error) {
+//     console.error("Error during ICRC2 approve:", error);
+//   }
+// };
+
 
 useLayoutEffect(() => {
   if (modalIsOpen) {
@@ -450,6 +489,13 @@ useLayoutEffect(() => {
                   loading={isSubmitting}
                   isDisabled={isSubmitting}
                 />
+                {/* <button
+                  onClick={handleApprove}
+                  // loading={isSubmitting}
+                  // isDisabled={isSubmitting}
+                  >approve
+                    </button> */}
+
               </div>
             </form>
           </div>
