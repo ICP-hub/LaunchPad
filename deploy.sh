@@ -130,3 +130,5 @@ dfx deploy icplaunchpad_backend
 # echo "Cycle fabrication completed for all local canisters."
 
 # echo "run ./test_fairlaunch.sh to run an example successful fairlaunch."
+
+dfx ledger fabricate-cycles --canister bw4dl-smaaa-aaaaa-qaacq-cai
