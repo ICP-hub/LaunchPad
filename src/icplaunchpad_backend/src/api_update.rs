@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+use crate::CanisterIdRecord;
 use candid::{encode_one, Nat, Principal};
 use ic_cdk::{
     api::{
@@ -265,43 +266,87 @@ pub async fn create_token(user_params: UserInputParams) -> Result<TokenCreationR
     let arg = CreateCanisterArgument { settings: None };
 
     // Create ledger canister
-    let (canister_id,) = create_canister(arg.clone())
-        .await
-        .map_err(|(_, err_string)| {
-            ic_cdk::println!("Error creating ledger canister: {}", err_string);
-            format!("Error creating ledger canister: {}", err_string)
-        })?;
-    ic_cdk::println!("Ledger canister created with ID: {:?}", canister_id);
+    let ledger_creation_result = create_canister(arg.clone()).await;
+    let canister_id_principal = match ledger_creation_result {
+        Ok((canister_id,)) => canister_id.canister_id,
+        Err((_, err_string)) => {
+            return Err(format!("Error creating ledger canister: {}", err_string));
+        }
+    };
 
-    // Create index canister
-    let (index_canister_id,) = create_canister(arg.clone())
-        .await
-        .map_err(|(_, err_string)| {
-            ic_cdk::println!("Error creating index canister: {}", err_string);
-            format!("Error creating index canister: {}", err_string)
-        })?;
-    ic_cdk::println!("Index canister created with ID: {:?}", index_canister_id);
+    // Attempt to create the index canister
+    let index_creation_result = create_canister(arg).await;
+    let index_canister_id_principal = match index_creation_result {
+        Ok((canister_id,)) => canister_id.canister_id,
+        Err((_, err_string)) => {
+            // Rollback if index canister creation fails
+            let delete_arg = ic_cdk::api::management_canister::provisional::CanisterIdRecord {
+                canister_id: canister_id_principal,
+            };
+            let delete_result =
+                ic_cdk::api::management_canister::main::delete_canister(delete_arg).await;
+            match delete_result {
+                Ok(_) => ic_cdk::println!("Ledger canister rollback successful."),
+                Err(delete_err) => {
+                    ic_cdk::println!("Failed to rollback ledger canister: {:?}", delete_err)
+                }
+            }
+            return Err(format!(
+                "Error creating index canister: {}, ledger canister rolled back",
+                err_string
+            ));
+        }
+    };
+
+    // Success message logging if all goes well
+    ic_cdk::println!(
+        "Ledger canister created with ID: {}",
+        canister_id_principal.to_text()
+    );
+    ic_cdk::println!(
+        "Index canister created with ID: {}",
+        index_canister_id_principal.to_text()
+    );
 
     // Add cycles to the ledger canister
-    deposit_cycles(canister_id, 150_000_000_000)
-        .await
-        .map_err(|(_, err_string)| {
-            ic_cdk::println!("Error adding cycles to ledger canister: {}", err_string);
-            format!("Error adding cycles to ledger canister: {}", err_string)
-        })?;
-    ic_cdk::println!("Cycles added to ledger canister: {:?}", canister_id);
+    let deposit_ledger_result = deposit_cycles(
+        CanisterIdRecord {
+            canister_id: canister_id_principal,
+        },
+        150_000_000_000,
+    )
+    .await;
+    if let Err((_, err_string)) = deposit_ledger_result {
+        ic_cdk::println!("Error adding cycles to ledger canister: {}", err_string);
+        return Err(format!(
+            "Error adding cycles to ledger canister: {}",
+            err_string
+        ));
+    }
+    ic_cdk::println!(
+        "Cycles added to ledger canister: {:?}",
+        canister_id_principal
+    );
 
     // Add cycles to the index canister
-    deposit_cycles(index_canister_id, 100_000_000_000)
-        .await
-        .map_err(|(_, err_string)| {
-            ic_cdk::println!("Error adding cycles to index canister: {}", err_string);
-            format!("Error adding cycles to index canister: {}", err_string)
-        })?;
-    ic_cdk::println!("Cycles added to index canister: {:?}", index_canister_id);
-
-    let canister_id_principal = canister_id.canister_id;
-    let index_canister_id_principal = index_canister_id.canister_id;
+    let deposit_index_result = deposit_cycles(
+        CanisterIdRecord {
+            canister_id: index_canister_id_principal,
+        },
+        100_000_000_000,
+    )
+    .await;
+    if let Err((_, err_string)) = deposit_index_result {
+        ic_cdk::println!("Error adding cycles to index canister: {}", err_string);
+        return Err(format!(
+            "Error adding cycles to index canister: {}",
+            err_string
+        ));
+    }
+    ic_cdk::println!(
+        "Cycles added to index canister: {:?}",
+        index_canister_id_principal
+    );
 
     // Calculate total supply from initial balances
     let total_supply: Nat = user_params
@@ -369,18 +414,50 @@ pub async fn create_token(user_params: UserInputParams) -> Result<TokenCreationR
     };
 
     // Install code for the ledger canister
-    install_code(arg1.clone(), wasm_module)
-        .await
-        .map_err(|(code, msg)| {
-            ic_cdk::println!("Error installing ledger code: {} - {}", code as u8, msg);
-            format!("Error installing ledger code: {} - {}", code as u8, msg)
-        })?;
+    let ledger_install_result = install_code(arg1.clone(), wasm_module).await;
+    if let Err((code, msg)) = ledger_install_result {
+        ic_cdk::println!("Error installing ledger code: {} - {}", code as u8, msg);
+        // Rollback by deleting the ledger canister
+        let delete_arg = ic_cdk::api::management_canister::provisional::CanisterIdRecord {
+            canister_id: canister_id_principal,
+        };
+        let _ = ic_cdk::api::management_canister::main::delete_canister(delete_arg).await;
+        return Err(format!(
+            "Error installing ledger code: {} - {}",
+            code as u8, msg
+        ));
+    }
     ic_cdk::println!(
         "Ledger code installed successfully for canister ID: {:?}",
         canister_id_principal
     );
 
-    // Update state with ledger canister details
+    // Install code for the index canister
+    let index_install_result = index_install_code(arg2, index_wasm_module).await;
+    if let Err((code, msg)) = index_install_result {
+        ic_cdk::println!("Error installing index code: {} - {}", code as u8, msg);
+        // Rollback by deleting both the index and ledger canisters
+        let delete_index_arg = ic_cdk::api::management_canister::provisional::CanisterIdRecord {
+            canister_id: index_canister_id_principal,
+        };
+        let _ = ic_cdk::api::management_canister::main::delete_canister(delete_index_arg).await;
+
+        let delete_ledger_arg = ic_cdk::api::management_canister::provisional::CanisterIdRecord {
+            canister_id: canister_id_principal,
+        };
+        let _ = ic_cdk::api::management_canister::main::delete_canister(delete_ledger_arg).await;
+
+        return Err(format!(
+            "Error installing index code: {} - {}, both ledger and index canisters rolled back",
+            code as u8, msg
+        ));
+    }
+    ic_cdk::println!(
+        "Index code installed successfully for canister ID: {:?}",
+        index_canister_id_principal
+    );
+
+    // Update state with ledger and index canister details
     mutate_state(|state| {
         state.canister_ids.insert(
             canister_id_principal.to_string(),
@@ -394,31 +471,14 @@ pub async fn create_token(user_params: UserInputParams) -> Result<TokenCreationR
                 total_supply,
             },
         );
-    });
-    ic_cdk::println!("Ledger canister details updated in state.");
-
-    // Install code for the index canister
-    index_install_code(arg2, index_wasm_module)
-        .await
-        .map_err(|(code, msg)| {
-            ic_cdk::println!("Error installing index code: {} - {}", code as u8, msg);
-            format!("Error installing index code: {} - {}", code as u8, msg)
-        })?;
-    ic_cdk::println!(
-        "Index code installed successfully for canister ID: {:?}",
-        index_canister_id_principal
-    );
-
-    // Update state with index canister details
-    mutate_state(|state| {
         state.index_canister_ids.insert(
             index_canister_id_principal.to_string(),
             IndexCanisterIdWrapper {
                 index_canister_ids: index_canister_id_principal,
             },
-        )
+        );
     });
-    ic_cdk::println!("Index canister details updated in state.");
+    ic_cdk::println!("State updated with ledger and index canister details.");
 
     ic_cdk::println!(
         "Token creation completed successfully for caller: {}",
