@@ -132,12 +132,11 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
       fetchFee();
   }, []);
 
-  // Form submission handler
   const onSubmit = async (formData) => {
     setValidationError('');
     setIsSubmitting(true);
 
-    // Ensure terms are accepted first
+    // Step 1: Ensure terms are accepted first
     if (!termsAccepted) {
         setValidationError("Please accept the terms and conditions.");
         setIsSubmitting(false);
@@ -145,6 +144,7 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
     }
 
     try {
+        // Extract form data
         const { token_name, token_symbol, decimals, total_supply } = formData;
         const ownerPrincipal = Principal.fromText(principal);
 
@@ -165,144 +165,33 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
         };
         console.log("Token data:", tokenData);
 
-        // Handle local network
+        // Step 1: Initialize the ledger actor
+        const ledgerActor = Actor.createActor(ledgerIDL, {
+            agent,
+            canisterId: "ryjl3-tyaaa-aaaaa-aaaba-cai", // Ledger canister ID
+        });
+
+        // Step 2: Check ICP balance
+        const balance = await checkICPBALANCE(ledgerActor, ownerPrincipal);
+
+        if (balance <= 0) {
+            setValidationError("Insufficient ICP balance.");
+            setIsSubmitting(false);
+            return;
+        }
+
+        // Step 3: Handle local or mainnet network
         if (process.env.DFX_NETWORK !== 'ic') {
-          if(signerId ==='Plug'){
-            // Handle non-local network with ICRC2 approval
-            const ledgerActor = Actor.createActor(ledgerIDL, {
-              agent,
-              canisterId: "ryjl3-tyaaa-aaaaa-aaaba-cai",  // Ledger canister ID
-          });
+            console.log("Local network detected");
 
-          const spenderAccount = {
-              owner: Principal.fromText(process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND),
-              subaccount: [],
-          };
-          const nowInMicroseconds = BigInt(Date.now()) * 1000n;
-          const expiresAtTimeInMicroseconds = nowInMicroseconds + BigInt(10 * 60 * 1_000_000); // 10 minutes later
-          const creationTimeInMicroseconds = nowInMicroseconds;  // Ensure BigInt here
-          const Amount = BigInt(Math.round(fee * 10 ** 8) + 10000); 
-          const feeAmount = BigInt(0.0001 * 10 ** 8 + 10000); 
-
-          const icrc2ApproveArgs = {
-              from_subaccount: [],
-              spender: spenderAccount,
-              fee: [],
-              memo: [], 
-              amount: feeAmount, 
-              created_at_time: [],
-              expected_allowance: [],
-              expires_at: [],
-
-          };
-
-
-          const approveResponse = await ledgerActor.icrc2_approve(icrc2ApproveArgs);
-          console.log("ICRC2 approve response:", approveResponse);
-  
-          if(approveResponse && !approveResponse?.Err){
-            const ledgerPrincipal=Principal.fromText("ryjl3-tyaaa-aaaaa-aaaba-cai")
-            const feeResponse= await actor.token_fee_transfer(ownerPrincipal, Amount,ledgerPrincipal);
-            console.log('feeResponse=',feeResponse);
-  
-          if(feeResponse && !feeResponse?.Err){
-              const response = await actor.create_token(tokenData);
-              console.log("Token creation response:", response);
-
-              if (response && response.Ok) {
-                  const { ledger_canister_id, index_canister_id } = response.Ok;
-                  navigate("/verify-token", {
-                      state: {
-                          formData,
-                          ledger_canister_id: ledger_canister_id._arr,
-                          index_canister_id,
-                      },
-                  });
-              } else {
-                  setValidationError("Token creation failed.");
-              } }
-              else 
-                throw new Error(`ICRC2 fee Transfer failed: ${feeResponse?.Err}`);
-            }
-           else {
-              throw new Error(`ICRC2 approval failed: ${approveResponse.Err}`);
-          }
-          }else{
-            const response = await actor.create_token(tokenData);
-            console.log("Token creation response:", response);
-
-            if (response && response.Ok) {
-                const { ledger_canister_id, index_canister_id } = response.Ok;
-                navigate("/verify-token", {
-                    state: {
-                        formData,
-                        ledger_canister_id: ledger_canister_id._arr,
-                        index_canister_id,
-                    },
-                });
+            if (signerId === 'Plug') {
+                await handleICRC2ApprovalAndTokenCreation(ledgerActor, ownerPrincipal, tokenData);
             } else {
-                setValidationError("Token creation failed.");
+                await createToken(actor, tokenData);
             }
-          }
         } else {
-            // Handle non-local network with ICRC2 approval
-            const ledgerActor = Actor.createActor(ledgerIDL, {
-                agent,
-                canisterId: "ryjl3-tyaaa-aaaaa-aaaba-cai",  // Ledger canister ID
-            });
-
-            const spenderAccount = {
-                owner: Principal.fromText(process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND),
-                subaccount: [],
-            };
-
-            const nowInMicroseconds = BigInt(Date.now()) * 1000n;
-            const expiresAtTimeInMicroseconds = nowInMicroseconds + BigInt(10 * 60 * 1_000_000); // 10 minutes later
-            const creationTimeInMicroseconds = nowInMicroseconds; 
-            const feeAmount = BigInt(0.0001 * 10 ** 8+ 10000); 
-            const Amount = BigInt(Math.round(fee * 10 ** 8) + 10000); 
-
-            const icrc2ApproveArgs = {
-                from_subaccount: [],
-                spender: spenderAccount,
-                fee: [],
-                memo: [], 
-                amount: feeAmount, 
-                expires_at: [expiresAtTimeInMicroseconds],
-                created_at_time: [creationTimeInMicroseconds],
-                expected_allowance: [], 
-            };
-
-            const approveResponse = await ledgerActor.icrc2_approve(icrc2ApproveArgs);
-            console.log("ICRC2 approve response:", approveResponse);
-    
-            if(approveResponse && !approveResponse?.Err){
-              const ledgerPrincipal=Principal.fromText("ryjl3-tyaaa-aaaaa-aaaba-cai")
-              const feeResponse= await actor.token_fee_transfer(ownerPrincipal, Amount,ledgerPrincipal);
-              console.log('feeResponse=',feeResponse);
-    
-            if(feeResponse && !feeResponse?.Err){
-                const response = await actor.create_token(tokenData);
-                console.log("Token creation response:", response);
-
-                if (response && response.Ok) {
-                    const { ledger_canister_id, index_canister_id } = response.Ok;
-                    navigate("/verify-token", {
-                        state: {
-                            formData,
-                            ledger_canister_id: ledger_canister_id._arr,
-                            index_canister_id,
-                        },
-                    });
-                } else {
-                    setValidationError("Token creation failed.");
-                } }
-                else 
-                  throw new Error(`ICRC2 fee Transfer failed: ${feeResponse?.Err}`);
-              }
-             else {
-                throw new Error(`ICRC2 approval failed: ${approveResponse.Err}`);
-            }
+            console.log("Mainnet detected");
+                await handleICRC2ApprovalAndTokenCreation(ledgerActor, ownerPrincipal, tokenData);     
         }
     } catch (error) {
         console.error("Error during token creation or approval:", error);
@@ -311,6 +200,101 @@ const CreateTokenModal = ({ modalIsOpen, setIsOpen }) => {
         setIsSubmitting(false);
     }
 };
+
+// 🛠️ Helper Function: Check ICP Balance
+const checkICPBALANCE = async (ledgerActor, ownerPrincipal) => {
+    const acc = {
+        owner: ownerPrincipal,
+        subaccount: [],
+    };
+
+    const balanceICP = await ledgerActor.icrc1_balance_of(acc);
+    const balance = Number(balanceICP) / 100000000;
+    console.log("Balance:", balance);
+
+    return balance;
+};
+
+const handleICRC2ApprovalAndTokenCreation = async (ledgerActor, ownerPrincipal, tokenData) => {
+  try {
+      // Step 1: Define spender account
+      const spenderAccount = {
+          owner: Principal.fromText(process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND),
+          subaccount: [],
+      };
+
+      // Step 2: Calculate time in nanoseconds
+      const nowInNanoseconds = BigInt(Date.now()) * 1_000_000n;
+      const expiresAtTimeInNanoseconds = nowInNanoseconds + BigInt(10 * 60 * 1_000_000_000); // 10 minutes later
+
+      // Step 3: Calculate the fee amount
+      const feeAmount = BigInt(Math.floor(fee * 10 ** 8));
+      const Amount = feeAmount + BigInt(10000); // Adding extra buffer
+
+      // Step 4: Always perform ICRC2 approval
+      console.log("Performing ICRC2 approval...");
+
+      const icrc2ApproveArgs = {
+          from_subaccount: [new Uint8Array(32).fill(0)],
+          spender: spenderAccount,
+          fee: [],
+          memo: [],
+          amount: Amount,
+          created_at_time: [nowInNanoseconds],
+          expected_allowance: [],
+          expires_at: [expiresAtTimeInNanoseconds],
+      };
+
+      const approveResponse = await ledgerActor.icrc2_approve(icrc2ApproveArgs);
+      console.log("ICRC2 approve response:", approveResponse);
+
+      if (!approveResponse || approveResponse.Err) {
+          throw new Error(`ICRC2 approval failed: ${JSON.stringify(approveResponse.Err)}`);
+      }
+
+      // Step 5: Transfer the fee
+      console.log("Transferring the fee...");
+      const ledgerPrincipal = Principal.fromText("ryjl3-tyaaa-aaaaa-aaaba-cai");
+      const feeResponse = await actor.token_fee_transfer(ownerPrincipal, Amount, ledgerPrincipal);
+      console.log("Fee transfer response:", feeResponse);
+
+      if (feeResponse && feeResponse.Err) {
+          throw new Error(`Fee transfer failed: ${feeResponse.Err}`);
+      }
+
+      // Step 6: Create the token
+      console.log("Creating the token...");
+      await createToken(actor, tokenData);
+  } catch (error) {
+      throw new Error(`Error during ICRC2 approval and fee transfer: ${error.message}`);
+  }
+};
+
+
+// 🛠️ Helper Function: Create Token
+const createToken = async (actor, tokenData) => {
+    try {
+        const response = await actor.create_token(tokenData);
+        console.log("Token creation response:", response);
+
+        if (response && response.Ok) {
+            const { ledger_canister_id, index_canister_id } = response.Ok;
+            navigate("/verify-token", {
+                state: {
+                    formData: tokenData,
+                    ledger_canister_id: ledger_canister_id._arr,
+                    index_canister_id,
+                },
+            });
+        } else {
+            setValidationError("Token creation failed.");
+        }
+    } catch (error) {
+        throw new Error(`Token creation error: ${error.message}`);
+    }
+};
+
+
 
 // const handleApprove = async () => {
 //   const ledgerActor = Actor.createActor(ledgerIDL, {
