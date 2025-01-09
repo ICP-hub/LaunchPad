@@ -51,64 +51,42 @@ const CreatePreLaunch = () => {
   const handleImportToken = async () => {
     setError('');
     setLoading(true);
-  
-    // Validate ledgerCanisterId
     if (!ledgerCanisterId) {
       setError('Please enter a Ledger Canister ID.');
       setLoading(false);
       return;
     }
-  
-    // Validate indexCanisterId if index input is shown
-    if (showIndexInput && !indexCanisterId) {
-      setError('Please enter an Index Canister ID.');
+
+    if ( showIndexInput && !indexCanisterId) {
+      setError('Please enter a Index Canister ID.');
       setLoading(false);
       return;
     }
-  
-    // Validate canister IDs
-    const isValidCanister = validateCanisterId(ledgerCanisterId, indexCanisterId);
+
+    const isValidCanister = validateCanisterId(ledgerCanisterId,indexCanisterId );
     if (!isValidCanister) {
-      setError('Invalid Canister ID(s).');
       setLoading(false);
       return;
     }
-  
+
     try {
-      // Create ledger actor
-      const ledgerActor = await createCustomActor(ledgerCanisterId);
-      if (!ledgerActor) {
-        throw new Error('Failed to create ledger actor.');
-      }
-  
-      // Create index actor if indexCanisterId is provided
-      let indexActor = null;
-      if (showIndexInput && indexCanisterId) {
-        indexActor = await createCustomActor(indexCanisterId);
-        if (!indexActor) {
-          throw new Error('Failed to create index actor.');
+      if (ledgerCanisterId ) {
+        const customActor = await createCustomActor(ledgerCanisterId);
+        if (customActor) {
+          const ledgerPrincipal = Principal.fromText(ledgerCanisterId);
+          const indexPrincipal = (showIndexInput && indexCanisterId) ? [Principal.fromText(indexCanisterId)] : [] ;
+          console.log('ledgerPrincipal',ledgerPrincipal, '  ','indexPrincipal',indexPrincipal) 
+
+          const response = await actor.import_token(ledgerPrincipal, indexPrincipal)
+          console.log('Import response: ', response);
+          if (!response?.Err) {
+            navigate('/verify-token', {
+              state: { ledger_canister_id: ledgerCanisterId },
+            });
+          } else {
+            setError('Token has already been imported');
+          }
         }
-      }
-  
-      // Prepare principals
-      const ledgerPrincipal = Principal.fromText(ledgerCanisterId);
-      const indexPrincipal = indexActor ? [Principal.fromText(indexCanisterId)] : [];
-  
-      console.log('ledgerPrincipal:', ledgerPrincipal, 'indexPrincipal:', indexPrincipal);
-  
-      // Import token
-      const response = await ledgerActor.import_token(ledgerPrincipal, indexPrincipal);
-      console.log('Import response:', response);
-  
-      if (!response?.Err) {
-        navigate('/verify-token', {
-          state: {
-            ledger_canister_id: ledgerCanisterId,
-            index_canister_id: indexCanisterId,
-          },
-        });
-      } else {
-        setError('Token has already been imported.');
       }
     } catch (err) {
       console.error('Error importing token:', err);
