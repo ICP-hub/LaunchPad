@@ -48,17 +48,7 @@ const VerifyToken = () => {
   );
   // console.log('ledger_canister_id verify', Principal.fromUint8Array(ledger_canister_id))
   const principal = useSelector((currState) => currState.internet.principal);
-  const { signerId } = useAuths();
-
-  //  useBlocker(
-  //   ({ action, location }) => {
-  //     if (isSubmitting || currentStep < 4) {
-  //       return window.confirm("You have unsaved changes. Are you sure you want to leave?");
-  //     }
-  //     return true;
-  //   },
-  //   true // Enable blocking
-  // );
+  const { signerId,createCustomActor } = useAuths();
 
   useEffect(() => {
     if (formData)
@@ -186,6 +176,7 @@ const VerifyToken = () => {
 
       console.log("Presale created successfully:", presaleResult.value.Ok);
       setTokenApproved(presaleResult.value.Ok);
+      const approvedValue= presaleResult.value.Ok;
 
       // Handle token image upload response
       if (TokenPicture) {
@@ -221,11 +212,9 @@ const VerifyToken = () => {
 
       if (process.env.NETWORK === "ic") {
         try {
-          const ledgerActor = Actor.createActor(ledgerIDL, {
-            agent,
-            canisterId: ledger_canister_id.toText(),
-          });
-
+          const stringledgerId=ledgerPrincipalId.toText();
+          const ledgerActor = await createCustomActor(stringledgerId)
+          
           const spenderAccount = {
             owner: Principal.fromText(process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND),
             subaccount: [],
@@ -234,7 +223,7 @@ const VerifyToken = () => {
           const nowInMicroseconds = BigInt(Date.now()) * 1000n;
           const expiresAtTimeInMicroseconds = nowInMicroseconds + BigInt(10 * 60 * 1_000_000); // 10 minutes later
           const creationTimeInMicroseconds = nowInMicroseconds;  // Ensure BigInt here
-          const Amount = BigInt(Math.round(tokenApproved * 10 ** tokenData?.decimals));
+          const Amount = BigInt(Math.round(Number(approvedValue) * 10 ** tokenData?.decimals[0]));
           const feeAmount = BigInt(Math.round(0.0001 * 10 ** 8) + 10000);
 
           const icrc2ApproveArgs = {
@@ -262,11 +251,12 @@ const VerifyToken = () => {
         }
       }else{
         if(signerId ==='Plug'){
+
+          console.log('enter verifyToken')
           try {
-            const ledgerActor = Actor.createActor(ledgerIDL, {
-              agent,
-              canisterId: ledger_canister_id.toText(),
-            });
+            const stringledgerId=ledgerPrincipalId.toText();
+            console.log('stringledgerId->',stringledgerId)
+            const ledgerActor = await createCustomActor(stringledgerId)
   
             const spenderAccount = {
               owner: Principal.fromText(process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND),
@@ -276,15 +266,18 @@ const VerifyToken = () => {
             const nowInMicroseconds = BigInt(Date.now()) * 1000n;
             const expiresAtTimeInMicroseconds = nowInMicroseconds + BigInt(10 * 60 * 1_000_000); // 10 minutes later
             const creationTimeInMicroseconds = nowInMicroseconds;  // Ensure BigInt here
-            const Amount = BigInt(Math.round(tokenApproved * 10 ** tokenData?.decimals));
+
+            console.log('tokenApproved',approvedValue, 'tokenData?.decimals',tokenData?.decimals)
+            const Amount = BigInt(Math.round(Number(approvedValue) * 10 ** tokenData?.decimals[0]));
             const feeAmount = BigInt(Math.round(0.0001 * 10 ** 8) + 10000);
-  
+           
+            console.log('Amount',Amount)
             const icrc2ApproveArgs = {
               from_subaccount: [],
               spender: spenderAccount,
-              fee: [Amount],
+              fee: [feeAmount],
               memo: [],
-              amount: feeAmount,
+              amount: Amount,
               created_at_time: [creationTimeInMicroseconds],
               expected_allowance: [feeAmount],
               expires_at: [expiresAtTimeInMicroseconds],
@@ -302,7 +295,9 @@ const VerifyToken = () => {
             console.error("ICRC2 approval failed:", approvalError);
             toast.error("ICRC2 approval failed. Please check the network or parameters.");
           }
+          console.log('exit verifyToken')
         }
+        
       }
        
       //navigate to token page
