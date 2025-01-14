@@ -232,7 +232,7 @@ const TokenPage = () => {
         return <Token ledger_canister_id={ledger_canister_id} actor={ledgerActor} />;
       case "Pool Info":
         return <Pooolinfo presaleData={presaleData} poolData={tokenData ? tokenData : ''} />;
-      case "FAQs & Discussion":
+      case "FAQs":
         return <FAQsDiscussion />;
       case "Tokenomic":
         return <Tokenomic />;
@@ -249,7 +249,7 @@ const TokenPage = () => {
     "Pool Info",
     "Tokenomic",
     "Transactions",
-    "FAQs & Discussion",
+    "FAQs",
 
   ];
 
@@ -421,7 +421,7 @@ const TokenPage = () => {
                     Public
                   </label>
 
-                  <label className="flex  gap-4 items-center">
+                  {/* <label className="flex  gap-4 items-center">
                     <input
                       type="radio"
                       name="saleType"
@@ -433,9 +433,9 @@ const TokenPage = () => {
                     <div className="w-4 h-4 bg-transparent border-2 border-white  rounded-full  peer-checked:bg-gradient-to-r from-[#f09787]  to-[#CACCF5] flex items-center justify-center mr-2">
                       <div className="w-1.5 h-1.5 bg-transparent peer-checked:bg-gradient-to-r from-[#f09787]  to-[#CACCF5] rounded-full"></div>
                     </div>
-                    Whitelist
+                    Whitelistss
                   </label>
-                  <p className="ml-8 mt-[-10px]"> (Recommended For speed and private sale)</p>
+                  <p className="ml-8 mt-[-10px]"> (Recommended For speed and private sale)</p> */}
                 </div>
               </div>
 
@@ -458,13 +458,13 @@ const TokenPage = () => {
 
                 {/* Buttons */}
                 <div className="mx-auto flex  items-center justify-center ">
-                  <button className="w-full text-white   bg-gradient-to-r from-[#f09787]  to-[#CACCF5] rounded-2xl p-[1.5px] h-[60px] mt-2 ">
-                    <div onClick={()=>setPoolDateModalIsOpen(true)} className='flex items-center bg-[#191919] text-[13px] ss2:text-[17px] justify-center  w-full h-full  rounded-2xl  '>
+                <button className="w-full text-white bg-gradient-to-r from-[#f09787]  to-[#CACCF5]  rounded-3xl p-[1.5px] h-[40px]  mt-2 ">
+                    <div onClick={()=>setPoolDateModalIsOpen(true)} className='flex items-center justify-center text-[13px] ss2:text-[17px]   bg-[#191919] w-full h-full  rounded-3xl  '>
                       POOL START/END TIME SETTING
                     </div>
                   </button>
                 </div>
-                <button className="w-full text-white bg-gradient-to-r from-[#f09787]  to-[#CACCF5]  rounded-3xl p-[1.5px] h-[40px]  mt-2 ">
+                {/* <button className="w-full text-white bg-gradient-to-r from-[#f09787]  to-[#CACCF5]  rounded-3xl p-[1.5px] h-[40px]  mt-2 ">
                   <div className='flex items-center justify-center text-[13px] ss2:text-[17px]   bg-[#191919] w-full h-full  rounded-3xl  '>
                     HIDE TOKEN MATRIX CHART
                   </div>
@@ -473,7 +473,7 @@ const TokenPage = () => {
                   <div className='flex items-center justify-center text-[13px] ss2:text-[17px] bg-[#191919] w-full h-full  rounded-3xl  '>
                     CANCEL POOL
                   </div>
-                </button>
+                </button> */}
               </div>
             </div>
           )}
@@ -594,7 +594,7 @@ const TokenPage = () => {
                     Public
                   </label>
 
-                  <label className="flex items-center">
+                  {/* <label className="flex items-center">
                     <input
                       type="radio"
                       name="saleType"
@@ -607,7 +607,7 @@ const TokenPage = () => {
                       <div className="w-1.5 h-1.5 bg-transparent peer-checked:bg-gradient-to-r from-[#f09787]  to-[#CACCF5] rounded-full"></div>
                     </div>
                     Whitelist
-                  </label>
+                  </label> */}
                 </div>
               </div>
 
@@ -630,13 +630,13 @@ const TokenPage = () => {
 
                 {/* Buttons */}
                 <div className="mx-auto flex  items-center justify-center ">
-                  <button className="w-full text-white  bg-gradient-to-r from-[#f09787]  to-[#CACCF5] rounded-3xl p-[1.5px] h-[40px] mt-2 ">
-                    <div onClick={()=>setPoolDateModalIsOpen(true)} className='flex items-center bg-[#191919] justify-center  w-full h-full  rounded-3xl  '>
+                <button className="w-full text-white bg-gradient-to-r from-[#f09787]  to-[#CACCF5]  rounded-3xl p-[1.5px] h-[40px]  mt-2">
+                    <div onClick={()=>setPoolDateModalIsOpen(true)} className='flex items-center justify-center text-[13px] ss2:text-[17px] bg-[#191919] w-full h-full  rounded-3xl  ' >
                       POOL START/END TIME SETTING
                     </div>
                   </button>
                 </div>
-                <button className="w-full text-white bg-gradient-to-r from-[#f09787]  to-[#CACCF5]  rounded-3xl p-[1.5px] h-[40px]  mt-2 ">
+                {/* <button className="w-full text-white bg-gradient-to-r from-[#f09787]  to-[#CACCF5]  rounded-3xl p-[1.5px] h-[40px]  mt-2 ">
                   <div className='flex items-center justify-center  bg-[#191919] w-full h-full  rounded-3xl  '>
                     HIDE TOKEN MATRIX CHART
                   </div>
@@ -645,7 +645,7 @@ const TokenPage = () => {
                   <div className='flex items-center justify-center bg-[#191919] w-full h-full  rounded-3xl  '>
                     CANCEL POOL
                   </div>
-                </button>
+                </button> */}
               </div>
               
             </div>   

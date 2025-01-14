@@ -20,7 +20,7 @@ const AffiliateProgram = ({ poolData, presaleData }) => {
 
 
   return (
-    <div className="bg-[#FFFFFF1A] sm:bg-transparent text-gray-300 p-2 xxs1:p-6 rounded-lg w-full max-w-full">
+    <div className=" sm:bg-transparent text-gray-300 p-2 xxs1:p-6 rounded-lg w-full max-w-full">
 
       {!isLoading ?
         <>
@@ -32,7 +32,7 @@ const AffiliateProgram = ({ poolData, presaleData }) => {
           <p className="text-xs mb-6">Do not send ICP to the token address</p>
 
           {/* Pool Information */}
-          <div className="border-t pt-4 space-y-2">
+          <div className="border-t py-4 space-y-2">
 
             {/* Tokens for Presale */}
             <div className="flex justify-between text-[14px] xxs1:text-[17px] border-b py-2">

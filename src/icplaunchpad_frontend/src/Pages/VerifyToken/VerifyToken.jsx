@@ -213,6 +213,7 @@ const VerifyToken = () => {
       if (process.env.NETWORK === "ic") {
         try {
           const stringledgerId=ledgerPrincipalId.toText();
+          // const ledgerActor = await createCustomActor("ryjl3-tyaaa-aaaaa-aaaba-cai")
           const ledgerActor = await createCustomActor(stringledgerId)
           
           const spenderAccount = {
@@ -220,20 +221,20 @@ const VerifyToken = () => {
             subaccount: [],
           };
 
-          const nowInMicroseconds = BigInt(Date.now()) * 1000n;
-          const expiresAtTimeInMicroseconds = nowInMicroseconds + BigInt(10 * 60 * 1_000_000); // 10 minutes later
-          const creationTimeInMicroseconds = nowInMicroseconds;  // Ensure BigInt here
+          const nowInNanoseconds = BigInt(Date.now()) * 1_000_000n;
+          const expiresAtTimeInMicroseconds = nowInNanoseconds + BigInt(10 * 60 * 1_000_000_000); // 10 minutes later
+          const creationTimeInMicroseconds = nowInNanoseconds;  // Ensure BigInt here
           const Amount = BigInt(Math.round(Number(approvedValue) * 10 ** tokenData?.decimals[0]));
           const feeAmount = BigInt(Math.round(0.0001 * 10 ** 8) + 10000);
 
           const icrc2ApproveArgs = {
             from_subaccount: [],
             spender: spenderAccount,
-            fee: [Amount],
+            fee: [],
             memo: [],
-            amount: feeAmount,
+            amount: Amount,
             created_at_time: [creationTimeInMicroseconds],
-            expected_allowance: [feeAmount],
+            expected_allowance: [],
             expires_at: [expiresAtTimeInMicroseconds],
           };
 
@@ -256,6 +257,8 @@ const VerifyToken = () => {
           try {
             const stringledgerId=ledgerPrincipalId.toText();
             console.log('stringledgerId->',stringledgerId)
+
+            // const ledgerActor = await createCustomActor("ryjl3-tyaaa-aaaaa-aaaba-cai")
             const ledgerActor = await createCustomActor(stringledgerId)
   
             const spenderAccount = {
@@ -263,9 +266,9 @@ const VerifyToken = () => {
               subaccount: [],
             };
   
-            const nowInMicroseconds = BigInt(Date.now()) * 1000n;
-            const expiresAtTimeInMicroseconds = nowInMicroseconds + BigInt(10 * 60 * 1_000_000); // 10 minutes later
-            const creationTimeInMicroseconds = nowInMicroseconds;  // Ensure BigInt here
+            const nowInNanoseconds = BigInt(Date.now()) * 1_000_000n;
+            const expiresAtTimeInMicroseconds = nowInNanoseconds + BigInt(10 * 60 * 1_000_000_000); // 10 minutes later
+            const creationTimeInMicroseconds = nowInNanoseconds;  // Ensure BigInt here
 
             console.log('tokenApproved',approvedValue, 'tokenData?.decimals',tokenData?.decimals)
             const Amount = BigInt(Math.round(Number(approvedValue) * 10 ** tokenData?.decimals[0]));
@@ -275,11 +278,11 @@ const VerifyToken = () => {
             const icrc2ApproveArgs = {
               from_subaccount: [],
               spender: spenderAccount,
-              fee: [feeAmount],
+              fee: [],
               memo: [],
               amount: Amount,
               created_at_time: [creationTimeInMicroseconds],
-              expected_allowance: [feeAmount],
+              expected_allowance: [],
               expires_at: [expiresAtTimeInMicroseconds],
             };
   

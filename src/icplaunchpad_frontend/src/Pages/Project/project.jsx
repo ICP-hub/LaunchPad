@@ -133,7 +133,7 @@ const TokenPage = () => {
         return <Tokenomic />;
       case "Transactions":
         return <TokenTransactions actor={ledgerActor} />;
-      case "FAQs & Discussion":
+      case "FAQs":
         return <FAQsDiscussion />;
       default:
         return <ProjectTokenAbout />;
@@ -146,7 +146,7 @@ const TokenPage = () => {
     "Pool Info",
     "Tokenomic",
     "Transactions",
-    "FAQs & Discussion",
+    "FAQs",
   ];
 
   const progress = 35.1;
@@ -170,8 +170,9 @@ const TokenPage = () => {
 
   console.log("ledger actor ", ledgerActor)
 
-
+  
   const handleTokenPurchase = async (actor, buyerDetails, sellArgs) => {
+    console.log('purchase starting.. ')
     const purchaseResponse = await actor?.buy_tokens(buyerDetails);
     console.log("Token Purchase Response:", purchaseResponse);
 
@@ -204,15 +205,16 @@ const TokenPage = () => {
     }
 
     const totalAmount = BigInt(amount * 10 ** 8);
-    const nowInMicroseconds = BigInt(Date.now()) * 1000n;
-    const expiresAtTimeInMicroseconds = nowInMicroseconds + BigInt(10 * 60 * 1_000_000); // 10 minutes later
-    const creationTimeInMicroseconds = nowInMicroseconds;
+    const nowInNanoseconds = BigInt(Date.now()) * 1_000_000n;
+    const expiresAtTimeInMicroseconds = nowInNanoseconds + BigInt(10 * 60 * 1_000_000_000); // 10 minutes later
+    const creationTimeInMicroseconds = nowInNanoseconds;
 
     const spender = {
       owner: Principal.fromText(process.env.CANISTER_ID_ICPLAUNCHPAD_BACKEND),
       subaccount: [],
     };
-
+    
+    console.log('fee big Int',BigInt(100000))
     const icrc2ApproveArgs = {
       from_subaccount: [],
       spender,
@@ -220,8 +222,8 @@ const TokenPage = () => {
       memo: [],
       amount: totalAmount + BigInt(100000),
       created_at_time: [creationTimeInMicroseconds],
-      expected_allowance: [expiresAtTimeInMicroseconds],
-      expires_at: [],
+      expected_allowance: [],
+      expires_at: [expiresAtTimeInMicroseconds],
     };
 
     const buyerDetails = {
@@ -247,11 +249,12 @@ const TokenPage = () => {
           console.log("ICRC2 Approve Args:", icrc2ApproveArgs);
 
           const approvalResponse = await ledgerActor?.icrc2_approve(icrc2ApproveArgs);
-          console.log("Approval Response:", approvalResponse);
+          console.log("Approval Respons:", approvalResponse);
 
           if (approvalResponse?.Ok) {
             await handleTokenPurchase(actor, buyerDetails, sellArgs);
           } else {
+  
             throw new Error(`Approval failed: ${approvalResponse.Err}`);
           }
         } else {
@@ -267,15 +270,19 @@ const TokenPage = () => {
 
         if (approvalResponse?.Ok) {
           await handleTokenPurchase(actor, buyerDetails, sellArgs);
+         
         } else {
           throw new Error(`Approval failed: ${approvalResponse.Err}`);
         }
       }
+     
     } catch (error) {
       console.error("Error during transaction processing:", error);
       toast.error("Payment process failed. Please try again.");
     } finally {
       setIsLoading(false);
+      setTimeout(() => setModalIsOpen(false), 300);
+      
     }
   };
 
@@ -286,7 +293,7 @@ const TokenPage = () => {
       <div className="flex flex-col  gap-5 max-w-[95%] mx-auto lg:flex-row">
         <div className={`bg-[#FFFFFF1A] rounded-lg  mt-24 pb-5`}>
           {!isMobile && (
-            <div className="max-h-[314px]">
+            <div className="h-[314px]">
               <div className="relative">
                 <img
                   src={projectData.cover_image ? projectData.cover_image : ProjectRectangleBg}
@@ -323,7 +330,7 @@ const TokenPage = () => {
                     }
                   </div>
                 </div>
-                <div className="right flex flex-col text-[17px] mr-8 lgx:mr-0 gap-4">
+                <div className="right flex flex-col text-[16px] mr-6 lgx:mr-0 gap-4">
                   <div className="text-[#FFC145]"> {tokenPhase ? tokenPhase : <Skeleton width={80} height={20} />} </div>
                   <div>{saleParams ? `Softcap ${saleParams?.softcap} ICP` : <Skeleton width={100} height={20} />}</div>
                 </div>
@@ -380,9 +387,8 @@ const TokenPage = () => {
               <div className="flex font-posterama text-[12px] xl:text-[15px]  justify-between">
                 {tabNames.map((tab) => (
                   <div
-                    key={tab}
-                    className={`cursor-pointer relative ${activeTab === tab
-                      ? "before:absolute before:left-0 before:right-0 before:top-5 before:h-[2px] before:bg-gradient-to-r before:from-[#F3B3A7] before:to-[#CACCF5] before:rounded"
+                     className={`cursor-pointer relative ${activeTab === tab
+                      ? "before:absolute before:left-0 before:right-0 before:top-7 before:h-[2px] before:bg-gradient-to-r before:from-[#F3B3A7] before:to-[#CACCF5] before:rounded"
                       : ""
                       }`}
                     onClick={() => setActiveTab(tab)}
@@ -441,7 +447,7 @@ const TokenPage = () => {
             </button>
 
             <div>
-              {ModalIsOpen && <ApproveOrRejectModal handleAction={handleTransaction} ModalIsOpen={ModalIsOpen} setModalIsOpen={setModalIsOpen} amount={amount} ledgerPrincipal={projectData.canister_id} />}
+              {ModalIsOpen && <ApproveOrRejectModal handleAction={handleTransaction} ModalIsOpen={ModalIsOpen} setModalIsOpen={setModalIsOpen} amount={amount} ledgerPrincipal={projectData.canister_id} isLoading={isLoading} />}
             </div>
 
           </div>

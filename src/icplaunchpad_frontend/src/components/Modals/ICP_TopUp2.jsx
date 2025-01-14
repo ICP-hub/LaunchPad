@@ -204,7 +204,7 @@ const ICP_TopUp2 = ({
             className="w-full text-sm  text-white font-bold py-2 rounded-lg transition flex justify-center items-center "
           >
          
-           <AnimationButton text="Approve Funds" loading={loading} />
+           <AnimationButton text="Approve" loading={loading} />
             
           </button>
 

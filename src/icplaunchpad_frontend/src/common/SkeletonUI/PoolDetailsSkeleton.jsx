@@ -24,7 +24,7 @@ const PoolDetailsSkeleton = () => {
                 <Skeleton width={100} height={15} />
               </span>
               <span>
-                <Skeleton width={150} height={15} />
+                <Skeleton width={120} height={15} />
               </span>
             </div>
           ))}

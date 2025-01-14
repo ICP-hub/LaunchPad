@@ -54,7 +54,7 @@ const TokenTab = ({ ledgerId }) => {
   }, [ledgerId]); // Trigger fetch when ledgerId changes
 
   return (
-    <div className="bg-[#FFFFFF1A] sm:bg-transparent text-gray-300 p-3 xxs1:p-6 rounded-lg w-full max-w-full">
+    <div className=" sm:bg-transparent text-gray-300 p-3 xxs1:p-6 rounded-lg w-full max-w-full">
       {tokenData ? (
         <>
           {/* Token Address */}
@@ -67,7 +67,7 @@ const TokenTab = ({ ledgerId }) => {
           <p className="text-xs mb-6">Do not send ICP to the token address</p>
 
           {/* Token Details */}
-          <div className="border-t pt-4">
+          <div className="border-t py-4">
 
             <div className="flex border-b-2 justify-between py-2">
               <span>Name</span>
